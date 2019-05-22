@@ -1,6 +1,8 @@
 #!/bin/bash
 ff=$1
 output_dir=$2
+output_dir=${output_dir}/demplxed_fastq
+mkdir -p $output_dir
 
 fastqs=(${ff//,/ })
 nfile=${#fastqs[@]}
