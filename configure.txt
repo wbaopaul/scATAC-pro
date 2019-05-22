@@ -1,0 +1,29 @@
+##########################################################
+## provide the install path of the dependent software ####
+## ONLY change the value, DO NOT change stuff before =
+##########################################################
+
+BWA_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bwa
+
+GENOME_FASTA=/mnt/isilon/tan_lab/yuw1/local_tools/annotation/hg38_genome/hg38_genome.fa
+
+SAMTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
+
+R_PATH=
+
+PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
+#PYTHON_PATH=/cm/shared/apps_chop/python/3.6.3/bin
+
+MACS2_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
+MACS2_OPTS="-g hs -n ss"  ## provided extra options for macs2
+
+
+
+#########################################
+## provide global variable 
+## ONLY change the value, DO NOT change stuff before =
+#########################################
+
+SAMPLE_PREFIX='ss'
+
+MAPQ=10  ## filter bam by MAPQ 
