@@ -1,9 +1,9 @@
 Run scATAC-pro 1.0.0
 --------------------------------------------
-Wed May 22 11:45:18 EDT 2019
+Wed May 22 14:08:31 EDT 2019
 Call peaks ...
-INFO  @ Wed, 22 May 2019 11:45:19: 
-# Command line: callpeak -t output/filtered_bam/ss.dedup.MAPQ10.bam --outdir output/peaks -f BAM -g hs -n ss --nomodel --extsize 147
+INFO  @ Wed, 22 May 2019 14:08:32: 
+# Command line: callpeak -t output/filtered_bam/ss.dedup.MAPQ10.bam --outdir output/peaks -f BAM -g hs -n ss -q 0.5
 # ARGUMENTS LIST:
 # name = ss
 # format = BAM
@@ -12,30 +12,37 @@ INFO  @ Wed, 22 May 2019 11:45:19:
 # effective genome size = 2.70e+09
 # band width = 300
 # model fold = [5, 50]
-# qvalue cutoff = 5.00e-02
+# qvalue cutoff = 5.00e-01
 # Larger dataset will be scaled towards smaller dataset.
 # Range for calculating regional lambda is: 10000 bps
 # Broad region calling is off
 # Paired-End mode is off
  
-INFO  @ Wed, 22 May 2019 11:45:19: #1 read tag files... 
-INFO  @ Wed, 22 May 2019 11:45:19: #1 read treatment tags... 
-INFO  @ Wed, 22 May 2019 11:45:21: #1 tag size is determined as 50 bps 
-INFO  @ Wed, 22 May 2019 11:45:21: #1 tag size = 50 
-INFO  @ Wed, 22 May 2019 11:45:21: #1  total tags in treatment: 233210 
-INFO  @ Wed, 22 May 2019 11:45:21: #1 user defined the maximum tags... 
-INFO  @ Wed, 22 May 2019 11:45:21: #1 filter out redundant tags at the same location and the same strand by allowing at most 1 tag(s) 
-INFO  @ Wed, 22 May 2019 11:45:21: #1  tags after filtering in treatment: 230497 
-INFO  @ Wed, 22 May 2019 11:45:21: #1  Redundant rate of treatment: 0.01 
-INFO  @ Wed, 22 May 2019 11:45:21: #1 finished! 
-INFO  @ Wed, 22 May 2019 11:45:21: #2 Build Peak Model... 
-INFO  @ Wed, 22 May 2019 11:45:21: #2 Skipped... 
-INFO  @ Wed, 22 May 2019 11:45:21: #2 Use 147 as fragment length 
-INFO  @ Wed, 22 May 2019 11:45:21: #3 Call peaks... 
-INFO  @ Wed, 22 May 2019 11:45:21: #3 Pre-compute pvalue-qvalue table... 
-INFO  @ Wed, 22 May 2019 11:45:22: #3 Call peaks for each chromosome... 
-INFO  @ Wed, 22 May 2019 11:45:22: #4 Write output xls file... output/peaks/ss_peaks.xls 
-INFO  @ Wed, 22 May 2019 11:45:22: #4 Write peak in narrowPeak format file... output/peaks/ss_peaks.narrowPeak 
-INFO  @ Wed, 22 May 2019 11:45:22: #4 Write summits bed file... output/peaks/ss_summits.bed 
-INFO  @ Wed, 22 May 2019 11:45:22: Done! 
+INFO  @ Wed, 22 May 2019 14:08:32: #1 read tag files... 
+INFO  @ Wed, 22 May 2019 14:08:32: #1 read treatment tags... 
+INFO  @ Wed, 22 May 2019 14:08:33: #1 tag size is determined as 50 bps 
+INFO  @ Wed, 22 May 2019 14:08:33: #1 tag size = 50 
+INFO  @ Wed, 22 May 2019 14:08:33: #1  total tags in treatment: 233210 
+INFO  @ Wed, 22 May 2019 14:08:33: #1 user defined the maximum tags... 
+INFO  @ Wed, 22 May 2019 14:08:33: #1 filter out redundant tags at the same location and the same strand by allowing at most 1 tag(s) 
+INFO  @ Wed, 22 May 2019 14:08:33: #1  tags after filtering in treatment: 230497 
+INFO  @ Wed, 22 May 2019 14:08:33: #1  Redundant rate of treatment: 0.01 
+INFO  @ Wed, 22 May 2019 14:08:33: #1 finished! 
+INFO  @ Wed, 22 May 2019 14:08:33: #2 Build Peak Model... 
+INFO  @ Wed, 22 May 2019 14:08:33: #2 looking for paired plus/minus strand peaks... 
+INFO  @ Wed, 22 May 2019 14:08:34: #2 number of paired peaks: 5131 
+INFO  @ Wed, 22 May 2019 14:08:34: start model_add_line... 
+INFO  @ Wed, 22 May 2019 14:08:34: start X-correlation... 
+INFO  @ Wed, 22 May 2019 14:08:34: end of X-cor 
+INFO  @ Wed, 22 May 2019 14:08:34: #2 finished! 
+INFO  @ Wed, 22 May 2019 14:08:34: #2 predicted fragment length is 297 bps 
+INFO  @ Wed, 22 May 2019 14:08:34: #2 alternative fragment length(s) may be 297 bps 
+INFO  @ Wed, 22 May 2019 14:08:34: #2.2 Generate R script for model : output/peaks/ss_model.r 
+INFO  @ Wed, 22 May 2019 14:08:34: #3 Call peaks... 
+INFO  @ Wed, 22 May 2019 14:08:34: #3 Pre-compute pvalue-qvalue table... 
+INFO  @ Wed, 22 May 2019 14:08:35: #3 Call peaks for each chromosome... 
+INFO  @ Wed, 22 May 2019 14:08:35: #4 Write output xls file... output/peaks/ss_peaks.xls 
+INFO  @ Wed, 22 May 2019 14:08:35: #4 Write peak in narrowPeak format file... output/peaks/ss_peaks.narrowPeak 
+INFO  @ Wed, 22 May 2019 14:08:35: #4 Write summits bed file... output/peaks/ss_summits.bed 
+INFO  @ Wed, 22 May 2019 14:08:35: Done! 
 Call peaks Done

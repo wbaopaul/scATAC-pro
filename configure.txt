@@ -15,7 +15,7 @@ PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 #PYTHON_PATH=/cm/shared/apps_chop/python/3.6.3/bin
 
 MACS2_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
-MACS2_OPTS="-g hs -n ss"  ## provided extra options for macs2
+MACS2_OPTS="-g hs -n ss -q 0.5"  ## provided extra options for macs2
 
 
 
