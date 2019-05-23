@@ -164,6 +164,7 @@ declare -x BEDTOOLS_PATH
 declare -x PERL_PATH
 declare -x R_PATH
 declare -x DEEPTOOLS_PATH
+declare -x BLACKLIST
 
 
 source $CONFIG
