@@ -32,7 +32,7 @@ demplx_fastq: /bin/bash
 	@date 
 	@echo "Demultiplex fastq ..." 
 	@$(SCRIPTS)/dex_fastq.sh $(INPUT_FILE) $(OUTPUT_DIR)
-	@echo "Demuxtiplex Done"
+	@echo 
 
 
 
@@ -47,7 +47,7 @@ mapping: /bin/bash
 	@date 
 	@echo "Aligning by bwa ..." 
 	@$(SCRIPTS)/mapping_bwa.sh $(INPUT_FILE) $(OUTPUT_DIR)
-	@echo "Alignment Done"
+	@echo
 
 
 #######################################
@@ -58,7 +58,7 @@ filter_bam: /bin/bash
 	@date 
 	@echo "Filtering bwa ..." 
 	@$(SCRIPTS)/filter_bam.sh $(INPUT_FILE) $(OUTPUT_DIR)
-	@echo "Filtering Bam Done"
+	@echo
 
 
 
@@ -71,6 +71,16 @@ call_peak:
 	@date 
 	@echo "Call peaks ..." 
 	@$(SCRIPTS)/call_peak.sh $(INPUT_FILE) $(OUTPUT_DIR)
-	@echo "Call peaks Done"
+	@echo 
 
+
+#######################################
+## get peak barcode matrix
+#######################################
+get_peak_barcode_mat: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Prepare peak by barcode matrix ..." 
+	@$(SCRIPTS)/get_peak_barcode_mat.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@echo 
 

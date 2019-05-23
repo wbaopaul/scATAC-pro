@@ -16,6 +16,9 @@ mapRes_dir="${2}/mapping_result"
 echo "Starting alignment ... "
 ${BWA_PATH}/bwa mem $GENOME_FASTA ${fastqs[0]} ${fastqs[1]} > ${mapRes_dir}/${SAMPLE_PREFIX}.sam
 
+echo "BWA Mapping Done!"
+
+
 ## convert to bam
 echo "Converting sam to bam ... "
 ${SAMTOOLS_PATH}/samtools view -h -bS ${mapRes_dir}/${SAMPLE_PREFIX}.sam > ${mapRes_dir}/${SAMPLE_PREFIX}.bam
@@ -54,3 +57,5 @@ ${SAMTOOLS_PATH}/samtools idxstats ${mapRes_dir}/${SAMPLE_PREFIX}.markdup.bam > 
 rm ${mapRes_dir}/${SAMPLE_PREFIX}.sorted.bam
 rm ${mapRes_dir}/${SAMPLE_PREFIX}.fixmate.bam
 
+
+echo "Simple mapping stats summary Done!"

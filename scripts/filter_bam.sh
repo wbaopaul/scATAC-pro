@@ -13,6 +13,8 @@ ${SAMTOOLS_PATH}/samtools markdup -r $input_bam ${filterBam_dir}/${SAMPLE_PREFIX
 ## filter by MAPQ
 ${SAMTOOLS_PATH}/samtools view -h -b -q $MAPQ ${filterBam_dir}/${SAMPLE_PREFIX}.dedup.bam -o ${filterBam_dir}/${SAMPLE_PREFIX}.dedup.MAPQ${MAPQ}.bam
 
+echo "Filtering Bam Done!"
+
 
 
 

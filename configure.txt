@@ -9,7 +9,7 @@ GENOME_FASTA=/mnt/isilon/tan_lab/yuw1/local_tools/annotation/hg38_genome/hg38_ge
 
 SAMTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 
-R_PATH=
+R_PATH=/mnt/isilon/linux_pool_software/R/3.5.3/lib64/R/bin
 
 PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 #PYTHON_PATH=/cm/shared/apps_chop/python/3.6.3/bin
@@ -17,6 +17,9 @@ PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 MACS2_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 MACS2_OPTS="-g hs -n ss -q 0.5"  ## provided extra options for macs2
 
+BEDTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
+
+PERL_PATH=/usr/bin
 
 
 #########################################

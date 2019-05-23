@@ -11,3 +11,7 @@
 ./scATAC-pro -s filter_bam -i output/mapping_result/ss.markdup.bam -c configure.txt -o output > logs/filter_bam.log
 
 ./scATAC-pro -s call_peak -i output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o output > logs/call_peak.log
+
+./scATAC-pro -s get_peak_barcode_mat -i output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o output > logs/get_peak_barcode_mat.log
+
+
