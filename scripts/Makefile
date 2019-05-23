@@ -77,10 +77,20 @@ call_peak:
 #######################################
 ## get peak barcode matrix
 #######################################
-get_peak_barcode_mat: 
+get_peak_barcode_mat: get_peak_barcode_mat.pl 
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Prepare peak by barcode matrix ..." 
 	@$(SCRIPTS)/get_peak_barcode_mat.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@echo 
+
+#######################################
+## generate signal
+#######################################
+generate_signal: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Call peaks ..." 
+	@$(SCRIPTS)/generate_signal.sh $(INPUT_FILE) $(OUTPUT_DIR)
 	@echo 
 

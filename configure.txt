@@ -19,6 +19,8 @@ MACS2_OPTS="-g hs -n ss -q 0.5"  ## provided extra options for macs2
 
 BEDTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 
+DEEPTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
+
 PERL_PATH=/usr/bin
 
 
