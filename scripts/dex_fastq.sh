@@ -1,4 +1,9 @@
 #!/bin/bash
+
+
+
+set -e
+
 ff=$1
 output_dir=$2
 output_dir=${output_dir}/demplxed_fastq

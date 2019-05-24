@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+source /home/yuw1/.bashrc
+
+#$ -cwd
+
+#$ -j y
+#$ -l h_vmem=8G 
+#$ -l mem_free=8G
+
+./scATAC-pro -s qc_per_barcode -i output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o output > logs/qc_per_barcode.log
+

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ### will search peaks/*narrowPeak under $2
+set -e
 
 input_bam=$1
 region_file=${2}/peaks/${SAMPLE_PREFIX}_peaks.narrowPeak
@@ -19,7 +20,7 @@ ${SAMTOOLS_PATH}/samtools view $input_bam > ${mat_dir}/tmp.sam
 ## use perl script to get the matrix
 curr_dir=`dirname $0`
 
-${PERL_PATH}/perl ${curr_dir}/get_peak_barcode_mat.pl --region_file $region_file --read_file ${mat_dir}/tmp.sam --read_length 100 --output_file ${mat_dir}/${SAMPLE_PREFIX}.peak.barcode.mat
+${PERL_PATH}/perl ${curr_dir}/get_peak_barcode_mat.pl --region_file $region_file --read_file ${mat_dir}/tmp.sam --read_length 100 --output_mat_file ${mat_dir}/${SAMPLE_PREFIX}.peak.barcode.mat --output_barcode_file ${mat_dir}/${SAMPLE_PREFIX}.barcodes 
 
 rm ${mat_dir}/tmp.sam
 

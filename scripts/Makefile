@@ -77,7 +77,7 @@ call_peak:
 #######################################
 ## get peak barcode matrix
 #######################################
-get_peak_barcode_mat: get_peak_barcode_mat.pl 
+get_peak_barcode_mat:  
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Prepare peak by barcode matrix ..." 
@@ -92,5 +92,15 @@ generate_signal:
 	@date 
 	@echo "Call peaks ..." 
 	@$(SCRIPTS)/generate_signal.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@echo 
+
+#######################################
+## reads overlap with regions, per barcode
+#######################################
+qc_per_barcode: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Doing QC per barcode ..." 
+	@$(SCRIPTS)/qc_per_barcode.sh $(INPUT_FILE) $(OUTPUT_DIR)
 	@echo 
 

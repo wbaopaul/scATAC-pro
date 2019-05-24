@@ -25,29 +25,4 @@ zerosToNans: True
 smoothLength: None
 save_data: False
 out_file_for_raw_data: None
-maxPairedFragmentLength: 1000
-bamFilesList: ['output/filtered_bam/ss.dedup.MAPQ10.bam']
-binLength: 200
-numberOfSamples: None
-blackListFileName: None
-skipZeroOverZero: False
-defaultFragmentLength: read length
-numberOfProcessors: 4
-verbose: False
-region: None
-bedFile: None
-minMappingQuality: None
-ignoreDuplicates: False
-chrsToSkip: []
-stepSize: 200
-center_read: False
-samFlag_include: None
-samFlag_exclude: None
-minFragmentLength: 0
-maxFragmentLength: 0
-zerosToNans: True
-smoothLength: None
-save_data: False
-out_file_for_raw_data: None
-maxPairedFragmentLength: 1000
-
+maxPairedFragmentLength: 1make: *** [generate_signal] Hangup

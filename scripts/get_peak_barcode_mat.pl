@@ -1,5 +1,6 @@
 #Sam file input
-#perl get_peak_barcode_mat.pl --region_file example_regions.bed --read_file example_reads.sam --read_length 100 --output_file example_sam_output.bed.txt
+
+#perl get_region_barcode_mat.pl --region_file example_regions.bed --read_file example_reads.sam --read_length 100 --output_mat_file example_sam_output.bed.txt --output_barcode_file barcodes.txt 
 
 
 
@@ -12,7 +13,8 @@ use Getopt::Long;
 GetOptions( 'region_file=s' => \my $region_file 
           , 'read_file=s' => \my $read_file  
           , 'read_length=s' => \my $read_length 
-          , 'output_file=s' => \my $output_file  
+          , 'output_mat_file=s' => \my $output_mat_file  
+          , 'output_barcode_file=s' => \my $output_barcode_file  
           );
 
 
@@ -43,14 +45,15 @@ if($read_file_suffix eq ".bed")
 
 open(REGION, $region_file ) or die("Cannot read $region_file \n");
 open(READ, $read_file ) or die("Cannot read $read_file \n");
-open(OUT, ">$output_file" ) or die("Cannot write $output_file \n");
+open(OUT, ">$output_mat_file" ) or die("Cannot write $output_mat_file \n");
+open(OUT_barcode, ">$output_barcode_file" ) or die("Cannot write $output_barcode_file \n");
 
 my %regions = ();
 
 
 #my $header = <REGION>;
 
-print("I am reading cluster information file: $region_file .\n");
+print("I am reading region information file: $region_file .\n");
 
 my $region_counter = 0;
 while(my $line = <REGION>)
@@ -66,7 +69,7 @@ while(my $line = <REGION>)
    my $end = $array[2];
    my $name = $array[3];
 
-   my $region_id = $chrom."\t".$start."\t".$end;
+   my $region_id = $chrom."_".$start."_".$end;
    $regions{$region_id} = $name;
 
 }
@@ -75,7 +78,7 @@ print "I have successfully read $region_counter regions from $region_file \n";
 
 print "...\n";
 
-print("Now I am starting to process read file: $read_file .\n");
+print("Now I am starting to process reads file: $read_file .\n");
 print "...\n";
 my $read_file_counter = 0;
 my $barcode_counter = 0;
@@ -109,29 +112,20 @@ while(<READ>)
    {
 
 	   chomp;
-	   #my $CBZ_index = index($_, "CB:Z:");
-	   #if ($CBZ_index  < 0) {
-	   # next;
-	   #} 
 	   
 	   my @array = split /\t/;
-	   my $tmp = $array[0];
-	   my @tmp_array = split /:/, $tmp;
-           $barcode = $tmp_array[0];
+
 	   $chrom = $array[2];
 	   $start = $array[3];
 	   $end = $start + $read_length;
 	   $qual = $array[4];
 
-           $read_length_half = ($read_length+1) / 2;
+	   my $tmp = $array[0];
+	   my @tmp_array = split /:/, $tmp;
+           $barcode = $tmp_array[0];   ## the barcode was indicated in the name of each read in the demuliplexed fastq file, thus bam file
+           
 
-	   #my $BCZ_index = index($_, "BC:Z:");
-	     
-	   #my $barcode_start_index = $CBZ_index + 5;
-
-	   #my $barcode_length = $BCZ_index - 1 - $barcode_start_index;
-	   
-	   #$barcode = substr($_, $barcode_start_index, $barcode_length);
+	   $read_length_half = ($read_length+1) / 2;
 
        #print $barcode."\n";
    }
@@ -150,12 +144,12 @@ while(<READ>)
 
    }#if($read_file_suffix eq "bed")
 
-   $cells{$barcode} = 1;
+   $cells{$barcode} =  $cells{$barcode} + 1;
 
    foreach my $region_id (keys %regions)
    {
 
-      my @region_coord_array = split /\t/, $region_id;
+      my @region_coord_array = split /_/, $region_id;
       my $region_chrom = $region_coord_array[0];
       my $region_start = $region_coord_array[1];
       my $region_end = $region_coord_array[2];
@@ -164,11 +158,17 @@ while(<READ>)
       {
          if($start >= $region_start && $start <= $region_end) #Read start is between region start and end
          { 
-           if($region_end - $start >= $read_length_half) {$overlap_matrix{$region_id}{$barcode} = $overlap_matrix{$region_id}{$barcode} + 1; }
+           #if($region_end - $start >= $read_length_half) {$overlap_matrix{$region_id}{$barcode} = $overlap_matrix{$region_id}{$barcode} + 1; }
+           #use following less stringent one
+           $overlap_matrix{$region_id}{$barcode} = $overlap_matrix{$region_id}{$barcode} + 1; 
+           $matching_line_counter++;
 
-         }elsif($end >= $region_start && $end <= $region_end) #Read start is between region start and end
+         }elsif($end >= $region_start && $end <= $region_end) #Read end is between region start and end
          {
-           if($end - $region_start >= $read_length_half) {$overlap_matrix{$region_id}{$barcode} = $overlap_matrix{$region_id}{$barcode} + 1; }           
+           #if($end - $region_start >= $read_length_half) {$overlap_matrix{$region_id}{$barcode} = $overlap_matrix{$region_id}{$barcode} + 1; }           
+           #less stringent:
+           $overlap_matrix{$region_id}{$barcode} = $overlap_matrix{$region_id}{$barcode} + 1;           
+           $matching_line_counter++;
          }
          
       }#if($chrom eq $region_chrom)
@@ -182,18 +182,24 @@ while(<READ>)
 
 
 print("I have read $read_file_counter reads from input read file: $read_file .\n");
+print("I have read $matching_line_counter reads are overlapped .\n");
 
 
-print("Now I am writing the output to $output_file .\n");
+print("Now I am writing the output to $output_mat_file .\n");
 
-print OUT "region_chrom\tregion_start\tregion_end";
+print OUT "region_position";
+
+#print OUT_region "\n";
+
 
 foreach my $cell (keys %cells)
 {
-   print OUT "\t".$cell;      
+   print OUT "\t";      
+   print OUT "$cell";      
+   print OUT_barcode "$cell \t $cells{$cell}\n";      
 }
 
-print OUT "\n";
+print OUT "\n";      
 
 foreach my $region_id (keys %regions)
 {
@@ -201,7 +207,7 @@ foreach my $region_id (keys %regions)
    foreach my $cell (keys %cells)
    {
       print OUT "\t";
-      if(exists($overlap_matrix{$region_id}{$cell}) )
+      if(exists($overlap_matrix{$region_id}{$cell}))
       {
           print OUT $overlap_matrix{$region_id}{$cell};
       }else
@@ -230,7 +236,8 @@ foreach my $region_id (keys %regions)
 #   print("!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!");
 #   print("Matching rate is 0. I recommmend you to check your input files!");
 #}
-print("Output matrix is in the file $output_file  . \n");
+print("Output matrix is in the file $output_mat_file  . \n");
+print("Output barcodes are in the file $output_barcode_file  . \n");
 
 
 

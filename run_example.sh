@@ -16,3 +16,5 @@
 
 ./scATAC-pro -s generate_signal -i output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o output > logs/generate_signal.log
 
+./scATAC-pro -s qc_per_barcode -i output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o output > logs/qc_per_barcode.log
+
