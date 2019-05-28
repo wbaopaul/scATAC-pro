@@ -1,50 +1,554 @@
 Run scATAC-pro 1.0.0
 --------------------------------------------
-Wed May 22 11:32:49 EDT 2019
-Aligning by bwa ...
-Starting alignment ... 
-[M::bwa_idx_load_from_disk] read 0 ALT contigs
-[M::process] read 200000 sequences (10000000 bp)...
-[M::process] read 200000 sequences (10000000 bp)...
-[M::mem_pestat] # candidate unique pairs for (FF, FR, RF, RR): (0, 78971, 2, 4)
-[M::mem_pestat] skip orientation FF as there are not enough pairs
-[M::mem_pestat] analyzing insert size distribution for orientation FR...
-[M::mem_pestat] (25, 50, 75) percentile: (136, 193, 273)
-[M::mem_pestat] low and high boundaries for computing mean and std.dev: (1, 547)
-[M::mem_pestat] mean and std.dev: (210.34, 108.18)
-[M::mem_pestat] low and high boundaries for proper pairs: (1, 684)
-[M::mem_pestat] skip orientation RF as there are not enough pairs
-[M::mem_pestat] skip orientation RR as there are not enough pairs
-[M::mem_process_seqs] Processed 200000 reads in 37.736 CPU sec, 37.624 real sec
-[M::process] read 100000 sequences (5000000 bp)...
-[M::mem_pestat] # candidate unique pairs for (FF, FR, RF, RR): (1, 79436, 4, 11)
-[M::mem_pestat] skip orientation FF as there are not enough pairs
-[M::mem_pestat] analyzing insert size distribution for orientation FR...
-[M::mem_pestat] (25, 50, 75) percentile: (127, 190, 267)
-[M::mem_pestat] low and high boundaries for computing mean and std.dev: (1, 547)
-[M::mem_pestat] mean and std.dev: (206.12, 108.69)
-[M::mem_pestat] low and high boundaries for proper pairs: (1, 687)
-[M::mem_pestat] skip orientation RF as there are not enough pairs
-[M::mem_pestat] analyzing insert size distribution for orientation RR...
-[M::mem_pestat] (25, 50, 75) percentile: (161, 202, 247)
-[M::mem_pestat] low and high boundaries for computing mean and std.dev: (1, 419)
-[M::mem_pestat] mean and std.dev: (178.00, 99.44)
-[M::mem_pestat] low and high boundaries for proper pairs: (1, 576)
-[M::mem_pestat] skip orientation RR
-[M::mem_process_seqs] Processed 200000 reads in 36.601 CPU sec, 36.484 real sec
-[M::mem_pestat] # candidate unique pairs for (FF, FR, RF, RR): (0, 39616, 2, 3)
-[M::mem_pestat] skip orientation FF as there are not enough pairs
-[M::mem_pestat] analyzing insert size distribution for orientation FR...
-[M::mem_pestat] (25, 50, 75) percentile: (126, 189, 263)
-[M::mem_pestat] low and high boundaries for computing mean and std.dev: (1, 537)
-[M::mem_pestat] mean and std.dev: (204.22, 107.50)
-[M::mem_pestat] low and high boundaries for proper pairs: (1, 674)
-[M::mem_pestat] skip orientation RF as there are not enough pairs
-[M::mem_pestat] skip orientation RR as there are not enough pairs
-[M::mem_process_seqs] Processed 100000 reads in 17.856 CPU sec, 17.778 real sec
-[main] Version: 0.7.17-r1198-dirty
-[main] CMD: /mnt/isilon/tan_lab/yuw1/local_tools/bwa/bwa mem /mnt/isilon/tan_lab/yuw1/local_tools/annotation/hg38_genome/hg38_genome.fa output/test_R1.fastq.dex output/test_R3.fastq.dex
-[main] Real time: 124.440 sec; CPU: 96.497 sec
+Tue May 28 14:35:51 EDT 2019
+Aligning ...
+Starting bowtie alignment ... 
+Warning: Exhausted best-first chunk memory for read ATGTTTCACTACCTGA:NB551646:17:H5TCHBGXB:1:11101:11698:1463 1:N:0:ACTACTGT/1 (patid 451); skipping read
+Warning: Exhausted best-first chunk memory for read CCGCTAACTGGACCTC:NB551646:17:H5TCHBGXB:1:11101:4302:1811 1:N:0:ACTACTGT/1 (patid 849); skipping read
+Warning: Exhausted best-first chunk memory for read TCCGAGCGATTTCTTG:NB551646:17:H5TCHBGXB:1:11101:5096:2172 1:N:0:ACTACTGT/1 (patid 1288); skipping read
+Warning: Exhausted best-first chunk memory for read CATTGGAACCAAGGTG:NB551646:17:H5TCHBGXB:1:11101:5764:2412 1:N:0:ACTACTGT/1 (patid 1560); skipping read
+Warning: Exhausted best-first chunk memory for read GCGGTTCGAACGTAAA:NB551646:17:H5TCHBGXB:1:11101:13995:2472 1:N:0:ACTACTGT/1 (patid 1627); skipping read
+Warning: Exhausted best-first chunk memory for read CGACGACACCAGCTGC:NB551646:17:H5TCHBGXB:1:11101:15147:3304 1:N:0:ACTACTGT/1 (patid 2593); skipping read
+Warning: Exhausted best-first chunk memory for read TCCTCATCTGGCCATC:NB551646:17:H5TCHBGXB:1:11101:2369:4056 1:N:0:ACTACTGT/1 (patid 3463); skipping read
+Warning: Exhausted best-first chunk memory for read GGTATGACTGGAATTA:NB551646:17:H5TCHBGXB:1:11101:20899:5084 1:N:0:ACTACTGT/1 (patid 4658); skipping read
+Warning: Exhausted best-first chunk memory for read GTTGAAGCTCGATGTT:NB551646:17:H5TCHBGXB:1:11101:26243:5547 1:N:0:ACTACTGT/1 (patid 5179); skipping read
+Warning: Exhausted best-first chunk memory for read AAACGCTACTCCAGCG:NB551646:17:H5TCHBGXB:1:11101:20404:6134 1:N:0:ACTACTGT/1 (patid 5903); skipping read
+Warning: Exhausted best-first chunk memory for read GAGGTTGGAAAACATG:NB551646:17:H5TCHBGXB:1:11101:5332:6312 1:N:0:ACTACTGT/1 (patid 6128); skipping read
+Warning: Exhausted best-first chunk memory for read TCGTTGCTGTACCTGA:NB551646:17:H5TCHBGXB:1:11101:3449:6953 1:N:0:ACTACTGT/1 (patid 6932); skipping read
+Warning: Exhausted best-first chunk memory for read CCAAGTTGATAAAGCA:NB551646:17:H5TCHBGXB:1:11101:9169:7043 1:N:0:ACTACTGT/1 (patid 7036); skipping read
+Warning: Exhausted best-first chunk memory for read ACAGACTTGAGGACCA:NB551646:17:H5TCHBGXB:1:11101:15395:7404 1:N:0:ACTACTGT/1 (patid 7464); skipping read
+Warning: Exhausted best-first chunk memory for read TACCCGTTGACGCGAA:NB551646:17:H5TCHBGXB:1:11101:5745:7503 1:N:0:ACTACTGT/1 (patid 7595); skipping read
+Warning: Exhausted best-first chunk memory for read CTTGCGGGATTTGTCT:NB551646:17:H5TCHBGXB:1:11101:2962:7684 1:N:0:ACTACTGT/1 (patid 7808); skipping read
+Warning: Exhausted best-first chunk memory for read GGATTAAGAGAACAGC:NB551646:17:H5TCHBGXB:1:11101:3388:8199 1:N:0:ACTACTGT/1 (patid 8434); skipping read
+Warning: Exhausted best-first chunk memory for read GGTAGCCTGCACTCAA:NB551646:17:H5TCHBGXB:1:11101:1629:8710 1:N:0:ACTACTGT/1 (patid 9011); skipping read
+Warning: Exhausted best-first chunk memory for read CCAACGGTGGGAGTCA:NB551646:17:H5TCHBGXB:1:11101:2181:9149 1:N:0:ACTACTGT/1 (patid 9503); skipping read
+Warning: Exhausted best-first chunk memory for read AAGGCGATGTGAACAA:NB551646:17:H5TCHBGXB:1:11101:14948:9699 1:N:0:ACTACTGT/1 (patid 10150); skipping read
+Warning: Exhausted best-first chunk memory for read TGCGAGGCTTTCGCAA:NB551646:17:H5TCHBGXB:1:11101:8912:9958 1:N:0:ACTACTGT/1 (patid 10432); skipping read
+Warning: Exhausted best-first chunk memory for read AGGGACATGCAGTCTA:NB551646:17:H5TCHBGXB:1:11101:15177:10334 1:N:0:ACTACTGT/1 (patid 10871); skipping read
+Warning: Exhausted best-first chunk memory for read TCCGTAAGACCAACGC:NB551646:17:H5TCHBGXB:1:11101:16989:10608 1:N:0:ACTACTGT/1 (patid 11182); skipping read
+Warning: Exhausted best-first chunk memory for read CTGCTAGCTCTCGATA:NB551646:17:H5TCHBGXB:1:11101:19403:11072 1:N:0:ACTACTGT/1 (patid 11707); skipping read
+Warning: Exhausted best-first chunk memory for read GAACAACCTTGCTTGA:NB551646:17:H5TCHBGXB:1:11101:22098:11854 1:N:0:ACTACTGT/1 (patid 12616); skipping read
+Warning: Exhausted best-first chunk memory for read CGCTTCCCTATCCTAG:NB551646:17:H5TCHBGXB:1:11101:22670:12449 1:N:0:ACTACTGT/1 (patid 13351); skipping read
+Warning: Exhausted best-first chunk memory for read ATGTCCAGACTCATCC:NB551646:17:H5TCHBGXB:1:11101:24763:12815 1:N:0:ACTACTGT/1 (patid 13790); skipping read
+Warning: Exhausted best-first chunk memory for read CAAGGGTGAAAGTAAC:NB551646:17:H5TCHBGXB:1:11101:21747:13393 1:N:0:ACTACTGT/1 (patid 14472); skipping read
+Warning: Exhausted best-first chunk memory for read ATATTCGCTCATTCAG:NB551646:17:H5TCHBGXB:1:11101:18396:13405 1:N:0:ACTACTGT/1 (patid 14488); skipping read
+Warning: Exhausted best-first chunk memory for read ACCTCCATGTTCGTTT:NB551646:17:H5TCHBGXB:1:11101:21081:13579 1:N:0:ACTACTGT/1 (patid 14692); skipping read
+Warning: Exhausted best-first chunk memory for read CGACATCCTCCTCCTA:NB551646:17:H5TCHBGXB:1:11101:18676:13614 1:N:0:ACTACTGT/1 (patid 14736); skipping read
+Warning: Exhausted best-first chunk memory for read ATAAGACGAAAGTAAC:NB551646:17:H5TCHBGXB:1:11101:1082:14499 1:N:0:ACTACTGT/1 (patid 15811); skipping read
+Warning: Exhausted best-first chunk memory for read CTTGCGTTGGAAACAT:NB551646:17:H5TCHBGXB:1:11101:22371:14991 1:N:0:ACTACTGT/1 (patid 16417); skipping read
+Warning: Exhausted best-first chunk memory for read CCGTTGTACAGGCATG:NB551646:17:H5TCHBGXB:1:11101:21975:15082 1:N:0:ACTACTGT/1 (patid 16528); skipping read
+Warning: Exhausted best-first chunk memory for read TTCTATGACCTCGATA:NB551646:17:H5TCHBGXB:1:11101:16756:15578 1:N:0:ACTACTGT/1 (patid 17097); skipping read
+Warning: Exhausted best-first chunk memory for read GTGGCAGCTAAATGCA:NB551646:17:H5TCHBGXB:1:11101:2867:15721 1:N:0:ACTACTGT/1 (patid 17244); skipping read
+Warning: Exhausted best-first chunk memory for read GTAGGTGGAACGTGCC:NB551646:17:H5TCHBGXB:1:11101:14184:16933 1:N:0:ACTACTGT/1 (patid 18699); skipping read
+Warning: Exhausted best-first chunk memory for read TCGCCTATGAGGTAAT:NB551646:17:H5TCHBGXB:1:11101:12670:17338 1:N:0:ACTACTGT/1 (patid 19225); skipping read
+Warning: Exhausted best-first chunk memory for read GTGTGATACCCAAGTT:NB551646:17:H5TCHBGXB:1:11101:4061:17343 1:N:0:ACTACTGT/1 (patid 19233); skipping read
+Warning: Exhausted best-first chunk memory for read CCCTATCGAGTCCCAG:NB551646:17:H5TCHBGXB:1:11101:16424:17637 1:N:0:ACTACTGT/1 (patid 19543); skipping read
+Warning: Exhausted best-first chunk memory for read TCGAAGTACGGAATAT:NB551646:17:H5TCHBGXB:1:11101:10286:17711 1:N:0:ACTACTGT/1 (patid 19611); skipping read
+Warning: Exhausted best-first chunk memory for read GGGCTGACTGCTGGCT:NB551646:17:H5TCHBGXB:1:11101:24142:17740 1:N:0:ACTACTGT/1 (patid 19654); skipping read
+Warning: Exhausted best-first chunk memory for read TGGATAGCTAACTCGG:NB551646:17:H5TCHBGXB:1:11101:18856:17797 1:N:0:ACTACTGT/1 (patid 19708); skipping read
+Warning: Exhausted best-first chunk memory for read GCTCGTGGAAAACTGA:NB551646:17:H5TCHBGXB:1:11101:3896:18221 1:N:0:ACTACTGT/1 (patid 20210); skipping read
+Warning: Exhausted best-first chunk memory for read AGCCCAGTGAGTCTGT:NB551646:17:H5TCHBGXB:1:11101:17501:18279 1:N:0:ACTACTGT/1 (patid 20271); skipping read
+Warning: Exhausted best-first chunk memory for read TGTGTTACTGCTAGAG:NB551646:17:H5TCHBGXB:1:11101:2609:18420 1:N:0:ACTACTGT/1 (patid 20423); skipping read
+Warning: Exhausted best-first chunk memory for read GTTTGAGACCGACTAT:NB551646:17:H5TCHBGXB:1:11101:14337:19115 1:N:0:ACTACTGT/1 (patid 21238); skipping read
+Warning: Exhausted best-first chunk memory for read ATACATCCTGGACCAA:NB551646:17:H5TCHBGXB:1:11101:6943:19191 1:N:0:ACTACTGT/1 (patid 21333); skipping read
+Warning: Exhausted best-first chunk memory for read CAATCGCCTTCGTCCT:NB551646:17:H5TCHBGXB:1:11101:23369:19241 1:N:0:ACTACTGT/1 (patid 21396); skipping read
+Warning: Exhausted best-first chunk memory for read AATGGTGCTTCGTCAA:NB551646:17:H5TCHBGXB:1:11101:6212:19471 1:N:0:ACTACTGT/1 (patid 21660); skipping read
+Warning: Exhausted best-first chunk memory for read TCAGCCGGACCTTCCA:NB551646:17:H5TCHBGXB:1:11101:21678:19699 1:N:0:ACTACTGT/1 (patid 21900); skipping read
+Warning: Exhausted best-first chunk memory for read GAGACTTACTCATTGG:NB551646:17:H5TCHBGXB:1:11101:5972:20028 1:N:0:ACTACTGT/1 (patid 22261); skipping read
+Warning: Exhausted best-first chunk memory for read CGCATCTTGGCTGTTA:NB551646:17:H5TCHBGXB:1:11101:18070:20134 1:N:0:ACTACTGT/1 (patid 22379); skipping read
+Warning: Exhausted best-first chunk memory for read GGTACGCTGTAGACAA:NB551646:17:H5TCHBGXB:1:11102:21375:2245 1:N:0:ACTACTGT/1 (patid 23960); skipping read
+Warning: Exhausted best-first chunk memory for read TGGCAATTGGCGCAAA:NB551646:17:H5TCHBGXB:1:11102:17208:3890 1:N:0:ACTACTGT/1 (patid 25797); skipping read
+Warning: Exhausted best-first chunk memory for read CGACCTTTGGCCCTTT:NB551646:17:H5TCHBGXB:1:11102:1589:3952 1:N:0:ACTACTGT/1 (patid 25867); skipping read
+Warning: Exhausted best-first chunk memory for read AATCAGCTGATGTCAC:NB551646:17:H5TCHBGXB:1:11102:2822:4072 1:N:0:ACTACTGT/1 (patid 25994); skipping read
+Warning: Exhausted best-first chunk memory for read GTTAGTTCTGAGCTGA:NB551646:17:H5TCHBGXB:1:11102:20947:4159 1:N:0:ACTACTGT/1 (patid 26087); skipping read
+Warning: Exhausted best-first chunk memory for read TATAGCCGATACAGCT:NB551646:17:H5TCHBGXB:1:11102:23364:4225 1:N:0:ACTACTGT/1 (patid 26166); skipping read
+Warning: Exhausted best-first chunk memory for read GTTATTGCTCGGTTTA:NB551646:17:H5TCHBGXB:1:11102:25941:4622 1:N:0:ACTACTGT/1 (patid 26641); skipping read
+Warning: Exhausted best-first chunk memory for read GGTATACTGTGACTCA:NB551646:17:H5TCHBGXB:1:11102:19516:4883 1:N:0:ACTACTGT/1 (patid 26964); skipping read
+Warning: Exhausted best-first chunk memory for read TATTGGTCTACTCGAT:NB551646:17:H5TCHBGXB:1:11102:7312:5309 1:N:0:ACTACTGT/1 (patid 27463); skipping read
+Warning: Exhausted best-first chunk memory for read CGTAGCTCTGAACCTT:NB551646:17:H5TCHBGXB:1:11102:10806:5657 1:N:0:ACTACTGT/1 (patid 27868); skipping read
+Warning: Exhausted best-first chunk memory for read TTGCAGATGCGCAAAG:NB551646:17:H5TCHBGXB:1:11102:1818:6453 1:N:0:ACTACTGT/1 (patid 28753); skipping read
+Warning: Exhausted best-first chunk memory for read CATCAGAACTACCAAC:NB551646:17:H5TCHBGXB:1:11102:11112:6603 1:N:0:ACTACTGT/1 (patid 28957); skipping read
+Warning: Exhausted best-first chunk memory for read CCTAGCACTTGAACAA:NB551646:17:H5TCHBGXB:1:11102:18011:6734 1:N:0:ACTACTGT/1 (patid 29122); skipping read
+Warning: Exhausted best-first chunk memory for read GGTCTAAACAGGTGCA:NB551646:17:H5TCHBGXB:1:11102:23907:6842 1:N:0:ATTACTGT/1 (patid 29259); skipping read
+Warning: Exhausted best-first chunk memory for read GCCGTTTACCAATGAA:NB551646:17:H5TCHBGXB:1:11102:17143:7122 1:N:0:ACTACTGT/1 (patid 29562); skipping read
+Warning: Exhausted best-first chunk memory for read CATTCCTCTGAAGTTA:NB551646:17:H5TCHBGXB:1:11102:7849:7411 1:N:0:ACTACTGT/1 (patid 29909); skipping read
+Warning: Exhausted best-first chunk memory for read ATTCCTAACAAGGCCA:NB551646:17:H5TCHBGXB:1:11102:4261:7819 1:N:0:ACTACTGT/1 (patid 30404); skipping read
+Warning: Exhausted best-first chunk memory for read ATCGAGTTGGACTGTT:NB551646:17:H5TCHBGXB:1:11102:10641:8130 1:N:0:ACTACTGT/1 (patid 30781); skipping read
+Warning: Exhausted best-first chunk memory for read CTTTCCGGACATGCAT:NB551646:17:H5TCHBGXB:1:11102:13850:8931 1:N:0:ACTACTGT/1 (patid 31715); skipping read
+Warning: Exhausted best-first chunk memory for read TCAGTCCTGTAACCCA:NB551646:17:H5TCHBGXB:1:11102:14270:9080 1:N:0:ACTACTGT/1 (patid 31885); skipping read
+Warning: Exhausted best-first chunk memory for read TACCACCTGGACTGTT:NB551646:17:H5TCHBGXB:1:11102:16397:9093 1:N:0:ACTACTGT/1 (patid 31896); skipping read
+Warning: Exhausted best-first chunk memory for read TGAGACTTGGGACTGA:NB551646:17:H5TCHBGXB:1:11102:4865:10649 1:N:0:ACTACTGT/1 (patid 33683); skipping read
+Warning: Exhausted best-first chunk memory for read GGGGGGGGGGGGGGGG:NB551646:17:H5TCHBGXB:1:11102:5739:11108 1:N:0:ACTACTGT/1 (patid 34226); skipping read
+Warning: Exhausted best-first chunk memory for read GCACAGCACGCACCCA:NB551646:17:H5TCHBGXB:1:11102:12418:11161 1:N:0:CCTACTGT/1 (patid 34283); skipping read
+Warning: Exhausted best-first chunk memory for read GTATTCACTGCCCAAC:NB551646:17:H5TCHBGXB:1:11102:14732:11366 1:N:0:ACTACTGT/1 (patid 34541); skipping read
+Warning: Exhausted best-first chunk memory for read TCGAAGTACCATAGCT:NB551646:17:H5TCHBGXB:1:11102:18001:11710 1:N:0:ACTACTGT/1 (patid 34973); skipping read
+Warning: Exhausted best-first chunk memory for read CACATCCTGACAGGCA:NB551646:17:H5TCHBGXB:1:11102:12842:12468 1:N:0:ACTACTGT/1 (patid 35909); skipping read
+Warning: Exhausted best-first chunk memory for read CTCTTGGACCTGCCAG:NB551646:17:H5TCHBGXB:1:11102:14387:13569 1:N:0:ACTACTGT/1 (patid 37203); skipping read
+Warning: Exhausted best-first chunk memory for read AGTAAGTGACTTGAAC:NB551646:17:H5TCHBGXB:1:11102:8006:14331 1:N:0:ACTACTGT/1 (patid 38128); skipping read
+Warning: Exhausted best-first chunk memory for read ATAAGACGAATGTAAC:NB551646:17:H5TCHBGXB:1:11102:26543:14502 1:N:0:ACTACTGT/1 (patid 38335); skipping read
+Warning: Exhausted best-first chunk memory for read CGCTTCAACACGCCAC:NB551646:17:H5TCHBGXB:1:11102:2687:14521 1:N:0:ACTACTGT/1 (patid 38355); skipping read
+Warning: Exhausted best-first chunk memory for read AAAGGGAGAAAGGTGC:NB551646:17:H5TCHBGXB:1:11102:22209:14747 1:N:0:ACTACTGT/1 (patid 38638); skipping read
+Warning: Exhausted best-first chunk memory for read TACCCGGGACCGTTAA:NB551646:17:H5TCHBGXB:1:11102:17730:15016 1:N:0:ACTACTGT/1 (patid 38960); skipping read
+Warning: Exhausted best-first chunk memory for read CCACATGCTTGATGAA:NB551646:17:H5TCHBGXB:1:11102:8876:15208 1:N:0:ACTACTGT/1 (patid 39192); skipping read
+Warning: Exhausted best-first chunk memory for read ACACTCCACAATCTGC:NB551646:17:H5TCHBGXB:1:11102:6964:15658 1:N:0:ACTACTGT/1 (patid 39739); skipping read
+Warning: Exhausted best-first chunk memory for read TCCATTTGACGTAGAG:NB551646:17:H5TCHBGXB:1:11102:14772:16728 1:N:0:ACTACTGT/1 (patid 40982); skipping read
+Warning: Exhausted best-first chunk memory for read AATCCAGACTCAATGC:NB551646:17:H5TCHBGXB:1:11102:26869:16944 1:N:0:ACTACTGT/1 (patid 41208); skipping read
+Warning: Exhausted best-first chunk memory for read AAACACGCTATGAATG:NB551646:17:H5TCHBGXB:1:11102:1927:17421 1:N:0:ACTACTGT/1 (patid 41778); skipping read
+Warning: Exhausted best-first chunk memory for read CTTGGAGACTGGGCAA:NB551646:17:H5TCHBGXB:1:11102:5125:17562 1:N:0:ACTACTGT/1 (patid 41928); skipping read
+Warning: Exhausted best-first chunk memory for read TGCTAGTGAGGATGGT:NB551646:17:H5TCHBGXB:1:11102:22342:17783 1:N:0:ACTACTGT/1 (patid 42189); skipping read
+Warning: Exhausted best-first chunk memory for read TGGCCTGGATTACGAC:NB551646:17:H5TCHBGXB:1:11102:17659:17852 1:N:0:ACTACTGT/1 (patid 42266); skipping read
+Warning: Exhausted best-first chunk memory for read TTTCTGATGCCTTCCA:NB551646:17:H5TCHBGXB:1:11102:20806:18169 1:N:0:ACTACTGT/1 (patid 42616); skipping read
+Warning: Exhausted best-first chunk memory for read AAACACGCTCAGCAAG:NB551646:17:H5TCHBGXB:1:11102:25292:18992 1:N:0:ACTACTGT/1 (patid 43559); skipping read
+Warning: Exhausted best-first chunk memory for read TACTGTACTATCCTTT:NB551646:17:H5TCHBGXB:1:11102:23300:19294 1:N:0:ACTACTGT/1 (patid 43921); skipping read
+Warning: Exhausted best-first chunk memory for read AAGTACCACGATTAAG:NB551646:17:H5TCHBGXB:1:11102:12304:20361 1:N:0:ACTACTGT/1 (patid 45193); skipping read
+Warning: Exhausted best-first chunk memory for read ACCCGAGACCCCGCAA:NB551646:17:H5TCHBGXB:1:11102:18085:20362 1:N:0:ACTACTGT/1 (patid 45194); skipping read
+Warning: Exhausted best-first chunk memory for read TATTCCTGATTGGGAG:NB551646:17:H5TCHBGXB:1:11103:19063:2110 1:N:0:ACTACTGT/1 (patid 46433); skipping read
+Warning: Exhausted best-first chunk memory for read CGACCTACTTGGTCCG:NB551646:17:H5TCHBGXB:1:11103:2846:2544 1:N:0:ACTACTGT/1 (patid 46943); skipping read
+Warning: Exhausted best-first chunk memory for read AACCACTGATTCGTTT:NB551646:17:H5TCHBGXB:1:11103:15825:3030 1:N:0:ACTACTGT/1 (patid 47485); skipping read
+Warning: Exhausted best-first chunk memory for read CCACATGCTTGATGAA:NB551646:17:H5TCHBGXB:1:11103:3158:3190 1:N:0:ACTACTGT/1 (patid 47665); skipping read
+Warning: Exhausted best-first chunk memory for read CTTGCTGACCCAGCTG:NB551646:17:H5TCHBGXB:1:11103:25926:3571 1:N:0:ACTACTGT/1 (patid 48118); skipping read
+Warning: Exhausted best-first chunk memory for read GGGTCACACAGGACCA:NB551646:17:H5TCHBGXB:1:11103:23909:3660 1:N:0:ACTACTGT/1 (patid 48217); skipping read
+Warning: Exhausted best-first chunk memory for read GAGCATACTCTCTGGG:NB551646:17:H5TCHBGXB:1:11103:4894:4003 1:N:0:ACTACTGT/1 (patid 48588); skipping read
+Warning: Exhausted best-first chunk memory for read CTTGCGGGACTGGGTC:NB551646:17:H5TCHBGXB:1:11103:1386:4588 1:N:0:ACTACTGT/1 (patid 49278); skipping read
+Warning: Exhausted best-first chunk memory for read TGCCATCTGCCCGAGT:NB551646:17:H5TCHBGXB:1:11103:23621:4668 1:N:0:ACTACTGT/1 (patid 49372); skipping read
+Warning: Exhausted best-first chunk memory for read CCTTACTCTATCAGGG:NB551646:17:H5TCHBGXB:1:11103:1875:4851 1:N:0:ACTACTGT/1 (patid 49583); skipping read
+Warning: Exhausted best-first chunk memory for read ACACTCCACAATCTGC:NB551646:17:H5TCHBGXB:1:11103:13991:5964 1:N:0:ACTACTGT/1 (patid 50858); skipping read
+Warning: Exhausted best-first chunk memory for read CAAGGGATGATACGCT:NB551646:17:H5TCHBGXB:1:11103:20865:6750 1:N:0:ACTACTGT/1 (patid 51806); skipping read
+Warning: Exhausted best-first chunk memory for read CAAGGGAACCCATGTA:NB551646:17:H5TCHBGXB:1:11103:5051:6914 1:N:0:ACTACTGT/1 (patid 51992); skipping read
+Warning: Exhausted best-first chunk memory for read AGGACAGACACACAAA:NB551646:17:H5TCHBGXB:1:11103:14446:6981 1:N:0:ACTACTGT/1 (patid 52074); skipping read
+Warning: Exhausted best-first chunk memory for read CTATAGCGATCCAGCG:NB551646:17:H5TCHBGXB:1:11103:22816:7021 1:N:0:ACTACTGT/1 (patid 52123); skipping read
+Warning: Exhausted best-first chunk memory for read CGAGGACCTACCGTTA:NB551646:17:H5TCHBGXB:1:11103:2132:7092 1:N:0:ACTACTGT/1 (patid 52215); skipping read
+Warning: Exhausted best-first chunk memory for read AGTCACAACGTACACT:NB551646:17:H5TCHBGXB:1:11103:7257:8041 1:N:0:ACTACTGT/1 (patid 53379); skipping read
+Warning: Exhausted best-first chunk memory for read CGTCAACCTTGCACCG:NB551646:17:H5TCHBGXB:1:11103:10059:8289 1:N:0:ACTACTGT/1 (patid 53657); skipping read
+Warning: Exhausted best-first chunk memory for read GCAAACTACAACGCAG:NB551646:17:H5TCHBGXB:1:11103:18591:8812 1:N:0:ACTACTGT/1 (patid 54271); skipping read
+Warning: Exhausted best-first chunk memory for read ACTGATTCTCGTAGAG:NB551646:17:H5TCHBGXB:1:11103:24688:8815 1:N:0:ACTACTGT/1 (patid 54275); skipping read
+Warning: Exhausted best-first chunk memory for read ACAGTCATGACGCCAC:NB551646:17:H5TCHBGXB:1:11103:21962:9259 1:N:0:ACTACTGT/1 (patid 54816); skipping read
+Warning: Exhausted best-first chunk memory for read TCCAAAGTGTAGCGAG:NB551646:17:H5TCHBGXB:1:11103:15244:9774 1:N:0:ACTACTGT/1 (patid 55434); skipping read
+Warning: Exhausted best-first chunk memory for read AACCGGCACAGCTTTG:NB551646:17:H5TCHBGXB:1:11103:19889:9860 1:N:0:ACTACTGT/1 (patid 55546); skipping read
+Warning: Exhausted best-first chunk memory for read AGACTACTGCTCACGG:NB551646:17:H5TCHBGXB:1:11103:20693:10595 1:N:0:ACTACTGT/1 (patid 56453); skipping read
+Warning: Exhausted best-first chunk memory for read CAGCTGTCTTCCAGCG:NB551646:17:H5TCHBGXB:1:11103:4271:11052 1:N:0:ACTACTGT/1 (patid 57029); skipping read
+Warning: Exhausted best-first chunk memory for read GGGTAGAACACGAGCA:NB551646:17:H5TCHBGXB:1:11103:21534:11122 1:N:0:ACTACTGT/1 (patid 57122); skipping read
+Warning: Exhausted best-first chunk memory for read TATGTACCTGCGAGTA:NB551646:17:H5TCHBGXB:1:11103:9652:11275 1:N:0:ACTACTGT/1 (patid 57284); skipping read
+Warning: Exhausted best-first chunk memory for read ACGGCCATGGAACAGC:NB551646:17:H5TCHBGXB:1:11103:1974:11889 1:N:0:ACTACTGT/1 (patid 58019); skipping read
+Warning: Exhausted best-first chunk memory for read CCCAGGATGACGAGCA:NB551646:17:H5TCHBGXB:1:11103:11277:12637 1:N:0:ACTACTGT/1 (patid 58922); skipping read
+Warning: Exhausted best-first chunk memory for read GGACGAATGATCCTAG:NB551646:17:H5TCHBGXB:1:11103:21184:13130 1:N:0:ACTACTGT/1 (patid 59474); skipping read
+Warning: Exhausted best-first chunk memory for read ACCAATGACAGTTGAA:NB551646:17:H5TCHBGXB:1:11103:4028:14112 1:N:0:ACTACTGT/1 (patid 60695); skipping read
+Warning: Exhausted best-first chunk memory for read GGATGGAACTTACGCA:NB551646:17:H5TCHBGXB:1:11103:21116:14703 1:N:0:ACTACTGT/1 (patid 61427); skipping read
+Warning: Exhausted best-first chunk memory for read TCGCCTATGAGGTAAT:NB551646:17:H5TCHBGXB:1:11103:11054:14703 1:N:0:ACTACTGT/1 (patid 61429); skipping read
+Warning: Exhausted best-first chunk memory for read AAGTCTTCTTAATCGC:NB551646:17:H5TCHBGXB:1:11103:17688:15254 1:N:0:ACTACTGT/1 (patid 62102); skipping read
+Warning: Exhausted best-first chunk memory for read GTATGAAGAGCTCCTT:NB551646:17:H5TCHBGXB:1:11103:1869:15450 1:N:0:ACTACTGT/1 (patid 62318); skipping read
+Warning: Exhausted best-first chunk memory for read GTTATTGCTCGGTTTA:NB551646:17:H5TCHBGXB:1:11103:10253:15848 1:N:0:ACTACTGT/1 (patid 62792); skipping read
+Warning: Exhausted best-first chunk memory for read GGCTGACTGCGAGTTT:NB551646:17:H5TCHBGXB:1:11103:5932:16080 1:N:0:ACTACTGT/1 (patid 63078); skipping read
+Warning: Exhausted best-first chunk memory for read CTGACGTCTGGATGGT:NB551646:17:H5TCHBGXB:1:11103:5137:16237 1:N:0:ACTACTGT/1 (patid 63269); skipping read
+Warning: Exhausted best-first chunk memory for read TCAGCTAGACGCAAAG:NB551646:17:H5TCHBGXB:1:11103:22691:16513 1:N:0:ACTACTGT/1 (patid 63611); skipping read
+Warning: Exhausted best-first chunk memory for read GCAGGTCTGGTCGGTC:NB551646:17:H5TCHBGXB:1:11103:9974:17810 1:N:0:ACTACTGT/1 (patid 65164); skipping read
+Warning: Exhausted best-first chunk memory for read GCTTTAGGAGGACTGA:NB551646:17:H5TCHBGXB:1:11103:1633:17960 1:N:0:ACTACTGT/1 (patid 65332); skipping read
+Warning: Exhausted best-first chunk memory for read TGATAGAGAGGGATTG:NB551646:17:H5TCHBGXB:1:11103:25919:17984 1:N:0:ACTACTGT/1 (patid 65369); skipping read
+Warning: Exhausted best-first chunk memory for read AGGTATGCTCATCCTC:NB551646:17:H5TCHBGXB:1:11103:13941:18084 1:N:0:ACTACTGT/1 (patid 65475); skipping read
+Warning: Exhausted best-first chunk memory for read TCGACCTTGTCGAGAG:NB551646:17:H5TCHBGXB:1:11103:20973:18255 1:N:0:ACTACTGT/1 (patid 65690); skipping read
+Warning: Exhausted best-first chunk memory for read CGTATCGCTTTTGTCT:NB551646:17:H5TCHBGXB:1:11103:24907:18720 1:N:0:ACTACTGT/1 (patid 66246); skipping read
+Warning: Exhausted best-first chunk memory for read GTTGAAGCTAAGTTCC:NB551646:17:H5TCHBGXB:1:11103:20720:18898 1:N:0:ACTACTGT/1 (patid 66463); skipping read
+Warning: Exhausted best-first chunk memory for read TAGCATTCTTTTGGGT:NB551646:17:H5TCHBGXB:1:11103:24564:19075 1:N:0:ACTACTGT/1 (patid 66668); skipping read
+Warning: Exhausted best-first chunk memory for read GTGAAGCGAAAGGTGC:NB551646:17:H5TCHBGXB:1:11103:1298:19627 1:N:0:ACTACTGT/1 (patid 67339); skipping read
+Warning: Exhausted best-first chunk memory for read TTGTACTACTTATGGC:NB551646:17:H5TCHBGXB:1:11103:15334:20019 1:N:0:ACTACTGT/1 (patid 67834); skipping read
+Warning: Exhausted best-first chunk memory for read ATGACAAGAGTCTTGA:NB551646:17:H5TCHBGXB:1:11103:7961:20320 1:N:0:ACTACTGT/1 (patid 68219); skipping read
+Warning: Exhausted best-first chunk memory for read ATGGCTATGCAATAGA:NB551646:17:H5TCHBGXB:1:11104:17613:1690 1:N:0:ACTACTGT/1 (patid 69085); skipping read
+Warning: Exhausted best-first chunk memory for read CAGTTGATGTGCAAGG:NB551646:17:H5TCHBGXB:1:11104:5810:2753 1:N:0:ACTACTGT/1 (patid 70268); skipping read
+Warning: Exhausted best-first chunk memory for read GAGTTACTGTCCAGCG:NB551646:17:H5TCHBGXB:1:11104:19779:2917 1:N:0:ACTACTGT/1 (patid 70458); skipping read
+Warning: Exhausted best-first chunk memory for read ATCTCTTGATCGCTAA:NB551646:17:H5TCHBGXB:1:11104:2344:3100 1:N:0:ACTACTGT/1 (patid 70655); skipping read
+Warning: Exhausted best-first chunk memory for read CTCATAACTAGTAGGC:NB551646:17:H5TCHBGXB:1:11104:18442:3165 1:N:0:ACTACTGT/1 (patid 70733); skipping read
+Warning: Exhausted best-first chunk memory for read CAATGTGACCGAGTTT:NB551646:17:H5TCHBGXB:1:11104:23520:3226 1:N:0:ACTACTGT/1 (patid 70816); skipping read
+Warning: Exhausted best-first chunk memory for read AGAGGAGTGTGGCATT:NB551646:17:H5TCHBGXB:1:11104:2428:3226 1:N:0:ACTACTGT/1 (patid 70817); skipping read
+Warning: Exhausted best-first chunk memory for read CGACGACACCCTAACA:NB551646:17:H5TCHBGXB:1:11104:17904:3354 1:N:0:ACTACTGT/1 (patid 70975); skipping read
+Warning: Exhausted best-first chunk memory for read TAACTCACTAATCCAC:NB551646:17:H5TCHBGXB:1:11104:5159:3735 1:N:0:ACTACTGT/1 (patid 71407); skipping read
+Warning: Exhausted best-first chunk memory for read AACCCTCACGGGTAGT:NB551646:17:H5TCHBGXB:1:11104:11806:3747 1:N:0:ACTACTGT/1 (patid 71419); skipping read
+Warning: Exhausted best-first chunk memory for read CCGCTAACTGGACCTC:NB551646:17:H5TCHBGXB:1:11104:4961:4290 1:N:0:ACTACTGT/1 (patid 72063); skipping read
+Warning: Exhausted best-first chunk memory for read GGTCTGGACCCAGAGA:NB551646:17:H5TCHBGXB:1:11104:10470:5385 1:N:0:ACTACTGT/1 (patid 73372); skipping read
+Warning: Exhausted best-first chunk memory for read CTTGCGTTGGAAACAT:NB551646:17:H5TCHBGXB:1:11104:4603:6078 1:N:0:ACTACTGT/1 (patid 74175); skipping read
+Warning: Exhausted best-first chunk memory for read TGGGAGTGACGGCACT:NB551646:17:H5TCHBGXB:1:11104:18809:6621 1:N:0:ACTACTGT/1 (patid 74851); skipping read
+Warning: Exhausted best-first chunk memory for read GGATTTGACTCATTGG:NB551646:17:H5TCHBGXB:1:11104:14110:6856 1:N:0:ACTACTGT/1 (patid 75104); skipping read
+Warning: Exhausted best-first chunk memory for read CCCTGATTGCGGCACT:NB551646:17:H5TCHBGXB:1:11104:12088:6881 1:N:0:ACTACTGT/1 (patid 75147); skipping read
+Warning: Exhausted best-first chunk memory for read GTCAAGTACCATGATC:NB551646:17:H5TCHBGXB:1:11104:8371:7310 1:N:0:ACTACTGT/1 (patid 75660); skipping read
+Warning: Exhausted best-first chunk memory for read GGTCAAGGAGCGGTAA:NB551646:17:H5TCHBGXB:1:11104:24913:7383 1:N:0:ACTACTGT/1 (patid 75752); skipping read
+Warning: Exhausted best-first chunk memory for read AACCTATCTATTGGTC:NB551646:17:H5TCHBGXB:1:11104:19341:7470 1:N:0:ACTACTGT/1 (patid 75844); skipping read
+Warning: Exhausted best-first chunk memory for read TACCGACCTGAATGTA:NB551646:17:H5TCHBGXB:1:11104:22902:7649 1:N:0:ACTACTGT/1 (patid 76039); skipping read
+Warning: Exhausted best-first chunk memory for read CAATTCGGACCATGTA:NB551646:17:H5TCHBGXB:1:11104:20729:8155 1:N:0:ACTACTGT/1 (patid 76580); skipping read
+Warning: Exhausted best-first chunk memory for read GTATAGGCTTCCGTGA:NB551646:17:H5TCHBGXB:1:11104:15819:8165 1:N:0:ACTACTGT/1 (patid 76589); skipping read
+Warning: Exhausted best-first chunk memory for read ACAAAGAACAGCCATT:NB551646:17:H5TCHBGXB:1:11104:11217:8317 1:N:0:ACTACTGT/1 (patid 76758); skipping read
+Warning: Exhausted best-first chunk memory for read GGTCAGAGACGATTCA:NB551646:17:H5TCHBGXB:1:11104:6276:8493 1:N:0:ACTACTGT/1 (patid 76971); skipping read
+Warning: Exhausted best-first chunk memory for read CCCATTTCTTACACTG:NB551646:17:H5TCHBGXB:1:11104:26147:8913 1:N:0:ACTACTGT/1 (patid 77485); skipping read
+Warning: Exhausted best-first chunk memory for read GCTTCTGACTAACGGG:NB551646:17:H5TCHBGXB:1:11104:25870:9290 1:N:0:ACTACTGT/1 (patid 77931); skipping read
+Warning: Exhausted best-first chunk memory for read GCCAATATGAATCGAA:NB551646:17:H5TCHBGXB:1:11104:25723:9474 1:N:0:ACTACTGT/1 (patid 78142); skipping read
+Warning: Exhausted best-first chunk memory for read ACGTCCACTGCCGTTG:NB551646:17:H5TCHBGXB:1:11104:6450:9662 1:N:0:ACTACTGT/1 (patid 78361); skipping read
+Warning: Exhausted best-first chunk memory for read CTCCGTAACCGTTAGT:NB551646:17:H5TCHBGXB:1:11104:20005:9803 1:N:0:ACTACTGT/1 (patid 78548); skipping read
+Warning: Exhausted best-first chunk memory for read AGTACAAGACTCACGG:NB551646:17:H5TCHBGXB:1:11104:8038:10076 1:N:0:ACTACTGT/1 (patid 78859); skipping read
+Warning: Exhausted best-first chunk memory for read AACTCACGATCTGGAT:NB551646:17:H5TCHBGXB:1:11104:11994:10192 1:N:0:ACTACTGT/1 (patid 78981); skipping read
+Warning: Exhausted best-first chunk memory for read CCTGTTGACGCAGTTT:NB551646:17:H5TCHBGXB:1:11104:24470:10245 1:N:0:ACTACTGT/1 (patid 79061); skipping read
+Warning: Exhausted best-first chunk memory for read GGATTTGACTCATTGG:NB551646:17:H5TCHBGXB:1:11104:21926:11041 1:N:0:ACTACTGT/1 (patid 79959); skipping read
+Warning: Exhausted best-first chunk memory for read CTGTGCACTGTACACT:NB551646:17:H5TCHBGXB:1:11104:25157:11193 1:N:0:ACTACTGT/1 (patid 80153); skipping read
+Warning: Exhausted best-first chunk memory for read TGTCCCATGAGTCTAC:NB551646:17:H5TCHBGXB:1:11104:11353:11394 1:N:0:ACTACTGT/1 (patid 80403); skipping read
+Warning: Exhausted best-first chunk memory for read ACTGGAGGACCACATA:NB551646:17:H5TCHBGXB:1:11104:20270:11745 1:N:0:ACTACTGT/1 (patid 80814); skipping read
+Warning: Exhausted best-first chunk memory for read AGGACGCCTTACGATC:NB551646:17:H5TCHBGXB:1:11104:10568:11831 1:N:0:ACTACTGT/1 (patid 80904); skipping read
+Warning: Exhausted best-first chunk memory for read AACACACACGCAGGAT:NB551646:17:H5TCHBGXB:1:11104:21412:12001 1:N:0:ACTACTGT/1 (patid 81101); skipping read
+Warning: Exhausted best-first chunk memory for read GGATTTGACCGACACC:NB551646:17:H5TCHBGXB:1:11104:12214:13726 1:N:0:ACTACTGT/1 (patid 83140); skipping read
+Warning: Exhausted best-first chunk memory for read CTTATGTTGTCATTGG:NB551646:17:H5TCHBGXB:1:11104:10487:14066 1:N:0:ACTACTGT/1 (patid 83550); skipping read
+Warning: Exhausted best-first chunk memory for read AGGAACCGACGCACTG:NB551646:17:H5TCHBGXB:1:11104:12169:14070 1:N:0:ACTACTGT/1 (patid 83555); skipping read
+Warning: Exhausted best-first chunk memory for read CCACTAAGATTGGGAG:NB551646:17:H5TCHBGXB:1:11104:12584:14363 1:N:0:ACTACTGT/1 (patid 83897); skipping read
+Warning: Exhausted best-first chunk memory for read CAATCGTGAACACCGC:NB551646:17:H5TCHBGXB:1:11104:21528:14693 1:N:0:ACTACTGT/1 (patid 84320); skipping read
+Warning: Exhausted best-first chunk memory for read ACCTCCAACGGCCTGT:NB551646:17:H5TCHBGXB:1:11104:15379:14899 1:N:0:ACTACTGT/1 (patid 84591); skipping read
+Warning: Exhausted best-first chunk memory for read GGATCCCGACTTAGTG:NB551646:17:H5TCHBGXB:1:11104:9030:15147 1:N:0:ACTACTGT/1 (patid 84899); skipping read
+Warning: Exhausted best-first chunk memory for read GAAGGACACCTCGATA:NB551646:17:H5TCHBGXB:1:11104:21761:15206 1:N:0:ACTACTGT/1 (patid 84963); skipping read
+Warning: Exhausted best-first chunk memory for read CGACGTTCTTGATCAC:NB551646:17:H5TCHBGXB:1:11104:20517:15735 1:N:0:ACTACTGT/1 (patid 85583); skipping read
+Warning: Exhausted best-first chunk memory for read AACTACGACATCAGGG:NB551646:17:H5TCHBGXB:1:11104:16025:15977 1:N:0:ACTACTGT/1 (patid 85875); skipping read
+Warning: Exhausted best-first chunk memory for read CTGAGATACATTCTGG:NB551646:17:H5TCHBGXB:1:11104:19336:16454 1:N:0:ACTACTGT/1 (patid 86432); skipping read
+Warning: Exhausted best-first chunk memory for read GGGAGAACTTGCAAGG:NB551646:17:H5TCHBGXB:1:11104:11215:16728 1:N:0:ACTACTGT/1 (patid 86721); skipping read
+Warning: Exhausted best-first chunk memory for read CGAGGACCTACCGTTA:NB551646:17:H5TCHBGXB:1:11104:10799:16814 1:N:0:ACTACTGT/1 (patid 86822); skipping read
+Warning: Exhausted best-first chunk memory for read GTCTAATCTTAGGAGC:NB551646:17:H5TCHBGXB:1:11104:14313:17794 1:N:0:ACTACTGT/1 (patid 87982); skipping read
+Warning: Exhausted best-first chunk memory for read AGGAACCGACCAAACT:NB551646:17:H5TCHBGXB:1:11104:13581:18146 1:N:0:ACTACTGT/1 (patid 88396); skipping read
+Warning: Exhausted best-first chunk memory for read CGGATAGGAACACAAA:NB551646:17:H5TCHBGXB:1:11104:12146:18687 1:N:0:ACTACTGT/1 (patid 89023); skipping read
+Warning: Exhausted best-first chunk memory for read AGCTATGACAAGTAAC:NB551646:17:H5TCHBGXB:1:11104:10957:19503 1:N:0:ACTACTGT/1 (patid 90012); skipping read
+Warning: Exhausted best-first chunk memory for read AGCCTACCTCCTAGTA:NB551646:17:H5TCHBGXB:1:11104:24903:19839 1:N:0:ACTACTGT/1 (patid 90377); skipping read
+Warning: Exhausted best-first chunk memory for read CGTGCAGACTGGCATT:NB551646:17:H5TCHBGXB:1:11104:14302:20344 1:N:0:ACTACTGT/1 (patid 90944); skipping read
+Warning: Exhausted best-first chunk memory for read AAACTCCGACTGAGAG:NB551646:17:H5TCHBGXB:1:11105:12287:1078 1:N:0:ACTACTGT/1 (patid 91060); skipping read
+Warning: Exhausted best-first chunk memory for read TGCCAAATGCCTAGGC:NB551646:17:H5TCHBGXB:1:11105:13848:1646 1:N:0:ACTACTGT/1 (patid 91703); skipping read
+Warning: Exhausted best-first chunk memory for read TCGCCTCCTTGCTGTA:NB551646:17:H5TCHBGXB:1:11105:23034:2074 1:N:0:ACTACTGT/1 (patid 92204); skipping read
+Warning: Exhausted best-first chunk memory for read TGCAGTATGTACACTG:NB551646:17:H5TCHBGXB:1:11105:11082:3189 1:N:0:ACTACTGT/1 (patid 93500); skipping read
+Warning: Exhausted best-first chunk memory for read CTACCTGTGAGACAAT:NB551646:17:H5TCHBGXB:1:11105:17864:3514 1:N:0:ACTACTGT/1 (patid 93903); skipping read
+Warning: Exhausted best-first chunk memory for read TGCTTCTCTACCTAGT:NB551646:17:H5TCHBGXB:1:11105:24096:3820 1:N:0:ACTACTGT/1 (patid 94266); skipping read
+Warning: Exhausted best-first chunk memory for read GCTGTTCTGGCGGTAA:NB551646:17:H5TCHBGXB:1:11105:11098:4075 1:N:0:ACTACTGT/1 (patid 94525); skipping read
+Warning: Exhausted best-first chunk memory for read CAGCGCATGCGGTTGC:NB551646:17:H5TCHBGXB:1:11105:22846:4138 1:N:0:ACTACTGT/1 (patid 94596); skipping read
+Warning: Exhausted best-first chunk memory for read GTGCTAATGGCCCTAG:NB551646:17:H5TCHBGXB:1:11105:13791:4195 1:N:0:ACTACTGT/1 (patid 94665); skipping read
+Warning: Exhausted best-first chunk memory for read GTCCCAGGACATGCGC:NB551646:17:H5TCHBGXB:1:11105:6099:4330 1:N:0:ACTACTGT/1 (patid 94843); skipping read
+Warning: Exhausted best-first chunk memory for read TTTGACGGATGGCAAG:NB551646:17:H5TCHBGXB:1:11105:26514:4389 1:N:0:ACTACTGT/1 (patid 94908); skipping read
+Warning: Exhausted best-first chunk memory for read AGTCACAACTGCTCAA:NB551646:17:H5TCHBGXB:1:11105:17552:4466 1:N:0:ACTACTGT/1 (patid 95000); skipping read
+Warning: Exhausted best-first chunk memory for read GGAACTACTGTCCCAG:NB551646:17:H5TCHBGXB:1:11105:12928:4876 1:N:0:ACTACTGT/1 (patid 95492); skipping read
+Warning: Exhausted best-first chunk memory for read CCCGGAAACCCGCAGT:NB551646:17:H5TCHBGXB:1:11105:15824:5306 1:N:0:ACTACTGT/1 (patid 95957); skipping read
+Warning: Exhausted best-first chunk memory for read TGGCGTTCTGGCCTTG:NB551646:17:H5TCHBGXB:1:11105:25281:5562 1:N:0:ACTACTGT/1 (patid 96273); skipping read
+Warning: Exhausted best-first chunk memory for read ATCGCAAACGGCATTT:NB551646:17:H5TCHBGXB:1:11105:5305:5859 1:N:0:ACTACTGT/1 (patid 96627); skipping read
+Warning: Exhausted best-first chunk memory for read AGATATGGACTTTAGG:NB551646:17:H5TCHBGXB:1:11105:18126:5972 1:N:0:ACTACTGT/1 (patid 96761); skipping read
+Warning: Exhausted best-first chunk memory for read AAGTGACCTCGATGTT:NB551646:17:H5TCHBGXB:1:11105:7961:7211 1:N:0:ACTACTGT/1 (patid 98188); skipping read
+Warning: Exhausted best-first chunk memory for read TCTTCAAACAGGGCTA:NB551646:17:H5TCHBGXB:1:11105:5260:7285 1:N:0:ACTACTGT/1 (patid 98267); skipping read
+Warning: Exhausted best-first chunk memory for read TATGCTTTGAAACTGA:NB551646:17:H5TCHBGXB:1:11105:2774:7930 1:N:0:ACTACTGT/1 (patid 99013); skipping read
+Warning: Exhausted best-first chunk memory for read GTTACAGTGCCGGCTA:NB551646:17:H5TCHBGXB:1:11105:24062:7976 1:N:0:ACTACTGT/1 (patid 99072); skipping read
+Warning: Exhausted best-first chunk memory for read GTCAACTGATGGGCCT:NB551646:17:H5TCHBGXB:1:11105:21246:7984 1:N:0:ACTACTGT/1 (patid 99084); skipping read
+Warning: Exhausted best-first chunk memory for read CAAGGGTGAGGACCTC:NB551646:17:H5TCHBGXB:1:11105:26390:8124 1:N:0:ACTACTGT/1 (patid 99255); skipping read
+Warning: Exhausted best-first chunk memory for read CAAAGTAGAAAACTGA:NB551646:17:H5TCHBGXB:1:11105:22304:8324 1:N:0:ACTACTGT/1 (patid 99473); skipping read
+Warning: Exhausted best-first chunk memory for read CGTGTCTTGAGCTGAG:NB551646:17:H5TCHBGXB:1:11105:5414:8890 1:N:0:ACTACTGT/1 (patid 100167); skipping read
+Warning: Exhausted best-first chunk memory for read CATTAGTCTTGAGCAG:NB551646:17:H5TCHBGXB:1:11105:16881:9080 1:N:0:ACTACTGT/1 (patid 100385); skipping read
+Warning: Exhausted best-first chunk memory for read TACTGTACTTACAGAA:NB551646:17:H5TCHBGXB:1:11105:13378:9606 1:N:0:ACTACTGT/1 (patid 101021); skipping read
+Warning: Exhausted best-first chunk memory for read AAGCATCACGTTGGTT:NB551646:17:H5TCHBGXB:1:11105:21046:9658 1:N:0:ACTACTGT/1 (patid 101097); skipping read
+Warning: Exhausted best-first chunk memory for read ACGGAATCTCGGGTAA:NB551646:17:H5TCHBGXB:1:11105:10187:10355 1:N:0:ACTACTGT/1 (patid 101932); skipping read
+Warning: Exhausted best-first chunk memory for read ACAATGCACTGCTGTA:NB551646:17:H5TCHBGXB:1:11105:17493:10643 1:N:0:ACTACTGT/1 (patid 102261); skipping read
+Warning: Exhausted best-first chunk memory for read CCGCAAGTGCGATTGT:NB551646:17:H5TCHBGXB:1:11105:13259:11660 1:N:0:ACTACTGT/1 (patid 103434); skipping read
+Warning: Exhausted best-first chunk memory for read TTTACGTACACTCGAT:NB551646:17:H5TCHBGXB:1:11105:6030:11759 1:N:0:ACTACTGT/1 (patid 103540); skipping read
+Warning: Exhausted best-first chunk memory for read GTACATCGATGGCTTA:NB551646:17:H5TCHBGXB:1:11105:10051:11844 1:N:0:ACTACTGT/1 (patid 103630); skipping read
+Warning: Exhausted best-first chunk memory for read ACAATGCACGCTCAGC:NB551646:17:H5TCHBGXB:1:11105:11888:12336 1:N:0:ACTACTGT/1 (patid 104248); skipping read
+Warning: Exhausted best-first chunk memory for read CAGATACTGGTTTGGT:NB551646:17:H5TCHBGXB:1:11105:6730:12534 1:N:0:ACTACTGT/1 (patid 104488); skipping read
+Warning: Exhausted best-first chunk memory for read AATGTGCACCGGTACC:NB551646:17:H5TCHBGXB:1:11105:4325:12897 1:N:0:ACTACTGT/1 (patid 104914); skipping read
+Warning: Exhausted best-first chunk memory for read GGAATCATGGCACGCT:NB551646:17:H5TCHBGXB:1:11105:25641:12946 1:N:0:ACTACTGT/1 (patid 104965); skipping read
+Warning: Exhausted best-first chunk memory for read ATAGATGGAATCCTCC:NB551646:17:H5TCHBGXB:1:11105:10124:13165 1:N:0:ACTACTGT/1 (patid 105214); skipping read
+Warning: Exhausted best-first chunk memory for read CACACCACTTAGGAGC:NB551646:17:H5TCHBGXB:1:11105:16998:13347 1:N:0:ACTACTGT/1 (patid 105450); skipping read
+Warning: Exhausted best-first chunk memory for read ACGACGCTGGGGATTG:NB551646:17:H5TCHBGXB:1:11105:20450:15825 1:N:0:ACTACTGT/1 (patid 108479); skipping read
+Warning: Exhausted best-first chunk memory for read ATCGCAATGAATGCGG:NB551646:17:H5TCHBGXB:1:11105:18741:16669 1:N:0:ACTACTGT/1 (patid 109425); skipping read
+Warning: Exhausted best-first chunk memory for read GCTTCTCGAGCGCTGT:NB551646:17:H5TCHBGXB:1:11105:2456:16896 1:N:0:ACTACTGT/1 (patid 109705); skipping read
+Warning: Exhausted best-first chunk memory for read GCATATCGAAAGGCCA:NB551646:17:H5TCHBGXB:1:11105:9643:17243 1:N:0:ACTACTGT/1 (patid 110132); skipping read
+Warning: Exhausted best-first chunk memory for read CCATTGCTGATTGGTC:NB551646:17:H5TCHBGXB:1:11105:22181:18470 1:N:0:ACTACTGT/1 (patid 111484); skipping read
+Warning: Exhausted best-first chunk memory for read TGCGGGACTAATCCTG:NB551646:17:H5TCHBGXB:1:11105:17836:19030 1:N:0:ACTACTGT/1 (patid 112130); skipping read
+Warning: Exhausted best-first chunk memory for read GGGTGAAACCGAGTGA:NB551646:17:H5TCHBGXB:1:11105:20187:19191 1:N:0:ACTACTGT/1 (patid 112329); skipping read
+Warning: Exhausted best-first chunk memory for read AGCCCAGACGTTAGAA:NB551646:17:H5TCHBGXB:1:11105:25807:19290 1:N:0:ACTACTGT/1 (patid 112451); skipping read
+Warning: Exhausted best-first chunk memory for read ATGCCGCGAGAACCTT:NB551646:17:H5TCHBGXB:1:11106:15990:1635 1:N:0:ACTACTGT/1 (patid 114433); skipping read
+Warning: Exhausted best-first chunk memory for read TTCACGAGAATTCTGG:NB551646:17:H5TCHBGXB:1:11106:19566:1687 1:N:0:ACTACTGT/1 (patid 114497); skipping read
+Warning: Exhausted best-first chunk memory for read GATAGGTCTACCTGCG:NB551646:17:H5TCHBGXB:1:11106:9665:1755 1:N:0:ACTACTGT/1 (patid 114569); skipping read
+Warning: Exhausted best-first chunk memory for read ATAGGAAACCAGCTGC:NB551646:17:H5TCHBGXB:1:11106:15749:3153 1:N:0:ACTACTGT/1 (patid 116187); skipping read
+Warning: Exhausted best-first chunk memory for read GGTGCGTTGGCTCTTC:NB551646:17:H5TCHBGXB:1:11106:22556:3303 1:N:0:ACTACTGT/1 (patid 116372); skipping read
+Warning: Exhausted best-first chunk memory for read GATGAATGAGGATGGT:NB551646:17:H5TCHBGXB:1:11106:9739:4601 1:N:0:ACTACTGT/1 (patid 117929); skipping read
+Warning: Exhausted best-first chunk memory for read ACACACTGATCCTACC:NB551646:17:H5TCHBGXB:1:11106:19028:5365 1:N:0:ACTACTGT/1 (patid 118826); skipping read
+Warning: Exhausted best-first chunk memory for read ACGCCACGAGGTGTCC:NB551646:17:H5TCHBGXB:1:11106:14533:5385 1:N:0:ACTACTGT/1 (patid 118859); skipping read
+Warning: Exhausted best-first chunk memory for read CGTGCCAGAAATCTGC:NB551646:17:H5TCHBGXB:1:11106:3327:6265 1:N:0:ACTACTGT/1 (patid 119879); skipping read
+Warning: Exhausted best-first chunk memory for read TGATATCCTGCACTTA:NB551646:17:H5TCHBGXB:1:11106:1165:6319 1:N:0:ACTACTGT/1 (patid 119956); skipping read
+Warning: Exhausted best-first chunk memory for read GTTAACAGGCGTAGTG:NB551646:17:H5TCHBGXB:1:11106:8398:6664 1:N:0:ACTACTGT/1 (patid 120344); skipping read
+Warning: Exhausted best-first chunk memory for read GCTCGTGGAGTTGGTT:NB551646:17:H5TCHBGXB:1:11106:5246:6866 1:N:0:ACTACTGT/1 (patid 120602); skipping read
+Warning: Exhausted best-first chunk memory for read GTCCGAGTCCCGTTGT:NB551646:17:H5TCHBGXB:1:11106:10477:7172 1:N:0:ACTACTGT/1 (patid 120991); skipping read
+Warning: Exhausted best-first chunk memory for read TCCGTGGGAGAGCTGA:NB551646:17:H5TCHBGXB:1:11106:12879:7956 1:N:0:ACTACTGT/1 (patid 121940); skipping read
+Warning: Exhausted best-first chunk memory for read CGGATGAGACTTGAAC:NB551646:17:H5TCHBGXB:1:11106:13548:8746 1:N:0:ACTACTGT/1 (patid 122872); skipping read
+Warning: Exhausted best-first chunk memory for read GAAGCCCTGTGCTTGA:NB551646:17:H5TCHBGXB:1:11106:20833:8882 1:N:0:ACTACTGT/1 (patid 123029); skipping read
+Warning: Exhausted best-first chunk memory for read CTTCAGCACGAAATCA:NB551646:17:H5TCHBGXB:1:11106:24892:8991 1:N:0:ACTACTGT/1 (patid 123132); skipping read
+Warning: Exhausted best-first chunk memory for read ATTACTCACGGACACA:NB551646:17:H5TCHBGXB:1:11106:7927:9211 1:N:0:ACTACTGT/1 (patid 123398); skipping read
+Warning: Exhausted best-first chunk memory for read CCTCTTGGATACGTTG:NB551646:17:H5TCHBGXB:1:11106:1978:9432 1:N:0:ACTACTGT/1 (patid 123668); skipping read
+Warning: Exhausted best-first chunk memory for read TGAGCGCACAATCTGC:NB551646:17:H5TCHBGXB:1:11106:1446:9548 1:N:0:ACTACTGT/1 (patid 123803); skipping read
+Warning: Exhausted best-first chunk memory for read GATCTGCCTCGAGGTA:NB551646:17:H5TCHBGXB:1:11106:10244:9611 1:N:0:ACTACTGT/1 (patid 123888); skipping read
+Warning: Exhausted best-first chunk memory for read AGTGGTACTGGCCAAA:NB551646:17:H5TCHBGXB:1:11106:16991:9633 1:N:0:ACTACTGT/1 (patid 123916); skipping read
+Warning: Exhausted best-first chunk memory for read GCAATCATGGCACGCT:NB551646:17:H5TCHBGXB:1:11106:15347:9714 1:N:0:ACTACTGT/1 (patid 124005); skipping read
+Warning: Exhausted best-first chunk memory for read TAGGGACGAGCTGTTA:NB551646:17:H5TCHBGXB:1:11106:18336:10074 1:N:0:ACTACTGT/1 (patid 124458); skipping read
+Warning: Exhausted best-first chunk memory for read TCCGCGAGATGATGAA:NB551646:17:H5TCHBGXB:1:11106:13303:10104 1:N:0:ACTACTGT/1 (patid 124487); skipping read
+Warning: Exhausted best-first chunk memory for read TTCTATGACTAACTCG:NB551646:17:H5TCHBGXB:1:11106:8779:10411 1:N:0:ACTACTGT/1 (patid 124891); skipping read
+Warning: Exhausted best-first chunk memory for read GTAAGGGTGAGGTGAC:NB551646:17:H5TCHBGXB:1:11106:16599:10669 1:N:0:ACTACTGT/1 (patid 125205); skipping read
+Warning: Exhausted best-first chunk memory for read TCCTTGGTGGCATGAG:NB551646:17:H5TCHBGXB:1:11106:12414:11505 1:N:0:ACTACTGT/1 (patid 126161); skipping read
+Warning: Exhausted best-first chunk memory for read TGCATGCCTAAATGCA:NB551646:17:H5TCHBGXB:1:11106:14616:12178 1:N:0:ACTACTGT/1 (patid 126927); skipping read
+Warning: Exhausted best-first chunk memory for read TGTCTTCCTCTTAGTG:NB551646:17:H5TCHBGXB:1:11106:10290:12315 1:N:0:ACTACTGT/1 (patid 127106); skipping read
+Warning: Exhausted best-first chunk memory for read CATCCGTACTAGCTTG:NB551646:17:H5TCHBGXB:1:11106:2281:12647 1:N:0:ACTACTGT/1 (patid 127482); skipping read
+Warning: Exhausted best-first chunk memory for read GGGTGAATGAGAGGCT:NB551646:17:H5TCHBGXB:1:11106:25538:12743 1:N:0:ACTACTGT/1 (patid 127602); skipping read
+Warning: Exhausted best-first chunk memory for read GGGTAGAACTGGCATT:NB551646:17:H5TCHBGXB:1:11106:7954:13126 1:N:0:ACTACTGT/1 (patid 128045); skipping read
+Warning: Exhausted best-first chunk memory for read AAAGCGGACAGGTAAT:NB551646:17:H5TCHBGXB:1:11106:5016:13167 1:N:0:ACTACTGT/1 (patid 128087); skipping read
+Warning: Exhausted best-first chunk memory for read TCGCCTATGAGGTAAT:NB551646:17:H5TCHBGXB:1:11106:5518:14436 1:N:0:ACTACTGT/1 (patid 129546); skipping read
+Warning: Exhausted best-first chunk memory for read TCGCCTATGAGGTAAT:NB551646:17:H5TCHBGXB:1:11106:4530:15055 1:N:0:ACTACTGT/1 (patid 130320); skipping read
+Warning: Exhausted best-first chunk memory for read TACCGCTTGGGGTAGT:NB551646:17:H5TCHBGXB:1:11106:16830:15200 1:N:0:ACTACTGT/1 (patid 130497); skipping read
+Warning: Exhausted best-first chunk memory for read GGGTCACACAATCTGC:NB551646:17:H5TCHBGXB:1:11106:15595:16550 1:N:0:ACTACTGT/1 (patid 132122); skipping read
+Warning: Exhausted best-first chunk memory for read GCCATTCACGCTACGC:NB551646:17:H5TCHBGXB:1:11106:19498:18283 1:N:0:ACTACTGT/1 (patid 134141); skipping read
+Warning: Exhausted best-first chunk memory for read AGTAAGTGAGGACTGA:NB551646:17:H5TCHBGXB:1:11106:15040:18383 1:N:0:ACTACTGT/1 (patid 134265); skipping read
+Warning: Exhausted best-first chunk memory for read CCCACCTCTAAGGCCA:NB551646:17:H5TCHBGXB:1:11106:9860:18850 1:N:0:ACTACTGT/1 (patid 134801); skipping read
+Warning: Exhausted best-first chunk memory for read TGGCCTGGAATCCTTT:NB551646:17:H5TCHBGXB:1:11106:15704:19146 1:N:0:ACTACTGT/1 (patid 135154); skipping read
+Warning: Exhausted best-first chunk memory for read TCCTTCACTTGGGCCT:NB551646:17:H5TCHBGXB:1:11106:22806:19918 1:N:0:ACTACTGT/1 (patid 136067); skipping read
+Warning: Exhausted best-first chunk memory for read TCCTGTGACGGGTTCC:NB551646:17:H5TCHBGXB:1:11107:5164:1636 1:N:0:ACTACTGT/1 (patid 137344); skipping read
+Warning: Exhausted best-first chunk memory for read CAAAGAATGCCTAGCG:NB551646:17:H5TCHBGXB:1:11107:15862:2264 1:N:0:ACTACTGT/1 (patid 138062); skipping read
+Warning: Exhausted best-first chunk memory for read TGGAATGCTCGTGCAC:NB551646:17:H5TCHBGXB:1:11107:19804:3109 1:N:0:AATACTGT/1 (patid 139001); skipping read
+Warning: Exhausted best-first chunk memory for read GAAGCCCTGTCTGGGC:NB551646:17:H5TCHBGXB:1:11107:19069:3127 1:N:0:ACTACTGT/1 (patid 139020); skipping read
+Warning: Exhausted best-first chunk memory for read ATACCACGAGGGTAGT:NB551646:17:H5TCHBGXB:1:11107:15657:3387 1:N:0:ACTACTGT/1 (patid 139344); skipping read
+Warning: Exhausted best-first chunk memory for read TACCTCGACTTTCGCC:NB551646:17:H5TCHBGXB:1:11107:22977:4019 1:N:0:ACTACTGT/1 (patid 140102); skipping read
+Warning: Exhausted best-first chunk memory for read GGGCCTTGAGCTGAGA:NB551646:17:H5TCHBGXB:1:11107:12699:4266 1:N:0:ACTACTGT/1 (patid 140411); skipping read
+Warning: Exhausted best-first chunk memory for read GGTGGAAACAACGTTC:NB551646:17:H5TCHBGXB:1:11107:1813:4313 1:N:0:ACTACTGT/1 (patid 140467); skipping read
+Warning: Exhausted best-first chunk memory for read AATCAGCTGAGTGGTG:NB551646:17:H5TCHBGXB:1:11107:1625:4428 1:N:0:ACTACTGT/1 (patid 140601); skipping read
+Warning: Exhausted best-first chunk memory for read TTCCCATCTTCCTACC:NB551646:17:H5TCHBGXB:1:11107:8891:4985 1:N:0:ACTACTGT/1 (patid 141234); skipping read
+Warning: Exhausted best-first chunk memory for read GCGTTAATGGAACGTG:NB551646:17:H5TCHBGXB:1:11107:10261:5098 1:N:0:ACTACTGT/1 (patid 141350); skipping read
+Warning: Exhausted best-first chunk memory for read TACGCCTTGGTTAGAA:NB551646:17:H5TCHBGXB:1:11107:14637:5296 1:N:0:ACTACTGT/1 (patid 141588); skipping read
+Warning: Exhausted best-first chunk memory for read CATTCCCGATGTCACA:NB551646:17:H5TCHBGXB:1:11107:20523:6487 1:N:0:ACTACTGT/1 (patid 142971); skipping read
+Warning: Exhausted best-first chunk memory for read TCCATTCCTGCGTATT:NB551646:17:H5TCHBGXB:1:11107:1327:6731 1:N:0:ACTACTGT/1 (patid 143264); skipping read
+Warning: Exhausted best-first chunk memory for read GTATAGGCTTCTGTGA:NB551646:17:H5TCHBGXB:1:11107:20237:7422 1:N:0:ACTACTGT/1 (patid 144099); skipping read
+Warning: Exhausted best-first chunk memory for read TCCGAGTCTGCGAGTA:NB551646:17:H5TCHBGXB:1:11107:12190:7734 1:N:0:ACTACTGT/1 (patid 144456); skipping read
+Warning: Exhausted best-first chunk memory for read CATTGGCCTCGATGGA:NB551646:17:H5TCHBGXB:1:11107:11208:7904 1:N:0:ACTACTGT/1 (patid 144648); skipping read
+Warning: Exhausted best-first chunk memory for read CGCAATCCTCCTAGCG:NB551646:17:H5TCHBGXB:1:11107:6849:8232 1:N:0:ACTACTGT/1 (patid 145056); skipping read
+Warning: Exhausted best-first chunk memory for read TCGATGATGTAATGCC:NB551646:17:H5TCHBGXB:1:11107:14193:8234 1:N:0:ACTACTGT/1 (patid 145062); skipping read
+Warning: Exhausted best-first chunk memory for read GAACGTTTGGCTTCGG:NB551646:17:H5TCHBGXB:1:11107:26182:8318 1:N:0:ACTACTGT/1 (patid 145144); skipping read
+Warning: Exhausted best-first chunk memory for read TGGCCGATGTTCTGAG:NB551646:17:H5TCHBGXB:1:11107:15804:8412 1:N:0:ACTACTGT/1 (patid 145258); skipping read
+Warning: Exhausted best-first chunk memory for read GCTTACCACGTTGACT:NB551646:17:H5TCHBGXB:1:11107:1564:8817 1:N:0:ACTACTGT/1 (patid 145746); skipping read
+Warning: Exhausted best-first chunk memory for read CAACACCCTCCTCCTA:NB551646:17:H5TCHBGXB:1:11107:8437:8973 1:N:0:ACTACTGT/1 (patid 145916); skipping read
+Warning: Exhausted best-first chunk memory for read TGTCAATCTTTCTGAG:NB551646:17:H5TCHBGXB:1:11107:15348:9176 1:N:0:ACTACTGT/1 (patid 146134); skipping read
+Warning: Exhausted best-first chunk memory for read TTGTTTGTGAACGTGG:NB551646:17:H5TCHBGXB:1:11107:12464:9491 1:N:0:ACTACTGT/1 (patid 146492); skipping read
+Warning: Exhausted best-first chunk memory for read TCTTTAGACTGTTGTG:NB551646:17:H5TCHBGXB:1:11107:17202:9558 1:N:0:ACTACTGT/1 (patid 146564); skipping read
+Warning: Exhausted best-first chunk memory for read GGATCAGACCTACGGG:NB551646:17:H5TCHBGXB:1:11107:21033:9825 1:N:0:ACTACTGT/1 (patid 146880); skipping read
+Warning: Exhausted best-first chunk memory for read TAGTACCGATCGTCAA:NB551646:17:H5TCHBGXB:1:11107:15641:10136 1:N:0:ACTACTGT/1 (patid 147223); skipping read
+Warning: Exhausted best-first chunk memory for read TTTACGTACACTCGAT:NB551646:17:H5TCHBGXB:1:11107:2822:10305 1:N:0:ACTACTGT/1 (patid 147395); skipping read
+Warning: Exhausted best-first chunk memory for read ATACCACGATGTGCTA:NB551646:17:H5TCHBGXB:1:11107:9844:10709 1:N:0:ACTACTGT/1 (patid 147874); skipping read
+Warning: Exhausted best-first chunk memory for read TCCGAATGATCGTCAA:NB551646:17:H5TCHBGXB:1:11107:18377:11049 1:N:0:ACTACTGT/1 (patid 148301); skipping read
+Warning: Exhausted best-first chunk memory for read ACCGGAGCTATCTGTG:NB551646:17:H5TCHBGXB:1:11107:2683:11447 1:N:0:ACTACTGT/1 (patid 148754); skipping read
+Warning: Exhausted best-first chunk memory for read TAGGTAAGAAAAGTAC:NB551646:17:H5TCHBGXB:1:11107:8158:11454 1:N:0:ACTACTGT/1 (patid 148763); skipping read
+Warning: Exhausted best-first chunk memory for read CCCAATGCTGCTAGAG:NB551646:17:H5TCHBGXB:1:11107:7816:12494 1:N:0:ACTACTGT/1 (patid 149992); skipping read
+Warning: Exhausted best-first chunk memory for read CATTGTTACAGCTTTG:NB551646:17:H5TCHBGXB:1:11107:23341:12731 1:N:0:ACTACTGT/1 (patid 150286); skipping read
+Warning: Exhausted best-first chunk memory for read AACGAACCTATGTCAC:NB551646:17:H5TCHBGXB:1:11107:7271:12825 1:N:0:ACTACTGT/1 (patid 150408); skipping read
+Warning: Exhausted best-first chunk memory for read ACGTGTTGAGGCAGTA:NB551646:17:H5TCHBGXB:1:11107:26267:13250 1:N:0:ACTACTGT/1 (patid 150936); skipping read
+Warning: Exhausted best-first chunk memory for read AGACTACTGCTCAGGG:NB551646:17:H5TCHBGXB:1:11107:10667:13629 1:N:0:ACTACTGT/1 (patid 151393); skipping read
+Warning: Exhausted best-first chunk memory for read GGATCCCGATCGTCCT:NB551646:17:H5TCHBGXB:1:11107:3328:13632 1:N:0:ACTACTGT/1 (patid 151396); skipping read
+Warning: Exhausted best-first chunk memory for read GAGTTACTGGTACTAC:NB551646:17:H5TCHBGXB:1:11107:19777:13730 1:N:0:ACTACTGT/1 (patid 151521); skipping read
+Warning: Exhausted best-first chunk memory for read GCGTATATGTACCAAC:NB551646:17:H5TCHBGXB:1:11107:24831:13853 1:N:0:ACTACTGT/1 (patid 151644); skipping read
+Warning: Exhausted best-first chunk memory for read ACAGCGGCTAAGACAT:NB551646:17:H5TCHBGXB:1:11107:2623:13861 1:N:0:ACTACTGT/1 (patid 151652); skipping read
+Warning: Exhausted best-first chunk memory for read ACCCTTTCTGAATCTC:NB551646:17:H5TCHBGXB:1:11107:22105:14467 1:N:0:ACTACTGT/1 (patid 152393); skipping read
+Warning: Exhausted best-first chunk memory for read TAACGAGCTTTGCAGT:NB551646:17:H5TCHBGXB:1:11107:3321:15363 1:N:0:ACTACTGT/1 (patid 153436); skipping read
+Warning: Exhausted best-first chunk memory for read TACTGGAACTTACGCA:NB551646:17:H5TCHBGXB:1:11107:1070:16424 1:N:0:ACTACTGT/1 (patid 154731); skipping read
+Warning: Exhausted best-first chunk memory for read AGCGTATACAACGAAT:NB551646:17:H5TCHBGXB:1:11107:24217:17224 1:N:0:ACTACTGT/1 (patid 155714); skipping read
+Warning: Exhausted best-first chunk memory for read GCTAGCGACCCTTCCA:NB551646:17:H5TCHBGXB:1:11107:24901:17316 1:N:0:ACTACTGT/1 (patid 155812); skipping read
+Warning: Exhausted best-first chunk memory for read TACCCGGGACCGTTAA:NB551646:17:H5TCHBGXB:1:11107:3626:17805 1:N:0:ACTACTGT/1 (patid 156346); skipping read
+Warning: Exhausted best-first chunk memory for read CGTCAACCTTGCACCG:NB551646:17:H5TCHBGXB:1:11107:2024:18069 1:N:0:ACTACTGT/1 (patid 156648); skipping read
+Warning: Exhausted best-first chunk memory for read TTTACCATGAGGCATG:NB551646:17:H5TCHBGXB:1:11108:5119:1409 1:N:0:ACTACTGT/1 (patid 159765); skipping read
+Warning: Exhausted best-first chunk memory for read TACAACCGATGAGGCA:NB551646:17:H5TCHBGXB:1:11108:13736:1589 1:N:0:ACTACTGT/1 (patid 159949); skipping read
+Warning: Exhausted best-first chunk memory for read CCCTGATTGAAACTGA:NB551646:17:H5TCHBGXB:1:11108:3907:1746 1:N:0:ACTACTGT/1 (patid 160148); skipping read
+Warning: Exhausted best-first chunk memory for read GAGGTCCTGCCTCAAA:NB551646:17:H5TCHBGXB:1:11108:5926:2892 1:N:0:ACTACTGT/1 (patid 161392); skipping read
+Warning: Exhausted best-first chunk memory for read TCCATTCCTGCGTATT:NB551646:17:H5TCHBGXB:1:11108:1512:3232 1:N:0:ACTACTGT/1 (patid 161766); skipping read
+Warning: Exhausted best-first chunk memory for read CTTCGTTGTGGCTGCG:NB551646:17:H5TCHBGXB:1:11108:25249:3855 1:N:0:ACTACTGT/1 (patid 162451); skipping read
+Warning: Exhausted best-first chunk memory for read GATCTGCCTCGAGGTA:NB551646:17:H5TCHBGXB:1:11108:5067:4443 1:N:0:ACTACTGT/1 (patid 163105); skipping read
+Warning: Exhausted best-first chunk memory for read GTTTCATTGGGACCAA:NB551646:17:H5TCHBGXB:1:11108:11935:4727 1:N:0:ACTACTGT/1 (patid 163444); skipping read
+Warning: Exhausted best-first chunk memory for read CAACACCCTCCTCCTA:NB551646:17:H5TCHBGXB:1:11108:16796:4779 1:N:0:ACTACTGT/1 (patid 163500); skipping read
+Warning: Exhausted best-first chunk memory for read AGGAAGAGAGCATGAG:NB551646:17:H5TCHBGXB:1:11108:11702:4804 1:N:0:ACTACTGT/1 (patid 163532); skipping read
+Warning: Exhausted best-first chunk memory for read ACCTCCAACGGCCTGT:NB551646:17:H5TCHBGXB:1:11108:9976:4846 1:N:0:ACTACTGT/1 (patid 163583); skipping read
+Warning: Exhausted best-first chunk memory for read TCACCTGACTGCTCAA:NB551646:17:H5TCHBGXB:1:11108:9306:5206 1:N:0:ACTACTGT/1 (patid 163978); skipping read
+Warning: Exhausted best-first chunk memory for read CAACAACACTCCAATG:NB551646:17:H5TCHBGXB:1:11108:4845:5978 1:N:0:ACTACTGT/1 (patid 164923); skipping read
+Warning: Exhausted best-first chunk memory for read CAAGAGTCTCGATGTT:NB551646:17:H5TCHBGXB:1:11108:18196:6181 1:N:0:ACTACTGT/1 (patid 165169); skipping read
+Warning: Exhausted best-first chunk memory for read GGACATTTGAGCCCTG:NB551646:17:H5TCHBGXB:1:11108:12209:6571 1:N:0:ACTACTGT/1 (patid 165606); skipping read
+Warning: Exhausted best-first chunk memory for read TCCATTCCTGCGTATT:NB551646:17:H5TCHBGXB:1:11108:26779:6742 1:N:0:ACTACTGT/1 (patid 165796); skipping read
+Warning: Exhausted best-first chunk memory for read TACCACCTGGTCTTGA:NB551646:17:H5TCHBGXB:1:11108:14955:6837 1:N:0:ACTACTGT/1 (patid 165907); skipping read
+Warning: Exhausted best-first chunk memory for read CGTTTGCTGGAAATCA:NB551646:17:H5TCHBGXB:1:11108:5226:7353 1:N:0:ACTACTGT/1 (patid 166530); skipping read
+Warning: Exhausted best-first chunk memory for read CTGTAACGATAAGTAG:NB551646:17:H5TCHBGXB:1:11108:18349:7434 1:N:0:ACTACTGT/1 (patid 166612); skipping read
+Warning: Exhausted best-first chunk memory for read TATGGTTCTCATGCAT:NB551646:17:H5TCHBGXB:1:11108:2147:8093 1:N:0:ACTACTGT/1 (patid 167409); skipping read
+Warning: Exhausted best-first chunk memory for read GTGCAGAGAAGTGAGC:NB551646:17:H5TCHBGXB:1:11108:21306:8660 1:N:0:ACTACTGT/1 (patid 168074); skipping read
+Warning: Exhausted best-first chunk memory for read GTGCTAATGCGAACAG:NB551646:17:H5TCHBGXB:1:11108:12193:9031 1:N:0:ACTACTGT/1 (patid 168489); skipping read
+Warning: Exhausted best-first chunk memory for read TTTGGGATGGTACTAC:NB551646:17:H5TCHBGXB:1:11108:5675:9742 1:N:0:ACTACTGT/1 (patid 169317); skipping read
+Warning: Exhausted best-first chunk memory for read TAGACCTGACATAGCT:NB551646:17:H5TCHBGXB:1:11108:7408:9879 1:N:0:ACTACTGT/1 (patid 169468); skipping read
+Warning: Exhausted best-first chunk memory for read AACTCCCTGTGCGTGC:NB551646:17:H5TCHBGXB:1:11108:1262:9937 1:N:0:ACTACTGT/1 (patid 169529); skipping read
+Warning: Exhausted best-first chunk memory for read CTATCTATGCTCATCC:NB551646:17:H5TCHBGXB:1:11108:13938:9960 1:N:0:ACTACTGT/1 (patid 169559); skipping read
+Warning: Exhausted best-first chunk memory for read ATTAGCGTGCGATTGT:NB551646:17:H5TCHBGXB:1:11108:21433:10342 1:N:0:ACTACTGT/1 (patid 170017); skipping read
+Warning: Exhausted best-first chunk memory for read AATGTGCTGTAAGTAG:NB551646:17:H5TCHBGXB:1:11108:19347:10879 1:N:0:ACTACTGT/1 (patid 170654); skipping read
+Warning: Exhausted best-first chunk memory for read GCTGACCGATGAACAA:NB551646:17:H5TCHBGXB:1:11108:17888:10942 1:N:0:ACTACTGT/1 (patid 170733); skipping read
+Warning: Exhausted best-first chunk memory for read GTCGGCTGAAGTCTAC:NB551646:17:H5TCHBGXB:1:11108:25884:11668 1:N:0:ACTACTGT/1 (patid 171532); skipping read
+Warning: Exhausted best-first chunk memory for read GTCCGAGTGACAGGTG:NB551646:17:H5TCHBGXB:1:11108:4019:13136 1:N:0:ATTACTGT/1 (patid 173290); skipping read
+Warning: Exhausted best-first chunk memory for read GTCCCAGGACATGCGC:NB551646:17:H5TCHBGXB:1:11108:15641:13404 1:N:0:ACTACTGT/1 (patid 173617); skipping read
+Warning: Exhausted best-first chunk memory for read GGGAACCCTTGAAAGT:NB551646:17:H5TCHBGXB:1:11108:18066:13569 1:N:0:ACTACTGT/1 (patid 173830); skipping read
+Warning: Exhausted best-first chunk memory for read GGAGTTACTTATGACC:NB551646:17:H5TCHBGXB:1:11108:8631:14014 1:N:0:ACTACTGT/1 (patid 174309); skipping read
+Warning: Exhausted best-first chunk memory for read GTTTCATTGGGACCAA:NB551646:17:H5TCHBGXB:1:11108:15356:14633 1:N:0:ACTACTGT/1 (patid 175051); skipping read
+Warning: Exhausted best-first chunk memory for read TGGAATGCTTCAGGTT:NB551646:17:H5TCHBGXB:1:11108:12433:15225 1:N:0:ACTACAGT/1 (patid 175764); skipping read
+Warning: Exhausted best-first chunk memory for read AACCGGCACTTCCATT:NB551646:17:H5TCHBGXB:1:11108:16126:15388 1:N:0:ACTACTGT/1 (patid 175978); skipping read
+Warning: Exhausted best-first chunk memory for read CATGGAGGATACCTGA:NB551646:17:H5TCHBGXB:1:11108:18307:15485 1:N:0:ACTACTGT/1 (patid 176108); skipping read
+Warning: Exhausted best-first chunk memory for read AAACCCTGAGACTGTT:NB551646:17:H5TCHBGXB:1:11108:22605:16170 1:N:0:ACTACTGT/1 (patid 176878); skipping read
+Warning: Exhausted best-first chunk memory for read TCGCCTCCTCGTACAT:NB551646:17:H5TCHBGXB:1:11108:23967:16215 1:N:0:ACTACTGT/1 (patid 176940); skipping read
+Warning: Exhausted best-first chunk memory for read CCTGCCTCTTCCAATG:NB551646:17:H5TCHBGXB:1:11108:12117:16757 1:N:0:ACTACTGT/1 (patid 177565); skipping read
+Warning: Exhausted best-first chunk memory for read GATCTGCCTATCTGTG:NB551646:17:H5TCHBGXB:1:11108:10945:16903 1:N:0:ACTACTGT/1 (patid 177753); skipping read
+Warning: Exhausted best-first chunk memory for read AGGAGTTCTTCCCAGG:NB551646:17:H5TCHBGXB:1:11108:2461:17582 1:N:0:ACTACTGT/1 (patid 178493); skipping read
+Warning: Exhausted best-first chunk memory for read AAGTACCACGATTAAG:NB551646:17:H5TCHBGXB:1:11108:23665:17901 1:N:0:ACTACTGT/1 (patid 178859); skipping read
+Warning: Exhausted best-first chunk memory for read AGCTCGGACATAACCC:NB551646:17:H5TCHBGXB:1:11108:12010:18269 1:N:0:ACTACTGT/1 (patid 179315); skipping read
+Warning: Exhausted best-first chunk memory for read TTCCCTGGATTTGGGT:NB551646:17:H5TCHBGXB:1:11108:12010:19337 1:N:0:ACTACTGT/1 (patid 180637); skipping read
+Warning: Exhausted best-first chunk memory for read CAACACCCTCCTCCTA:NB551646:17:H5TCHBGXB:1:11108:11060:19599 1:N:0:ACTACTGT/1 (patid 180937); skipping read
+Warning: Exhausted best-first chunk memory for read GAACAACCTTGCTTGA:NB551646:17:H5TCHBGXB:1:11108:8650:20232 1:N:0:ACTACTGT/1 (patid 181688); skipping read
+Warning: Exhausted best-first chunk memory for read TACATTGCTGCCCTTT:NB551646:17:H5TCHBGXB:1:11109:11818:2179 1:N:0:ACTACTGT/1 (patid 183154); skipping read
+Warning: Exhausted best-first chunk memory for read GTTCTCGACTTGGTTG:NB551646:17:H5TCHBGXB:1:11109:25200:2575 1:N:0:ACTACTGT/1 (patid 183621); skipping read
+Warning: Exhausted best-first chunk memory for read TTCAAGCGAGGCCATC:NB551646:17:H5TCHBGXB:1:11109:22817:2623 1:N:0:ACTACTGT/1 (patid 183690); skipping read
+Warning: Exhausted best-first chunk memory for read CTTGCTGACCCAGCTG:NB551646:17:H5TCHBGXB:1:11109:10118:3832 1:N:0:ACTACTGT/1 (patid 185071); skipping read
+Warning: Exhausted best-first chunk memory for read AAAGCATGATGGTGAG:NB551646:17:H5TCHBGXB:1:11109:16854:3924 1:N:0:ACTACTGT/1 (patid 185184); skipping read
+Warning: Exhausted best-first chunk memory for read AGATGGATGAGCTTGT:NB551646:17:H5TCHBGXB:1:11109:3275:4211 1:N:0:ACTACTGT/1 (patid 185509); skipping read
+Warning: Exhausted best-first chunk memory for read TACCACCACGAATGTA:NB551646:17:H5TCHBGXB:1:11109:1984:4308 1:N:0:ACTACTGT/1 (patid 185638); skipping read
+Warning: Exhausted best-first chunk memory for read TGAGCGCACAATCTGC:NB551646:17:H5TCHBGXB:1:11109:24296:4491 1:N:0:ACTACTGT/1 (patid 185853); skipping read
+Warning: Exhausted best-first chunk memory for read ATGTGTGTGAATCTGC:NB551646:17:H5TCHBGXB:1:11109:19045:4615 1:N:0:ACTACTGT/1 (patid 185996); skipping read
+Warning: Exhausted best-first chunk memory for read TGTGGTAACGTTTGGT:NB551646:17:H5TCHBGXB:1:11109:9551:5178 1:N:0:ACTACTGT/1 (patid 186686); skipping read
+Warning: Exhausted best-first chunk memory for read ATAGGAAACGGATGGT:NB551646:17:H5TCHBGXB:1:11109:22509:5306 1:N:0:ACTACTGT/1 (patid 186835); skipping read
+Warning: Exhausted best-first chunk memory for read ATACCTGGACCAGCTG:NB551646:17:H5TCHBGXB:1:11109:20696:5345 1:N:0:ACTACTGT/1 (patid 186875); skipping read
+Warning: Exhausted best-first chunk memory for read CGTAGCTCTAAGCTAA:NB551646:17:H5TCHBGXB:1:11109:2458:5648 1:N:0:ACTACTGT/1 (patid 187227); skipping read
+Warning: Exhausted best-first chunk memory for read ACGGAATCTCGGGTAA:NB551646:17:H5TCHBGXB:1:11109:19122:6788 1:N:0:ACTACTGT/1 (patid 188546); skipping read
+Warning: Exhausted best-first chunk memory for read TAGGGACGATGCCACG:NB551646:17:H5TCHBGXB:1:11109:20768:7293 1:N:0:ACTACTGT/1 (patid 189165); skipping read
+Warning: Exhausted best-first chunk memory for read GGTTCACCTTCAATGC:NB551646:17:H5TCHBGXB:1:11109:17151:7589 1:N:0:ACTACTGT/1 (patid 189528); skipping read
+Warning: Exhausted best-first chunk memory for read CGACAATACATAACCC:NB551646:17:H5TCHBGXB:1:11109:3402:7797 1:N:0:ACTACTGT/1 (patid 189743); skipping read
+Warning: Exhausted best-first chunk memory for read AGTTTGCGAAATCCGT:NB551646:17:H5TCHBGXB:1:11109:11170:7992 1:N:0:ACTACTGT/1 (patid 189988); skipping read
+Warning: Exhausted best-first chunk memory for read AGAACCTTGACCTGCG:NB551646:17:H5TCHBGXB:1:11109:17448:8136 1:N:0:ACTACTGT/1 (patid 190185); skipping read
+Warning: Exhausted best-first chunk memory for read AACTTACCTTCGACAT:NB551646:17:H5TCHBGXB:1:11109:18852:8814 1:N:0:ACTACTGT/1 (patid 190965); skipping read
+Warning: Exhausted best-first chunk memory for read ACTCCGTACTGGAACG:NB551646:17:H5TCHBGXB:1:11109:1268:9276 1:N:0:ACTACTGT/1 (patid 191518); skipping read
+Warning: Exhausted best-first chunk memory for read CGTTACCTGGCTGTTA:NB551646:17:H5TCHBGXB:1:11109:13033:9434 1:N:0:ACTACTGT/1 (patid 191712); skipping read
+Warning: Exhausted best-first chunk memory for read ACGCCACGATAGCAGG:NB551646:17:H5TCHBGXB:1:11109:20926:9466 1:N:0:ACTACTGT/1 (patid 191754); skipping read
+Warning: Exhausted best-first chunk memory for read AACTCCCTGTGCGTGC:NB551646:17:H5TCHBGXB:1:11109:26693:9940 1:N:0:ACTACTGT/1 (patid 192290); skipping read
+Warning: Exhausted best-first chunk memory for read ACTTCCTCTCTGTACA:NB551646:17:H5TCHBGXB:1:11109:11939:9994 1:N:0:ACTACTGT/1 (patid 192326); skipping read
+Warning: Exhausted best-first chunk memory for read ATTACTCACGGACACA:NB551646:17:H5TCHBGXB:1:11109:24419:10116 1:N:0:ACTACTGT/1 (patid 192467); skipping read
+Warning: Exhausted best-first chunk memory for read ACTTATCACCGGCTCA:NB551646:17:H5TCHBGXB:1:11109:15442:10319 1:N:0:ACTACTGT/1 (patid 192728); skipping read
+Warning: Exhausted best-first chunk memory for read ATGTACGTGTGGCTGC:NB551646:17:H5TCHBGXB:1:11109:24107:11559 1:N:0:ACTACTGT/1 (patid 194272); skipping read
+Warning: Exhausted best-first chunk memory for read CTGAAGTACCGAGGTA:NB551646:17:H5TCHBGXB:1:11109:9048:11680 1:N:0:ACTACTGT/1 (patid 194432); skipping read
+Warning: Exhausted best-first chunk memory for read TTCGATGGACCAAGTT:NB551646:17:H5TCHBGXB:1:11109:23355:12127 1:N:0:ACTACTGT/1 (patid 194966); skipping read
+Warning: Exhausted best-first chunk memory for read TGTACCCTGAACGTAA:NB551646:17:H5TCHBGXB:1:11109:2508:12491 1:N:0:ACTACTGT/1 (patid 195393); skipping read
+Warning: Exhausted best-first chunk memory for read GTCGAAGGATTCTGAG:NB551646:17:H5TCHBGXB:1:11109:20378:12564 1:N:0:ACTACTGT/1 (patid 195461); skipping read
+Warning: Exhausted best-first chunk memory for read CTCTGGACTAACCCGC:NB551646:17:H5TCHBGXB:1:11109:26302:12979 1:N:0:ACTACTGT/1 (patid 195963); skipping read
+Warning: Exhausted best-first chunk memory for read TTTAGTCTGCCGGACT:NB551646:17:H5TCHBGXB:1:11109:25071:13215 1:N:0:ACTACTGT/1 (patid 196245); skipping read
+Warning: Exhausted best-first chunk memory for read CGCTTCAACCTCACTC:NB551646:17:H5TCHBGXB:1:11109:8184:13247 1:N:0:ACTACTGT/1 (patid 196281); skipping read
+Warning: Exhausted best-first chunk memory for read GGTCAGAGACGATTCA:NB551646:17:H5TCHBGXB:1:11109:2328:13994 1:N:0:ACTACTGT/1 (patid 197144); skipping read
+Warning: Exhausted best-first chunk memory for read GTAACTGTGCTCATTT:NB551646:17:H5TCHBGXB:1:11109:4262:14812 1:N:0:ACTACTGT/1 (patid 198159); skipping read
+Warning: Exhausted best-first chunk memory for read TCTAGACGAAGCAAGC:NB551646:17:H5TCHBGXB:1:11109:8199:15111 1:N:0:ACTACTGT/1 (patid 198512); skipping read
+Warning: Exhausted best-first chunk memory for read AGATACGCTCGTGCAC:NB551646:17:H5TCHBGXB:1:11109:22907:15955 1:N:0:ACTACTGT/1 (patid 199528); skipping read
+Warning: Exhausted best-first chunk memory for read ATTTAGCCTAAAGGTT:NB551646:17:H5TCHBGXB:1:11109:8671:16195 1:N:0:ACTACTGT/1 (patid 199806); skipping read
+Warning: Exhausted best-first chunk memory for read AAGACAAACTGGTCCG:NB551646:17:H5TCHBGXB:1:11109:18904:16621 1:N:0:ACTACTGT/1 (patid 200265); skipping read
+Warning: Exhausted best-first chunk memory for read CAGAGGCCTGACATAA:NB551646:17:H5TCHBGXB:1:11109:26322:17291 1:N:0:ACTACTGT/1 (patid 201080); skipping read
+Warning: Exhausted best-first chunk memory for read GAGCCTGACCCGTGAC:NB551646:17:H5TCHBGXB:1:11109:2918:17416 1:N:0:ACTACTGT/1 (patid 201240); skipping read
+Warning: Exhausted best-first chunk memory for read CCTGCCTCTGCTTACA:NB551646:17:H5TCHBGXB:1:11109:21871:17446 1:N:0:ACTACTGT/1 (patid 201272); skipping read
+Warning: Exhausted best-first chunk memory for read GATGAATGATATGACC:NB551646:17:H5TCHBGXB:1:11109:21858:17762 1:N:0:ACTACTGT/1 (patid 201657); skipping read
+Warning: Exhausted best-first chunk memory for read TTCCCAGACCCGATTA:NB551646:17:H5TCHBGXB:1:11109:25298:18354 1:N:0:ACTACTGT/1 (patid 202376); skipping read
+Warning: Exhausted best-first chunk memory for read GGAAGGACTGCGAGTA:NB551646:17:H5TCHBGXB:1:11109:20401:18538 1:N:0:ACTACTGT/1 (patid 202598); skipping read
+Warning: Exhausted best-first chunk memory for read AATGGCTACGTTCTCC:NB551646:17:H5TCHBGXB:1:11109:8256:19439 1:N:0:ACTACTGT/1 (patid 203655); skipping read
+Warning: Exhausted best-first chunk memory for read TCTGGTCACAAGCTAA:NB551646:17:H5TCHBGXB:1:11109:15885:19491 1:N:0:ACTACTGT/1 (patid 203725); skipping read
+Warning: Exhausted best-first chunk memory for read CAGAAACCTACCGTGC:NB551646:17:H5TCHBGXB:1:11109:16096:19585 1:N:0:ACTACTGT/1 (patid 203827); skipping read
+Warning: Exhausted best-first chunk memory for read GGTCAGAGACGATTCA:NB551646:17:H5TCHBGXB:1:11110:17960:1052 1:N:0:ACTACTGT/1 (patid 204785); skipping read
+Warning: Exhausted best-first chunk memory for read TACCGCTTGAGCCATT:NB551646:17:H5TCHBGXB:1:11110:23187:1209 1:N:0:ACTACTGT/1 (patid 204976); skipping read
+Warning: Exhausted best-first chunk memory for read GTTGAAGCTTCGTAGT:NB551646:17:H5TCHBGXB:1:11110:9724:1385 1:N:0:ACTACTGT/1 (patid 205157); skipping read
+Warning: Exhausted best-first chunk memory for read TCCGTAAGACCACAAT:NB551646:17:H5TCHBGXB:1:11110:23062:1490 1:N:0:ACTACTGT/1 (patid 205285); skipping read
+Warning: Exhausted best-first chunk memory for read AACCTATCTATTGGTC:NB551646:17:H5TCHBGXB:1:11110:2119:1542 1:N:0:ACTACTGT/1 (patid 205340); skipping read
+Warning: Exhausted best-first chunk memory for read TACAACCGACGATTGT:NB551646:17:H5TCHBGXB:1:11110:1464:1989 1:N:0:ACTACTGT/1 (patid 205805); skipping read
+Warning: Exhausted best-first chunk memory for read CCTCCCTTGACAGATA:NB551646:17:H5TCHBGXB:1:11110:1883:2278 1:N:0:ACTACTGT/1 (patid 206145); skipping read
+Warning: Exhausted best-first chunk memory for read TCGACTAGACATGCGC:NB551646:17:H5TCHBGXB:1:11110:5790:2771 1:N:0:ACTACTGT/1 (patid 206693); skipping read
+Warning: Exhausted best-first chunk memory for read AGGAATTGAGCTGGCT:NB551646:17:H5TCHBGXB:1:11110:10423:2818 1:N:0:ACTACTGT/1 (patid 206750); skipping read
+Warning: Exhausted best-first chunk memory for read ATTAGCGTGAAGTTCC:NB551646:17:H5TCHBGXB:1:11110:10150:3498 1:N:0:ACTACTGT/1 (patid 207577); skipping read
+Warning: Exhausted best-first chunk memory for read TGTACGATGGAAGGCT:NB551646:17:H5TCHBGXB:1:11110:4447:4241 1:N:0:ACTACTGT/1 (patid 208435); skipping read
+Warning: Exhausted best-first chunk memory for read TCAACAGACGACACCC:NB551646:17:H5TCHBGXB:1:11110:23272:4508 1:N:0:ACTACTGT/1 (patid 208759); skipping read
+Warning: Exhausted best-first chunk memory for read TGAGACTTGCGATTGT:NB551646:17:H5TCHBGXB:1:11110:20826:4601 1:N:0:ACTACTGT/1 (patid 208871); skipping read
+Warning: Exhausted best-first chunk memory for read TGTCAATCTGCTTTGA:NB551646:17:H5TCHBGXB:1:11110:4702:6438 1:N:0:ACTACTGT/1 (patid 211019); skipping read
+Warning: Exhausted best-first chunk memory for read CATAGGTACCAGGTGA:NB551646:17:H5TCHBGXB:1:11110:26056:6527 1:N:0:ACTACTGT/1 (patid 211130); skipping read
+Warning: Exhausted best-first chunk memory for read TACTGGAACTTACGCA:NB551646:17:H5TCHBGXB:1:11110:11337:7170 1:N:0:ACTACTGT/1 (patid 211864); skipping read
+Warning: Exhausted best-first chunk memory for read AGAGACCGAATCCTCC:NB551646:17:H5TCHBGXB:1:11110:26807:7615 1:N:0:ACTACTGT/1 (patid 212426); skipping read
+Warning: Exhausted best-first chunk memory for read GTTCAGAACACCTAGT:NB551646:17:H5TCHBGXB:1:11110:20305:7859 1:N:0:ACTACTGT/1 (patid 212695); skipping read
+Warning: Exhausted best-first chunk memory for read GAGTTACTGTAGGCGA:NB551646:17:H5TCHBGXB:1:11110:22705:8340 1:N:0:ACTACTGT/1 (patid 213231); skipping read
+Warning: Exhausted best-first chunk memory for read ACACATCGATGATCAC:NB551646:17:H5TCHBGXB:1:11110:18816:8993 1:N:0:ACTACTGT/1 (patid 214028); skipping read
+Warning: Exhausted best-first chunk memory for read GCGTGCTGAAATCGAA:NB551646:17:H5TCHBGXB:1:11110:4902:9054 1:N:0:ACTACTGT/1 (patid 214102); skipping read
+Warning: Exhausted best-first chunk memory for read ACTCCGTACTGGAACG:NB551646:17:H5TCHBGXB:1:11110:26831:9276 1:N:0:ACTACTGT/1 (patid 214388); skipping read
+Warning: Exhausted best-first chunk memory for read TGCTGAAACTCTGTAG:NB551646:17:H5TCHBGXB:1:11110:8733:9960 1:N:0:ACTACTGT/1 (patid 215176); skipping read
+Warning: Exhausted best-first chunk memory for read GAAGTAATGATCCTTT:NB551646:17:H5TCHBGXB:1:11110:1628:10793 1:N:0:ACTACTGT/1 (patid 216154); skipping read
+Warning: Exhausted best-first chunk memory for read CCTACGGGACGAAGCA:NB551646:17:H5TCHBGXB:1:11110:16034:10914 1:N:0:ACTACTGT/1 (patid 216292); skipping read
+Warning: Exhausted best-first chunk memory for read TACCAGTGAGACACCC:NB551646:17:H5TCHBGXB:1:11110:24389:11343 1:N:0:ACTACTGT/1 (patid 216786); skipping read
+Warning: Exhausted best-first chunk memory for read TGCTAAGACGAATGTA:NB551646:17:H5TCHBGXB:1:11110:22146:12073 1:N:0:ACTACTGT/1 (patid 217637); skipping read
+Warning: Exhausted best-first chunk memory for read TTTAGTCTGTCTTTGT:NB551646:17:H5TCHBGXB:1:11110:26229:12141 1:N:0:ACTACTGT/1 (patid 217731); skipping read
+Warning: Exhausted best-first chunk memory for read TCAGCCGGACTTCACC:NB551646:17:H5TCHBGXB:1:11110:9029:13202 1:N:0:ACTACTGT/1 (patid 218984); skipping read
+Warning: Exhausted best-first chunk memory for read CTTCAGCACAAGTTAG:NB551646:17:H5TCHBGXB:1:11110:15907:13561 1:N:0:ACTACTGT/1 (patid 219393); skipping read
+Warning: Exhausted best-first chunk memory for read TAAACGCACACCGTGC:NB551646:17:H5TCHBGXB:1:11110:9549:13754 1:N:0:ACTACTGT/1 (patid 219615); skipping read
+Warning: Exhausted best-first chunk memory for read CATGGATTGTCGAGAG:NB551646:17:H5TCHBGXB:1:11110:12499:13937 1:N:0:ACTACTGT/1 (patid 219846); skipping read
+Warning: Exhausted best-first chunk memory for read AGGTATGCTGAACCTT:NB551646:17:H5TCHBGXB:1:11110:6359:14279 1:N:0:ACTACTGT/1 (patid 220246); skipping read
+Warning: Exhausted best-first chunk memory for read AACCCTCACGGGTAGT:NB551646:17:H5TCHBGXB:1:11110:18054:14446 1:N:0:ACTACTGT/1 (patid 220442); skipping read
+Warning: Exhausted best-first chunk memory for read GGTATTGACTGGGCCT:NB551646:17:H5TCHBGXB:1:11110:12031:14684 1:N:0:ACTACTGT/1 (patid 220723); skipping read
+Warning: Exhausted best-first chunk memory for read TTCCCTGGAGATCATC:NB551646:17:H5TCHBGXB:1:11110:24621:15370 1:N:0:ACTACTGT/1 (patid 221541); skipping read
+Warning: Exhausted best-first chunk memory for read TCACGGGACCATGCAT:NB551646:17:H5TCHBGXB:1:11110:5522:15478 1:N:0:ACTACTGT/1 (patid 221687); skipping read
+Warning: Exhausted best-first chunk memory for read GCATAGTACCCTGTGG:NB551646:17:H5TCHBGXB:1:11110:26315:15933 1:N:0:ACTACTGT/1 (patid 222192); skipping read
+Warning: Exhausted best-first chunk memory for read CTTCCACGAACAACAA:NB551646:17:H5TCHBGXB:1:11110:18463:16147 1:N:0:ACTACTGT/1 (patid 222467); skipping read
+Warning: Exhausted best-first chunk memory for read AAAGCATGACTCATTT:NB551646:17:H5TCHBGXB:1:11110:4327:16157 1:N:0:ACTACTGT/1 (patid 222479); skipping read
+Warning: Exhausted best-first chunk memory for read ATGGGACGATCGTACA:NB551646:17:H5TCHBGXB:1:11110:23064:16500 1:N:0:ACTACTGT/1 (patid 222903); skipping read
+Warning: Exhausted best-first chunk memory for read TACATTGCTATGTGGG:NB551646:17:H5TCHBGXB:1:11110:4646:16680 1:N:0:ACTACTGT/1 (patid 223115); skipping read
+Warning: Exhausted best-first chunk memory for read GTCTACCACTTACACG:NB551646:17:H5TCHBGXB:1:11110:3379:17719 1:N:0:ACTACTGT/1 (patid 224243); skipping read
+Warning: Exhausted best-first chunk memory for read GATATCGTGAGTACGG:NB551646:17:H5TCHBGXB:1:11110:9722:17811 1:N:0:ACTACTGT/1 (patid 224348); skipping read
+Warning: Exhausted best-first chunk memory for read GGTATACTGTGACTCA:NB551646:17:H5TCHBGXB:1:11110:10647:17879 1:N:0:ACTACTGT/1 (patid 224432); skipping read
+Warning: Exhausted best-first chunk memory for read ATTACTCACTGCTCAA:NB551646:17:H5TCHBGXB:1:11110:12129:19825 1:N:0:ACTACTGT/1 (patid 226595); skipping read
+Warning: Exhausted best-first chunk memory for read ATCTTACTGTTTCTTG:NB551646:17:H5TCHBGXB:1:11110:6552:20149 1:N:0:ACTACTGT/1 (patid 226972); skipping read
+Warning: Exhausted best-first chunk memory for read GCAAACTACAACGCAG:NB551646:17:H5TCHBGXB:1:11110:19609:20257 1:N:0:ACTACTGT/1 (patid 227117); skipping read
+Warning: Exhausted best-first chunk memory for read CAGTGGAGAATCCTCC:NB551646:17:H5TCHBGXB:1:11111:9252:1430 1:N:0:ACTACTGT/1 (patid 227679); skipping read
+Warning: Exhausted best-first chunk memory for read GTGGTAACTCGATTAC:NB551646:17:H5TCHBGXB:1:11111:13398:2706 1:N:0:ACTACTGT/1 (patid 229084); skipping read
+Warning: Exhausted best-first chunk memory for read GAACCATACCTCCTAC:NB551646:17:H5TCHBGXB:1:11111:23819:3463 1:N:0:ACTACTGT/1 (patid 229935); skipping read
+Warning: Exhausted best-first chunk memory for read TCGACCTTGTTGCGTA:NB551646:17:H5TCHBGXB:1:11111:14289:3705 1:N:0:ACTACTGT/1 (patid 230206); skipping read
+Warning: Exhausted best-first chunk memory for read CTTAGATCTAGTAGGC:NB551646:17:H5TCHBGXB:1:11111:24056:3721 1:N:0:ACTACTGT/1 (patid 230223); skipping read
+Warning: Exhausted best-first chunk memory for read AAATGCGCTTACGTTG:NB551646:17:H5TCHBGXB:1:11111:15344:3820 1:N:0:ACTACTGT/1 (patid 230340); skipping read
+Warning: Exhausted best-first chunk memory for read GTGGTAACTCGATTAC:NB551646:17:H5TCHBGXB:1:11111:9331:4101 1:N:0:ACTACTGT/1 (patid 230683); skipping read
+Warning: Exhausted best-first chunk memory for read TTAGCGATGCTAACGT:NB551646:17:H5TCHBGXB:1:11111:14821:4210 1:N:0:ACTACTGT/1 (patid 230803); skipping read
+Warning: Exhausted best-first chunk memory for read TCCCTGTGATGAGCAG:NB551646:17:H5TCHBGXB:1:11111:24033:4257 1:N:0:ACTACTGT/1 (patid 230851); skipping read
+Warning: Exhausted best-first chunk memory for read TACCAGTGAAAACTGA:NB551646:17:H5TCHBGXB:1:11111:2699:4372 1:N:0:ACTACTGT/1 (patid 230981); skipping read
+Warning: Exhausted best-first chunk memory for read GCCGAACTGTCGTCAA:NB551646:17:H5TCHBGXB:1:11111:13429:4793 1:N:0:ACTACTGT/1 (patid 231475); skipping read
+Warning: Exhausted best-first chunk memory for read GAAGCTTTGTGGCAAG:NB551646:17:H5TCHBGXB:1:11111:18835:4798 1:N:0:ACTACTGT/1 (patid 231485); skipping read
+Warning: Exhausted best-first chunk memory for read GTTGCTAGACAGACCC:NB551646:17:H5TCHBGXB:1:11111:26083:5270 1:N:0:ACTACTGT/1 (patid 232045); skipping read
+Warning: Exhausted best-first chunk memory for read GGTGAGATGGAGCCTC:NB551646:17:H5TCHBGXB:1:11111:17133:5513 1:N:0:ACTACTGT/1 (patid 232327); skipping read
+Warning: Exhausted best-first chunk memory for read CCACTCTGATCTATCT:NB551646:17:H5TCHBGXB:1:11111:23207:5588 1:N:0:ACTACTGT/1 (patid 232408); skipping read
+Warning: Exhausted best-first chunk memory for read GCATATCGAAAGGCCA:NB551646:17:H5TCHBGXB:1:11111:19326:5992 1:N:0:ACTACTGT/1 (patid 232840); skipping read
+Warning: Exhausted best-first chunk memory for read GGTCTAAACGGACCAA:NB551646:17:H5TCHBGXB:1:11111:17920:6705 1:N:0:ACTACTGT/1 (patid 233682); skipping read
+Warning: Exhausted best-first chunk memory for read TCAAAGCACCTTAAGC:NB551646:17:H5TCHBGXB:1:11111:5114:7138 1:N:0:ACTACTGT/1 (patid 234188); skipping read
+Warning: Exhausted best-first chunk memory for read TCAAACTCTAGCTGAG:NB551646:17:H5TCHBGXB:1:11111:17991:8030 1:N:0:ACTACTGT/1 (patid 235212); skipping read
+Warning: Exhausted best-first chunk memory for read CAAGAAATGAATCCTG:NB551646:17:H5TCHBGXB:1:11111:7001:8216 1:N:0:ACTACTGT/1 (patid 235434); skipping read
+Warning: Exhausted best-first chunk memory for read GTGCATAACGAAATCA:NB551646:17:H5TCHBGXB:1:11111:8598:8655 1:N:0:ACTACTGT/1 (patid 235922); skipping read
+Warning: Exhausted best-first chunk memory for read ATTCCAGGAATCTGTG:NB551646:17:H5TCHBGXB:1:11111:21761:9954 1:N:0:ACTACTGT/1 (patid 237411); skipping read
+Warning: Exhausted best-first chunk memory for read TTCTAGACTACGTGCC:NB551646:17:H5TCHBGXB:1:11111:20156:10889 1:N:0:ACTACTGT/1 (patid 238497); skipping read
+Warning: Exhausted best-first chunk memory for read TCCTACCGAGCAGGAT:NB551646:17:H5TCHBGXB:1:11111:21291:11328 1:N:0:ACTACTGT/1 (patid 238996); skipping read
+Warning: Exhausted best-first chunk memory for read GCGTAAGGAAACGAAT:NB551646:17:H5TCHBGXB:1:11111:8321:11553 1:N:0:ACTACTGT/1 (patid 239243); skipping read
+Warning: Exhausted best-first chunk memory for read TTTAAGCCTAGGACAC:NB551646:17:H5TCHBGXB:1:11111:20662:11883 1:N:0:ACTACTGT/1 (patid 239634); skipping read
+Warning: Exhausted best-first chunk memory for read CTACATTACACACCGC:NB551646:17:H5TCHBGXB:1:11111:18467:11888 1:N:0:ACTACTGT/1 (patid 239638); skipping read
+Warning: Exhausted best-first chunk memory for read AAATAGGACACTAGGG:NB551646:17:H5TCHBGXB:1:11111:21560:12078 1:N:0:ACTACTGT/1 (patid 239841); skipping read
+Warning: Exhausted best-first chunk memory for read TTGTCCCGAAACGCAG:NB551646:17:H5TCHBGXB:1:11111:7650:12081 1:N:0:ACTACTGT/1 (patid 239845); skipping read
+Warning: Exhausted best-first chunk memory for read ATGTACGTGCCTTTGT:NB551646:17:H5TCHBGXB:1:11111:2482:12165 1:N:0:ACTACTGT/1 (patid 239940); skipping read
+Warning: Exhausted best-first chunk memory for read CACGATTGATTACGCA:NB551646:17:H5TCHBGXB:1:11111:15866:12203 1:N:0:ACTACTGT/1 (patid 239980); skipping read
+Warning: Exhausted best-first chunk memory for read TCTACAGGACCGCAGT:NB551646:17:H5TCHBGXB:1:11111:4923:13157 1:N:0:ACTACTGT/1 (patid 241097); skipping read
+Warning: Exhausted best-first chunk memory for read CGACGACACCATGCGC:NB551646:17:H5TCHBGXB:1:11111:20677:14197 1:N:0:ACTACTGT/1 (patid 242335); skipping read
+Warning: Exhausted best-first chunk memory for read TGGACGCACTAAGTAG:NB551646:17:H5TCHBGXB:1:11111:21787:14226 1:N:0:ACTACTGT/1 (patid 242371); skipping read
+Warning: Exhausted best-first chunk memory for read CTTGCGTACTCTATCT:NB551646:17:H5TCHBGXB:1:11111:4010:14293 1:N:0:ACTACTGT/1 (patid 242482); skipping read
+Warning: Exhausted best-first chunk memory for read GCTAGCGACAATAGCA:NB551646:17:H5TCHBGXB:1:11111:8824:14689 1:N:0:ACTACTGT/1 (patid 242941); skipping read
+Warning: Exhausted best-first chunk memory for read GGGAACCCTTGAAAGT:NB551646:17:H5TCHBGXB:1:11111:3324:15188 1:N:0:ACTACTGT/1 (patid 243497); skipping read
+Warning: Exhausted best-first chunk memory for read TCCGCGAGATTGTACG:NB551646:17:H5TCHBGXB:1:11111:10023:15998 1:N:0:ACTACTGT/1 (patid 244403); skipping read
+Warning: Exhausted best-first chunk memory for read GGTATCTGATGCGTGC:NB551646:17:H5TCHBGXB:1:11111:22113:16306 1:N:0:ACTACTGT/1 (patid 244773); skipping read
+Warning: Exhausted best-first chunk memory for read CTCGGATCTTAGCAGG:NB551646:17:H5TCHBGXB:1:11111:5846:16862 1:N:0:ACTACTGT/1 (patid 245429); skipping read
+Warning: Exhausted best-first chunk memory for read CAATTCGGAGAACGTG:NB551646:17:H5TCHBGXB:1:11111:15055:17388 1:N:0:ACTACTGT/1 (patid 246067); skipping read
+Warning: Exhausted best-first chunk memory for read AGGTGTGGACGAACGA:NB551646:17:H5TCHBGXB:1:11111:11496:17798 1:N:0:ACTACTGT/1 (patid 246510); skipping read
+Warning: Exhausted best-first chunk memory for read CGATCGGTGGAATAGT:NB551646:17:H5TCHBGXB:1:11111:14170:18949 1:N:0:ACTACTGT/1 (patid 247793); skipping read
+Warning: Exhausted best-first chunk memory for read CTGTAACGACAGACCC:NB551646:17:H5TCHBGXB:1:11111:9847:19358 1:N:0:ACTACTGT/1 (patid 248243); skipping read
+Warning: Exhausted best-first chunk memory for read ATACCTGGACCAGCTG:NB551646:17:H5TCHBGXB:1:11111:8398:19940 1:N:0:ACTACTGT/1 (patid 248899); skipping read
+Warning: Exhausted best-first chunk memory for read TCGGTGCGACCTGCGA:NB551646:17:H5TCHBGXB:1:11111:18422:20075 1:N:0:ACTACTGT/1 (patid 249036); skipping read
+# reads processed: 250000
+# reads with at least one reported alignment: 163912 (65.56%)
+# reads that failed to align: 86088 (34.44%)
+Reported 163912 paired-end alignments
+Bowtie Mapping Done!
 Converting sam to bam ... 
 Sorting bam file
-Alignment Done
+Summarizing mapping stats ...
+[E::hts_open_format] Failed to open file .bam
+samtools view: failed to open ".bam" for reading: No such file or directory
+Simple mapping stats summary Done!
+

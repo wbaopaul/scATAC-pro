@@ -1,0 +1,6 @@
+Usage: samtools idxstats [options] <in.bam>
+      --input-fmt-option OPT[=VAL]
+               Specify a single input file format option in the form
+               of OPTION or OPTION=VALUE
+  -@, --threads INT
+               Number of additional threads to use [0]

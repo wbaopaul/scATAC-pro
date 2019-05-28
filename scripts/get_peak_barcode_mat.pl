@@ -1,6 +1,6 @@
 #Sam file input
 
-#perl get_region_barcode_mat.pl --region_file example_regions.bed --read_file example_reads.sam --read_length 100 --output_mat_file example_sam_output.bed.txt --output_barcode_file barcodes.txt 
+#perl get_region_barcode_mat.pl --region_file example_regions.bed --read_file example_reads.sam --read_length 100 --output_file example_sam_output.bed.txt  
 
 
 
@@ -13,8 +13,7 @@ use Getopt::Long;
 GetOptions( 'region_file=s' => \my $region_file 
           , 'read_file=s' => \my $read_file  
           , 'read_length=s' => \my $read_length 
-          , 'output_mat_file=s' => \my $output_mat_file  
-          , 'output_barcode_file=s' => \my $output_barcode_file  
+          , 'output_file=s' => \my $output_file  
           );
 
 
@@ -45,8 +44,7 @@ if($read_file_suffix eq ".bed")
 
 open(REGION, $region_file ) or die("Cannot read $region_file \n");
 open(READ, $read_file ) or die("Cannot read $read_file \n");
-open(OUT, ">$output_mat_file" ) or die("Cannot write $output_mat_file \n");
-open(OUT_barcode, ">$output_barcode_file" ) or die("Cannot write $output_barcode_file \n");
+open(OUT, ">$output_file" ) or die("Cannot write $output_file \n");
 
 my %regions = ();
 
@@ -185,7 +183,7 @@ print("I have read $read_file_counter reads from input read file: $read_file .\n
 print("I have read $matching_line_counter reads are overlapped .\n");
 
 
-print("Now I am writing the output to $output_mat_file .\n");
+print("Now I am writing the output to $output_file .\n");
 
 print OUT "region_position";
 
@@ -196,7 +194,6 @@ foreach my $cell (keys %cells)
 {
    print OUT "\t";      
    print OUT "$cell";      
-   print OUT_barcode "$cell \t $cells{$cell}\n";      
 }
 
 print OUT "\n";      
@@ -236,8 +233,7 @@ foreach my $region_id (keys %regions)
 #   print("!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!");
 #   print("Matching rate is 0. I recommmend you to check your input files!");
 #}
-print("Output matrix is in the file $output_mat_file  . \n");
-print("Output barcodes are in the file $output_barcode_file  . \n");
+print("Output matrix is in the file $output_file  . \n");
 
 
 

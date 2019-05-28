@@ -1,0 +1,6 @@
+Run scATAC-pro 1.0.0
+--------------------------------------------
+Fri May 24 15:51:12 EDT 2019
+Getting bin by barcode matrix ...
+/home/yuw1/yuw1/scATAC-pro/scripts/get_bin_barcode_mat.sh: line 13: /bedtools: No such file or directory
+make: *** [get_bin_barcode_mat] Error 1

@@ -108,8 +108,6 @@ while(<READ>)
    }
    
    my $read_length_half;
-   if($read_file_suffix eq ".sam")
-   {
 
 	   chomp;
 	   
@@ -127,21 +125,7 @@ while(<READ>)
 	   $read_length_half = ($read_length+1) / 2;
 
        #print $barcode."\n";
-   }
 
-   if($read_file_suffix eq ".bed")
-   {	      
-
-      my @array = split /\t/;
-      $chrom = $array[0];
-      $start = $array[1];
-      $end = $array[2];
-      $barcode = $array[3];
-      $qual = "Not_Provided";
-      $read_length = $end - $start;
-      $read_length_half = ($read_length+1) / 2;
-
-   }#if($read_file_suffix eq "bed")
 
    $cells{$barcode} =  $cells{$barcode} + 1;
 

@@ -1,6 +1,6 @@
 Run scATAC-pro 1.0.0
 --------------------------------------------
-Wed May 22 11:19:38 EDT 2019
+Tue May 28 11:32:55 EDT 2019
 Demultiplex fastq ...
-error: output/test_R1.fastq.dex already exists, remove it first!
-Demuxtiplex Done
+Demultiplexing Done!
+

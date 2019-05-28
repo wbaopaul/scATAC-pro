@@ -1,17 +1,5 @@
 Run scATAC-pro 1.0.0
 --------------------------------------------
-Thu May 23 14:21:37 EDT 2019
-Prepare peak by barcode matrix ...
-It looks like the read file is in sam format.
-I am reading region information file: output/peaks/ss_peaks.narrowPeak .
-I have successfully read 504 regions from output/peaks/ss_peaks.narrowPeak 
-...
-Now I am starting to process reads file: output/raw_matrix/tmp.sam .
-...
-I have read 470191 reads from input read file: output/raw_matrix/tmp.sam .
-I have read 9737 reads are overlapped .
-Now I am writing the output to output/raw_matrix/ss.peak.barcode.mat .
-Output matrix is in the file output/raw_matrix/ss.peak.barcode.mat  . 
-Output barcodes are in the file output/raw_matrix/ss.barcodes  . 
-Get Matrix Done!
-
+Fri May 24 15:50:13 EDT 2019
+Getting peak by barcode matrix ...
+make: *** [get_peak_barcode_mat] Terminated

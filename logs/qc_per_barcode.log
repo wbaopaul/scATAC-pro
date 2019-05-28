@@ -29,3 +29,14 @@ I have read 470191 reads from input read file: output/qc_result/tmp.sam .
 And 55051 reads from input reads are overlapped in given region.
 Now I am writing the output to output/qc_result/overlapWith.promoters .
 Output is in the file output/qc_result/overlapWith.promoters  . 
+It looks like the read file is in sam format.
+I am reading region information file: /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_enhancer.bed .
+I have successfully read 233020 regions from /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_enhancer.bed 
+...
+Now I am starting to process reads file: output/qc_result/tmp.sam .
+...
+I have read 470191 reads from input read file: output/qc_result/tmp.sam .
+And 75119 reads from input reads are overlapped in given region.
+Now I am writing the output to output/qc_result/overlapWith.enhs .
+Output is in the file output/qc_result/overlapWith.enhs  . 
+

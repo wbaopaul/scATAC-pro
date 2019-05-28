@@ -152,7 +152,11 @@ fi
 ## declare global variables, whose values will be 
 ## provided through user specified configure file
 ###################################################
-declare -x BWA_PATH
+declare -x MAPPING_METHOD
+declare -x MAPPING_PATH
+declare -x MAPPING_OPTS
+declare -x BOWTIE_INDEX
+
 declare -x GENOME_FASTA
 declare -x PYTHON_PATH
 declare -x SAMTOOLS_PATH
@@ -165,6 +169,8 @@ declare -x PERL_PATH
 declare -x R_PATH
 declare -x DEEPTOOLS_PATH
 declare -x BLACKLIST
+declare -x BIN_RESL
+declare -x CHROM_SIZE_FILE
 
 
 source $CONFIG
