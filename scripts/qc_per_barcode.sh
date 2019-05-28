@@ -19,11 +19,11 @@ peaks=/mnt/isilon/tan_lab/yuw1/scATAC-pro/output/peaks/ss_peaks.narrowPeak
 
 ${PERL_PATH}/perl ${curr_dir}/cal_frac_mito.pl --read_file ${qc_dir}/tmp.sam  --output_file ${qc_dir}/freq.mito
 
-${PERL_PATH}/perl ${curr_dir}/overlap_region_barcode.pl --region_file $peaks --read_file ${qc_dir}/tmp.sam --read_length 100 --output_file ${qc_dir}/overlapWith.peaks
+${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --per_file $peaks --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/overlapWith.peaks
 
-${PERL_PATH}/perl ${curr_dir}/overlap_region_barcode.pl --region_file $proms --read_file ${qc_dir}/tmp.sam --read_length 100 --output_file ${qc_dir}/overlapWith.promoters
+${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --per_file $proms --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/overlapWith.promoters
 
-${PERL_PATH}/perl ${curr_dir}/overlap_region_barcode.pl --region_file $enhs --read_file ${qc_dir}/tmp.sam --read_length 100 --output_file ${qc_dir}/overlapWith.enhs
+${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --per_file $enhs --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/overlapWith.enhs
 
 
 #rm ${qc_dir}/tmp.sam

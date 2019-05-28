@@ -12,9 +12,9 @@
 
 ./scATAC-pro -s call_peak -i ../tmp_output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o ../tmp_output > logs/call_peak.log
 
-./scATAC-pro -s get_peak_barcode_mat -i output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o output > logs/get_peak_barcode_mat.log
+./scATAC-pro -s get_peak_barcode_mat -i ../tmp_output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o ../tmp_output > logs/get_peak_barcode_mat.log
 
-./scATAC-pro -s generate_signal -i output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o output > logs/generate_signal.log
+./scATAC-pro -s generate_signal -i ../tmp_output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o ../tmp_output > logs/generate_signal.log
 
-./scATAC-pro -s qc_per_barcode -i output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o output > logs/qc_per_barcode.log
+./scATAC-pro -s qc_per_barcode -i ../tmp_output/filtered_bam/ss.dedup.MAPQ10.bam -c configure.txt -o ../tmp_output > logs/qc_per_barcode.log
 

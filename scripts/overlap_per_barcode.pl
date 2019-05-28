@@ -1,5 +1,5 @@
 #Sam file input
-#perl Read_Matcher.pl --region_file example_regions.bed --read_file example_reads.sam --read_length 100 --output_file example_sam_output.bed.txt
+#perl overlap_per_barcode.pl --region_file example_regions.bed --read_file example_reads.sam --read_length 100 --output_file example_sam_output.bed.txt
 
 use strict;
 
@@ -49,23 +49,21 @@ while(my $line = <REGION>)
    $region_counter++;
    #print $line;
    chomp $line;
-   #print "***************\n";
-   #print ("xx".$line);
    my @array = split /\t/, $line;
    my $chrom = $array[0];
    my $start = $array[1];
    my $end = $array[2];
    my $name = $array[3];
 
-   my $region_id = $chrom."\t".$start."\t".$end;
+   my $region_id = $chrom."_".$start."_".$end;
    if( exists($chroms{$chrom}) )
    {
-      $chroms{$chrom}{$region_id} = $name;
+      $chroms{$chrom}{$region_id} = 0;
    }
    else
    {
       $chroms{$chrom} = ();
-      $chroms{$chrom}{$region_id} = $name;
+      $chroms{$chrom}{$region_id} = 0;
    }  
 
 }#while(my $line = <REGION>)
@@ -84,7 +82,7 @@ my $matching_line_counter = 0;
 my $btime = time;
 
 my %cells = ();
-my %overlap_matrix = ();
+my %overlap_vec = ();
 
 while(<READ>)
 {
@@ -120,16 +118,22 @@ while(<READ>)
 
 
 
-   $cells{$barcode} = 1;
+       if(exists($cells{$barcode}))
+       {
+           $cells{$barcode} += 1;
+       }else
+       { 
+           $cells{$barcode} = 0
+       }
 
-   if(exists($chroms{$chrom}) )
+   if(exists($chroms{$chrom}))
    {
-   	   my %regions = $chroms{$chrom};
+       # my %regions = $chroms{$chrom};
    
-	   foreach my $region_id (keys %regions)
+	   foreach my $region_id (keys $chroms{$chrom})
 	   {
 
-		  my @region_coord_array = split /\t/, $region_id;
+		  my @region_coord_array = split /_/, $region_id;
 		  my $region_chrom = $region_coord_array[0];
 		  my $region_start = $region_coord_array[1];
 		  my $region_end = $region_coord_array[2];
@@ -138,11 +142,11 @@ while(<READ>)
 		  {
 		     if($start >= $region_start && $start <= $region_end) #Read start is between region start and end
 		     { 
-		       $overlap_matrix{$region_id}{$barcode} = $overlap_matrix{$region_id}{$barcode} + 1; 
+		       $overlap_vec{$barcode} = $overlap_vec{$barcode} + 1; 
 
 		     }elsif($end >= $region_start && $end <= $region_end) #Read end is between region start and end
 		     {
-		       $overlap_matrix{$region_id}{$barcode} = $overlap_matrix{$region_id}{$barcode} + 1;            
+		       $overlap_vec{$barcode} = $overlap_vec{$barcode} + 1;            
 		     }
 		     
 		  }#if($chrom eq $region_chrom)
@@ -162,39 +166,24 @@ print("I have read $read_file_counter reads from input read file: $read_file .\n
 
 print("Now I am writing the output to $output_file .\n");
 
-print OUT "region_chrom\tregion_start\tregion_end";
+print OUT "Barcode\tTotal_reads\tTotal_overlaps";
 
-foreach my $cell (keys %cells)
-{
-   print OUT "\t".$cell;      
-}
 
 print OUT "\n";
 
-foreach my $chrom (keys %chroms)
-{
-
-	#my %regions = $chroms{$chrom};
-
-	foreach my $region_id (keys % {$chroms{$chrom} } )
-	{
-	   #print OUT $chrom;
-	   print OUT $region_id;
 	   foreach my $cell (keys %cells)
 	   {
-		  print OUT "\t";
-		  if(exists($overlap_matrix{$region_id}{$cell}) )
+		  print OUT $cell."\t".$cells{$cell}."\t";
+		  if(exists($overlap_vec{$cell}) )
 		  {
-		      print OUT $overlap_matrix{$region_id}{$cell};
+		      print OUT $overlap_vec{$cell};
 		  }else
 		  {
 		      print OUT "0";
 		  }
+	        print OUT "\n";
 	   }
-	   print OUT "\n";
-	}
 
-}
 
 
 print("Output matrix is in the file $output_file  . \n");
