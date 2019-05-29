@@ -156,18 +156,20 @@ declare -x MAPPING_METHOD
 declare -x MAPPING_PATH
 declare -x MAPPING_OPTS
 declare -x BOWTIE_INDEX
-
+declare -x BOWTIE2_INDEX
 declare -x GENOME_FASTA
+
 declare -x PYTHON_PATH
 declare -x SAMTOOLS_PATH
 declare -x SAMPLE_PREFIX
-declare -x MAPQ
 declare -x MACS2_PATH
 declare -x MACS2_OPTS
 declare -x BEDTOOLS_PATH
 declare -x PERL_PATH
 declare -x R_PATH
 declare -x DEEPTOOLS_PATH
+
+declare -x MAPQ
 declare -x BLACKLIST
 declare -x BIN_RESL
 declare -x CHROM_SIZE_FILE

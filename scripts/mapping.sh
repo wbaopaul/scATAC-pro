@@ -4,8 +4,6 @@ set -e
 
 
 ## align
-input_ff=$1
-fastqs=(${input_ff//,/ })
 
 mapRes_dir="${2}/mapping_result"
 
@@ -15,6 +13,8 @@ if [ $MAPPING_METHOD == "bwa" ];then
     bash ${curr_dir}/mapping_bwa.sh $1 $mapRes_dir
 elif [ $MAPPING_METHOD == "bowtie" ];then
     bash ${curr_dir}/mapping_bowtie.sh $1 $mapRes_dir
+else
+    bash ${curr_dir}/mapping_bowtie2.sh $1 $mapRes_dir
 fi
 
 
@@ -47,14 +47,8 @@ echo "Summarizing mapping stats ..."
 curr_dir=`dirname $0`
 qc_dir=${2}/qc_result
 mkdir -p $qc_dir
+echo ${mapRes_dir}/${SAMPLE_PREFIX}.${MAPPING_METHOD}.markdup.bam
 bash $curr_dir/mapping_qc.sh ${mapRes_dir}/${SAMPLE_PREFIX}.${MAPPING_METHOD}.markdup.bam  $qc_dir
-
-
-
-#${SAMTOOLS_PATH}/samtools flagstat ${mapRes_dir}/${SAMPLE_PREFIX}.markdup.bam > ${mapRes_dir}/${SAMPLE_PREFIX}.markdup.map.flagstat.txt
-
-
-#${SAMTOOLS_PATH}/samtools idxstats ${mapRes_dir}/${SAMPLE_PREFIX}.markdup.bam > ${mapRes_dir}/${SAMPLE_PREFIX}.markdup.map.idxstat.txt
 
 
 
