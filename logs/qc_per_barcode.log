@@ -1,42 +1,29 @@
 Run scATAC-pro 1.0.0
 --------------------------------------------
-Thu May 23 19:01:35 EDT 2019
+Wed May 29 16:26:59 EDT 2019
 Doing QC per barcode ...
 It looks like the read file is in sam format.
-Now I am starting to process reads file: output/qc_result/tmp.sam .
+Now I am starting to process reads file: /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/tmp.sam .
 ...
-I have read 470191 reads from input read file: output/qc_result/tmp.sam .
-And 15597 reads from input reads are overlapped in given region.
-Now I am writing the output to output/qc_result/freq.mito .
-Output is in the file output/qc_result/freq.mito  . 
+I have read 500004 reads from input read file: /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/tmp.sam .
+And 17517 reads from input reads are overlapped in given region.
+Now I am writing the output to /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/ss.bwa.freq.mito .
+Output is in the file /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/ss.bwa.freq.mito  . 
 It looks like the read file is in sam format.
-I am reading region information file: /mnt/isilon/tan_lab/yuw1/scATAC-pro/output/peaks/ss_peaks.narrowPeak .
-I have successfully read 504 regions from /mnt/isilon/tan_lab/yuw1/scATAC-pro/output/peaks/ss_peaks.narrowPeak 
+I am reading cluster information file: /mnt/isilon/tan_lab/yuw1/tmp_output/peaks/ss_peaks.narrowPeak .
+I have successfully read 504 regions from /mnt/isilon/tan_lab/yuw1/tmp_output/peaks/ss_peaks.narrowPeak 
 ...
-Now I am starting to process reads file: output/qc_result/tmp.sam .
+Now I am starting to process read file: /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/tmp.sam .
 ...
-I have read 470191 reads from input read file: output/qc_result/tmp.sam .
-And 9736 reads from input reads are overlapped in given region.
-Now I am writing the output to output/qc_result/overlapWith.peaks .
-Output is in the file output/qc_result/overlapWith.peaks  . 
+I have read 500004 reads from input read file: /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/tmp.sam .
+Now I am writing the output to /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/ss.bwa.overlapWith.peaks .
+Output matrix is in the file /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/ss.bwa.overlapWith.peaks  . 
 It looks like the read file is in sam format.
-I am reading region information file: /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_promoter.bed .
+I am reading cluster information file: /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_promoter.bed .
 I have successfully read 16375 regions from /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_promoter.bed 
 ...
-Now I am starting to process reads file: output/qc_result/tmp.sam .
+Now I am starting to process read file: /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/tmp.sam .
 ...
-I have read 470191 reads from input read file: output/qc_result/tmp.sam .
-And 55051 reads from input reads are overlapped in given region.
-Now I am writing the output to output/qc_result/overlapWith.promoters .
-Output is in the file output/qc_result/overlapWith.promoters  . 
-It looks like the read file is in sam format.
-I am reading region information file: /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_enhancer.bed .
-I have successfully read 233020 regions from /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_enhancer.bed 
-...
-Now I am starting to process reads file: output/qc_result/tmp.sam .
-...
-I have read 470191 reads from input read file: output/qc_result/tmp.sam .
-And 75119 reads from input reads are overlapped in given region.
-Now I am writing the output to output/qc_result/overlapWith.enhs .
-Output is in the file output/qc_result/overlapWith.enhs  . 
-
+I have read 500004 reads from input read file: /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/tmp.sam .
+Now I am writing the output to /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/ss.bwa.overlapWith.promoters .
+Output matrix is in the file /mnt/isilon/tan_lab/yuw1/tmp_output/qc_result/ss.bwa.overlapWith.promoters  . 

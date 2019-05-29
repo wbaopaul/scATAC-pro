@@ -9,14 +9,14 @@ mapRes_dir="${2}"
 
 
 echo "Starting bowtie alignment ... "
-${MAPPING_PATH}/bowtie -1 ${fastqs[0]} -2 ${fastqs[1]} $BOWTIE_INDEX -S $MAPPING_OPTS > ${mapRes_dir}/${SAMPLE_PREFIX}.bowtie.sam 
+${MAPPING_PATH}/bowtie -1 ${fastqs[0]} -2 ${fastqs[1]} $BOWTIE_INDEX -S $BOWTIE_OPTS > ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie.sam 
 
 echo "Bowtie Mapping Done!"
 
 
 ## convert to bam
 echo "Converting sam to bam ... "
-${SAMTOOLS_PATH}/samtools view -h -bS ${mapRes_dir}/${SAMPLE_PREFIX}.bowtie.sam > ${mapRes_dir}/${SAMPLE_PREFIX}.bowtie.bam
+${SAMTOOLS_PATH}/samtools view -h -bS ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie.sam > ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie.bam
 
-#rm ${mapRes_dir}/${SAMPLE_PREFIX}.bowtie.sam
+#rm ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie.sam
 

@@ -1,7 +1,7 @@
-##########################################################
+######################################################################
 ## provide the install path of the dependent software ####
 ## ONLY change the value, DO NOT change stuff before =
-##########################################################
+######################################################################
 MAPPING_METHOD=bwa  ## one of bwa/bowtie/bowtie2
 
 # set up aligner path accordingly
@@ -9,19 +9,19 @@ MAPPING_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bwa
 #MAPPING_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bowtie-1.2.2
 #MAPPING_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bowtie2.2.9
 
-BWA_OPTS="-t 2"   ## extra mapping options (NO NEED TO SPECIFY INPUT FASTQS AND OUTPUT FILE/DIRECTORY)
-BOWTIE_OPTS=" --quiet " ## extra mapping options (NO NEED TO SPECIFY INPUT FASTQS AND OUTPUT FILE/DIRECTORY)
-BOWTIE2_OPTS="--end-to-end -p 2"   ## extra mapping options (NO NEED TO SPECIFY INPUT FASTQS AND OUTPUT FILE/DIRECTORY)
+BWA_OPTS="-t 8"   ## extra mapping options (NO NEED TO SPECIFY INPUT FASTQS AND OUTPUT FILE/DIRECTORY)
+BOWTIE_OPTS=" --quiet -p 8 " ## extra mapping options (NO NEED TO SPECIFY INPUT FASTQS AND OUTPUT FILE/DIRECTORY)
+BOWTIE2_OPTS="--end-to-end -p 8"   ## extra mapping options (NO NEED TO SPECIFY INPUT FASTQS AND OUTPUT FILE/DIRECTORY)
 
+BWA_INDEX=/mnt/isilon/tan_lab/yuw1/local_tools/annotation/hg38_genome/hg38_genome.fa
 BOWTIE_INDEX="/mnt/isilon/tan_lab/yuw1/local_tools/bowtie-1.2.2/indexes/GRCh38/GRCh38_no_alt"
 BOWTIE2_INDEX="/mnt/isilon/tan_lab/yuw1/local_tools/bowtie2.2.9/indexes/GRCh38/GRCh38"
 
 
-GENOME_FASTA=/mnt/isilon/tan_lab/yuw1/local_tools/annotation/hg38_genome/hg38_genome.fa
 
 SAMTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 
-R_PATH=/mnt/isilon/linux_pool_software/R/3.5.3/lib64/R/bin
+R_PATH=/cm/shared/apps_chop/R/3.5.3/lib64/R/bin
 
 PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 #PYTHON_PATH=/cm/shared/apps_chop/python/3.6.3/bin
@@ -36,23 +36,28 @@ DEEPTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 PERL_PATH=/usr/bin
 
 
-#########################################
+######################################################################
 ## provide global variable 
 ## ONLY change the value, DO NOT change stuff before =
-#########################################
+######################################################################
 
-SAMPLE_PREFIX='ss'
+OUTPUT_PREFIX='ss'     ## prefix for ouput file name
 
-MAPQ=10  ## filter bam by MAPQ 
+MAPQ=30  ## filter bam by MAPQ for downstream analysis 
+
+###########################################################################
+## annotation files(blacklist, promoters, enhancers, TSS, etc)
+###########################################################################
+BLACKLIST=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_blacklist.bed
+PROMOTERS=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_promoter.bed
+ENHANCERS=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_enhancer.bed
+TSS=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_tss.bed
 
 
-BLACKLIST=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38.blacklist.bed
 
-
-
-###################################################
+######################################################################
 ## parameter for get bin by barcode matrix
-###################################################
+######################################################################
 BIN_RESL=10000    ## bin resolution in bp
 CHROM_SIZE_FILE='annotation/chrom_hg38.sizes'    ## chrom sizes file
 

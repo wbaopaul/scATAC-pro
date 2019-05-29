@@ -7,15 +7,11 @@ use strict;
 #Receive options from command line
 use Getopt::Long;
 
-my $region_file; 
-my $read_file;
-my $read_length;
-my $output_file;
 
-GetOptions( 'region_file=s' => \$region_file 
-          , 'read_file=s' => \$read_file  
-          , 'read_length=s' => \$read_length 
-          , 'output_file=s' => \$output_file 
+GetOptions( 'region_file=s' => \my $region_file 
+          , 'read_file=s' => \my $read_file  
+          , 'read_length=s' => \my $read_length 
+          , 'output_file=s' => \my $output_file 
           );
 
 
@@ -103,13 +99,12 @@ while(<READ>)
    }
    
 
-	   chomp;
-	   
-	   my @array = split /\t/;
-	   $chrom = $array[2];
-	   $start = $array[3];
-	   $end = $start + $read_length;
-	   $qual = $array[4];
+     chomp;
+     my @array = split /\t/;	
+       $chrom = $array[2];
+       $start = $array[3];
+       $end = $start + $read_length;
+       $qual = $array[4];
 
        my @tmp_array = split /:/, $array[0];
 

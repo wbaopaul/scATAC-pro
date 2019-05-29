@@ -38,11 +38,11 @@ demplx_fastq: /bin/bash
 
 
 ######################################
-## bwa Alignment
+## Alignment
 ##
 ######################################
 
-mapping: /bin/bash
+mapping: 
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Aligning ..." 
@@ -50,6 +50,16 @@ mapping: /bin/bash
 	@echo
 
 
+######################################
+## mapping qc
+##
+######################################
+
+mapping_qc: /bin/bash
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Reporting mapping qc ..." 
+	@$(SCRIPTS)/mapping_qc.sh $(INPUT_FILE) $(OUTPUT_DIR)
 #######################################
 ## filter bam
 #######################################

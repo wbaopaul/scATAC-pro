@@ -110,12 +110,8 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "mapping" "filter_bam" "generate_signal" "call_peak" "get_peak_barcode_mat" "get_bin_barcode_mat" "qc_per_barcode" )
-NEED_BAM_STEP_ARRAY=("filter_bam" "generate_signal" "get_cell_peak_mat" "get_cell_bin_mat" "filtered_qc")
-NEED_FASTQ_STEP_ARRAY=("demplx_fastq mapping")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "mapping" "mapping_qc" "filter_bam" "generate_signal" "call_peak" "get_peak_barcode_mat" "get_bin_barcode_mat" "qc_per_barcode" "call_cell")
 
-NEED_BAM=0
-NEED_FASTQ=0
 
 check_s=0
 for i in ${AVAILABLE_STEP_ARRAY[@]}; do
@@ -125,13 +121,6 @@ done
 
 if [[ $check_s == 0 ]]; then die "Unknown STEP option (\"-s $s\"). Use $0 --help for usage information."; fi
 
-for i in ${NEED_FASTQ_STEP_ARRAY[@]}; do
-	    if [[ "$i" == "$STEP" ]]; then NEED_FASTQ=1; fi
-done
-
-for i in ${NEED_BAM_STEP_ARRAY[@]}; do
-	    if [[ "$i" == "$STEP" ]]; then NEED_BAM=1; fi
-done
 
 ############################
 ## make output_dir
@@ -154,14 +143,18 @@ fi
 ###################################################
 declare -x MAPPING_METHOD
 declare -x MAPPING_PATH
-declare -x MAPPING_OPTS
+
+declare -x BWA_OPTS
+declare -x BOWTIE_OPTS
+declare -x BOWTIE2_OPTS
+
 declare -x BOWTIE_INDEX
 declare -x BOWTIE2_INDEX
-declare -x GENOME_FASTA
+declare -x BWA_INDEX
 
 declare -x PYTHON_PATH
 declare -x SAMTOOLS_PATH
-declare -x SAMPLE_PREFIX
+declare -x OUTPUT_PREFIX
 declare -x MACS2_PATH
 declare -x MACS2_OPTS
 declare -x BEDTOOLS_PATH
@@ -170,10 +163,14 @@ declare -x R_PATH
 declare -x DEEPTOOLS_PATH
 
 declare -x MAPQ
-declare -x BLACKLIST
 declare -x BIN_RESL
 declare -x CHROM_SIZE_FILE
 
+
+declare -x BLACKLIST
+declare -x PROMOTERS
+declare -x ENHANCERS
+declare -x TSS
 
 source $CONFIG
 
