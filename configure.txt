@@ -37,13 +37,15 @@ PERL_PATH=/usr/bin
 
 
 ######################################################################
-## provide global variable 
-## ONLY change the value, DO NOT change stuff before =
+## provide some global variable 
 ######################################################################
 
 OUTPUT_PREFIX='ss'     ## prefix for ouput file name
 
 MAPQ=30  ## filter bam by MAPQ for downstream analysis 
+
+
+
 
 ###########################################################################
 ## annotation files(blacklist, promoters, enhancers, TSS, etc)
@@ -60,5 +62,26 @@ TSS=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_tss.bed
 ######################################################################
 BIN_RESL=10000    ## bin resolution in bp
 CHROM_SIZE_FILE='annotation/chrom_hg38.sizes'    ## chrom sizes file
+
+
+
+
+###########################################################################
+## cell caller paramters
+###########################################################################
+CELL_CALLER=EmptyDrop
+EmptyDrop_FDR=0.001
+
+
+# set up cutoff (lower bound) to define cell if CELL_CALLER is specified as CUT
+# ignored if CELL CALLER was specified other than CUT
+BC_FILTER_CUTOFF="--Total_reads=100, --fraction_in_peaks=0.5, --fraction_in_tss=0.1, --fraction_in_promoters=0"
+
+
+
+
+
+
+
 
 

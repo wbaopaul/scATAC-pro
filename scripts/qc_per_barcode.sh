@@ -26,6 +26,7 @@ ${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $peaks --read
 ${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $PROMOTERS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.promoters
 
 
+${PERL_PATH}/perl ${curr_dir}/overlap_with_tss.pl --region_file $TSS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.tss
 
 ${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $ENHANCERS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.enhancers
 

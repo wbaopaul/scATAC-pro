@@ -16,7 +16,10 @@ echo "Bowtie2 Mapping Done!"
 
 ## convert to bam
 echo "Converting sam to bam ... "
-${SAMTOOLS_PATH}/samtools view -h -bS ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie2.sam > ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie2.bam
+ncore=$(nproc --all)
+ncore=$(($ncore - 1))
+
+${SAMTOOLS_PATH}/samtools view -@ $ncore -h -bS ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie2.sam > ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie2.bam
 
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie2.sam
 

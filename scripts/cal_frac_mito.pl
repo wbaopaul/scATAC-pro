@@ -117,7 +117,7 @@ print("Now I am writing the output to $output_file .\n");
 
 
 
-print OUT "Barcode \t Total_read \t Total_Mito_read\n";      
+print OUT "Barcode \t Total_reads \t Total_Mito_read\n";      
 foreach my $cell (keys %cells)
 {
    print OUT "$cell \t $cells{$cell} \t"; 

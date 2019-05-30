@@ -22,24 +22,27 @@ fi
 
 ## sort
 echo "Sorting bam file"
+
+ncore=$(nproc --all)
+ncore=$(($ncore - 1))
 mkdir -p ${mapRes_dir}/tmp
-${SAMTOOLS_PATH}/samtools sort -T ${mapRes_dir}/tmp/ -n -o ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam
+${SAMTOOLS_PATH}/samtools sort -T ${mapRes_dir}/tmp/ -@ $ncore -n -o ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam
 
 
 ## to mark duplicates
-${SAMTOOLS_PATH}/samtools fixmate -m ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
+${SAMTOOLS_PATH}/samtools fixmate -@ $ncore -m ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
 
 
 # Markdup needs position order
-${SAMTOOLS_PATH}/samtools sort -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
+${SAMTOOLS_PATH}/samtools sort -@ $ncore -T ${mapRes_dir}/tmp/ -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
 
 
 
 ## mark duplicates
-${SAMTOOLS_PATH}/samtools markdup ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam
+${SAMTOOLS_PATH}/samtools markdup -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam
 
 
-${SAMTOOLS_PATH}/samtools index ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam 
+${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam 
 
 ## mapping stats
 echo "Summarizing mapping stats ..."

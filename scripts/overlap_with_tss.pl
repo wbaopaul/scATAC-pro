@@ -135,15 +135,14 @@ while(<READ>)
 
 		  if($chrom eq $region_chrom)
 		  {
-		     if($start >= $region_start && $start <= $region_end) #Read start is between region start and end
+		     if($region_start >= $start && $region_start <= $end) #Region start is between start and end
 		     { 
-		       $overlap_vec{$barcode} = $overlap_vec{$barcode} + 1; 
-                  last;
-
-		     }elsif($end >= $region_start && $end <= $region_end) #Read end is between region start and end
+      		       $overlap_vec{$barcode} = $overlap_vec{$barcode} + 1; 
+                       last;
+		     }elsif($region_end >= $start && $region_end <= $end) #Regopm end is between region start and end
 		     {
 		       $overlap_vec{$barcode} = $overlap_vec{$barcode} + 1;            
-                      last;
+                       last;
 		     }
 		     
 		  }#if($chrom eq $region_chrom)

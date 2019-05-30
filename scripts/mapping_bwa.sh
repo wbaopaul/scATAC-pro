@@ -20,7 +20,10 @@ echo "BWA Mapping Done!"
 
 
 ## convert to bam
+ncore=$(nproc --all)
+ncore=$(($ncore - 1))
+
 echo "Converting sam to bam ... "
-${SAMTOOLS_PATH}/samtools view -h -bS ${mapRes_dir}/${OUTPUT_PREFIX}.bwa.sam > ${mapRes_dir}/${OUTPUT_PREFIX}.bwa.bam
+${SAMTOOLS_PATH}/samtools view -@ $ncore -h -bS ${mapRes_dir}/${OUTPUT_PREFIX}.bwa.sam > ${mapRes_dir}/${OUTPUT_PREFIX}.bwa.bam
 
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.bwa.sam

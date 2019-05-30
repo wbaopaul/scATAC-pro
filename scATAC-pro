@@ -172,6 +172,11 @@ declare -x PROMOTERS
 declare -x ENHANCERS
 declare -x TSS
 
+declare -x CELL_CALLER
+declare -x EmptyDrop_FDR
+declare -x BC_FILTER_CUTOFF
+
+
 source $CONFIG
 
 
