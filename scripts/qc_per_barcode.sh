@@ -15,24 +15,24 @@ curr_dir=`dirname $0`
 
 file_prefix=${OUTPUT_PREFIX}.${MAPPING_METHOD}
 
-${PERL_PATH}/perl ${curr_dir}/cal_frac_mito.pl --read_file ${qc_dir}/tmp.sam  --output_file ${qc_dir}/${file_prefix}.freq.mito
+${PERL_PATH}/perl ${curr_dir}/cal_frac_mito.pl --read_file ${qc_dir}/tmp.sam  --output_file ${qc_dir}/${file_prefix}.freq.mito &
 
 
 peaks=${2}/peaks/${OUTPUT_PREFIX}_peaks.narrowPeak
-${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $peaks --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.peaks
+${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $peaks --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.peaks &
 
 
 
-${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $PROMOTERS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.promoters
+${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $PROMOTERS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.promoters &
 
 
-${PERL_PATH}/perl ${curr_dir}/overlap_with_tss.pl --region_file $TSS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.tss
+${PERL_PATH}/perl ${curr_dir}/overlap_with_tss.pl --region_file $TSS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.tss &
 
-${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $ENHANCERS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.enhancers
+${PERL_PATH}/perl ${curr_dir}/overlap_per_barcode.pl --region_file $ENHANCERS --read_file ${qc_dir}/tmp.sam --read_length 50 --output_file ${qc_dir}/${file_prefix}.overlapWith.enhancers &
 
-
+wait
 ## merger by R
-#${R_PATH}/R --vanilla --args $qc_dir $file_prefix < summary_overlap.R
+${R_PATH}/R --vanilla --args $qc_dir $file_prefix < summary_overlap.R
 
 
 

@@ -44,20 +44,34 @@ ${SAMTOOLS_PATH}/samtools markdup -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAP
 
 ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam 
 
+
+
+## filtering low quality and/or deplicates for downstreame analysis
+${SAMTOOLS_PATH}/samtools view -f 0x2 -b -h -q 30 -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.MAPQ30.bam 
+${SAMTOOLS_PATH}/samtools markdup -r -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.MAPQ30.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.dedup.MAPQ30.bam 
+
+
+
 ## mapping stats
 echo "Summarizing mapping stats ..."
 
 curr_dir=`dirname $0`
 qc_dir=${2}/qc_result
 mkdir -p $qc_dir
-echo ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam
-bash $curr_dir/mapping_qc.sh ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam  $qc_dir
+bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $qc_dir
 
 
 
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam
+
+
+if [ $MAPQ ne 30 ]; then
+     ${SAMTOOLS_PATH}/samtools view -f 0x2 -b -h -q $MAPQ -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.markdup.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.MAPQ${MAPQ}.bam 
+     ${SAMTOOLS_PATH}/samtools markdup -r -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.MAPQ${MAPQ}.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.dedup.MAPQ${MAPQ}.bam 
+fi
+
 
 
 echo "Simple mapping stats summary Done!"

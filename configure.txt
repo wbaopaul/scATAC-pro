@@ -2,6 +2,12 @@
 ## provide the install path of the dependent software ####
 ## ONLY change the value, DO NOT change stuff before =
 ######################################################################
+
+
+###############################################################
+## set up path and parameters for mapping method
+###############################################################
+
 MAPPING_METHOD=bwa  ## one of bwa/bowtie/bowtie2
 
 # set up aligner path accordingly
@@ -17,7 +23,11 @@ BWA_INDEX=/mnt/isilon/tan_lab/yuw1/local_tools/annotation/hg38_genome/hg38_genom
 BOWTIE_INDEX="/mnt/isilon/tan_lab/yuw1/local_tools/bowtie-1.2.2/indexes/GRCh38/GRCh38_no_alt"
 BOWTIE2_INDEX="/mnt/isilon/tan_lab/yuw1/local_tools/bowtie2.2.9/indexes/GRCh38/GRCh38"
 
+MAPQ=30  ## filter bam by MAPQ for downstream analysis 
 
+##########################################################
+## set up paths for other dependencies
+##########################################################
 
 SAMTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 
@@ -42,10 +52,6 @@ PERL_PATH=/usr/bin
 
 OUTPUT_PREFIX='ss'     ## prefix for ouput file name
 
-MAPQ=30  ## filter bam by MAPQ for downstream analysis 
-
-
-
 
 ###########################################################################
 ## annotation files(blacklist, promoters, enhancers, TSS, etc)
@@ -62,8 +68,6 @@ TSS=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_tss.bed
 ######################################################################
 BIN_RESL=10000    ## bin resolution in bp
 CHROM_SIZE_FILE='annotation/chrom_hg38.sizes'    ## chrom sizes file
-
-
 
 
 ###########################################################################
