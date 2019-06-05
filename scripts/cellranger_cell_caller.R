@@ -1,0 +1,49 @@
+library(data.table)
+library(Matrix)
+library(flexmix)
+library(countreg)  ##install.packages("countreg", repos="http://R-Forge.R-project.org")
+
+
+args = commandArgs(T)
+
+input_mtx_file = args[1]
+output_pre = args[2]
+peak_cov_frac = as.numeric(args[3])
+qc_per_bc_file = args[4]
+
+
+## read matrix data
+input_mtx_dir = dirname(input_mtx_file)
+mat = readMM(input_mtx_file)
+
+barcodes = fread(paste0(input_mtx_dir, '/barcodes.txt'), header = F)
+
+message(paste0("The barcodes correspond to raw matrix:", input_mtx_dir, '/barcodes.txt'))
+colnames(mat) = barcodes$V1
+
+
+## filter barcodes by frac_in_peak
+qc_per_bc = fread(qc_per_bc_file)
+qc_sele_bc = qc_per_bc[frac_peak >= peak_cov_frac]
+
+## substract counts due to contamination (rate 0.02)
+CN = round(sum(qc_sele_bc$total_frags)/nrow(qc_sele_bc) * 0.02)
+qc_sele_bc[, 'total_frags' := total_frags -CN]
+qc_sele_bc = qc_sele_bc[total_frags >= 0]
+
+## fit two NB mixture model & using signal to noisy ratio to select cells
+fm0 <- flexmix(qc_sele_bc$total_frags ~ 1, k = 2, model = FLXMRnegbin())
+prob1 = posterior(fm0)[, 1]
+prob2 = posterior(fm0)[, 2]
+parameters(fm0)
+
+aa = which(prob1/prob2 > 100000)
+select.cells = qc_per_bc$bc[aa]
+length(select.cells)
+
+out_mat = mat[, colnames(mat) %in% select.cells]
+barcodes = colnames(out_mat)
+dim(out_mat)
+writeMM(out_mat, file = paste0(output_pre, 'filtered.mtx'))  
+write.table(barcodes, file = paste0(output_pre, 'filtered.barcodes.txt'), sep = '\t', row.names = F, quote = F, col.names = F)
+

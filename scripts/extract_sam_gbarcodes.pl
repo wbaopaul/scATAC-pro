@@ -29,7 +29,12 @@ if($read_file_suffix ne ".sam")
 
 if($read_file_suffix eq ".sam")
 {
-   print("It looks like the read file is in sam format.\n")
+   my $header = `head -1 $read_file | cut -f1`;
+   if($header !~ /@/) {
+      die("Please provide sam with header ! \n");
+   }
+   print("It looks like the read file is in sam format:\n")
+
 }
 
 open(BARCODES, $barcode_file ) or die("Cannot read $barcode_file \n");

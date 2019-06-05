@@ -1,34 +1,40 @@
 #!/bin/bash
 
-### will search peak file in peaks/*narrowPeak under $2
+### will search bam file under ouptu_dir/mapping_resutl
 set -e
 
-input_bam=$1
-region_file=${2}/peaks/${OUTPUT_PREFIX}.${MAPPING_METHOD}_peaks_filterBlacklist.narrowPeak
-mat_dir="${2}/raw_matrix"
+input_peaks=$1
+output_dir=$2
+
+mat_dir="${output_dir}/raw_matrix"
 mkdir -p $mat_dir
+
+input_bam=${output_dir}/mapping_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam
 
 ncore=$(nproc --all)
 ncore=$(($ncore - 1))
-## conver bam to sam
-if [[ -z ${mat_dir}/tmp.sam ]]; then
-  ${SAMTOOLS_PATH}/samtools view -h -@ $ncore  $input_bam > ${mat_dir}/tmp.sam
-fi
 
-echo "filter barcodes with less than 10 reads"
+
+
 curr_dir=`dirname $0`
-if [[ -z ${mat_dir}/tmp.bed ]]; then
-	perl ${curr_dir}/cal_frac_mito.pl --read_file ${mat_dir}/tmp.sam  --read_length 50  --output_file ${mat_dir}/tmp.bed
-	sed -i '1d' ${mat_dir}/tmp.bed
+if [[ ! -f ${mat_dir}/fragments.bed ]]; then
+   if [[ ! -f ${mat_dir}/tmp.sam ]]; then
+     echo "Converting bam to sam"
+     ${SAMTOOLS_PATH}/samtools view -h -@ $ncore  $input_bam > ${mat_dir}/tmp.sam
+   fi
+   echo "Getting bed file for read pair (fragment) information"
+   ${PERL_PATH}/perl ${curr_dir}/simply_sam2frags.pl --read_file ${mat_dir}/tmp.sam  --output_file ${mat_dir}/fragments.bed
+
 fi
 
-awk '$2 > 10 {print $1}' ${mat_dir}/tmp.bed > ${mat_dir}/barcodes.reads.GT10
+#echo "Sorting the output by position" -- slow in shell, just do it by R will be much faster
+#sort -k1,1 -k2,2n -k3,3n ${mat_dir}/fragments.bed > ${mat_dir}/fragments.bed.sorted
 
-perl ${curr_dir}/extract_sam_gbarcodes.pl --barcode_file ${mat_dir}/barcodes.reads.GT10 --read_file ${mat_dir}/tmp.sam --output_file ${mat_dir}/barcodes.reads.GT10.sam
 
-## use perl script to get the matrix
-echo "getting matrix..."
-${PERL_PATH}/perl ${curr_dir}/get_peak_barcode_mat.pl --region_file $region_file --read_file ${mat_dir}/barcodes.reads.GT10.sam --read_length 50 --output_file ${mat_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.peak.barcode.mat  
+
+echo "Getting matrix..."
+# this R script will output sorted fragments as well
+${R_PATH}/R --vanilla --args ${mat_dir}/fragments.bed $input_peaks ${mat_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.peak.barcode.mtx < ${curr_dir}/get_mat.R 
 
 rm ${mat_dir}/tmp.sam
 

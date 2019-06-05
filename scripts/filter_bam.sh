@@ -31,6 +31,7 @@ rm ${filterBam_dir}/${out_prefix}.paired.MAPQ${MAPQ}.bam
 ${SAMTOOLS_PATH}/samtools view -h -@ $ncore  ${filterBam_dir}/${out_prefix}.dedup.paired.MAPQ${MAPQ}.bam > ${filterBam_dir}/tmp.sam
 
 
+
 echo "further remove barcodes with less than 10 reads..."
 
 curr_dir=`dirname $0`

@@ -1,0 +1,50 @@
+---
+title: "QC report for single cells"
+output: 
+  html_document:
+    front_size: 18px
+    highlight: kate
+    section_divs: yes
+    number_sections: yes
+    theme: lumen
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+params:
+  bc_stat_file: qc_per_bc.bed
+  selected_bcs: barcodes.txt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, include = T)
+```
+
+## 
+
+```{r echo=F}
+library(data.table)
+
+bc_stat = fread(params$bc_stat_file)
+barcodes = fread(params$selected_bcs, header = F)
+
+qc_sele = bc_stat[bc %in% barcodes$V1, ]
+
+
+```
+
+```{r echo=F,fig.width=5, fig.height=6}
+## get table or plot as report to html file
+boxplot(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$frac_promoter, 
+        qc_sele$frac_enh, qc_sele$frac_mito, outline = F,
+        ylab = 'frac of reads in annotation region', 
+        names = c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'))
+
+```
+
+
+```{r echo=F, fig.width=3, fig.height=6}
+boxplot(qc_sele$total_frags, outline = F, 
+        ylab = 'Total reads per cell')
+
+```
+

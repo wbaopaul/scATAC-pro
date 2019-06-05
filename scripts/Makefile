@@ -124,3 +124,13 @@ qc_per_barcode:
 	@$(SCRIPTS)/qc_per_barcode.sh $(INPUT_FILE) $(OUTPUT_DIR)
 	@echo 
 
+#######################################
+## call cell
+#######################################
+call_cell: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Calling cell ..." 
+	@$(SCRIPTS)/call_cell.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@echo 
+
