@@ -39,7 +39,7 @@ ${SAMTOOLS_PATH}/samtools sort -@ $ncore -T ${mapRes_dir}/tmp/ -o ${mapRes_dir}/
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
 
 ## mark duplicates
-${SAMTOOLS_PATH}/samtools markdup -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsorto.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam
+${SAMTOOLS_PATH}/samtools markdup -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort0.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort0.bam
 
 
@@ -49,7 +49,7 @@ ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPI
 
 ## filtering low quality and/or deplicates for downstreame analysis
 ${SAMTOOLS_PATH}/samtools view -f 0x2 -b -h -q 30 -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ30.bam 
-#${SAMTOOLS_PATH}/samtools markdup -r -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ30.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.dedup.positionsort.MAPQ30.bam 
+${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ30.bam 
 
 
 
@@ -62,7 +62,7 @@ mkdir -p $qc_dir
 bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $2
 
 
-if [ $MAPQ ne 30 ]; then
+if [ $MAPQ -ne 30 ]; then
      ${SAMTOOLS_PATH}/samtools view -f 0x2 -b -h -q $MAPQ -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam 
  #    ${SAMTOOLS_PATH}/samtools markdup -r -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.MAPQ${MAPQ}.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.dedup.MAPQ${MAPQ}.bam 
 fi

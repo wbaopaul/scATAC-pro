@@ -64,17 +64,17 @@ total_dups_MAPQ30=$((${total_dups_MAPQ30}/2))
 
 
 #print to file
-echo "total_pairs    $total_pairs" > ${output_pre}.summary 
-echo "total_uniq_mapped    $total_uniq_mapped" >> ${output_pre}.summary 
-echo "total_pairs_mapped    $total_pairs_mapped" >> ${output_pre}.summary 
-echo "total_mito    $total_mito" >> ${output_pre}.summary 
-echo "total_mito_mapped    $total_mito_mapped" >> ${output_pre}.summary 
-echo "total_dups    $total_dups" >> ${output_pre}.summary 
+echo "Total_Pairs    $total_pairs" > ${output_pre}.summary 
+echo "Total_Uniq_Mapped    $total_uniq_mapped" >> ${output_pre}.summary 
+echo "Total_Pairs_Mapped    $total_pairs_mapped" >> ${output_pre}.summary 
+echo "Total_Mito    $total_mito" >> ${output_pre}.summary 
+echo "Total_Mito_Mapped    $total_mito_mapped" >> ${output_pre}.summary 
+echo "Total_Dups    $total_dups" >> ${output_pre}.summary 
 
 
-echo "total_pairs_MAPQ30    $total_pairs_MAPQ30" >> ${output_pre}.summary 
-echo "total_mito_MAPQ30    $total_mito_MAPQ30" >> ${output_pre}.summary 
-echo "total_dups_MAPQ30    $total_dups_MAPQ30" >> ${output_pre}.summary 
+echo "Total_Pairs_MAPQ30    $total_pairs_MAPQ30" >> ${output_pre}.summary 
+echo "Total_Mito_MAPQ30    $total_mito_MAPQ30" >> ${output_pre}.summary 
+echo "Total_Dups_MAPQ30    $total_dups_MAPQ30" >> ${output_pre}.summary 
 
 rm $tmp_sam_file
 

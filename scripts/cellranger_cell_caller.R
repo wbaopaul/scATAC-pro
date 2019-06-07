@@ -7,7 +7,7 @@ library(countreg)  ##install.packages("countreg", repos="http://R-Forge.R-projec
 args = commandArgs(T)
 
 input_mtx_file = args[1]
-output_pre = args[2]
+output_dir = args[2]
 peak_cov_frac = as.numeric(args[3])
 qc_per_bc_file = args[4]
 
@@ -44,6 +44,10 @@ length(select.cells)
 out_mat = mat[, colnames(mat) %in% select.cells]
 barcodes = colnames(out_mat)
 dim(out_mat)
-writeMM(out_mat, file = paste0(output_pre, 'filtered.mtx'))  
-write.table(barcodes, file = paste0(output_pre, 'filtered.barcodes.txt'), sep = '\t', row.names = F, quote = F, col.names = F)
+
+system(paste('mkdir -p', output_dir))
+writeMM(out_mat, file = paste0(output_dir, '/matrix.mtx'))  
+write.table(barcodes, file = paste0(output_dir, '/barcodes.txt'), 
+            sep = '\t', row.names = F, quote = F, col.names = F)
+system(paste0('cp ', input_mtx_dir, '/features.txt ',  output_dir, '/'))
 

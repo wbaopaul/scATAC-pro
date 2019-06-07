@@ -33,8 +33,8 @@ SAMTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 
 R_PATH=/cm/shared/apps_chop/R/3.5.3/lib64/R/bin
 
-PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
-#PYTHON_PATH=/cm/shared/apps_chop/python/3.6.3/bin
+#PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
+PYTHON_PATH=/cm/shared/apps_chop/python/3.6.3/bin
 
 MACS2_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 MACS2_OPTS="-g hs -q 0.5"  ## provided extra options for macs2 (NO NEED TO SPECIFY -t, -n, -f here)
@@ -67,19 +67,20 @@ TSS=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_tss.bed
 ## parameter for get bin by barcode matrix
 ######################################################################
 BIN_RESL=10000    ## bin resolution in bp
-CHROM_SIZE_FILE='annotation/chrom_hg38.sizes'    ## chrom sizes file
+CHROM_SIZE_FILE='/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/chrom_hg38.sizes'    ## chrom sizes file
 
 
 ###########################################################################
 ## cell caller paramters
 ###########################################################################
-CELL_CALLER=EmptyDrop
+CELL_CALLER=cellranger  ## EmptyDrop or cellranger or FILTER
+
+
 EmptyDrop_FDR=0.001
 
-
-# set up cutoff (lower bound) to define cell if CELL_CALLER is specified as CUT
-# ignored if CELL CALLER was specified other than CUT
-BC_FILTER_CUTOFF="--Total_reads=100, --fraction_in_peaks=0.5, --fraction_in_tss=0.1, --fraction_in_promoters=0"
+# set up cutoff (lower bound) to define cell if CELL_CALLER is specified as FILTER
+# ignored if CELL CALLER was specified other than FILTER
+BC_FILTER_CUTOFF="--total_frags=1000 --frac_peak=0.2 --frac_tss=0.0 --frac_promoter=0 --frac_enhancer=0.1 --frac_mito=0.2"
 
 
 

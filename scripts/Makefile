@@ -85,23 +85,13 @@ call_peak:
 
 
 #######################################
-## get peak barcode matrix
+## get peak/bin barcode matrix
 #######################################
-get_peak_barcode_mat:  
+get_mtx:  
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Getting peak by barcode matrix ..." 
-	@$(SCRIPTS)/get_peak_barcode_mat.sh $(INPUT_FILE) $(OUTPUT_DIR)
-	@echo 
-
-#######################################
-## get bin barcode matrix
-#######################################
-get_bin_barcode_mat:  
-	@echo "--------------------------------------------" 
-	@date 
-	@echo "Getting bin by barcode matrix ..." 
-	@$(SCRIPTS)/get_bin_barcode_mat.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/get_mtx.sh $(INPUT_FILE) $(OUTPUT_DIR)
 	@echo 
 
 #######################################
@@ -132,5 +122,15 @@ call_cell:
 	@date 
 	@echo "Calling cell ..." 
 	@$(SCRIPTS)/call_cell.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@echo 
+
+#######################################
+## clustering
+#######################################
+clustering: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Clustering ..." 
+	@$(SCRIPTS)/clustering.sh $(INPUT_FILE) $(OUTPUT_DIR)
 	@echo 
 

@@ -110,7 +110,7 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "mapping" "mapping_qc" "filter_bam" "generate_signal" "call_peak" "get_peak_barcode_mat" "get_bin_barcode_mat" "qc_per_barcode" "call_cell")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "mapping" "mapping_qc" "filter_bam" "generate_signal" "call_peak" "get_mtx" "qc_per_barcode" "call_cell", "clustering", "motif_analysis")
 
 
 check_s=0
@@ -152,11 +152,16 @@ declare -x BOWTIE_INDEX
 declare -x BOWTIE2_INDEX
 declare -x BWA_INDEX
 
+declare -x PEAK_CALLER
+declare -x MUSIC_PATH
+declare -x MACS2_PATH
+declare -x MACS2_OPTS
+declare -x GEM_PATH
+
+
 declare -x PYTHON_PATH
 declare -x SAMTOOLS_PATH
 declare -x OUTPUT_PREFIX
-declare -x MACS2_PATH
-declare -x MACS2_OPTS
 declare -x BEDTOOLS_PATH
 declare -x PERL_PATH
 declare -x R_PATH
@@ -176,6 +181,9 @@ declare -x CELL_CALLER
 declare -x EmptyDrop_FDR
 declare -x BC_FILTER_CUTOFF
 
+declare -x CLUSTERING_METHOD
+declare -x K_CLUSTERS
+
 
 source $CONFIG
 
@@ -186,6 +194,9 @@ source $CONFIG
 ###################################################
 
 make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
+#logDir=${OUTPUT_DIR}/logs
+#mkdir -p $logDir
+#make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2 > ${logDir}/$STEP.log
 
 
 

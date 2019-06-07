@@ -10,8 +10,8 @@ parser = OptionParser()
 parser <- add_option(parser, c("-mf", "--raw_mtx_file"), type="character", default='peak_barcode.mtx',
                      help="original peak barcode file [default %default]")
 
-parser <- add_option(parser, c("-out", "--output_prefix"), type="character", default='filtered',
-                     help="output mtx prefix [default %default]")
+parser <- add_option(parser, c("-out", "--output_dir"), type="character", default='filtered',
+                     help="output mtx directory [default %default]")
 
 
 parser <- add_option(parser, c("-bs", "--bc_stat_file"), type="character", default='fragments.bed',
@@ -45,16 +45,17 @@ opt = parse_args(parser)
 
 ## read summary qc table
 mtx_file = opt$raw_mtx_file
-output_pre = opt$output_prefix
+output_dir = opt$output_dir
 qc_bc_stat = fread(opt$bc_stat_file)
 
+cut.total = opt$total_frags
 cut.mito = opt$frac_mito
 cut.peak = opt$frac_peak
 cut.tss = opt$frac_tss
 cut.promoter = opt$frac_promoter
 cut.enh = opt$frac_enhancer
 
-qc_sele = qc_bc_stat[frac_mito <= cut.mito &
+qc_sele = qc_bc_stat[total_frags >= cut.total & frac_mito <= cut.mito &
                        frac_peak >= cut.peak &
                        frac_tss >= cut.tss &
                        frac_promoter >= cut.promoter &
@@ -65,9 +66,11 @@ input_mtx_dir = dirname(mtx_file)
 colnames(mtx) = fread(paste0(input_mtx_dir, '/barcodes.txt'), header = F)$V1
 mtx = mtx[, colnames(mtx) %in% qc_sele$bc]
 
-writeMM(mtx, file = paste0(output_pre, 'filtered.mtx'))
-write.table(colnames(mtx), file = paste0(output_pre, 'filtered.barcodes.txt'), 
+mtx.dir = dirname(mtx_file)
+system(paste('mkdir -p', output_dir))
+writeMM(mtx, file = paste0(output_dir, '/matrix.mtx'))
+write.table(colnames(mtx), file = paste0(output_dir, '/barcodes.txt'), 
             sep = '\t', row.names = F, quote = F, col.names = F)
-
+system(paste0('cp ', mtx_file, '/features.txt ', output_dir, '/features.txt'))
 
 
