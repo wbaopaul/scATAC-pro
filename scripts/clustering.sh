@@ -9,5 +9,4 @@ mkdir -p $output_dir
 
 curr_dir=`dirname $0`
 
-#${R_PATH}/R --vanilla --args $mtx_file $CLUSTERING_METHOD $K_CLUSTERS $output_dir < ${curr_dir}/clustering.R
-${R_PATH}/Rscript --vanilla ${curr_dir}/clustering.R $mtx_file $CLUSTERING_METHOD $K_CLUSTERS $output_dir 
+${R_PATH}/Rscript --vanilla ${curr_dir}/clustering.R $mtx_file $CLUSTERING_METHOD $K_CLUSTERS $output_dir $GENOME_NAME 

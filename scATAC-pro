@@ -110,7 +110,7 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "mapping" "mapping_qc" "filter_bam" "generate_signal" "call_peak" "get_mtx" "qc_per_barcode" "call_cell", "clustering", "motif_analysis")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "mapping_qc" "filter_bam" "generate_signal" "call_peak" "get_mtx" "qc_per_barcode" "call_cell", "clustering", "motif_analysis")
 
 
 check_s=0
@@ -141,6 +141,8 @@ fi
 ## declare global variables, whose values will be 
 ## provided through user specified configure file
 ###################################################
+declare -x Trimmomatic_PATH
+
 declare -x MAPPING_METHOD
 declare -x MAPPING_PATH
 
@@ -183,6 +185,7 @@ declare -x BC_FILTER_CUTOFF
 
 declare -x CLUSTERING_METHOD
 declare -x K_CLUSTERS
+declare -x GENOME_NAME
 
 
 source $CONFIG
@@ -193,10 +196,10 @@ source $CONFIG
 ##Run scATAC-pro
 ###################################################
 
-make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
-#logDir=${OUTPUT_DIR}/logs
-#mkdir -p $logDir
-#make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2 > ${logDir}/$STEP.log
+#make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
+logDir=${OUTPUT_DIR}/logs
+mkdir -p $logDir
+make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP > ${logDir}/$STEP.log 2>&1
 
 
 

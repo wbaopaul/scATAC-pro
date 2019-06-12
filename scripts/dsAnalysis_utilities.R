@@ -113,7 +113,7 @@ doBasicSeurat <- function(mtx, npc = 100, top.variable = 0.2, doLog = T,
 }
 doBasicSeurat = cmpfun(doBasicSeurat)
 
-
+# get the right resolution parater given number of expected cluster
 queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc = 20, 
                                    min_resl = 0.1, max_resl = 1, max_iter = 15, doPCA = F){
   max.dim = ifelse(reduction == 'pca', npc, 2)
@@ -188,7 +188,7 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
 }
 queryResolution4Seurat = cmpfun(queryResolution4Seurat)
 
-## implement of generic clustering methods ####
+## implement of generic clustering methods 
 generalCluster <- function(reduced.mtx, method = 'hclust', k = 5){
   if(method == 'kmeans'){
     res = kmeans(reduced.mtx, centers = k)
@@ -218,12 +218,13 @@ run_scABC <- function(mtx, k = 5){
   return(labels)
 }
 
-run_chromVAR <- function(mtx, genomeName = 'BSgenome.Hsapiens.UCSC.hg19'){
+run_chromVAR <- function(mtx, genomeName = 'BSgenome.Hsapiens.UCSC.hg38',
+                         ncore = 3){
   
-  register(MulticoreParam(4))
+  register(MulticoreParam(3))
   
   peaks = data.table('x' = rownames(mtx))
-  peaks = tidyr::separate(peaks, col = 'x', into = c('chr', 'start', 'end'))
+  peaks = tidyr::separate(peaks, col = 'x', into = c('chr', 'start', 'end'), sep = '-')
   peaks = GenomicRanges::makeGRangesFromDataFrame(peaks)
   
   frag.counts = SummarizedExperiment(assay = list(counts = mtx),

@@ -4,6 +4,11 @@
 ######################################################################
 
 
+####################################################################
+Trim
+####################################################################
+PATH2_trimmomatic=/mnt/isilon/tan_lab/yuw1/local_tools/Trimmomatic-0.39/trimmomatic-0.39.jar
+
 ###############################################################
 ## set up path and parameters for mapping method
 ###############################################################
@@ -33,8 +38,8 @@ SAMTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 
 R_PATH=/cm/shared/apps_chop/R/3.5.3/lib64/R/bin
 
-#PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
-PYTHON_PATH=/cm/shared/apps_chop/python/3.6.3/bin
+PYTHON_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
+#PYTHON_PATH=/cm/shared/apps_chop/python/3.6.3/bin
 
 MACS2_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 MACS2_OPTS="-g hs -q 0.5"  ## provided extra options for macs2 (NO NEED TO SPECIFY -t, -n, -f here)

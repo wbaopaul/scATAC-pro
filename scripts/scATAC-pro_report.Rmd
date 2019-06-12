@@ -10,7 +10,7 @@ params:
   selected_bcs: ~/yuw1/run_scATAC-pro/output/filtered_matrix/FILTER/barcodes.txt
   mapping_qc_file: ~/yuw1/run_scATAC-pro/output/qc_result/ss.bwa.summary
   fragments_file: ~/yuw1/run_scATAC-pro/output/fragments/fragments.bed
-  seuratObj_file: ~/yuw1/run_scATAC-pro/output/downstream_analysis/seurat_obj_withCluster.rds
+  downstream_dir: ~/yuw1/run_scATAC-pro/output/downstream_analysis
   tss_escore_file: ~/yuw1/run_scATAC-pro/output/signal/ss.bwa.dedup.paired.MAPQ30.bam.mtx
   
 ---
@@ -202,10 +202,10 @@ Column
 ```{r}
 library(Seurat)
 rm(frags, bc_stat, qc_sele)
-ss = readRDS(params$seuratObj_file)
+ss = readRDS(paste0(params$downstream_dir, '/seurat_obj_withCluster.rds'))
 
 cg <- DimPlot(ss, label = T, reduction = 'umap') 
-cg
+cg + scale_color_brewer(palette="Dark2")
 #ggplotly(cg)
 
 ```
@@ -216,7 +216,7 @@ cg
 
 fg <- FeaturePlot(ss, features = 'nCount_ATAC', reduction = 'umap') + ggtitle('') 
 #ggplotly(fg)
-fg
+fg 
 
 ```
 
@@ -225,3 +225,54 @@ Column
 ----------------------------------------------------
 
 ### Motif Analysis
+
+```{r}
+## check enriched TFs for each cluster
+library(viridis)
+library(chromVAR)
+library(BiocParallel)
+register(SerialParam())
+
+metaData = ss@meta.data
+rm(ss)
+
+chromVar.obj = readRDS(paste0(params$downstream_dir, '/chromVar_obj.rds'))
+variability <- computeVariability(chromVar.obj)
+variability = data.table(variability, stringsAsFactors = F)
+variability = variability[order(-variability), ]
+
+## plot enriched TFs in heatmap
+sele.tfs = as.character(variability$name[1:50])
+zscores = chromVar.obj@assays$data$z
+rnames = rownames(zscores)
+rownames(zscores) = sapply(rnames, function(x) unlist(strsplit(x, '_'))[2])
+sele.zscores = zscores[rownames(zscores) %in% sele.tfs, ]
+
+
+metaData = data.table(metaData, keep.rownames = T)
+setkey(metaData, seurat_cluster)
+
+sele.zscores = sele.zscores[, metaData$rn]
+
+ann_col = data.table('cluster' = metaData$seurat_cluster)
+rownames(ann_col) = metaData$rn
+
+sele.zscores[sele.zscores > 10] = 10
+sele.zscores[sele.zscores < -10] = -10
+
+cluster = brewer.pal(n=6, name = 'Dark2')
+names(cluster) = levels(metaData$seurat_cluster)
+ann_colors = list('cluster' = cluster)
+
+# resample to reduce memory used
+set.seed(2019)
+rids = sort(sample(1:ncol(sele.zscores), floor(ncol(sele.zscores)/6)))
+ann_col0 = ann_col[rids, ]
+rownames(ann_col0) = colnames(sele.zscores)[rids]
+pheatmap::pheatmap(sele.zscores[, rids], cluster_cols = F, show_colnames = F,
+                   annotation_col = ann_col0, color = viridis(100),
+                   annotation_colors = ann_colors, fontsize_row = 7)
+
+
+```
+

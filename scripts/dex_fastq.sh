@@ -3,24 +3,41 @@
 
 
 set -e
+unset PYTHONPATH
 
 ff=$1
 output_dir=$2
 output_dir=${output_dir}/demplxed_fastq
 mkdir -p $output_dir
 
-fastqs=(${ff//,/ })
+fastqs=(${ff//,/ }) ## suppose the first fastq is the read file, the others are index fastq files
 nfile=${#fastqs[@]}
-kk=$(( $nfile-2 ))
+kk=$(( $nfile ))
+
+if [[ $kk < 2 ]];then
+  echo -e "Erro: Provide at least two fastq files: with the first one as read fastq, the others as index fastq files" >&2
+  exit
+fi
 
 curr_dir=`dirname $0`
 
 
-for (( i==0; i<=$kk; i++ ))
-do
-  dex_prefix=${fastqs[$i]}
-  dex_prefix=${dex_prefix##*/}
-  ${PYTHON_PATH}/python ${curr_dir}/dex_fastq.py ${fastqs[$i]} ${output_dir}/demplxed_${dex_prefix}  ${fastqs[$nfile - 1]}
-done
+
+## the first barcode was add to the read name after @, and : was used to concatenate to the original name
+#dex_prefix=${fastqs[0]}
+#dex_prefix=${dex_prefix##*/}
+dex_prefix=$(basename ${fastqs[0]})
+${PYTHON_PATH}/python ${curr_dir}/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix}  ${fastqs[1]}
+
+## for the round of barcodes, add them to the read name after @, concatenate the original name by _
+if [[ $kk>2 ]];then
+	for (( i==2; i<=$kk; i++ ))
+	do
+        ${PYTHON_PATH}/python ${curr_dir}/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix} ${output_dir}/demplxed_${dex_prefix}_$i ${fastqs[$i]}
+        mv ${output_dir}/demplxed_${dex_prefix}_$i ${output_dir}/demplxed_${dex_prefix}
+	done
+fi
+
+
 
 echo "Demultiplexing Done!"

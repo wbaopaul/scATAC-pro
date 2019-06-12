@@ -18,7 +18,9 @@ else
 fi
 
 
-
+#echo "Removing reads in blacklist ..."    ## do it use fragment file, will be much faster
+#${BEDTOOLS_PATH}/intersect -v -a ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam -b $BLACKLIST > ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.rmBlacklist.bam
+#mv ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.rmBlacklist.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam
 
 ## sort
 echo "Sorting bam file"
@@ -27,7 +29,6 @@ ncore=$(nproc --all)
 ncore=$(($ncore - 1))
 mkdir -p ${mapRes_dir}/tmp
 ${SAMTOOLS_PATH}/samtools sort -T ${mapRes_dir}/tmp/ -@ $ncore -n -o ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam
-rm ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam
 
 
 ## to mark duplicates

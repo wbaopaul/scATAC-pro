@@ -22,6 +22,8 @@ SCRIPTS = $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 ## System
 ##
 ######################################
+
+
 ######################################
 ##  demultiplex
 ##
@@ -35,6 +37,16 @@ demplx_fastq: /bin/bash
 	@echo 
 
 
+######################################
+##  trimming adapter
+##
+######################################
+
+trimming: /bin/bash
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Trimming fastq ..." 
+	@$(SCRIPTS)/trimming.sh $(INPUT_FILE) $(OUTPUT_DIR)
 
 
 ######################################
@@ -132,5 +144,15 @@ clustering:
 	@date 
 	@echo "Clustering ..." 
 	@$(SCRIPTS)/clustering.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@echo 
+
+#######################################
+## motif analysis
+#######################################
+motif_analysis: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Clustering ..." 
+	@$(SCRIPTS)/motif_analysis.sh $(INPUT_FILE) $(OUTPUT_DIR)
 	@echo 
 
