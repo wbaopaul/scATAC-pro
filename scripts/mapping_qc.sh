@@ -65,9 +65,9 @@ total_dups_MAPQ30=$((${total_dups_MAPQ30}/2))
 
 #print to file
 echo "Total_Pairs    $total_pairs" > ${output_pre}.summary 
-echo "Total_Uniq_Mapped    $total_uniq_mapped" >> ${output_pre}.summary 
 echo "Total_Pairs_Mapped    $total_pairs_mapped" >> ${output_pre}.summary 
-echo "Total_Mito    $total_mito" >> ${output_pre}.summary 
+echo "Total_Uniq_Mapped    $total_uniq_mapped" >> ${output_pre}.summary 
+#echo "Total_Mito    $total_mito" >> ${output_pre}.summary 
 echo "Total_Mito_Mapped    $total_mito_mapped" >> ${output_pre}.summary 
 echo "Total_Dups    $total_dups" >> ${output_pre}.summary 
 
@@ -78,7 +78,6 @@ echo "Total_Dups_MAPQ30    $total_dups_MAPQ30" >> ${output_pre}.summary
 
 rm $tmp_sam_file
 
-## using R to make the result as a table/plot
 
 
 echo "MAPPING QC Done!"

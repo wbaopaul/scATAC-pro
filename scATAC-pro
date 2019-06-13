@@ -141,7 +141,8 @@ fi
 ## declare global variables, whose values will be 
 ## provided through user specified configure file
 ###################################################
-declare -x Trimmomatic_PATH
+#declare -x Trimmomatic_PATH
+declare -x Trimgalore_PATH
 
 declare -x MAPPING_METHOD
 declare -x MAPPING_PATH

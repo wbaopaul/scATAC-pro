@@ -27,13 +27,13 @@ curr_dir=`dirname $0`
 #dex_prefix=${fastqs[0]}
 #dex_prefix=${dex_prefix##*/}
 dex_prefix=$(basename ${fastqs[0]})
-${PYTHON_PATH}/python ${curr_dir}/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix}  ${fastqs[1]}
+${PYTHON_PATH}/python ${curr_dir}/Utils/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix}  ${fastqs[1]}
 
 ## for the round of barcodes, add them to the read name after @, concatenate the original name by _
 if [[ $kk>2 ]];then
 	for (( i==2; i<=$kk; i++ ))
 	do
-        ${PYTHON_PATH}/python ${curr_dir}/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix} ${output_dir}/demplxed_${dex_prefix}_$i ${fastqs[$i]}
+        ${PYTHON_PATH}/python ${curr_dir}/Utils/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix} ${output_dir}/demplxed_${dex_prefix}_$i ${fastqs[$i]}
         mv ${output_dir}/demplxed_${dex_prefix}_$i ${output_dir}/demplxed_${dex_prefix}
 	done
 fi

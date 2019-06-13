@@ -1,0 +1,8 @@
+## note for install zinba package
+# download zinba package
+library(withr)
+with_makevars(c(CXXFLAGS = "-std=gnu++98"), install.packages("zinba_2.02.03.tar.gz", repos = NULL))
+
+## follow following method to generate mappability for zinba and music
+https://www.biostars.org/p/14092/
+

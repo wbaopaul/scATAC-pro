@@ -28,23 +28,6 @@ ${SAMTOOLS_PATH}/samtools markdup -@ $ncore -r ${filterBam_dir}/${out_prefix}.pa
 rm ${filterBam_dir}/${out_prefix}.paired.MAPQ${MAPQ}.bam
 
 
-${SAMTOOLS_PATH}/samtools view -h -@ $ncore  ${filterBam_dir}/${out_prefix}.dedup.paired.MAPQ${MAPQ}.bam > ${filterBam_dir}/tmp.sam
-
-
-
-echo "further remove barcodes with less than 10 reads..."
-
-curr_dir=`dirname $0`
-perl ${curr_dir}/cal_frac_mito.pl --read_file ${filterBam_dir}/tmp.sam  --read_length 50  --output_file ${filterBam_dir}/tmp.bed
-sed -i '1d' ${filterBam_dir}/tmp.bed
-awk '$2 > 10 {print $1}' ${filterBam_dir}/tmp.bed > ${filterBam_dir}/barcodes.reads.GT10
-
-perl ${curr_dir}/extract_sam_gbarcodes.pl --barcode_file ${filterBam_dir}/barcodes.reads.GT10 --read_file ${filterBam_dir}/tmp.sam --output_file ${filterBam_dir}/${out_prefix}.dedup.paired.MAPQ${MAPQ}.bcReadsGT10.sam
-
-rm ${filterBam_dir}/tmp.sam
-rm ${filterBam_dir}/tmp.bed
-
-
 echo "Filtering Bam Done!"
 
 

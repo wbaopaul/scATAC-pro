@@ -20,20 +20,19 @@ fi
 
 curr_dir=`dirname $0`
 
-ncore=$(nproc --all)
-ncore=$(($ncore - 1))
 
 ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
 prefix0=${fastqs[0]}
 prefix0=${prefix0##*/}
 
 prefix1=$(basename ${fastqs[1]})
-#prefix1=${fastqs[1]}
-#prefix1=${prefix1##*/}
+ncore=$(nproc --all)
+ncore=$(($nproc - 1))
+Trimmomatic_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/Trimmomatic-0.39
 
-#java -jar ${Trimmomatic_PATH}/*jar PE ${fastqs[0]} ${fastqs[1]} ${output_dir}/trimmed_paired_${prefix0} ${output_dir}/trimmed_unpaired_${prefix0} \
+#java -jar ${Trimmomatic_PATH}/*jar PE -threads 4 ${fastqs[0]} ${fastqs[1]} ${output_dir}/trimmed_paired_${prefix0} ${output_dir}/trimmed_unpaired_${prefix0} \
 #    ${output_dir}/trimmed_paired_${prefix1} ${output_dir}/trimmed_unpaired_${prefix1} \
-#    ILLUMINACLIP:${Trimmomatic_PATH}/adapters/TruSeq3-PE.fa:2:30:10:2:keepBothReads LEADING:3 TRAILING:3 MINLEN:25
+#    ILLUMINACLIP:${Trimmomatic_PATH}/adapters/NexteraPE-PE.fa:2:30:10:2:keepBothReads LEADING:3 TRAILING:3 MINLEN:25
 
-/mnt/isilon/cbmi/tan_lab/yuw1/local_tools/bin/trim_galore -j $ncore -o $output_dir  ${fastqs[0]} ${fastqs[1]}   --paired
+${Trimgalore_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]}   --paired
 echo "Trimming Done!"
