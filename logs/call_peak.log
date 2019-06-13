@@ -1,9 +1,0 @@
-Run scATAC-pro 1.0.0
---------------------------------------------
-Thu May 23 11:37:14 EDT 2019
-Call peaks ...
-Traceback (most recent call last):
-  File "/mnt/isilon/tan_lab/yuw1/local_tools/bin/macs2", line 31, in <module>
-    from MACS2.Constants import *
-ImportError: No module named MACS2.Constants
-

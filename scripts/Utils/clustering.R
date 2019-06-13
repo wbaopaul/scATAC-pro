@@ -37,9 +37,11 @@ if(file.exists(paste0(output_dir, '/seurat_obj_withCluster.rds'))){
 if(cluster_method == 'seurat'){
   ## seurat implemented louvain algorithm
   seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca')
-  resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 50, k = k)
+  resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 50, k = k,
+                                min_resl = 0.05)
   seurat.obj = FindClusters(seurat.obj, resolution = resl)
   seurat.obj$seurat_clusters = seurat.obj@active.ident
+  seurat.obj$active_clusters = seurat.obj$seurat_clusters
 }
 
 if(cluster_method == 'cisTopic'){
@@ -48,16 +50,19 @@ if(cluster_method == 'cisTopic'){
   sele.cisTopic <- selectModel(cis.obj, 
                                keepBinaryMatrix = F, keepModels = F)
   cell_topic <- t(modelMatSelection(sele.cisTopic, 'cell', 'Probability'))
-  seurat.obj$cisTopic_cluster = generalCluster(cell_topic, method = 'hclust', k = k)
+  seurat.obj$cisTopic_clusters = generalCluster(cell_topic, method = 'hclust', k = k)
+  seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
 }
 
 if(cluster_method == 'LSI'){
   seurat.obj$LSI_clusters = run_LSI(mtx, k = k)
+  seurat.obj$active_clusters = seurat.obj$LSI_clusters
 }
 
 
 if(cluster_method == 'scABC'){
   seurat.obj$scABC_clusters = run_scABC(mtx, k = k)
+  seurat.obj$active_clusters = seurat.obj$scABC_clusters
 }
 
 if(cluster_method == 'chromVar'){
@@ -69,8 +74,15 @@ if(cluster_method == 'chromVar'){
   nc = detectCores()
   obj = run_chromVAR(mtx, genomeName, max(1, nc - 1))
   saveRDS(obj, file = paste0(output_dir, '/chromVar_obj.rds'))
+  pca_coords = doDimReduction4mat(obj@assays$data$z)[[1]]
+  
+  seurat.obj$chromVar_clusters = cutree(hclust(dist(pca_coords)), k = k)
+  seurat.obj$active_clusters = seurat.obj$chromVar_clusters
+  
   
 }
 
 saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_withCluster.rds'))
+
+
 

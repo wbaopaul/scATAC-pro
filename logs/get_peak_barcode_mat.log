@@ -1,5 +1,0 @@
-Run scATAC-pro 1.0.0
---------------------------------------------
-Fri May 24 15:50:13 EDT 2019
-Getting peak by barcode matrix ...
-make: *** [get_peak_barcode_mat] Terminated

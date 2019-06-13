@@ -21,37 +21,21 @@ cell.out <- emptyDrops(mat)
 
 filter.out <- cell.out[complete.cases(cell.out), ]
 
+saveRDS(filter.out, file = paste0(output_dir, '/EmptyDrop_obj.rds'))
 
 filter.out = filter.out[filter.out$FDR <= fdr, ]
 
 select.cells = rownames(filter.out)
 
-filter.knee = filter.out[filter.out$FDR == 0, ]
-select.cells.knee = rownames(filter.knee)
-
 out_mat = mat[, colnames(mat) %in% select.cells]
 barcodes = colnames(out_mat)
 
 
-dir1 = paste0(output_dir, '/fdr', fdr)
-system(paste('mkdir -p', dir1))
-writeMM(out_mat, file = paste0(dir1, '/matrix.mtx'))  
-write.table(barcodes, file = paste0(dir1, '/barcodes.txt'), sep = '\t', 
+system(paste('mkdir -p', output_dir))
+writeMM(out_mat, file = paste0(output_dir, '/matrix.mtx'))  
+write.table(barcodes, file = paste0(output_dir, '/barcodes.txt'), sep = '\t', 
             row.names = F, quote = F, col.names = F)
-write.table(features, file = paste0(dir1, '/features.txt'), sep = '\t',
+write.table(features, file = paste0(output_dir, '/features.txt'), sep = '\t',
             row.names = F, quote = F, col.names = F)
 
-
-out_mat0 = mat[, colnames(mat) %in% select.cells.knee]
-barcodes0 = colnames(out_mat0)
-writeMM(out_mat0, file = paste0(output_pre, 'filtered.kneepoint', '.mtx'))  
-write.table(barcodes0, file = paste0(output_pre, 'filtered.kneepoint.barcodes.txt'), sep = '\t', row.names = F, quote = F, col.names = F)
-
-dir2 = paste0(output_dir, '/kneepoint')
-system(paste('mkdir -p', dir2))
-writeMM(out_mat0, file = paste0(dir2, '/matrix.mtx'))  
-write.table(barcodes0, file = paste0(dir2, '/barcodes.txt'), sep = '\t', 
-            row.names = F, quote = F, col.names = F)
-write.table(features, file = paste0(dir2, '/features.txt'), sep = '\t',
-            row.names = F, quote = F, col.names = F)
 

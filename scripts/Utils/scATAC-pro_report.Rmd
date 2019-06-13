@@ -1,0 +1,326 @@
+---
+title: "scATAC-pro Analysis Report"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+    social: menu
+    theme: unite
+params:
+  bc_stat_file: ~/yuw1/run_scATAC-pro/output/qc_result/ss.bwa.qc_per_barcode.bed
+  selected_bcs: ~/yuw1/run_scATAC-pro/output/filtered_matrix/cellranger/barcodes.txt
+  mapping_qc_file: ~/yuw1/run_scATAC-pro/output/qc_result/ss.bwa.summary
+  fragments_file: ~/yuw1/run_scATAC-pro/output/fragments/fragments.bed
+  downstream_dir: ~/yuw1/run_scATAC-pro/output/downstream_analysis/cellranger
+  tss_escore_file: ~/yuw1/run_scATAC-pro/output/signal/ss.bwa.dedup.paired.MAPQ30.bam.mtx
+  
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(data.table)
+library(magrittr)
+library(kableExtra)
+library(RColorBrewer)
+library(ggplot2)
+library(plotly)
+
+```
+
+Mapping QC 
+==========================================
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+### Global mapping stat
+
+```{r}
+mapping_qc = fread(params$mapping_qc_file, header = F)
+mapping_qc$frac = round(mapping_qc$V2/mapping_qc$V2[1], 3)
+mapping_qc$frac = paste0(100*mapping_qc$frac, '%')
+
+kable(mapping_qc, col.names = NULL, format = 'html') %>%
+  kable_styling("striped", full_width = F, position = 'left')
+```
+
+
+Column {data-width=400}
+--------------------------------------------------------
+### Mapping stat for cell barcodes
+
+```{r}
+bc_stat = fread(params$bc_stat_file)
+
+barcodes = fread(params$selected_bcs, header = F)$V1
+
+qc_sele = bc_stat[bc %in% barcodes, ]
+qc_nonsele = bc_stat[!bc %in% barcodes, ]
+
+frags = fread(params$fragments_file)
+names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
+
+frags = frags[bc %in% barcodes]
+
+ncells = length(barcodes)
+frac.in.cell = paste0(round(sum(frags$ndup)/mapping_qc$V2[1], 3) * 100, '%')
+frac.uniq = paste0(round(nrow(frags)/sum(frags$ndup), 3) * 100, '%')
+
+cell.table = data.frame(c(paste0(ncells), frac.in.cell, frac.uniq)) 
+rownames(cell.table) = c('Estimated # of cells', 'Fraction of MAPQ30 in cells', 
+                         'Library Complexity (non redudant fraction)')  
+kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
+  kable_styling("striped", full_width = F, position = 'left')
+
+
+```
+
+
+
+
+
+Cell barcodes QC {data-orientation=rows}
+==========================================
+
+Row 
+--------------------------------------------------------------------
+### TSS enrichment score profile
+```{r}
+set.cols = brewer.pal(n=5, name = 'Dark2')
+tss.mat = fread(params$tss_escore_file)
+tss.mat = tss.mat[, -c(1:6)]
+tss.mat[is.na(tss.mat)] = 0
+tss.escore = colSums(tss.mat)
+ma <- function(x, n = 10){stats::filter(x, rep(1 / n, n), sides = 2)}
+tss.escore = ma(tss.escore)
+tss.escore = tss.escore[14:213]
+df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
+ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1]) +
+  xlab('Distance to TSS') + ylab('TSS enrichment score(bp)') + theme(legend.title=element_blank(), axis.text = element_text(size = 14))
+
+```
+
+
+### Overlapping with functional annotation
+```{r}
+
+qc_sele_df = data.table(frac = c(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$frac_promoter, qc_sele$frac_enh, qc_sele$frac_mito), 'type' = rep(c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'), each = nrow(qc_sele)))
+
+p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fraction') +
+  geom_boxplot(outlier.size = 0.01) +  theme(legend.title=element_blank()) + xlab('')
+ggplotly(p0)
+
+```
+
+
+
+
+### Overlapping stats
+
+```{r}
+
+frac_peak = sum(qc_sele$total_frags * qc_sele$frac_peak)/sum(qc_sele$total_frags)
+frac_mito = sum(qc_sele$total_frags * qc_sele$frac_mito)/sum(qc_sele$total_frags)
+frac_promoter = sum(qc_sele$total_frags * qc_sele$frac_promoter)/sum(qc_sele$total_frags)
+frac_enh = sum(qc_sele$total_frags * qc_sele$frac_enhancer)/sum(qc_sele$total_frags)
+frac_tss = sum(qc_sele$total_frags * qc_sele$frac_tss)/sum(qc_sele$total_frags)
+
+fracs = data.frame(c(frac_peak, frac_mito, frac_promoter, frac_enh, frac_tss))
+row.names(fracs) = c('Fraction in peaks', 'Fraction in mitocondrial chromosome',
+                    'Fraction in promoters', 'Fraction in Enhancers(ENCODE)', 
+                    'Fraction in TSS')
+colnames(fracs) = 'pr'
+fracs$pr = round(fracs$pr, 3)
+fracs$pr = paste0(100*fracs$pr, '%')
+
+kable(fracs, row.names = T, col.names = NULL) %>%
+  kable_styling(full_width = F, position = 'left')
+
+
+
+```
+
+
+Row 
+-------------------------------------------------------------------
+
+
+### Disctribution of fragments
+
+```{r}
+
+bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
+
+p <- ggplot(data = bc_stat, aes(x = total_frags, col = group)) + 
+  geom_density() + scale_x_continuous(trans = 'log10') +
+  theme(legend.position=c(.1, .9)) +  theme(legend.title=element_blank(),
+                                            axis.text = element_text(size = 14)) + xlab('Total #fragments')
+
+ggplotly(p)
+```
+
+
+
+
+### Total fragments VS franction in peak
+
+```{r}
+
+library(ggplot2)
+library(plotly)
+g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], aes(x = total_frags, y = frac_peak, col = group)) + geom_point(size = 0.5) + scale_x_continuous(trans='log10') +
+      theme(legend.position=c(.9, .9)) +  theme(legend.title=element_blank(),
+                                                legend.text = element_text(size=14),
+                                                legend.background = NULL,
+                                                axis.text = element_text(size = 14),
+                                                axis.title = element_text(size = 14)) + xlab('Total #fragments') + ylab('Fraction in Peak')
+
+#ggplotly(g)
+g
+```
+
+
+### Insersion Size distribution
+
+```{r}
+frags[, 'isize' := end - start]
+frags = frags[sample(1:nrow(frags), 1000000), ]
+
+p1 <- ggplot(data = frags[isize < 800], aes(x = isize)) +
+  geom_density() + xlab('insersion size')
+ggplotly(p1)
+
+rm(frags)
+```
+
+
+Downstream Analysis
+=====================================================
+
+Column
+-----------------------------------------------------
+
+### Clustering 
+```{r}
+library(Seurat)
+rm(frags, bc_stat, qc_sele)
+ss = readRDS(paste0(params$downstream_dir, '/seurat_obj_withCluster.rds'))
+
+cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters') 
+cg + scale_color_brewer(palette = "Dark2")
+#ggplotly(cg)
+
+```
+
+
+### Read depth Plot
+```{r}
+
+fg <- FeaturePlot(ss, features = 'nCount_ATAC', reduction = 'umap') + ggtitle('') 
+#ggplotly(fg)
+fg 
+
+```
+
+
+Column
+----------------------------------------------------
+
+### Motif Analysis
+
+```{r}
+## check enriched TFs for each cluster
+library(viridis)
+library(chromVAR)
+library(BiocParallel)
+register(SerialParam())
+
+# Do DA/DE with one cluster vs the rest clusters
+# clusters are the data frame with <barcode> <cluster>
+do_DA <- function(mtx_score, clusters, test = 'wilcox', 
+                  only.pos = T, fdr = 0.05, topn = 10){
+  clusters$cluster = as.character(clusters$cluster)
+  cls = unique(clusters$cluster)
+  res = NULL
+  features = rownames(mtx_score)
+  for(cluster0 in cls){
+    bc0 = clusters[cluster == cluster0]$barcode
+    mtx1 = mtx_score[, colnames(mtx_score) %in% bc0]
+    mtx2 = mtx_score[, !colnames(mtx_score) %in% bc0]
+    mu1 = sapply(1:length(features), function(x) mean(mtx1[x, ]))
+    mu2 = sapply(1:length(features), function(x) mean(mtx2[x, ]))
+    
+   
+    pvs = sapply(1:length(features), function(x) wilcox.test(mtx1[x, ], mtx2[x, ])$p.value )
+    pvs.adj = p.adjust(pvs, method = 'fdr')
+    res0 = data.table('feature' = features, 'cluster' = cluster0,
+                      'mean1' = mu1, 'mean2' = mu2,
+                       'pv' = pvs, 'pv_adjust' = pvs.adj)
+    
+    if(only.pos) res0 = res0[mean1 > 0]
+    
+    res0 = res0[order(pv_adjust), ]
+    res0 = res0[pv_adjust <= fdr]
+    
+    if(nrow(res0) > topn) res0 = res0[1:topn, ]
+    res = rbind(res, res0)
+  }
+  return(res)
+}
+
+metaData = ss@meta.data
+rm(ss)
+if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
+  chromVar.obj = readRDS(paste0(params$downstream_dir, '/chromVar_obj.rds'))
+  #variability <- computeVariability(chromVar.obj)
+  #variability = data.table(variability, stringsAsFactors = F)
+  #variability = variability[order(-variability), ]
+  
+  ## calculate DA
+  da.res = do_DA(chromVar.obj@assays$data$deviations, 
+                 clusters = data.table('barcode' = rownames(metaData),
+                                       'cluster' = metaData$active_clusters))
+  write.csv(da.res, file = paste0(params$downstream_dir, '/differential_TF_accessibility.csv'), quote = F, row.names = F )
+  
+  
+  ## plot enriched TFs in heatmap
+  sele.tfs = da.res$feature
+  zscores = chromVar.obj@assays$data$z
+  sele.zscores = zscores[sele.tfs, ]
+  
+  
+  # change tf name to be more readable
+  rnames = rownames(sele.zscores)
+  rownames(sele.zscores) = sapply(rnames, function(x) unlist(strsplit(x, '_'))[2])
+  
+  
+  metaData = data.table(metaData, keep.rownames = T)
+  setkey(metaData, seurat_clusters)
+  
+  sele.zscores = sele.zscores[, metaData$rn]
+  
+  ann_col = data.table('cluster' = metaData$active_clusters)
+  rownames(ann_col) = metaData$rn
+  
+  sele.zscores[sele.zscores > 10] = 10
+  sele.zscores[sele.zscores < -10] = -10
+  
+  cluster = brewer.pal(n=6, name = 'Dark2')
+  names(cluster) = levels(metaData$seurat_cluster)
+  ann_colors = list('cluster' = cluster)
+  
+  # resample to reduce memory used
+  set.seed(2019)
+  rids = sort(sample(1:ncol(sele.zscores), floor(ncol(sele.zscores)/6)))
+  ann_col0 = ann_col[rids, ]
+  rownames(ann_col0) = colnames(sele.zscores)[rids]
+  pheatmap::pheatmap(sele.zscores[, rids], cluster_cols = F,
+                     cluster_rows = F, show_colnames = F,
+                     annotation_col = ann_col0, color = viridis(100),
+                     annotation_colors = ann_colors, fontsize_row = 6)
+  
+
+}
+
+
+```
+

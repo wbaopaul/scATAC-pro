@@ -210,6 +210,31 @@ generalCluster <- function(reduced.mtx, method = 'hclust', k = 5){
   return(cl.label)
 }
 
+doDimReduction4mat <- function(mtx, max_pc = 20, doTSNE = F){
+  ## DO SVD on tf_idf normalized matrix                             
+  set.seed(1234)
+  SVDtsne = irlba(mtx, max_pc, max_pc, maxit=1000)
+  d_diagtsne = matrix(0, nrow=length(SVDtsne$d), ncol=length(SVDtsne$d))
+  diag(d_diagtsne) = SVDtsne$d
+  SVDtsne_vd = t(d_diagtsne %*% t(SVDtsne$v))
+  rownames(SVDtsne_vd) = colnames(mtx)
+  colnames(SVDtsne_vd) = paste0('pca_', 1:ncol(SVDtsne_vd))
+  
+  ## Run TSNE to 2 dimensions
+  tsne_coords = NULL
+  if(doTSNE){
+    tsnetfidf = Rtsne(SVDtsne_vd, pca=F, perplexity=30, max_iter=5000)
+    
+    tsne_coords = as.data.frame(tsnetfidf$Y)
+    colnames(tsne_coords) = c('tsne_1', 'tsne_2')
+    rownames(tsne_coords) = colnames(mtx)
+  }
+  
+  pca_coords = SVDtsne_vd
+  return(list('pca_coords' = pca_coords, 'tsne_coords' = tsne_coords))
+}
+
+
 # the imput mtx is already filterd
 run_scABC <- function(mtx, k = 5){
   weights = apply(mtx, 2, mean)
@@ -295,3 +320,35 @@ run_cisTopic <- function(mtx, nCores = 4){
 }
 
 
+# Do DA/DE with one cluster vs the rest clusters
+# clusters are the data frame with <barcode> <cluster>
+do_DA <- function(mtx_score, clusters, test = 'wilcox', 
+                  only.pos = T, fdr = 0.05, topn = 10){
+  clusters$cluster = as.character(clusters$cluster)
+  cls = unique(clusters$cluster)
+  res = NULL
+  features = rownames(mtx_score)
+  for(cluster0 in cls){
+    bc0 = clusters[cluster == cluster0]$barcode
+    mtx1 = mtx_score[, colnames(mtx_score) %in% bc0]
+    mtx2 = mtx_score[, !colnames(mtx_score) %in% bc0]
+    mu1 = sapply(1:length(features), function(x) mean(mtx1[x, ]))
+    mu2 = sapply(1:length(features), function(x) mean(mtx2[x, ]))
+    
+   
+    pvs = sapply(1:length(features), function(x) wilcox.test(mtx1[x, ], mtx2[x, ])$p.value )
+    pvs.adj = p.adjust(pvs, method = 'fdr')
+    res0 = data.table('feature' = features, 'cluster' = cluster0,
+                      'mean1' = mu1, 'mean2' = mu2,
+                       'pv' = pvs, 'pv_adjust' = pvs.adj)
+    
+    if(only.pos) res0 = res0[mean1 > 0]
+    
+    res0 = res0[order(pv_adjust), ]
+    res0 = res0[pv_adjust <= fdr]
+    
+    if(nrow(res0) > topn) res0 = res0[1:topn, ]
+    res = rbind(res, res0)
+  }
+  return(res)
+}
