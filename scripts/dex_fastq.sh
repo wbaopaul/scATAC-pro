@@ -5,12 +5,13 @@
 set -e
 unset PYTHONPATH
 
-ff=$1
-output_dir=$2
-output_dir=${output_dir}/demplxed_fastq
+input_fastqs=$1
+
+source $2
+output_dir=${OUTPUT_DIR}/demplxed_fastq
 mkdir -p $output_dir
 
-fastqs=(${ff//,/ }) ## suppose the first fastq is the read file, the others are index fastq files
+fastqs=(${input_fastqs//,/ }) ## suppose the first fastq is the read file, the others are index fastq files
 nfile=${#fastqs[@]}
 kk=$(( $nfile ))
 

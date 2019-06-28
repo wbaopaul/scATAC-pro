@@ -4,7 +4,7 @@
 mtx_file=$1
 
 output_dir=$2 
-output_dir=${output_dir}/downstream_analysis
+output_dir=${output_dir}/downstream_analysis/${CELL_CALLER}
 mkdir -p $output_dir
 
 curr_dir=`dirname $0`

@@ -1,15 +1,15 @@
 ######################################################################
-## provide the install path of the dependent software ####
+## provide the install path of the dependent software
 ## ONLY change the value, DO NOT change stuff before =
 ######################################################################
-
+OUTPUT_DIR=./output
 
 ####################################################################
 ## Adapter trim tools and adapter seqeunce file
 ####################################################################
-# if ADAPTER is specified, trimgalore will be used
-# if ADAPTER='', trimgalore will be used 
-ADAPTER=/mnt/isilon/tan_lab/yuw1/local_tools/Trimmomatic-0.39/adapters/NexteraPE-PE.fa
+# if ADAPTER_SEQ is specified, trimgalore will be used
+# if ADAPTER_SEQ='', trimgalore will be used 
+ADAPTER_SEQ=/mnt/isilon/tan_lab/yuw1/local_tools/Trimmomatic-0.39/adapters/NexteraPE-PE.fa
 Trimmomatic_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/Trimmomatic-0.39
 Trimgalore_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
 
@@ -38,7 +38,7 @@ MAPQ=30  ## filter bam by MAPQ for downstream analysis
 
 
 ##########################################################
-## set up paths for other dependencies
+## set up paths for other tools
 ##########################################################
 
 SAMTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/bin
@@ -57,8 +57,7 @@ DEEPTOOLS_PATH=/mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 
 PERL_PATH=/usr/bin
 
-
-
+HINT_PATH=~/.local/bin  ##use rgt-hint to do footprint analysis
 
 ######################################################################
 ## Output prefix 
@@ -80,7 +79,7 @@ TSS=/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_tss.bed
 
 
 ######################################################################
-## parameter for get bin by barcode matrix
+## parameter for binning genome
 ######################################################################
 BIN_RESL=10000    ## bin resolution in bp
 CHROM_SIZE_FILE='/mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/chrom_hg38.sizes'    ## chrom sizes file

@@ -7,8 +7,7 @@ source_local <- function(fname){
 source_local('dsAnalysis_utilities.R')
 
 library(parallel)
-library(pheatmap)
-library(viridis)
+
 
 args = commandArgs(T)
 mtx_file = args[1]

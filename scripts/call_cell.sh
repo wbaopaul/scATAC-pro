@@ -4,7 +4,8 @@
 set -e
 
 input_mtx_file=$1
-ABS_PATH=`cd "$2"; pwd`
+source $2
+ABS_PATH=`cd "$OUTPUT_DIR"; pwd`
 
 bc_stat_file=${ABS_PATH}/qc_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.qc_per_barcode.bed
 mapping_qc_file=${ABS_PATH}/qc_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.summary

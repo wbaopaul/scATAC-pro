@@ -2,14 +2,13 @@
 
 ### will search bam file under ouptu_dir/mapping_resutl
 set -e
-
+source $2
 input_peaks=$1
-output_dir=$2
 
-mat_dir="${output_dir}/raw_matrix"
+mat_dir="${OUTPUT_DIR}/raw_matrix"
 mkdir -p $mat_dir
 
-input_bam=${output_dir}/mapping_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam
+input_bam=${OUTPUT_DIR}/mapping_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam
 
 ncore=$(nproc --all)
 ncore=$(($ncore - 1))

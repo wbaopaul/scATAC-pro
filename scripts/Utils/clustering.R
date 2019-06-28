@@ -85,4 +85,10 @@ if(cluster_method == 'chromVar'){
 saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_withCluster.rds'))
 
 
+#output bacrcode cluster information
+bc_cls = data.table('Barcode' = rownames(seurat.obj@meta.data), 'Cluster' = seurat.obj@meta.data$active_clusters)
+setkey(bc_cls, Cluster)
+
+write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table.txt'), sep = '\t',
+            quote = F, row.names = F)
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 input_bam=$1
-
-peaks_dir="${2}/peaks"
+source $2
+peaks_dir="${OUTPUT_DIR}/peaks"
 mkdir -p $peaks_dir
 
 out_prefix=${OUTPUT_PREFIX}.${MAPPING_METHOD}
@@ -34,7 +34,9 @@ if [ ${PEAK_CALLER} = 'MUSIC' ];then
 
 	#${MUSIC_PATH}/MUSIC -sort_reads ${work_dir}/chip ${work_dir}/chip/sorted
 	#${MUSIC_PATH}/MUSIC -remove_duplicates ${work_dir}/chip/sorted 2 ${work_dir}/chip/dedup
-	${MUSIC_PATH}/MUSIC -get_multiscale_broad_ERs -chip ${work_dir}/chip/dedup -mapp /mnt/isilon/tan_lab/yuw1/local_tools/annotations/GRCh38_multimappability -l_mapp 36 -begin_l 1000 -end_l 16000 -step 1.5
+	${MUSIC_PATH}/MUSIC -get_multiscale_broad_ERs -chip ${work_dir}/chip/dedup \
+        -mapp /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/Mappability_MAP/map50_hg38 \
+        -l_mapp 50 -begin_l 1000 -end_l 16000 -step 1.5
  
 
 	## remove peaks overlapped with blacklist

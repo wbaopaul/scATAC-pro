@@ -33,7 +33,7 @@ demplx_fastq: /bin/bash
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Demultiplex fastq ..." 
-	@$(SCRIPTS)/dex_fastq.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/dex_fastq.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo 
 
 
@@ -46,7 +46,7 @@ trimming: /bin/bash
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Trimming fastq ..." 
-	@$(SCRIPTS)/trimming.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/trimming.sh $(INPUT_FILE) $(CONFIG_FILE)
 
 
 ######################################
@@ -58,7 +58,7 @@ mapping:
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Aligning ..." 
-	@$(SCRIPTS)/mapping.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/mapping.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo
 
 
@@ -71,7 +71,7 @@ mapping_qc: /bin/bash
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Reporting mapping qc ..." 
-	@$(SCRIPTS)/mapping_qc.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/mapping_qc.sh $(INPUT_FILE) $(CONFIG_FILE)
 #######################################
 ## filter bam
 #######################################
@@ -79,7 +79,7 @@ filter_bam: /bin/bash
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Filtering bwa ..." 
-	@$(SCRIPTS)/filter_bam.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/filter_bam.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo
 
 
@@ -92,7 +92,7 @@ call_peak:
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Calling peaks ..." 
-	@$(SCRIPTS)/call_peak.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/call_peak.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo 
 
 
@@ -103,7 +103,7 @@ get_mtx:
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Getting peak by barcode matrix ..." 
-	@$(SCRIPTS)/get_mtx.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/get_mtx.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo 
 
 #######################################
@@ -113,7 +113,7 @@ generate_signal:
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Call peaks ..." 
-	@$(SCRIPTS)/generate_signal.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/generate_signal.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo 
 
 #######################################
@@ -123,7 +123,7 @@ qc_per_barcode:
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Doing QC per barcode ..." 
-	@$(SCRIPTS)/qc_per_barcode.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/qc_per_barcode.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo 
 
 #######################################
@@ -133,7 +133,7 @@ call_cell:
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Calling cell ..." 
-	@$(SCRIPTS)/call_cell.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/call_cell.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo 
 
 #######################################
@@ -143,7 +143,7 @@ clustering:
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Clustering ..." 
-	@$(SCRIPTS)/clustering.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@$(SCRIPTS)/clustering.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo 
 
 #######################################
@@ -152,7 +152,37 @@ clustering:
 motif_analysis: 
 	@echo "--------------------------------------------" 
 	@date 
-	@echo "Clustering ..." 
-	@$(SCRIPTS)/motif_analysis.sh $(INPUT_FILE) $(OUTPUT_DIR)
+	@echo "Doing motif analysis ..." 
+	@$(SCRIPTS)/motif_analysis.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@echo 
+
+################################################
+## split bam and generate track (bigwig)
+################################################
+split_bam: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "split bam into clusters ..." 
+	@$(SCRIPTS)/split_bam2clusters.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@echo 
+
+################################################
+## footprint
+################################################
+footprint: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Footprint analysis ..." 
+	@$(SCRIPTS)/footprint_by_cluster.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@echo 
+
+#######################################
+## report
+#######################################
+report: 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Getting reports ..." 
+	@$(SCRIPTS)/report.sh $(INPUT_FILE) $(CONFIG_FILE)
 	@echo 
 

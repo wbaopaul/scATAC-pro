@@ -3,7 +3,7 @@
 ## output mapping qc results
 
 input_dir=$1  ## the directory where the mapping results are
-output_dir=${2}/qc_result
+output_dir=${2}
 mkdir -p $output_dir
 
 ncore=$(nproc --all)
@@ -28,7 +28,7 @@ ${SAMTOOLS_PATH}/samtools idxstats -@ $ncore ${input_pre}.positionsort.MAPQ30.ba
 
 
 tmp_sam_file=${output_dir}/tmp.sam
-${SAMTOOLS_PATH}/samtools view -@ $ncore -q 1 ${input_pre}.positionsort.bam > $tmp_sam_file
+${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 ${input_pre}.positionsort.bam > $tmp_sam_file
 
 if [ $MAPPING_METHOD == 'bwa' ]; then
    total_uniq_mapped=$( wc -l ${tmp_sam_file} | cut -d ' ' -f1 )  ## number of unique mapped reads
@@ -61,7 +61,32 @@ total_mito_MAPQ30=$((${total_mito_MAPQ30}/2))
 total_dups_MAPQ30=$(grep 'duplicates' ${output_pre}.MAPQ30.flagstat.txt | cut -d ' ' -f1)
 total_dups_MAPQ30=$((${total_dups_MAPQ30}/2))
 
+rm ${output_pre}.idxstat.txt 
+rm ${output_pre}.flagstat.txt 
 
+rm ${output_pre}.MAPQ30.idxstat.txt 
+rm ${output_pre}.MAPQ30.flagstat.txt 
+
+#print to file
+echo "Total_Pairs    $total_pairs" > ${output_pre}.summary 
+echo "Total_Pairs_Mapped    $total_pairs_mapped" >> ${output_pre}.summary 
+echo "Total_Uniq_Mapped    $total_uniq_mapped" >> ${output_pre}.summary 
+#echo "Total_Mito    $total_mito" >> ${output_pre}.summary 
+echo "Total_Mito_Mapped    $total_mito_mapped" >> ${output_pre}.summary 
+echo "Total_Dups    $total_dups" >> ${output_pre}.summary 
+
+
+echo "Total_Pairs_MAPQ30    $total_pairs_MAPQ30" >> ${output_pre}.summary 
+echo "Total_Mito_MAPQ30    $total_mito_MAPQ30" >> ${output_pre}.summary 
+echo "Total_Dups_MAPQ30    $total_dups_MAPQ30" >> ${output_pre}.summary 
+
+rm $tmp_sam_file
+
+
+
+echo "MAPPING QC Done!"
+rm ${output_pre}.MAPQ30.idxstat.txt 
+rm ${output_pre}.MAPQ30.flagstat.txt 
 
 #print to file
 echo "Total_Pairs    $total_pairs" > ${output_pre}.summary 

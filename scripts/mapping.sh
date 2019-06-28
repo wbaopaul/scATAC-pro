@@ -4,8 +4,9 @@ set -e
 
 fastqs=$1
 ## align
+source $2
 
-mapRes_dir="${2}/mapping_result"
+mapRes_dir="${OUTPUT_DIR}/mapping_result"
 mkdir -p $mapRes_dir
 curr_dir=`dirname $0`
 
@@ -58,14 +59,13 @@ ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPI
 echo "Summarizing mapping stats ..."
 
 curr_dir=`dirname $0`
-qc_dir=${2}/qc_result
+qc_dir=${OUTPUT_DIR}/qc_result
 mkdir -p $qc_dir
-bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $2
+bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $qc_dir
 
 
 if [ $MAPQ -ne 30 ]; then
      ${SAMTOOLS_PATH}/samtools view -f 0x2 -b -h -q $MAPQ -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam 
- #    ${SAMTOOLS_PATH}/samtools markdup -r -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.MAPQ${MAPQ}.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.dedup.MAPQ${MAPQ}.bam 
 fi
 
 

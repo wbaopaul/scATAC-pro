@@ -3,7 +3,8 @@
 set -e
 
 input_frags=$1  ## use read pair(fragment) bed file as input
-qc_dir="${2}/qc_result"
+source $2
+qc_dir="${OUTPUT_DIR}/qc_result"
 mkdir -p $qc_dir
 
 

@@ -1,19 +1,46 @@
 ---
-title: "scATAC-pro Analysis Report"
+title: scATAC-pro Analysis Report
 output: 
   flexdashboard::flex_dashboard:
     vertical_layout: fill
     social: menu
-    theme: unite
+    theme: united
 params:
   bc_stat_file: ~/yuw1/run_scATAC-pro/output/qc_result/ss.bwa.qc_per_barcode.bed
-  selected_bcs: ~/yuw1/run_scATAC-pro/output/filtered_matrix/cellranger/barcodes.txt
+  selected_bcs: ~/yuw1/run_scATAC-pro/output/filtered_matrix/EmptyDrop/barcodes.txt
   mapping_qc_file: ~/yuw1/run_scATAC-pro/output/qc_result/ss.bwa.summary
-  fragments_file: ~/yuw1/run_scATAC-pro/output/fragments/fragments.bed
-  downstream_dir: ~/yuw1/run_scATAC-pro/output/downstream_analysis/cellranger
+  fragments_file: ~/yuw1/run_scATAC-pro/output/fragments/fragments_MAPQ30.bed
+  downstream_dir: ~/yuw1/run_scATAC-pro/output/downstream_analysis/EmptyDrop
   tss_escore_file: ~/yuw1/run_scATAC-pro/output/signal/ss.bwa.dedup.paired.MAPQ30.bam.mtx
   
 ---
+
+<style type="text/css">
+
+.title { /* Header 1 */
+  font-size: 28px;
+}
+
+.chart-title {  /* chart_title  */
+   font-family: "Raleway", Helvetica, Arial, sans-serif;
+   font-size: 18px;
+   font-weight: 800;
+}  
+.navbar-brand {
+   font-size: 22px;
+   font-weight: 900;
+}
+
+</style>
+
+
+<style type="image-container">
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+</style>
+
+
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
@@ -23,16 +50,17 @@ library(kableExtra)
 library(RColorBrewer)
 library(ggplot2)
 library(plotly)
+library(viridis)
 
 ```
 
-Mapping QC 
+<span style="font-size:20px;"> Mapping QC </span>
 ==========================================
 
 Column {data-width=400}
 -----------------------------------------------------------------------
 
-### Global mapping stat
+### Global mapping statistics
 
 ```{r}
 mapping_qc = fread(params$mapping_qc_file, header = F)
@@ -46,7 +74,7 @@ kable(mapping_qc, col.names = NULL, format = 'html') %>%
 
 Column {data-width=400}
 --------------------------------------------------------
-### Mapping stat for cell barcodes
+### Mapping statistics for cell barcodes
 
 ```{r}
 bc_stat = fread(params$bc_stat_file)
@@ -78,7 +106,7 @@ kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
 
 
 
-Cell barcodes QC {data-orientation=rows}
+<span style="font-size:20px;">Cell barcodes QC  </span> {data-orientation=rows}
 ==========================================
 
 Row 
@@ -95,26 +123,27 @@ tss.escore = ma(tss.escore)
 tss.escore = tss.escore[14:213]
 df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
 ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1]) +
-  xlab('Distance to TSS') + ylab('TSS enrichment score(bp)') + theme(legend.title=element_blank(), axis.text = element_text(size = 14))
+  xlab('Distance to TSS') + ylab('TSS enrichment score(bp)') + theme(legend.title=element_blank(), axis.text = element_text(size = 15), axis.title = element_text(size = 15))
 
 ```
 
 
-### Overlapping with functional annotation
+### Overlapping with sequence annotated regions
 ```{r}
 
 qc_sele_df = data.table(frac = c(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$frac_promoter, qc_sele$frac_enh, qc_sele$frac_mito), 'type' = rep(c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'), each = nrow(qc_sele)))
 
 p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fraction') +
-  geom_boxplot(outlier.size = 0.01) +  theme(legend.title=element_blank()) + xlab('')
-ggplotly(p0)
+  geom_boxplot(outlier.size = 0.01) +  theme(legend.position = 'none', axis.text = element_text(size = 15), axis.title.x = element_blank(), axis.title.y = element_text(size = 15)) + xlab('')
+#ggplotly(p0)
+p0
 
 ```
 
 
 
 
-### Overlapping stats
+### Overlapping statistics
 
 ```{r}
 
@@ -144,7 +173,7 @@ Row
 -------------------------------------------------------------------
 
 
-### Disctribution of fragments
+### Distribution of fragments
 
 ```{r}
 
@@ -153,15 +182,16 @@ bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
 p <- ggplot(data = bc_stat, aes(x = total_frags, col = group)) + 
   geom_density() + scale_x_continuous(trans = 'log10') +
   theme(legend.position=c(.1, .9)) +  theme(legend.title=element_blank(),
-                                            axis.text = element_text(size = 14)) + xlab('Total #fragments')
-
-ggplotly(p)
+                                            axis.title = element_text(size = 15),
+                                            axis.text = element_text(size = 15)) + xlab('Total #fragments') + ylab('Density')
+p
+#ggplotly(p)
 ```
 
 
 
 
-### Total fragments VS franction in peak
+### Total fragments VS fraction in peaks
 
 ```{r}
 
@@ -169,32 +199,35 @@ library(ggplot2)
 library(plotly)
 g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], aes(x = total_frags, y = frac_peak, col = group)) + geom_point(size = 0.5) + scale_x_continuous(trans='log10') +
       theme(legend.position=c(.9, .9)) +  theme(legend.title=element_blank(),
-                                                legend.text = element_text(size=14),
+                                                legend.text = element_text(size=15),
                                                 legend.background = NULL,
-                                                axis.text = element_text(size = 14),
-                                                axis.title = element_text(size = 14)) + xlab('Total #fragments') + ylab('Fraction in Peak')
+                                                axis.text = element_text(size = 15),
+                                                axis.title = element_text(size = 15)) + xlab('Total #fragments') + ylab('Fraction in Peak')
 
 #ggplotly(g)
 g
 ```
 
 
-### Insersion Size distribution
+### Distribution of Insert Size 
 
 ```{r}
 frags[, 'isize' := end - start]
 frags = frags[sample(1:nrow(frags), 1000000), ]
 
 p1 <- ggplot(data = frags[isize < 800], aes(x = isize)) +
-  geom_density() + xlab('insersion size')
-ggplotly(p1)
+  geom_density() + xlab('Insert size') + ylab('Density') +  theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15))
+
+p1
+#ggplotly(p1)
 
 rm(frags)
 ```
 
 
-Downstream Analysis
+<span style="font-size:20px;"> Downstream Analysis </span>
 =====================================================
+
 
 Column
 -----------------------------------------------------
@@ -205,19 +238,23 @@ library(Seurat)
 rm(frags, bc_stat, qc_sele)
 ss = readRDS(paste0(params$downstream_dir, '/seurat_obj_withCluster.rds'))
 
-cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters') 
-cg + scale_color_brewer(palette = "Dark2")
+cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters', label = T) 
+cg + scale_color_brewer(palette = "Paired") + theme(legend.text = element_text(size = 17))
 #ggplotly(cg)
 
 ```
 
 
-### Read depth Plot
+### Total reads per cell
 ```{r}
+ss$log10_nCount = log10(ss$nCount_ATAC)
+#fg <- FeaturePlot(ss, features = 'log10_nCount', reduction = 'umap') + ggtitle('') +
+#   scale_fill_viridis()
 
-fg <- FeaturePlot(ss, features = 'nCount_ATAC', reduction = 'umap') + ggtitle('') 
-#ggplotly(fg)
-fg 
+dat = data.table('logN' = ss$log10_nCount, 'UMAP_1' = ss@reductions$umap@cell.embeddings[, 1], 'UMAP_2' = ss@reductions$umap@cell.embeddings[, 2])
+ggplot(data = dat, aes(x = UMAP_1, y = UMAP_2, colour = logN)) + geom_point(size = 1.1) +
+  scale_colour_viridis() + theme(legend.title=element_blank(), axis.title = element_text(size = 15), axis.text = element_text(size = 15), legend.text = element_text(size = 17))
+
 
 ```
 
@@ -227,9 +264,8 @@ Column
 
 ### Motif Analysis
 
-```{r}
+```{r, fig.height=9, out.width='\\textwidth'}
 ## check enriched TFs for each cluster
-library(viridis)
 library(chromVAR)
 library(BiocParallel)
 register(SerialParam())
@@ -292,11 +328,12 @@ if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
   rnames = rownames(sele.zscores)
   rownames(sele.zscores) = sapply(rnames, function(x) unlist(strsplit(x, '_'))[2])
   
-  
+  metaData$active_clusters = as.character(metaData$active_clusters)  
   metaData = data.table(metaData, keep.rownames = T)
-  setkey(metaData, seurat_clusters)
+  setkey(metaData, active_clusters)
   
   sele.zscores = sele.zscores[, metaData$rn]
+  sele.zscores = sele.zscores[!duplicated(sele.zscores), ]
   
   ann_col = data.table('cluster' = metaData$active_clusters)
   rownames(ann_col) = metaData$rn
@@ -304,8 +341,8 @@ if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
   sele.zscores[sele.zscores > 10] = 10
   sele.zscores[sele.zscores < -10] = -10
   
-  cluster = brewer.pal(n=6, name = 'Dark2')
-  names(cluster) = levels(metaData$seurat_cluster)
+  cluster = brewer.pal(n=length(unique(metaData$active_clusters)), name = 'Paired')
+  names(cluster) = sort(unique(metaData$active_clusters))
   ann_colors = list('cluster' = cluster)
   
   # resample to reduce memory used
@@ -314,9 +351,9 @@ if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
   ann_col0 = ann_col[rids, ]
   rownames(ann_col0) = colnames(sele.zscores)[rids]
   pheatmap::pheatmap(sele.zscores[, rids], cluster_cols = F,
-                     cluster_rows = F, show_colnames = F,
+                     cluster_rows = T, show_colnames = F, fontsize = 13,
                      annotation_col = ann_col0, color = viridis(100),
-                     annotation_colors = ann_colors, fontsize_row = 6)
+                     annotation_colors = ann_colors, fontsize_row = 9)
   
 
 }
@@ -324,3 +361,61 @@ if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
 
 ```
 
+Column
+----------------------------------------------------
+
+
+### Footprinting Analysis: Comparing two clusters
+
+```{r, out.width='\\textwidth'}
+
+footprint_stats.file = paste0(params$downstream_dir, '/data_by_cluster/footprint/cluster_0_cluster_1/cluster_0_cluster_1_statistics.txt')
+if(file.exists(footprint_stats.file)){
+  library(ggrepel)
+  library(gridExtra)
+  library(grid)
+  footprint_stats = fread(footprint_stats.file)
+
+  footprint_stats[, 'motif1' := unlist(strsplit(Motif, '.', fixed = T))[3], by = Motif]
+  footprint_stats[, 'motif2' := unlist(strsplit(Motif, '.', fixed = T))[4], by = Motif]
+  footprint_stats[, 'motif2' := ifelse(is.na(motif2), "", motif2)]
+  footprint_stats[, 'motif' := paste0(motif1, motif2)]
+  footprint_stats[, c('motif1', 'motif2') := NULL]
+  
+  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05, 'Differentiated', 'non-Differentiated')]
+  footprint_stats$motif_show = ""
+  footprint_stats[P_values <= 0.05]$motif_show = footprint_stats[P_values <= 0.05]$motif
+ p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + ylab('TF Activity Difference') + theme(legend.text = element_text(size=15), axis.title = element_text(size = 15), axis.text.x = element_blank(), legend.title = element_blank(), legend.direction = 'horizontal', plot.title = element_text(size = 15, face = 'bold')) + ggtitle('TF Activity difference: cluster_1 - cluster_0') 
+ 
+p + geom_text_repel(force = 10) + theme(plot.margin=unit(c(0.2, 0, 0.2, 0),"cm"), legend.position = 'bottom')
+ 
+ 
+}
+
+```
+
+
+### An example 
+```{r, out.width='\\textwidth'}
+if(file.exists(footprint_stats.file)){
+ 
+ #select a TF to show
+ sele.motif = 'CEBPE'
+ tf.file.name = footprint_stats[motif == sele.motif]$Motif
+ tf.file.name = paste0(params$downstream_dir, '/data_by_cluster/footprint/cluster_0_cluster_1/Lineplots/', tf.file.name, '.txt')
+ 
+ dd = fread(tf.file.name)
+ dd[, 'id' := -99:100]
+ dd0 = rbind(subset(dd, select = - cluster_1))
+ dd1 = rbind(subset(dd, select = - cluster_0))
+ names(dd0)[1] = names(dd1)[1] = 'score'
+ dd = rbind(dd1, dd0)
+ dd$cluster = rep(c('cluster_1', 'cluster_0'), each = nrow(dd0))
+ 
+ p2 = ggplot(data = dd, aes(x = id, y = score, colour = cluster)) + geom_line(aes(linetype = cluster), size = 1.1) + ggtitle(sele.motif) + xlab('Distance to Motif') + theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15), legend.position = c(0.8, 0.8), plot.title = element_text(size = 15, face = 'bold')) + theme(plot.margin=unit(c(0.2,0,0.2,0),"cm"))
+ 
+ 
+ p2
+}
+
+```
