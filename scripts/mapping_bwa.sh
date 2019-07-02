@@ -1,10 +1,5 @@
 #!/bin/bash
 
-## index
-
-#echo "Indexing genome ... "
-#${MAPPING_PATH}/bwa index $BWA_INDEX
-
 
 ## align
 input_ff=$1
@@ -12,6 +7,15 @@ fastqs=(${input_ff//,/ })
 
 mapRes_dir="${2}"
 
+if [[ -z "$MAPPING_PATH" || ! -f "$MAPPING_PATH" ]];then
+    MAPPING_PATH=`which bwa`
+    MAPPING_PATH=$(dirname $MAPPING_PATH)
+fi
+
+## index
+
+#echo "Indexing genome ... "
+#${MAPPING_PATH}/bwa index $BWA_INDEX
 
 echo "Starting alignment ... "
 ${MAPPING_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.bwa.sam

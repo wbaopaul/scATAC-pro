@@ -134,6 +134,48 @@ if [ $CLUSTER == 0 ]; then
 fi
 
 
+###################################################
+## required dependencies PATH -- set as global para
+###################################################
+declare -x SAMTOOLS_PATH
+declare -x DEEPTOOLS_PATH
+declare -x R_PATH
+declare -x PYTHON_PATH
+
+PYTHON_PATH=`which python`
+PYTHON_PATH=$(dirname ${PYTHON_PATH})
+
+R_PATH=`which R`
+R_PATH=$(dirname ${R_PATH})
+
+SAMTOOLS_PATH=`which samtools`
+SAMTOOLS_PATH=$(dirname ${SAMTOOLS_PATH})
+
+BEDTOOLS_PATH=`which bedtools`
+BEDTOOLS_PATH=$(dirname ${BEDTOOLS_PATH})
+
+DEEPTOOLS_PATH=`which deeptools`
+DEEPTOOLS_PATH=$(dirname ${DEEPTOOLS_PATH})
+
+
+###################################################
+## provided through user specified configure file
+###################################################
+
+
+source $CONFIG
+
+
+mkdir -p $OUTPUT_DIR
+
+###################################################
+##Run scATAC-pro
+###################################################
+
+#make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
+DEEPTOOLS_PATH=`which deeptools`
+DEEPTOOLS_PATH=$(dirname ${DEEPTOOLS_PATH})
+
 
 ###################################################
 ## provided through user specified configure file

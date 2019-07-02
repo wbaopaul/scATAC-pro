@@ -3,14 +3,13 @@
 set -e
 
 input_bam=$1  ## two input bam file for two cluster, seperated by ,
-
+source $2
 bams=(${input_bam//,/ })
 
 bam1=${bams[0]}
 bam2=${bams[1]}
 
-output_dir=$2
-output_dir=${output_dir}/downstream_analysis/${CELL_CALLER}/data_by_cluster/footprint
+output_dir=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/footprint
 mkdir -p $output_dir
 
 input_peak=${2}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_peaks_BlacklistRemoved.narrowPeak  ## suppose path for peak file
@@ -40,6 +39,6 @@ ${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc 10 --mpbs
     --mpbs-file2=${output_dir}/${cluster1}_mpbs.bed --reads-file1=$bam1 --reads-file2=$bam2 --condition1=$cluster1 --condition2=$cluster2 --output-location=${output_dir}/${cluster1}_${cluster2}
 
 
-echo "Done!"
+echo "Footprinting Analysis Done!"
 
 

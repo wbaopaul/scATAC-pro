@@ -17,12 +17,12 @@ ncore=$(($ncore - 1))
 
 curr_dir=`dirname $0`
 if [[ ! -f ${mat_dir}/fragments.bed ]]; then
-   if [[ ! -f ${mat_dir}/tmp.sam ]]; then
-     echo "Converting bam to sam"
-     ${SAMTOOLS_PATH}/samtools view -h -@ $ncore  $input_bam > ${mat_dir}/tmp.sam
-   fi
-   echo "Getting bed file for read pair (fragment) information"
-   ${PERL_PATH}/perl ${curr_dir}/Utils/simply_sam2frags.pl --read_file ${mat_dir}/tmp.sam  --output_file ${mat_dir}/fragments.bed
+    #echo "Converting bam to sam"
+    #${SAMTOOLS_PATH}/samtools view -h -@ $ncore  $input_bam > ${mat_dir}/tmp.sam
+    echo "Getting bed file for read pair (fragment) information"
+   #${PERL_PATH}/perl ${curr_dir}/src/simply_sam2frags.pl --read_file ${mat_dir}/tmp.sam  --output_file ${mat_dir}/fragments.bed
+   ${PERL_PATH}/perl ${curr_dir}/src/simply_bam2frags.pl --read_file $input_bam \
+        --output_file ${mat_dir}/fragments.bed --samtools_path $SAMTOOLS_PATH
 
 fi
 
@@ -33,7 +33,7 @@ fi
 
 echo "Getting peak by barcode matrix..."
 # this R script will output sorted fragments as well
-${R_PATH}/R --vanilla --args ${mat_dir}/fragments.bed $input_peaks ${mat_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.peak.barcode.mtx < ${curr_dir}/Utils/get_mtx.R 
+${R_PATH}/R --vanilla --args ${mat_dir}/fragments.bed $input_peaks ${mat_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.peak.barcode.mtx < ${curr_dir}/src/get_mtx.R 
 
 if [[ $BIN_RESL != '' ]]; then
     echo "Getting bin by barcode matrix as well ..."
@@ -41,12 +41,12 @@ if [[ $BIN_RESL != '' ]]; then
     bin_dir=${mat_dir}/bin_mat_resl${BIN_RESL}
     mkdir -p $bin_dir
     ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > $bin_file
-    ${R_PATH}/R --vanilla --args ${mat_dir}/fragments.bed $bin_file ${bin_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bin_resl${BIN_RESL}.mtx < ${curr_dir}/Utils/get_mtx.R 
+    ${R_PATH}/R --vanilla --args ${mat_dir}/fragments.bed $bin_file ${bin_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bin_resl${BIN_RESL}.mtx < ${curr_dir}/src/get_mtx.R 
     rm $bin_file
 fi
 
 
-rm ${mat_dir}/tmp.sam
+#rm ${mat_dir}/tmp.sam
 
 echo "Get Matrix Done!"
 

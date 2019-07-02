@@ -1,0 +1,15 @@
+######################################################################
+## provide the install path of the dependent software
+## ONLY change the value, DO NOT change the variable name
+######################################################################
+
+## where to install dependencies
+INSTALL_PREFIX = /mnt/isilon/tan_lab/yuw1/local_tools/bin/    
+
+## at least one of the following path should be specified/detected
+BWA_PATH =
+BOWTIE_PATH =
+BOWTIEW2_PATH =
+
+SAMTOOLS_PATH = 
+ 

@@ -3,10 +3,13 @@
 
 report_dir=$1
 mkdir -p $report_dir
+
+source $2
+
 abs_report_dir=`cd ${report_dir}; pwd`
 echo "report path: ${abs_report_dir}"
 
-abs_out_dir=`cd ${2}; pwd`
+abs_out_dir=`cd ${OUTPUT_DIR}; pwd`
 
 downstream_dir=${abs_out_dir}/downstream_analysis/${CELL_CALLER}
 mkdir -p $downstream_dir
@@ -20,7 +23,7 @@ tss_escore_file=${abs_out_dir}/signal/${OUTPUT_PREFIX}.${MAPPING_METHOD}.dedup.p
 curr_dir=`dirname $0`
 
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/Utils/render2report.R \
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/render2report.R \
     ${abs_report_dir}/scATAC-pro_report_${CELL_CALLER}.html $mapping_qc_file $bc_stat_file \
     $barcode_file $fragments_file $downstream_dir $tss_escore_file
          
