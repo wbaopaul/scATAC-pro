@@ -1,7 +1,16 @@
 #!/bin/bash
 
 input_bam=$1
-source $2
+
+# reading configure file
+curr_dir=`dirname $0`
+curr_dir=`cd "${curr_dir}"; pwd`
+source ${curr_dir}/read_conf.sh
+read_conf "$2"
+read_conf "$3"
+
+#source ${curr_dir}/read_conf1.sh $2 $3
+
 peaks_dir="${OUTPUT_DIR}/peaks"
 mkdir -p $peaks_dir
 
@@ -13,6 +22,7 @@ if [ ${PEAK_CALLER} = 'macs2' ];then
 	unset PYTHONPATH
 	work_dir=${peaks_dir}/macs2
 	mkdir -p $work_dir
+    echo $out_prefix
 	${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $work_dir -n $out_prefix -f BAM $MACS2_OPTS 
 	#${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $peaks_dir -f BAM $MACS2_OPTS --nomodel --extsize 147
 

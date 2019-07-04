@@ -1,10 +1,14 @@
 #!/bin/bash
-
 set -e
+
+curr_dir=`dirname $0`
+#curr_dir=`cd "$curr_dir" ; pwd`
+source ${curr_dir}/read_conf.sh
+read_conf "$2"
+read_conf "$3"
 
 input_fastqs=$1
 
-source $2
 
 
 output_dir=${OUTPUT_DIR}/trimmed_fastq
@@ -19,7 +23,6 @@ if [[ $kk < 2 ]];then
   exit
 fi
 
-curr_dir=`dirname $0`
 
 
 ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
@@ -30,14 +33,21 @@ prefix1=$(basename ${fastqs[1]})
 ncore=$(nproc --all)
 ncore=$(($nproc - 1))
 
-if [[ $ADAPTER_SEQ != '' ]];then
-    java -jar ${Trimmomatic_PATH}/*jar PE -threads 4 ${fastqs[0]} ${fastqs[1]} \
+if [ ${TRIM_METHOD} = 'Trimmomatic' ]; then
+    echo "Using Trimmomatic ..."  
+    if [ -z $TRIMMOMATIC_PATH ]; then 
+        echo "error: no trimmomatic_path found" >&2
+        exit 
+    fi
+    java -jar ${TRIMMOMATIC_PATH}/*jar PE -threads 4 ${fastqs[0]} ${fastqs[1]} \
         ${output_dir}/trimmed_paired_${prefix0} ${output_dir}/trimmed_unpaired_${prefix0} \
     ${output_dir}/trimmed_paired_${prefix1} ${output_dir}/trimmed_unpaired_${prefix1} \
     ILLUMINACLIP:${ADAPTER_SEQ}:2:30:10:2:keepBothReads LEADING:3 TRAILING:3 MINLEN:25
 else
-    echo "ADAPTER sequence not detected, using trim_galore ..."
-    ${Trimgalore_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]}   --paired
+    echo "Using trim_galore ..." 
+    ${TRIM_GALORE_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]}   --paired
 fi
     
-echo "Trimming Done!"
+echo "Trimming Done!" 
+
+

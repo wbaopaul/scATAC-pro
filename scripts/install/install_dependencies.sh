@@ -12,7 +12,6 @@ die() {
 
 function usage {
     echo -e "Usage : ./install_dependencies.sh"
-    echo -e "-c"" <configuration install file>"
     echo -e "-o"" <installation folder>"
     echo -e "-q"" <quiet>"
     echo -e "-h"" <help>"
@@ -28,18 +27,17 @@ echo -e "$BLUE""Starting $SOFT installation ...""$NORMAL";
 ## Initialize
 ############################################################
 quiet=0
-set -- $(getopt c:o:qh "$@")
+set -- $(getopt o:qh "$@")
 while [ $# -gt 0 ]
 do
     case "$1" in
-        (-c) conf=$2;shift;;
         (-o) install_dir=$2;shift;;
         (-q) quite=1;shift;;
         (-h) usage;;
         (--) shift;break;;
         (-*) echo "$0: error - unrecongnized option $1" 1>&2; exit 1;;
         (*) break;;
-    esac;
+    esac
     shift
 done
 
@@ -49,34 +47,8 @@ then
 fi
 
 
-if [[ ! -e $conf ]]
-then
-    die "Error: Configuration file not found"
-fi
+mkdir -p $install_dir
 
-
-
-
-#############################################################################
-## Read the config file
-#############################################################################
-while read curline_read; do
-    curline=${curline_read// /}
-    if [[ $curline != \#* && ! -z $curline ]]; then
-        var=`echo $curline | awk -F= '{print $1}'`
-        val=`echo $curline | awk -F= '{print $2}'`
-
-        if [[ $var =~ "_PATH" ]]
-        then
-            if [[ ! -z $val ]]; then
-            echo "export $val in PATH"
-            export PATH=$val:$PATH
-            fi
-        else
-            export $var=$val
-        fi
-    fi
-done < $conf
 
 
 #############################################################################
@@ -122,21 +94,21 @@ vercomp () {
 
 
 #check for make
-which make > /dev/null;
+which make > /dev/null 2>&1
 if [ $? != "0" ]; then
     echo -e "$RED""Can not proceed without make, please install and re-run (Mac users see: http://developer.apple.com/technologies/xcode.html)""$NORMAL"
     exit 1;
 fi
 
 #check for g++
-which g++ > /dev/null;
+which g++ > /dev/null 2>&1
 if [ $? != "0" ]; then
 echo -e "$RED""Can not proceed without g++, please install and re-run""$NORMAL"
 exit 1;
 fi
 
 # python
-which python > /dev/null;
+which python > /dev/null 2>&1
 if [ $? != "0" ]; then
     echo -e "$RED""Can not proceed without Python, please install and re-run""$NORMAL"
     exit 1;
@@ -151,7 +123,7 @@ fi
 
 
 # R
-which R > /dev/null;
+which R > /dev/null 2>&1
 if [ $? != "0" ]; then
     echo -e "$RED""Can not proceed without R, please install and re-run""$NORMAL"
     exit 1;
@@ -163,6 +135,21 @@ else
     exit 1;
     fi
 fi
+
+#macs2
+which macs2 > /dev/null 2>&1
+if [ $? != "0" ]; then
+    echo -e "$RED""Can not proceed without macs2, please install and re-run""$NORMAL"
+    exit 1;
+else
+    macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
+    vercomp $macs2ver "2.1.1"
+    if [[ $? == 2 ]]; then
+    echo -e "$RED""macs2 v2.1.1 or higher is needed [$macs2pver detected].""$NORMAL"
+    exit 1;
+    fi
+fi
+
 
 
 
@@ -188,7 +175,7 @@ cd ./tmp
 ################ Install dependencies  ###################
 
 ## By default, dependencies will be installed in the same path with scATAC-pro
-PREFIX_BIN=${INSTALL_PREFIX}
+PREFIX_BIN=${install_dir}
 
 if [ ! -w $PREFIX_BIN ]; then
    quiet=1
@@ -219,14 +206,16 @@ if [ ! -d $PREFIX_BIN ]; then
 fi
 
 if [ ! -w $PREFIX_BIN ]; then
-    die "Cannot write to directory $PREFIX_BIN. Maybe missing super-user (root) permissions to write there.";
+    die "Cannot write to directory $PREFIX_BIN. Maybe missing super-user (root) permissions to write there. Please run 'make configure prefix=YOUR_INSTALL_PATH' ";
 fi 
 
 
-################ samtools  ###################
+##################################################################
+## samtools  
+##################################################################
 
 wasInstalled=0;
-which samtools > /dev/null
+which samtools > /dev/null 2>&1
 if [ $? = "0" ]; then
         
     samver=`samtools --version | grep samtools | cut -d" " -f2`
@@ -248,7 +237,7 @@ if [ $wasInstalled == 0 ]; then
     cd samtools-1.9
     make
     cd ..
-    mv samtools-1.9 $PREFIX_BIN
+    cp -r samtools-1.9 $PREFIX_BIN/
     export PATH=$PREFIX_BIN/samtools-1.9/:$PATH
     wasInstalled=0;
 fi
@@ -264,11 +253,11 @@ fi
 
 
 #########################################################################################
-################ bedtools 
+## bedtools 
 #########################################################################################
 
 wasInstalled=0;
-which bedtools > /dev/null
+which bedtools > /dev/null 2>&1
 if [ $? = "0" ]; then
 
     bedver=`bedtools --version | cut -d" " -f2 | cut -d"-" -f1`
@@ -290,7 +279,7 @@ if [ $wasInstalled == 0 ]; then
     cd bedtools-2.27
     make
     cd ..
-    mv bedtools-2.27 $PREFIX_BIN
+    cp -r bedtools-2.27 $PREFIX_BIN/
     export PATH=$PREFIX_BIN/bedtools-2.27/:$PATH
     wasInstalled=0;
 fi
@@ -305,25 +294,109 @@ if [ $wasInstalled == 0 ]; then
 fi
 
 
+#########################################################################################
+## deeptools 
+#########################################################################################
+
+wasInstalled=0;
+which deeptools > /dev/null
+if [ $? = "0" ]; then
+
+    dver=`deeptools --version 2>&1 | cut -d" " -f2 `
+    vercomp $dver "3.2.1"
+    if [[ $? == 2 ]]; then
+    echo -e "$RED""deeptools v3.2.1 or higher is needed [$dver detected].""NORMAL"
+    exit 1;
+    fi
+
+    echo -e "$BLUE""deeptools appears to be already installed. ""$NORMAL"
+    wasInstalled=1;
+fi
+
+if [ $wasInstalled == 0 ]; then
+    echo "Installing deeptools ..."
+    #From sources
+    $get deeptools-3.2.1.tar.gz https://github.com/deeptools/deepTools/archive/3.2.1.tar.gz 
+    tar -xzvf deeptools-3.2.1.tar.gz
+    cd deepTools-3.2.1
+    python setup.py install --prefix $PREFIX_BIN/deepTools3
+    export PATH=$PREFIX_BIN/deepTools3/bin:$PATH
+    wasInstalled=0;
+fi
+
+if [ $wasInstalled == 0 ]; then
+    check=`deeptools --version `;
+    if [ $? = "0" ]; then
+    echo -e "$BLUE""deeptools appears to be installed successfully""$NORMAL"
+    else
+    echo -e "$RED""deeptools NOT installed successfully""$NORMAL"; exit 1;
+    fi
+fi
+
+wasInstalled=0
+###################################################################################
+## Install R packages 
+###################################################################################
+#Install R Packages
+if [ $wasInstalled == 0 ]; then
+    echo "Installing missing R packages ..."
+    R CMD BATCH ../scripts/install/install_Rpackages.R install_Rpackages.Rout
+
+    if [ $? == "0" ]; then
+        echo -e "$BLUE""R packages appear to be installed successfully""$NORMAL"
+    else
+        echo -e "$RED""R packages NOT installed successfully. Look at the tmp/install_Rpackages.Rout for additional informations""$NORMAL"; exit 1;
+    fi
+fi
+
+
+##################################################################################
+## check adapter trimmer, if none of Trimmomatic or trim_galore installed,
+## trimgalore will be installed
+##################################################################################
+wasInstalled=0;
+which trim_galore > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo -e "$BLUE""trimgalore appears to be already installed. ""$NORMAL"
+    wasInstalled=1;
+fi
+
+
+if [ $wasInstalled == 0 ]; then
+    echo "trim_galore was not detected!"
+    echo "Installing trimgalore as default trimmer ..."
+    #From sources
+    $get TrimGalore-0.6.3.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.6.3.tar.gz 
+    tar -xzvf TrimGalore-0.6.3.tar.gz
+    cp -r TrimGalore-0.6.3 $PREFIX_BIN/
+    export PATH=$PREFIX_BIN/TrimGalore-0.6.3/:$PATH
+    wasInstalled=0;
+    which trim_galore > /dev/null 2>&1
+    if [ $? = "0" ]; then
+        echo -e "$BLUE""trim_galore appears to be installed successfully""$NORMAL"
+    else
+        echo -e "$RED""trim_galore NOT installed successfully""$NORMAL"; exit 1;
+    fi
+fi
 
 ###################################################################################
 ## check aligner, if none of bwa/bowtie/bowtiew was detected, 
 ## install bwa as default aligner
 ###################################################################################
 wasInstalled=0;
-which bwa > /dev/null
+which bwa > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo -e "$BLUE""bwa appears to be already installed. ""$NORMAL"
     wasInstalled=1;
 fi
 
-which bowtie2 > /dev/null
+which bowtie2 > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo -e "$BLUE""bowtie2 appears to be already installed. ""$NORMAL"
     wasInstalled=1;
 fi
 
-which bowtie > /dev/null
+which bowtie > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo -e "$BLUE""bowtie appears to be already installed. ""$NORMAL"
     wasInstalled=1;
@@ -344,7 +417,7 @@ if [ $wasInstalled == 0 ]; then
 fi
 
 if [ $wasInstalled == 0 ]; then
-    which bwa > /dev/null
+    which bwa > /dev/null 2>&1
     if [ $? = "0" ]; then
         echo -e "$BLUE""bwa appears to be installed successfully""$NORMAL"
     else
@@ -352,6 +425,7 @@ if [ $wasInstalled == 0 ]; then
     fi
 fi
 
+wasInstalled=0
 
 ## Clean up
 cd ..
@@ -359,5 +433,101 @@ rm -rf ./tmp
 
 echo -e "$RED""Dependencies checked !""$NORMAL"
 
+
+
+#############################################################################
+## Create the configure_system file 
+#############################################################################
+
+echo "Create the configure_system.txt file ..."
+
+CUR_DIR=`pwd`
+echo -e "$BLUE""Check $SOFT configuration ... ""$NORMAL"
+
+echo "#######################################################################" > configure_system.txt
+echo "## $SOFT - System settings" >> configure_system.txt
+echo "#######################################################################" >> configure_system.txt
+
+echo "#######################################################################" >> configure_system.txt
+echo "## Required Software - Specified the DIRECTORY name of the executables" >> configure_system.txt
+echo "## If not specified, the program will try to locate the executable" >> configure_system.txt
+echo "## using the 'which' command" >> configure_system.txt
+echo "#######################################################################" >> configure_system.txt
+
+
+echo "INSTALL_PREFIX = "${install_dir} >> configure_system.txt
+
+
+which python > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "PYTHON_PATH = "`dirname $(which python)` >> configure_system.txt
+else
+    die "PYTHON_PATH not found. Exit."
+fi
+
+which R > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "R_PATH = "`dirname $(which R)` >> configure_system.txt
+else
+    die "R_PATH not found. Exit." 
+fi
+
+which samtools > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "SAMTOOLS_PATH = "`dirname $(which samtools)`  >> configure_system.txt
+else
+    die "SAMTOOLS_PATH not found. Exit." 
+fi
+
+which deeptools > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "DEEPTOOLS_PATH = "`dirname $(which deeptools)` >> configure_system.txt
+else
+    die "DEEPTOOLS_PATH not found. Exit." 
+fi
+
+
+which bedtools > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "BEDTOOLS_PATH = "`dirname $(which bedtools)` >> configure_system.txt
+else
+    die "BEDTOOLS_PATH not found. Exit." 
+fi
+
+
+which bwa > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "BWA_PATH = "`dirname $(which bwa)` >> configure_system.txt
+fi
+
+
+which bowtie2 > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "BOWTIE2_PATH = "`dirname $(which bowtie2)` >> configure_system.txt
+fi
+
+which bowtie > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "BOWTIE_PATH = "`dirname $(which bowtie)` >> configure_system.txt
+fi
+
+which macs2 > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "MACS2_PATH = "`dirname $(which macs2)` >> configure_system.txt
+fi
+
+which trim_galore > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "TRIM_GALORE_PATH = "`dirname $(which trim_galore)` >> configure_system.txt
+fi
+
+
+## check rights in PREFIX folder
+
+if [ ! -w $install_dir ]; then
+    die "Cannot install scATAC-pro in $install_dir directory. Maybe missing super-user (root) permissions to write there. Please specify another directory using 'make configure prefix=YOUR_INSTALL_PATH' ";
+fi 
+
+echo "All Done: run 'make install' now! " ;
 
 

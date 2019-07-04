@@ -4,8 +4,11 @@ set -e
 
 ff=$1  ## a bed or txt file, with Barcode and Cluster information
 
-source $2
-
+# reading configure file
+curr_dir=`dirname $0`
+source ${curr_dir}/read_conf.sh
+read_conf "$2"
+read_conf "$3"
 
 output_dir=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster
 mkdir -p $output_dir

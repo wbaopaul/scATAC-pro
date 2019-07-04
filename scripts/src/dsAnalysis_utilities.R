@@ -6,7 +6,7 @@ library(motifmatchr)
 library(SummarizedExperiment)
 library(BiocParallel)
 library(JASPAR2016)
-library(cisTopic)
+#library(cisTopic)
 library(compiler)
 library(readr)
 
@@ -247,7 +247,7 @@ run_chromVAR <- function(mtx, genomeName = 'BSgenome.Hsapiens.UCSC.hg38',
                          ncore = 3){
   
   register(MulticoreParam(3))
-  
+  if(!require(genomeName, character.only = T)) BiocManager::install(genomeName)  
   peaks = data.table('x' = rownames(mtx))
   peaks = tidyr::separate(peaks, col = 'x', into = c('chr', 'start', 'end'), sep = '-')
   peaks = GenomicRanges::makeGRangesFromDataFrame(peaks)
@@ -305,6 +305,12 @@ run_LSI <- function(mtx, ncell.peak = 150,  max_pc = 10, k = 5){
 
 run_cisTopic <- function(mtx, nCores = 4){
   # prepare the right format of rownames
+  if(!require(cisTopic)){
+    if(!require(RcisTarge)) devtools::install_github("aertslab/RcisTarget")
+    if(!require(AUCell)) devtools::install_github("aertslab/AUCell") 
+    devtools::install_github("aertslab/cisTopic")
+  }
+  library(cisTopic)
   rnames = data.table('region' = rownames(mtx))
   tmp = tidyr::separate(rnames, col = 'region', into = c('chr', 'start', 'end'))
   rnames = paste0(tmp$chr, ':', tmp$start, '-', tmp$end)

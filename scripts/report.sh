@@ -4,7 +4,11 @@
 report_dir=$1
 mkdir -p $report_dir
 
-source $2
+# reading configure file
+curr_dir=`dirname $0`
+source ${curr_dir}/read_conf.sh
+read_conf "$2"
+read_conf "$3"
 
 abs_report_dir=`cd ${report_dir}; pwd`
 echo "report path: ${abs_report_dir}"

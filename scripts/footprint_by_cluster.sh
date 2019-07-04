@@ -3,7 +3,13 @@
 set -e
 
 input_bam=$1  ## two input bam file for two cluster, seperated by ,
-source $2
+
+# reading configure file
+curr_dir=`dirname $0`
+source ${curr_dir}/read_conf.sh
+read_conf "$2"
+read_conf "$3"
+
 bams=(${input_bam//,/ })
 
 bam1=${bams[0]}
@@ -12,7 +18,7 @@ bam2=${bams[1]}
 output_dir=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/footprint
 mkdir -p $output_dir
 
-input_peak=${2}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_peaks_BlacklistRemoved.narrowPeak  ## suppose path for peak file
+input_peak=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_peaks_BlacklistRemoved.narrowPeak  ## suppose path for peak file
 
 
 unset PYTHONPATH

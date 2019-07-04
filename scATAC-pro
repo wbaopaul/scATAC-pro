@@ -12,13 +12,30 @@ SOFT="scATAC-pro"
 VERSION="1.0.0"
 
 function usage {
-    echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-p] [-h] [-v]"
+    echo -e "usage : YOUR_INSTALL_PREFIX/${SOFT}_${VERSION}/$SOFT -s STEP -i INPUT -c CONFIG [-p] [-h] [-v]"
     echo -e "Use option -h|--help for more information"
+}
 
-    if [[ ! -e ${CONFIG} ]]; then
-	echo "Error - configure file not detected."
-	exit -1
-    fi
+function help {
+    usage;
+    echo 
+    echo "$SOFT $VERSION"
+    echo "---------------"
+    echo "OPTIONS"
+    echo
+    echo "   [-s|--step ANALYSIS_STEP] : run only a subset of the $SOFT workflow; follow steps and cominatorial steps are provided:"
+    echo "      dex_fastq: perform demultiplexing - require fastq files both for reads and index, separated by comma like: fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; output demultiplexed fastq1 and fastq2 files "
+    echo "      mapping: perform reads alignment - require fastq files, separated by comma for each paired end"
+    echo "      call_peak: call peaks for aggregated data - require BAM files"
+    echo "      get_mtx: build raw peak by barcode matrix - require BAM files, output fragment.bed file and sparese matrix file"
+    echo "      qc_per_barcode: quality control per barcode - require fragment.bed files"
+    echo "      call_cell: cell calling - require sparse matrix files"
+    echo "   -i|--input INPUT : input data, different types of input data are required for different steps;"
+    echo "   -c|--conf CONFIG : configuration file for output folder, pathes of dependency, and extra paramters for each step"
+    echo "   [-p|--parallel] : if specified run $SOFT on a cluster"
+    echo "   [-h|--help]: help"
+    echo "   [-v|--version]: version"
+    exit;
 }
 
 function version {
@@ -76,7 +93,7 @@ for arg in "$@"; do
   esac
 done
 
-while getopts ":s:i:c:p:v:h" OPT
+while getopts ":s:i:c:p:vh" OPT
 do
     case $OPT in
 	s) STEP=$OPTARG;;
@@ -194,7 +211,8 @@ mkdir -p $OUTPUT_DIR
 #make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
 logDir=${OUTPUT_DIR}/logs
 mkdir -p $logDir
-make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT CONFIG_FILE=$CONFIG $STEP > ${logDir}/$STEP.log 2>&1
+config_sys=${ABS_SOFT_PATH}/configure_system.txt
+make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT CONFIG_FILE=$CONFIG CONFIG_SYS=$config_sys $STEP > ${logDir}/$STEP.log 2>&1
 
 
 

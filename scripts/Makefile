@@ -11,29 +11,35 @@ tick := -
 undsc := _
 
 
-
 ## paralell
 
 
 SCRIPTS = $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
+
 ## - no parallelisation
 
 ######################################
 ## System
 ##
 ######################################
-
+config_check:
+ifndef CONFIG_SYS
+    $(error configure system not defined)
+endif
+ifndef CONFIG_FILE
+	$(error USER CONFIG not defined)
+endif
 
 ######################################
 ##  demultiplex
 ##
 ######################################
 
-demplx_fastq: /bin/bash
+demplx_fastq: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Demultiplex fastq ..." 
-	@$(SCRIPTS)/dex_fastq.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/dex_fastq.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 
@@ -42,11 +48,11 @@ demplx_fastq: /bin/bash
 ##
 ######################################
 
-trimming: /bin/bash
+trimming: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Trimming fastq ..." 
-	@$(SCRIPTS)/trimming.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/trimming.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 
 
 ######################################
@@ -54,11 +60,11 @@ trimming: /bin/bash
 ##
 ######################################
 
-mapping: 
+mapping: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Aligning ..." 
-	@$(SCRIPTS)/mapping.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/mapping.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo
 
 
@@ -67,122 +73,112 @@ mapping:
 ##
 ######################################
 
-mapping_qc: /bin/bash
+mapping_qc: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Reporting mapping qc ..." 
-	@$(SCRIPTS)/mapping_qc.sh $(INPUT_FILE) $(CONFIG_FILE)
-#######################################
-## filter bam
-#######################################
-filter_bam: /bin/bash
-	@echo "--------------------------------------------" 
-	@date 
-	@echo "Filtering bwa ..." 
-	@$(SCRIPTS)/filter_bam.sh $(INPUT_FILE) $(CONFIG_FILE)
-	@echo
-
+	@$(SCRIPTS)/mapping_qc.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 
 
 
 #######################################
 ## call peak
 #######################################
-call_peak: 
+call_peak: config_check 
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Calling peaks ..." 
-	@$(SCRIPTS)/call_peak.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/call_peak.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 
 #######################################
 ## get peak/bin barcode matrix
 #######################################
-get_mtx:  
+get_mtx:  config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Getting peak by barcode matrix ..." 
-	@$(SCRIPTS)/get_mtx.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/get_mtx.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
 ## generate signal
 #######################################
-generate_signal: 
+generate_signal: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Call peaks ..." 
-	@$(SCRIPTS)/generate_signal.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/generate_signal.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
 ## reads overlap with regions, per barcode
 #######################################
-qc_per_barcode: 
+qc_per_barcode: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Doing QC per barcode ..." 
-	@$(SCRIPTS)/qc_per_barcode.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/qc_per_barcode.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
 ## call cell
 #######################################
-call_cell: 
+call_cell: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Calling cell ..." 
-	@$(SCRIPTS)/call_cell.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/call_cell.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
 ## clustering
 #######################################
-clustering: 
+clustering: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Clustering ..." 
-	@$(SCRIPTS)/clustering.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/clustering.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
 ## motif analysis
 #######################################
-motif_analysis: 
+motif_analysis: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Doing motif analysis ..." 
-	@$(SCRIPTS)/motif_analysis.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/motif_analysis.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 ################################################
 ## split bam and generate track (bigwig)
 ################################################
-split_bam: 
+split_bam: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "split bam into clusters ..." 
-	@$(SCRIPTS)/split_bam2clusters.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/split_bam2clusters.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 ################################################
 ## footprint
 ################################################
-footprint: 
+footprint: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Footprint analysis ..." 
-	@$(SCRIPTS)/footprint_by_cluster.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@$(SCRIPTS)/footprint_by_cluster.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
 ## report
 #######################################
-report: 
+report: config_check
 	@echo "--------------------------------------------" 
 	@date 
-	@echo "Getting reports ..." 
-	@$(SCRIPTS)/report.sh $(INPUT_FILE) $(CONFIG_FILE)
+	@echo "Generating reports ..." 
+	@$(SCRIPTS)/report.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 

@@ -1,0 +1,26 @@
+## install R packages for scATAC-pro
+
+if(!require(BiocManager)){
+    install.packages('BiocManager')
+}
+
+pks = c('devtools', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',  'optparse', 'magrittr', 'readr', 'Seurat')
+
+for(pk in pks){
+    if(!require(pk, character.only = T)) {
+        message(paste('Install', pk, '...'))
+        install.packages(pk, dependencies = TRUE, repos = "http://cran.us.r-project.org")
+    }
+}
+
+
+bioc.pks = c('motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'JASPAR2016')
+
+for(pk in bioc.pks){
+    if(!require(pk, character.only = T)) {  
+        message(paste('Install', pk, '...'))
+        BiocManager::install(pk)
+    }
+}
+
+

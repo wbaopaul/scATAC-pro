@@ -5,13 +5,16 @@
 
 MK_PATH = $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 
+VNUM = $(shell $(MK_PATH)/scATAC-pro --version | cut -d " " -f 3)
+
+
 INST_SCRIPTS=$(MK_PATH)/scripts
 INST_SOURCES=$(INST_SCRIPTS)/src
 CONFIGURE_OUT=$(wildcard ./configure_system.txt)
-CONFIG_SYS=$(wildcard ./configure_install.txt)
+#CONFIG_INSTALL=$(wildcard ./configure_install.txt)
+prefix ?= /usr/local/bin
 
-
-install : config_check mapbuilder readstrimming iced cp
+install : config_check cp
 
 ######################################
 ## Config file
@@ -20,6 +23,7 @@ install : config_check mapbuilder readstrimming iced cp
 config_check:
 ifneq ("$(CONFIGURE_OUT)","")
 include $(CONFIGURE_OUT)
+#include $(CONFIG_INSTALL)
 else
 	$(error configure_system.txt file not found. Please run 'make configure' first)
 endif
@@ -29,10 +33,10 @@ endif
 ##
 ######################################
 configure:
-ifneq ("$(CONFIG_SYS)","")
-	make -f ./scripts/install/Makefile CONFIG_SYS=$(CONFIG_SYS)
+ifndef prefix
+	$(error prefix not defined !)
 else
-	$(error configure_install.txt file not found !)
+	make -f ./scripts/install/Makefile PREFIX=$(realpath $(prefix))
 endif
 
 ######################################
@@ -50,8 +54,15 @@ test: config_check
 ##
 ######################################
 
-cp:
+cp:	
+	@echo "Installing ..."
+	$(eval INSTALL_PATH := $(realpath $(INSTALL_PREFIX))/scATAC-pro_$(VNUM))
+	@if [ -d $(INSTALL_PATH) ]; then \
+		rm -rf $(INSTALL_PATH); \
+	fi
 ifneq ($(realpath $(MK_PATH)), $(realpath $(INSTALL_PATH)))
-	cp -Ri $(MK_PATH) $(INSTALL_PATH)
+	@cp -Ri $(MK_PATH) $(INSTALL_PATH)
+
 endif
-@echo "scATAC-pro installed in $(shell realpath $(INSTALL_PATH)) !"
+	@echo "scATAC-pro installed in $(shell realpath $(INSTALL_PATH)) !"
+

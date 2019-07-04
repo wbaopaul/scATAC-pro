@@ -1,3 +1,4 @@
+if(!require("DropletUtils")) BiocManager::install('DropletUtils')
 library(DropletUtils)
 library(data.table)
 library(Matrix)
