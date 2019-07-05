@@ -18,7 +18,12 @@ bam2=${bams[1]}
 output_dir=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/footprint
 mkdir -p $output_dir
 
-input_peak=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_peaks_BlacklistRemoved.narrowPeak  ## suppose path for peak file
+if [ $USE_BIN ]; then
+    echo "Error: footprinting analysis only works when USE_BIN=FALSE, since peak file is required"
+    exit
+fi
+
+input_peak=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_peaks_BlacklistRemoved.bed  ## suppose path for peak file
 
 
 unset PYTHONPATH

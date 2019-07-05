@@ -105,7 +105,7 @@ get_mtx:  config_check
 #######################################
 ## generate signal
 #######################################
-generate_signal: config_check
+aggr_signal: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Call peaks ..." 

@@ -12,7 +12,7 @@ SOFT="scATAC-pro"
 VERSION="1.0.0"
 
 function usage {
-    echo -e "usage : YOUR_INSTALL_PREFIX/${SOFT}_${VERSION}/$SOFT -s STEP -i INPUT -c CONFIG [-p] [-h] [-v]"
+    echo -e "usage : YOUR_INSTALL_PATH/${SOFT}_${VERSION}/$SOFT -s STEP -i INPUT -c CONFIG [-o] [-p] [-h] [-v]"
     echo -e "Use option -h|--help for more information"
 }
 
@@ -28,10 +28,12 @@ function help {
     echo "      mapping: perform reads alignment - require fastq files, separated by comma for each paired end"
     echo "      call_peak: call peaks for aggregated data - require BAM files"
     echo "      get_mtx: build raw peak by barcode matrix - require BAM files, output fragment.bed file and sparese matrix file"
+    echo "      aggr_signal: generate aggregated signal in bw file and bedgraph file, which can be upload and view in as genome browser - require BAM files, output bw and bedgraph file"
     echo "      qc_per_barcode: quality control per barcode - require fragment.bed files"
     echo "      call_cell: cell calling - require sparse matrix files"
     echo "   -i|--input INPUT : input data, different types of input data are required for different steps;"
-    echo "   -c|--conf CONFIG : configuration file for output folder, pathes of dependency, and extra paramters for each step"
+    echo "   -c|--conf CONFIG : configuration file for parameters (if exists) for each step"
+    echo "   [-o|--output_dir : folder to save results; sub-folder will be created automatically for each step"
     echo "   [-p|--parallel] : if specified run $SOFT on a cluster"
     echo "   [-h|--help]: help"
     echo "   [-v|--version]: version"
@@ -64,7 +66,7 @@ MAKE_OPTS=""
 STEP=""
 INPUT=""
 OUTPUT_DIR="output"
-CONF="configure.txt"
+CONF="configure_user.txt"
 
 
 
@@ -86,6 +88,7 @@ for arg in "$@"; do
       "--step")   set -- "$@" "-s" ;;
       "--input") set -- "$@" "-i" ;;
       "--conf")   set -- "$@" "-c" ;;
+      "--output_dir")   set -- "$@" "-o" ;;
       "--parallel")   set -- "$@" "-p" ;;
       "--help")   set -- "$@" "-h" ;;
       "--version")   set -- "$@" "-v" ;;
@@ -99,6 +102,7 @@ do
 	s) STEP=$OPTARG;;
 	i) INPUT=$OPTARG;;
 	c) CONFIG=$OPTARG;;
+	o) OUTPUT_DIR=$OPTARG ;;
 	p) CLUSTER=1 ;;
 	v) version ;;
 	h) help ;;
@@ -125,7 +129,7 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "generate_signal" "call_peak" "get_mtx" "qc_per_barcode" "call_cell" "clustering" "motif_analysis" "split_bam" "footprint" "report", "preprocess", "downstream", "all")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "aggr_signal" "call_peak" "get_mtx" "qc_per_barcode" "call_cell" "clustering" "motif_analysis" "split_bam" "footprint" "report", "preprocess", "downstream", "all")
 
 
 check_s=0
@@ -143,7 +147,6 @@ if [[ $check_s == 0 ]]; then die "Unknown STEP option (\"-s $s\"). Use $0 --help
 
 
 
-#cd $OUTPUT_DIR
 
 if [ $CLUSTER == 0 ]; then
     echo "Run scATAC-pro "${VERSION}
@@ -152,65 +155,23 @@ fi
 
 
 ###################################################
-## required dependencies PATH -- set as global para
-###################################################
-declare -x SAMTOOLS_PATH
-declare -x DEEPTOOLS_PATH
-declare -x R_PATH
-declare -x PYTHON_PATH
-
-PYTHON_PATH=`which python`
-PYTHON_PATH=$(dirname ${PYTHON_PATH})
-
-R_PATH=`which R`
-R_PATH=$(dirname ${R_PATH})
-
-SAMTOOLS_PATH=`which samtools`
-SAMTOOLS_PATH=$(dirname ${SAMTOOLS_PATH})
-
-BEDTOOLS_PATH=`which bedtools`
-BEDTOOLS_PATH=$(dirname ${BEDTOOLS_PATH})
-
-DEEPTOOLS_PATH=`which deeptools`
-DEEPTOOLS_PATH=$(dirname ${DEEPTOOLS_PATH})
-
-
-###################################################
-## provided through user specified configure file
-###################################################
-
-
-source $CONFIG
-
-
-mkdir -p $OUTPUT_DIR
-
-###################################################
 ##Run scATAC-pro
 ###################################################
 
-#make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
-DEEPTOOLS_PATH=`which deeptools`
-DEEPTOOLS_PATH=$(dirname ${DEEPTOOLS_PATH})
 
 
-###################################################
-## provided through user specified configure file
-###################################################
-
-
-source $CONFIG
-
-
+declare -x OUTPUT_DIR
+declare -x logdir
 mkdir -p $OUTPUT_DIR
 
-###################################################
-##Run scATAC-pro
-###################################################
-
-#make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
 logDir=${OUTPUT_DIR}/logs
 mkdir -p $logDir
+
+###################################################
+##Run scATAC-pro
+###################################################
+
+#make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
 config_sys=${ABS_SOFT_PATH}/configure_system.txt
 make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT CONFIG_FILE=$CONFIG CONFIG_SYS=$config_sys $STEP > ${logDir}/$STEP.log 2>&1
 

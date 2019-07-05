@@ -16,12 +16,12 @@ read_conf "$3"
 output_dir=${OUTPUT_DIR}/demplxed_fastq
 mkdir -p $output_dir
 
-fastqs=(${input_fastqs//,/ }) ## suppose the first fastq is the read file, the others are index fastq files
+fastqs=(${input_fastqs//,/ }) ## suppose the first two fastqs is the read file, the others are index fastq files
 nfile=${#fastqs[@]}
 kk=$(( $nfile ))
 
-if [[ $kk < 2 ]];then
-  echo -e "Erro: Provide at least two fastq files: with the first one as read fastq, the others as index fastq files" >&2
+if [[ $kk < 3 ]];then
+  echo -e "Erro: Provide at least three fastq files: with the first two as read fastqs, the others as index fastq files" >&2
   exit
 fi
 
@@ -30,17 +30,19 @@ curr_dir=`dirname $0`
 
 
 ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
-#dex_prefix=${fastqs[0]}
-#dex_prefix=${dex_prefix##*/}
-dex_prefix=$(basename ${fastqs[0]})
-${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix}  ${fastqs[1]}
+dex_prefix1=$(basename ${fastqs[0]})
+dex_prefix2=$(basename ${fastqs[0]})
+${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[2]}
+${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[1]} ${output_dir}/demplxed_${dex_prefix2}  ${fastqs[2]}
 
 ## for the round of barcodes, add them to the read name after @, concatenate the original name by _
-if [[ $kk>2 ]];then
-	for (( i==2; i<=$kk; i++ ))
+if [[ $kk>3 ]];then
+	for (( i==3; i<=$kk; i++ ))
 	do
-        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix} ${output_dir}/demplxed_${dex_prefix}_$i ${fastqs[$i]}
-        mv ${output_dir}/demplxed_${dex_prefix}_$i ${output_dir}/demplxed_${dex_prefix}
+        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]}
+        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]}
+        mv ${output_dir}/demplxed_${dex_prefix1}_$i ${output_dir}/demplxed_${dex_prefix1}
+        mv ${output_dir}/demplxed_${dex_prefix2}_$i ${output_dir}/demplxed_${dex_prefix2}
 	done
 fi
 

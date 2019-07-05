@@ -16,21 +16,23 @@ bamName=${input_bam##*/}   ## use input bam filename as prefix
 # index bam file
 ncore=`nproc --all`
 ncore=$(($ncore - 1))
-${SAMTOOLS_PATH}/samtools index -@ $ncore $input_bam
+#${SAMTOOLS_PATH}/samtools index -@ $ncore $input_bam
 
 echo "generate bw file..."
 unset PYTHONPATH
 ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
   --bam $input_bam --binSize 20 --skipNonCoveredRegions \
-  --outFileName ${signal_dir}/${bamName}.bw
+  --outFileName ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.bw
 
 #echo "generate bedgraph..."
-#${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
-#  --bam $input_bam --binSize 200 --skipNonCoveredRegions \
-#  --outFileFormat bedgraph --outFileName ${signal_dir}/${bamName}.bedgraph
+${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
+  --bam $input_bam --binSize 20 --skipNonCoveredRegions \
+  --outFileFormat bedgraph --outFileName ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.bedgraph
 
 
 echo "generate count around TSS..."
-${DEEPTOOLS_PATH}/computeMatrix reference-point -S ${signal_dir}/${bamName}.bw -R $TSS \
-    -a 1200 -b 1200 -o ${signal_dir}/${bamName}.mtx.gz
+${DEEPTOOLS_PATH}/computeMatrix reference-point -S ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.bw -R $TSS \
+    -a 1200 -b 1200 -o ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.mtx.gz
+
+
 

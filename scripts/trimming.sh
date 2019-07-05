@@ -8,7 +8,7 @@ read_conf "$2"
 read_conf "$3"
 
 input_fastqs=$1
-
+input_fastqs=${input_fastqs// /} ## remove space
 
 
 output_dir=${OUTPUT_DIR}/trimmed_fastq
@@ -43,11 +43,14 @@ if [ ${TRIM_METHOD} = 'Trimmomatic' ]; then
         ${output_dir}/trimmed_paired_${prefix0} ${output_dir}/trimmed_unpaired_${prefix0} \
     ${output_dir}/trimmed_paired_${prefix1} ${output_dir}/trimmed_unpaired_${prefix1} \
     ILLUMINACLIP:${ADAPTER_SEQ}:2:30:10:2:keepBothReads LEADING:3 TRAILING:3 MINLEN:25
-else
+    echo "Trimming Done!" 
+elif [${TRIM_METHOD} = 'trim_galore' ]; then
     echo "Using trim_galore ..." 
     ${TRIM_GALORE_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]}   --paired
+    echo "Trimming Done!" 
+else
+    echo "You have not specify TRIM_METHOD, so I do not trim the reads"
 fi
-    
-echo "Trimming Done!" 
+
 
 

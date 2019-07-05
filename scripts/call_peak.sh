@@ -4,12 +4,9 @@ input_bam=$1
 
 # reading configure file
 curr_dir=`dirname $0`
-curr_dir=`cd "${curr_dir}"; pwd`
 source ${curr_dir}/read_conf.sh
-read_conf "$2"
-read_conf "$3"
-
-#source ${curr_dir}/read_conf1.sh $2 $3
+read_conf $2
+read_conf $3
 
 peaks_dir="${OUTPUT_DIR}/peaks"
 mkdir -p $peaks_dir
@@ -27,8 +24,8 @@ if [ ${PEAK_CALLER} = 'macs2' ];then
 	#${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $peaks_dir -f BAM $MACS2_OPTS --nomodel --extsize 147
 
 	## remove peaks overlapped with blacklist
-	${BEDTOOLS_PATH}/bedtools intersect -a ${peaks_dir}/${out_prefix}_peaks.narrowPeak -b $BLACKLIST -v \
-	    > ${work_dir}/${out_prefix}_peaks_BlacklistRemoved.narrowPeak
+	${BEDTOOLS_PATH}/bedtools intersect -a ${work_dir}/${out_prefix}_peaks.narrowPeak -b $BLACKLIST -v \
+	    > ${work_dir}/${out_prefix}_peaks_BlacklistRemoved.bed
 fi
 
 

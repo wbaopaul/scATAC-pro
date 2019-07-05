@@ -19,7 +19,7 @@ output_dir=${ABS_PATH}/filtered_matrix
 curr_dir=`dirname $0`
 
 
-echo "${CELL_CALLER} is usded for cell calling..."
+echo "${CELL_CALLER} is used for cell calling..."
 
 
 if [ ${CELL_CALLER} = 'EmptyDrop' ];then
