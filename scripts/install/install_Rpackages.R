@@ -23,4 +23,5 @@ for(pk in bioc.pks){
     }
 }
 
-
+message(paste('Install chromVARmotifs...'))
+devtools::install_github("GreenleafLab/chromVARmotifs")

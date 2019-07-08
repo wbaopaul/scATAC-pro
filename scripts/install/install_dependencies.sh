@@ -136,19 +136,6 @@ else
     fi
 fi
 
-#macs2
-which macs2 > /dev/null 2>&1
-if [ $? != "0" ]; then
-    echo -e "$RED""Can not proceed without macs2, please install and re-run""$NORMAL"
-    exit 1;
-else
-    macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
-    vercomp $macs2ver "2.1.1"
-    if [[ $? == 2 ]]; then
-    echo -e "$RED""macs2 v2.1.1 or higher is needed [$macs2pver detected].""$NORMAL"
-    exit 1;
-    fi
-fi
 
 
 
@@ -209,6 +196,65 @@ if [ ! -w $PREFIX_BIN ]; then
     die "Cannot write to directory $PREFIX_BIN. Maybe missing super-user (root) permissions to write there. Please run 'make configure prefix=YOUR_INSTALL_PATH' ";
 fi 
 
+##########################
+##macs2
+##########################
+wasInstalled=0;
+which macs2 > /dev/null 2>&1
+if [ $? != "0" ]; then
+    echo "macs2 not installed, trying to install it through anaconda"
+    which conda > /dev/null 2>&1
+    if [ $? != "0" ]; then
+        echo "Install anaconda:"
+        if [ "$os" = "Darwin" ]; then 
+            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+        else
+            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-ppc64le.sh
+        fi
+        bash tmp.sh
+    fi
+    conda create --name py2 python=2.7
+    source activate py2
+    pip install --user --upgrade pip
+    pip install --user --upgrade Numpy 
+    pip install --user MACS2 
+    deactivate py2 
+fi
+
+macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
+if [ $? != '0']; then    
+    which conda > /dev/null 2>&1
+    if [ $? != "0" ]; then
+        echo "Install anaconda:"
+        if [ "$os" = "Darwin" ]; then 
+            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+        else
+            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-ppc64le.sh
+        fi
+        bash tmp.sh
+    fi
+    conda create --name py2 python=2.7
+    source activate py2
+    pip install --user --upgrade pip
+    pip install --user --upgrade Numpy 
+    pip install --user MACS2 
+    deactivate py2 
+fi
+
+macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
+if [ $? != '0' ]; then
+    echo -e "$RED"" macs2 Not installed successfully ].""NORMAL"
+    exit 
+fi
+
+vercomp $macs2ver "2.1.1"
+if [[ $? == 2 ]]; then
+    echo -e "$RED""macs2 v2.1.1 or higher is needed [$macs2pver detected].""$NORMAL"
+    exit 1;
+else
+    echo -e "$BLUE""macs2 appears to be installed successfully""$NORMAL"
+fi
+
 
 ##################################################################
 ## samtools  
@@ -221,8 +267,8 @@ if [ $? = "0" ]; then
     samver=`samtools --version | grep samtools | cut -d" " -f2`
     vercomp $samver "1.9"
     if [[ $? == 2 ]]; then
-    echo -e "$RED""samtools v1.9 or higher is needed [$samver detected].""NORMAL"
-    exit 1;
+        echo -e "$RED""samtools v1.9 or higher is needed [$samver detected].""NORMAL"
+        exit 1;
     fi
 
     echo -e "$BLUE""Samtools appears to be already installed. ""$NORMAL"
@@ -245,9 +291,9 @@ fi
 if [ $wasInstalled == 0 ]; then
     check=`samtools view -h 2>&1 | grep -i options`;
     if [ $? = "0" ]; then
-    echo -e "$BLUE""samtools appears to be installed successfully""$NORMAL"
+        echo -e "$BLUE""samtools appears to be installed successfully""$NORMAL"
     else
-    echo -e "$RED""samtools NOT installed successfully""$NORMAL"; exit 1;
+        echo -e "$RED""samtools NOT installed successfully""$NORMAL"; exit 1;
     fi
 fi
 
@@ -340,7 +386,8 @@ wasInstalled=0
 #Install R Packages
 if [ $wasInstalled == 0 ]; then
     echo "Installing missing R packages ..."
-    R CMD BATCH ../scripts/install/install_Rpackages.R install_Rpackages.Rout
+    #R CMD BATCH ../scripts/install/install_Rpackages.R install_Rpackages.Rout
+    R --vanilla < ../scripts/install/install_Rpackages.R
 
     if [ $? == "0" ]; then
         echo -e "$BLUE""R packages appear to be installed successfully""$NORMAL"

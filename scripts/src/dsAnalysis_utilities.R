@@ -255,7 +255,9 @@ run_chromVAR <- function(mtx, genomeName = 'BSgenome.Hsapiens.UCSC.hg38',
   frag.counts = SummarizedExperiment(assay = list(counts = mtx),
                                      rowRanges = peaks)
   frag.counts <- addGCBias(frag.counts, genome = genomeName)
-  motifs <- getJasparMotifs()
+  #motifs <- getJasparMotifs()
+  library(chromVARmotifs)
+  motifs = ifelse(grepl(genomeName, pattern = 'hg'), human_pwms_v2, mouse_pwms_v2) 
   motif_ix <- matchMotifs(motifs, frag.counts,
                           genome = genomeName)
   dev <- computeDeviations(object = frag.counts, 
