@@ -116,8 +116,8 @@ else
     pver=`python --version 2>&1 | cut -d" " -f2`
     vercomp $pver "3.6.0"
     if [[ $? == 2 ]]; then
-    echo -e "$RED""Python v3.6.0 or higher is needed [$pver detected].""$NORMAL"
-    exit 1;
+        echo -e "$RED""Python v3.6.0 or higher is needed [$pver detected].""$NORMAL"
+        exit 1;
     fi
 fi
 
@@ -202,7 +202,7 @@ fi
 wasInstalled=0;
 which macs2 > /dev/null 2>&1
 if [ $? != "0" ]; then
-    echo "macs2 not installed, trying to install it through anaconda"
+    echo -e "$RED""macs2 not installed, trying to install it through anaconda...""$NORMAL"
     which conda > /dev/null 2>&1
     if [ $? != "0" ]; then
         echo "Install anaconda:"
@@ -213,16 +213,22 @@ if [ $? != "0" ]; then
         fi
         bash tmp.sh
     fi
+    
+    conda_path=$(dirname `which conda`)
+    if [ $? != '0'  ]; then 
+        echo "anaconda not install successfully, please install anaconda or macs2 manually!" 
+    fi
     conda create --name py2 python=2.7
     source activate py2
+    unset PYTHONPATH 
     pip install --user --upgrade pip
     pip install --user --upgrade Numpy 
-    pip install --user MACS2 
-    deactivate py2 
+    pip install --user macs2 
+    conda deactivate 
 fi
 
 macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
-if [ $? != '0']; then    
+if [ $? != '0' ]; then    
     which conda > /dev/null 2>&1
     if [ $? != "0" ]; then
         echo "Install anaconda:"
@@ -233,12 +239,18 @@ if [ $? != '0']; then
         fi
         bash tmp.sh
     fi
+    
+    conda_path=$(dirname `which conda`)
+    if [ $? != '0'  ]; then 
+        echo "anaconda not install successfully, please install anaconda or macs2 manually!" 
+    fi
     conda create --name py2 python=2.7
     source activate py2
+    unset PYTHONPATH 
     pip install --user --upgrade pip
     pip install --user --upgrade Numpy 
-    pip install --user MACS2 
-    deactivate py2 
+    pip install --user macs2 
+    conda deactivate 
 fi
 
 macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
@@ -267,12 +279,12 @@ if [ $? = "0" ]; then
     samver=`samtools --version | grep samtools | cut -d" " -f2`
     vercomp $samver "1.9"
     if [[ $? == 2 ]]; then
-        echo -e "$RED""samtools v1.9 or higher is needed [$samver detected].""NORMAL"
-        exit 1;
+        echo -e "$RED""samtools v1.9 or higher is needed [$samver detected].""$NORMAL"
+        echo -e "$RED""I will try to install v1.9 now ...""$NORMAL"
+    else
+        echo -e "$BLUE""Samtools appears to be already installed. ""$NORMAL"
+        wasInstalled=1;
     fi
-
-    echo -e "$BLUE""Samtools appears to be already installed. ""$NORMAL"
-    wasInstalled=1;
 fi
 
 if [ $wasInstalled == 0 ]; then
@@ -285,10 +297,7 @@ if [ $wasInstalled == 0 ]; then
     cd ..
     cp -r samtools-1.9 $PREFIX_BIN/
     export PATH=$PREFIX_BIN/samtools-1.9/:$PATH
-    wasInstalled=0;
-fi
 
-if [ $wasInstalled == 0 ]; then
     check=`samtools view -h 2>&1 | grep -i options`;
     if [ $? = "0" ]; then
         echo -e "$BLUE""samtools appears to be installed successfully""$NORMAL"
@@ -309,12 +318,12 @@ if [ $? = "0" ]; then
     bedver=`bedtools --version | cut -d" " -f2 | cut -d"-" -f1`
     vercomp $bedver "1.0"
     if [[ $? == 2 ]]; then
-    echo -e "$RED""bedtools v2.27.1 or higher is needed [$bedver detected].""NORMAL"
-    exit 1;
+        echo -e "$RED""bedtools v2.27.1 or higher is needed [$bedver detected].""$NORMAL"
+        echo -e "$RED""I will try to install v2.27.1 now ...""$NORMAL"
+    else    
+        echo -e "$BLUE""bedtools appears to be already installed. ""$NORMAL"
+        wasInstalled=1;
     fi
-
-    echo -e "$BLUE""bedtools appears to be already installed. ""$NORMAL"
-    wasInstalled=1;
 fi
 
 if [ $wasInstalled == 0 ]; then
@@ -322,15 +331,12 @@ if [ $wasInstalled == 0 ]; then
     #From sources
     $get bedtools-2.27.1.tar.gz https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz 
     tar -xzvf bedtools-2.27.1.tar.gz
-    cd bedtools-2.27
+    cd bedtools2
     make
     cd ..
-    cp -r bedtools-2.27 $PREFIX_BIN/
-    export PATH=$PREFIX_BIN/bedtools-2.27/:$PATH
-    wasInstalled=0;
-fi
+    cp -r bedtools2 $PREFIX_BIN/
+    export PATH=$PREFIX_BIN/bedtools2/bin:$PATH
 
-if [ $wasInstalled == 0 ]; then
     check=`bedtools | grep -i options`;
     if [ $? = "0" ]; then
     echo -e "$BLUE""bedtools appears to be installed successfully""$NORMAL"
@@ -351,26 +357,26 @@ if [ $? = "0" ]; then
     dver=`deeptools --version 2>&1 | cut -d" " -f2 `
     vercomp $dver "3.2.1"
     if [[ $? == 2 ]]; then
-    echo -e "$RED""deeptools v3.2.1 or higher is needed [$dver detected].""NORMAL"
-    exit 1;
+        echo -e "$RED""deeptools v3.2.1 or higher is needed [$dver detected].""$NORMAL"
+        echo -e "$RED""I will try to install v3.2.1 now ...""$NORMAL"
+    else
+        echo -e "$BLUE""deeptools appears to be already installed. ""$NORMAL"
+        wasInstalled=1;
     fi
-
-    echo -e "$BLUE""deeptools appears to be already installed. ""$NORMAL"
-    wasInstalled=1;
 fi
 
 if [ $wasInstalled == 0 ]; then
     echo "Installing deeptools ..."
-    #From sources
-    $get deeptools-3.2.1.tar.gz https://github.com/deeptools/deepTools/archive/3.2.1.tar.gz 
-    tar -xzvf deeptools-3.2.1.tar.gz
-    cd deepTools-3.2.1
-    python setup.py install --prefix $PREFIX_BIN/deepTools3
-    export PATH=$PREFIX_BIN/deepTools3/bin:$PATH
-    wasInstalled=0;
-fi
+    ##From sources
+    #$get deeptools-3.2.1.tar.gz https://github.com/deeptools/deepTools/archive/3.2.1.tar.gz 
+    #tar -xzvf deeptools-3.2.1.tar.gz
+    #cd deepTools-3.2.1
+    #python setup.py install --prefix $PREFIX_BIN/deepTools3
+    #export PATH=$PREFIX_BIN/deepTools3/bin:$PATH
+    
+    ## from pip
+    pip install --user --upgrade deeptools
 
-if [ $wasInstalled == 0 ]; then
     check=`deeptools --version `;
     if [ $? = "0" ]; then
     echo -e "$BLUE""deeptools appears to be installed successfully""$NORMAL"
@@ -392,15 +398,21 @@ if [ $wasInstalled == 0 ]; then
     if [ $? == "0" ]; then
         echo -e "$BLUE""R packages appear to be installed successfully""$NORMAL"
     else
-        echo -e "$RED""R packages NOT installed successfully. Look at the tmp/install_Rpackages.Rout for additional informations""$NORMAL"; exit 1;
+        echo -e "$RED""R packages NOT installed successfully. You may manually install some packages which I cannot installed.""$NORMAL"; exit 1;
     fi
 fi
 
 
 ##################################################################################
-## check adapter trimmer, if none of Trimmomatic or trim_galore installed,
-## trimgalore will be installed
+## Trimmer: trimgalore  and Trimmomatic
 ##################################################################################
+echo "install Trimmomatic"
+$get Trimmomatic-0.39.zip http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
+unzip Trimmomatic-0.39.zip
+mv Trimmomatic-0.39 $PREFIX_BIN/
+TRIMMOMATIC_PATH=$PREFIX_BIN/Trimmomatic-0.39
+
+
 wasInstalled=0;
 which trim_galore > /dev/null 2>&1
 if [ $? = "0" ]; then
@@ -427,30 +439,25 @@ if [ $wasInstalled == 0 ]; then
 fi
 
 ###################################################################################
-## check aligner, if none of bwa/bowtie/bowtiew was detected, 
-## install bwa as default aligner
+## check aligner, install bwa as default aligner
 ###################################################################################
 wasInstalled=0;
 which bwa > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo -e "$BLUE""bwa appears to be already installed. ""$NORMAL"
-    wasInstalled=1;
 fi
 
 which bowtie2 > /dev/null 2>&1
 if [ $? = "0" ]; then
-    echo -e "$BLUE""bowtie2 appears to be already installed. ""$NORMAL"
-    wasInstalled=1;
+    echo -e "$BLUE""bowtie2 detected. ""$NORMAL"
 fi
 
 which bowtie > /dev/null 2>&1
 if [ $? = "0" ]; then
-    echo -e "$BLUE""bowtie appears to be already installed. ""$NORMAL"
-    wasInstalled=1;
+    echo -e "$BLUE""bowtie detected. ""$NORMAL"
 fi
 
 if [ $wasInstalled == 0 ]; then
-    echo "None of bwa/bowtie2/bowtie was detected!"
     echo "Installing bwa as default aligner ..."
     #From sources
     $get bwa-0.7.17.tar.bz2 https://sourceforge.net/projects/bio-bwa/files/bwa-0.7.17.tar.bz2/download
@@ -460,10 +467,7 @@ if [ $wasInstalled == 0 ]; then
     cd ..
     mv bwa-0.7.17 $PREFIX_BIN
     export PATH=$PREFIX_BIN/bwa-0.7.17/:$PATH
-    wasInstalled=0;
-fi
 
-if [ $wasInstalled == 0 ]; then
     which bwa > /dev/null 2>&1
     if [ $? = "0" ]; then
         echo -e "$BLUE""bwa appears to be installed successfully""$NORMAL"
@@ -568,6 +572,7 @@ if [ $? = "0" ]; then
     echo "TRIM_GALORE_PATH = "`dirname $(which trim_galore)` >> configure_system.txt
 fi
 
+echo "TRIMMOMATIC_PATH = " $TRIMMOMATIC_PATH >> configure_system.txt
 
 ## check rights in PREFIX folder
 

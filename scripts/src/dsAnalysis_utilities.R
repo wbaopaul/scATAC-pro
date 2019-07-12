@@ -5,7 +5,7 @@ library(chromVAR)
 library(motifmatchr)
 library(SummarizedExperiment)
 library(BiocParallel)
-library(JASPAR2016)
+#library(JASPAR2016)
 #library(cisTopic)
 library(compiler)
 library(readr)
@@ -256,8 +256,13 @@ run_chromVAR <- function(mtx, genomeName = 'BSgenome.Hsapiens.UCSC.hg38',
                                      rowRanges = peaks)
   frag.counts <- addGCBias(frag.counts, genome = genomeName)
   #motifs <- getJasparMotifs()
-  library(chromVARmotifs)
-  motifs = ifelse(grepl(genomeName, pattern = 'hg'), human_pwms_v2, mouse_pwms_v2) 
+  library(chromVARmotifs) ## cisbp motif
+  #motifs = ifelse(grepl(genomeName, pattern = 'hg'), human_pwms_v2, mouse_pwms_v2) 
+  if(grepl(genomeName, pattern = 'hg')){
+    motifs = human_pwms_v2
+  }else{
+    motifs = mouse_pwms_v2
+  }
   motif_ix <- matchMotifs(motifs, frag.counts,
                           genome = genomeName)
   dev <- computeDeviations(object = frag.counts, 

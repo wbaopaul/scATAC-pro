@@ -23,17 +23,56 @@ function help {
     echo "---------------"
     echo "OPTIONS"
     echo
-    echo "   [-s|--step ANALYSIS_STEP] : run only a subset of the $SOFT workflow; follow steps and cominatorial steps are provided:"
-    echo "      dex_fastq: perform demultiplexing - require fastq files both for reads and index, separated by comma like: fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; output demultiplexed fastq1 and fastq2 files "
-    echo "      mapping: perform reads alignment - require fastq files, separated by comma for each paired end"
-    echo "      call_peak: call peaks for aggregated data - require BAM files"
-    echo "      get_mtx: build raw peak by barcode matrix - require BAM files, output fragment.bed file and sparese matrix file"
-    echo "      aggr_signal: generate aggregated signal in bw file and bedgraph file, which can be upload and view in as genome browser - require BAM files, output bw and bedgraph file"
-    echo "      qc_per_barcode: quality control per barcode - require fragment.bed files"
-    echo "      call_cell: cell calling - require sparse matrix files"
-    echo "      preprocess: perform preprocessing - require fastq files both for reads and index, separated by comma like: fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; output cell peak matrix and all intermediate results "
-    echo "      downstream: do all downstream analysis, including clustering, motif_analysis, and footprinting analysis (optional) - require BAM files"
-    echo "      report: generate report in html file"
+    echo "   [-s|--step ANALYSIS_STEP] : run a step (or combinatorial steps) of the $SOFT workflow, supportting steps:"
+    echo "      dex_fastq: perform demultiplexing
+                           input: fastq files for both reads and index, separated by comma like:
+                                  fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...;
+                           output: demultiplexed fastq1 and fastq2 files "
+    echo "      mapping: perform reads alignment
+                         input: fastq files, separated by comma for each paired end
+                         output: position sorted bam file and mapping qc stat"
+    echo "      call_peak: call peaks for aggregated data
+                           input: BAM file
+                           output: peaks in bed file format"
+    echo "      get_mtx: build raw peak by barcode matrix
+                         input: BAM file
+                         output: fragment.bed file and sparse matrix in Matrix Market format"
+    echo "      aggr_signal: generate aggregated signal, which can be upload to and view
+                             in genome browser
+                             input: require BAM files
+                             output: bw and bedgraph file"
+    echo "      qc_per_barcode: quality control per barcode
+                                input: fragment.bed file
+                                output: qc_per_barcode.summary"
+    echo "      preprocess: perform preprocessing - including dex_fastq, mapping, call_peak, get_mtx,
+                            aggr_signal, qc_per_barcode abd call_cell
+                            input: fastq files for both reads and index, separated by comma like:
+                                   fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
+                            output: cell peak matrix and all intermediate results "
+    echo "      call_cell: cell calling
+                           input: raw peak barcode sparse matrix file
+                           output: filtered peak by cell matrix"
+    echo "      clustering: cell clustering
+                           input: filtered peak by cell matrix file
+                           output: seurat objects with clustering label in the metadata (.rds file) and 
+                                   barcodes with cluster labels (bed file)"
+    echo "      motif_analysis: doing motif analysis
+                           input: filtered peak by cell matrix file
+                           output: TF by cell matrix indicating TF accessibility (chromVAR object)"
+    echo "      split_bam: split bam file into different clusters
+                           input: barcodes with cluster label (bed file)
+                           output: footprint summary statistics (hint output)"
+    echo "      footprint: doing footprinting analysis
+                           input: bam files of two clusters, separated by comma like, bam1,bam2
+                           output: footprint summary statistics (hint output)"
+    echo "      downstream: do all downstream analysis, including clustering, motif_analysis, 
+                            split_bam (optional) and footprinting analysis (optional)
+                            input: sparse matrix file
+                            output: seurat object (in .rds format), differential TF accessibility score matrix
+                                    and footprint summary"
+    echo "      report: generate report in html file
+                        input: directory to output report
+                        output: summary report in html format"
     echo "   -i|--input INPUT : input data, different types of input data are required for different steps;"
     echo "   -c|--conf CONFIG : configuration file for parameters (if exists) for each step"
     echo "   [-o|--output_dir : folder to save results; sub-folder will be created automatically for each step"
@@ -56,7 +95,7 @@ function opts_error {
 }
 
 #####################
-## Set PATHS ##
+## Set PATHS and defaults
 #####################
 
 SOFT_PATH=`dirname $0`
@@ -99,7 +138,7 @@ for arg in "$@"; do
   esac
 done
 
-while getopts ":s:i:c:p:vh" OPT
+while getopts ":s:i:c:o:p:vh" OPT
 do
     case $OPT in
 	s) STEP=$OPTARG;;
@@ -132,7 +171,7 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "aggr_signal" "call_peak" "get_mtx" "qc_per_barcode" "call_cell" "clustering" "motif_analysis" "split_bam" "footprint" "report", "preprocess", "downstream", "all")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "after_mapping" "aggr_signal" "call_peak" "get_mtx" "qc_per_barcode" "call_cell" "clustering" "motif_analysis" "split_bam" "footprint" "report", "preprocess", "downstream", "all")
 
 
 check_s=0
@@ -164,7 +203,7 @@ fi
 
 
 declare -x OUTPUT_DIR
-declare -x logdir
+declare -x logDir
 mkdir -p $OUTPUT_DIR
 
 logDir=${OUTPUT_DIR}/logs

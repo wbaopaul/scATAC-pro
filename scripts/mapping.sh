@@ -63,7 +63,7 @@ ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPI
 echo "Summarizing mapping stats ..."
 
 curr_dir=`dirname $0`
-qc_dir=${OUTPUT_DIR}/qc_result
+qc_dir=${OUTPUT_DIR}/summary
 mkdir -p $qc_dir
 bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $qc_dir
 

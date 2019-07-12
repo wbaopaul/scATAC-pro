@@ -7,18 +7,22 @@ fastqs=(${input_ff//,/ })
 
 mapRes_dir="${2}"
 
-if [[ -z "$MAPPING_PATH" || ! -f "$MAPPING_PATH" ]];then
-    MAPPING_PATH=`which bwa`
-    MAPPING_PATH=$(dirname $MAPPING_PATH)
+if [[ -z "$BWA_PATH" || ! -d "$BWA_PATH" ]];then
+    echo "$BWA_PATH not found: please check you bwa installation path"
+    exit
 fi
 
 ## index
 
 #echo "Indexing genome ... "
-#${MAPPING_PATH}/bwa index $BWA_INDEX
+#${BWA_PATH}/bwa index $BWA_INDEX
 
 echo "Starting alignment ... "
-${MAPPING_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.bwa.sam
+if [[ -z "$BWA_INDEX" || ! -f "$BWA_INDEX" ]];then
+    echo "$BWA_INDEX not found: please check you bwa index file path"
+    exit
+fi
+${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.bwa.sam
 
 echo "BWA Mapping Done!"
 

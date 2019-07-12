@@ -18,8 +18,8 @@ abs_out_dir=`cd ${OUTPUT_DIR}; pwd`
 downstream_dir=${abs_out_dir}/downstream_analysis/${CELL_CALLER}
 mkdir -p $downstream_dir
 
-mapping_qc_file=${abs_out_dir}/qc_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.summary
-bc_stat_file=${abs_out_dir}/qc_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.qc_per_barcode.bed
+mapping_qc_file=${abs_out_dir}/summary/${OUTPUT_PREFIX}.${MAPPING_METHOD}.MappingStats
+bc_stat_file=${abs_out_dir}/summary/${OUTPUT_PREFIX}.${MAPPING_METHOD}.qc_per_barcode.bed
 barcode_file=${abs_out_dir}/filtered_matrix/${CELL_CALLER}/barcodes.txt
 fragments_file=${abs_out_dir}/raw_matrix/fragments.bed
 tss_escore_file=${abs_out_dir}/signal/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.mtx

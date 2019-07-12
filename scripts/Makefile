@@ -80,6 +80,16 @@ mapping_qc: config_check
 	@$(SCRIPTS)/mapping_qc.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 
 
+######################################
+## after mapping
+## call_peak to end of preprocess
+######################################
+
+after_mapping: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "From peak_calling to filtered matrix ..." 
+	@$(SCRIPTS)/after_mapping.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 
 #######################################
 ## call peak
@@ -133,6 +143,16 @@ call_cell: config_check
 	@echo 
 
 #######################################
+## preprocess
+#######################################
+preprocess: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Preprocessing ..." 
+	@$(SCRIPTS)/preprocess.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## clustering
 #######################################
 clustering: config_check
@@ -173,6 +193,16 @@ footprint: config_check
 	@echo 
 
 #######################################
+## downstream
+#######################################
+downstream: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Doing downstream analysis ..." 
+	@$(SCRIPTS)/downstream.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## report
 #######################################
 report: config_check
@@ -180,5 +210,15 @@ report: config_check
 	@date 
 	@echo "Generating reports ..." 
 	@$(SCRIPTS)/report.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
+## all
+#######################################
+all: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Run the whole pipeline ..." 
+	@$(SCRIPTS)/all.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 

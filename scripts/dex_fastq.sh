@@ -25,14 +25,22 @@ if [[ $kk < 3 ]];then
   exit
 fi
 
+
+
 curr_dir=`dirname $0`
-
-
 
 ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
 dex_prefix1=$(basename ${fastqs[0]})
-dex_prefix2=$(basename ${fastqs[0]})
+dex_prefix2=$(basename ${fastqs[1]})
+
+
+if [ -f ${output_dir}/demplxed_${dex_prefix1} ]; then
+    echo "I will exit because demultiplexed fastq file exists: delete it to redo it if necessary!"
+    exit
+fi
+
 ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[2]}
+
 ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[1]} ${output_dir}/demplxed_${dex_prefix2}  ${fastqs[2]}
 
 ## for the round of barcodes, add them to the read name after @, concatenate the original name by _

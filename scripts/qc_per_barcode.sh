@@ -10,7 +10,7 @@ source ${curr_dir}/read_conf.sh
 read_conf "$2"
 read_conf "$3"
 
-qc_dir="${OUTPUT_DIR}/qc_result"
+qc_dir="${OUTPUT_DIR}/summary"
 mkdir -p $qc_dir
 
 

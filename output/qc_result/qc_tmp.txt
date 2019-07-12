@@ -1,3 +1,0 @@
-total_uniq_map \t 0
-total_q10 \t 0
-total_q30 \t 0

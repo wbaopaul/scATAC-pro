@@ -4,7 +4,7 @@ if(!require(BiocManager)){
     install.packages('BiocManager')
 }
 
-pks = c('devtools', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',  'optparse', 'magrittr', 'readr', 'Seurat')
+pks = c('devtools', 'png', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',  'optparse', 'magrittr', 'readr', 'Seurat')
 
 for(pk in pks){
     if(!require(pk, character.only = T)) {
@@ -23,5 +23,7 @@ for(pk in bioc.pks){
     }
 }
 
-message(paste('Install chromVARmotifs...'))
-devtools::install_github("GreenleafLab/chromVARmotifs")
+if(!require(chromVARmotifs)) {  
+    message(paste('Install chromVARmotifs...'))
+    devtools::install_github("GreenleafLab/chromVARmotifs", upgrade = 'never')
+}
