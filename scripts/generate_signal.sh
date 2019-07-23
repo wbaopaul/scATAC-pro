@@ -21,18 +21,18 @@ ncore=$(($ncore - 1))
 echo "generate bw file..."
 unset PYTHONPATH
 ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
-  --bam $input_bam --binSize 20 --skipNonCoveredRegions \
-  --outFileName ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.bw
+  --bam $input_bam --binSize 20 --skipNonCoveredRegions --normalizeUsing BPM \
+  --outFileName ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregated.bw
 
 #echo "generate bedgraph..."
 ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
-  --bam $input_bam --binSize 20 --skipNonCoveredRegions \
-  --outFileFormat bedgraph --outFileName ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.bedgraph
+  --bam $input_bam --binSize 20 --skipNonCoveredRegions -- --normalizeUsing BPM \
+  --outFileFormat bedgraph --outFileName ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregated.bedgraph
 
 
 echo "generate count around TSS..."
-${DEEPTOOLS_PATH}/computeMatrix reference-point -S ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.bw -R $TSS \
-    -a 1200 -b 1200 -o ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.mtx.gz
+${DEEPTOOLS_PATH}/computeMatrix reference-point -S ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregated.bw -R $TSS \
+    -a 1200 -b 1200 -o ${signal_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregated.mtx.gz
 
 
 

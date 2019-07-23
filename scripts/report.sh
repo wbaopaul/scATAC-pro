@@ -22,7 +22,7 @@ mapping_qc_file=${abs_out_dir}/summary/${OUTPUT_PREFIX}.${MAPPING_METHOD}.Mappin
 bc_stat_file=${abs_out_dir}/summary/${OUTPUT_PREFIX}.${MAPPING_METHOD}.qc_per_barcode.bed
 barcode_file=${abs_out_dir}/filtered_matrix/${CELL_CALLER}/barcodes.txt
 fragments_file=${abs_out_dir}/summary/fragments.bed
-tss_escore_file=${abs_out_dir}/signal/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.mtx
+tss_escore_file=${abs_out_dir}/signal/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregated.mtx
 
 curr_dir=`dirname $0`
 

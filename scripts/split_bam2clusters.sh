@@ -38,7 +38,7 @@ for file0 in $(find $output_dir -name *cluster*.sam); do
     echo "generate bw file..."
     fname_bw=${file0/.sam/.bw}
     ${SAMTOOLS_PATH}/samtools index -@ $ncore $fname_bam
-    ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
+    ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max --normalizeUsing BPM \
          --bam $fname_bam --binSize 10 --skipNonCoveredRegions \
          --outFileName $fname_bw
 done
