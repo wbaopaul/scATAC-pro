@@ -9,7 +9,7 @@ mapRes_dir="${2}"
 
 
 echo "Starting bowtie2 alignment ... "
-${MAPPING_PATH}/bowtie2 -1 ${fastqs[0]} -2 ${fastqs[1]} -x $BOWTIE2_INDEX  $BOWTIE2_OPTS -S ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie2.sam 
+${BOWTIE2_PATH}/bowtie2 -1 ${fastqs[0]} -2 ${fastqs[1]} -x $BOWTIE2_INDEX  $BOWTIE2_OPTS -S ${mapRes_dir}/${OUTPUT_PREFIX}.bowtie2.sam 
 
 echo "Bowtie2 Mapping Done!"
 

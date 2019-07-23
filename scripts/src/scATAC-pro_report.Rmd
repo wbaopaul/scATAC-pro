@@ -236,25 +236,29 @@ Column
 ```{r}
 library(Seurat)
 rm(frags, bc_stat, qc_sele)
-ss = readRDS(paste0(params$downstream_dir, '/seurat_obj_withCluster.rds'))
+seurat_file = paste0(params$downstream_dir, '/seurat_obj_withCluster.rds')
+if(file.exists(seurat_file)){
+    ss = readRDS(seurat_file)
 
-cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters', label = T) 
-cg + scale_color_brewer(palette = "Paired") + theme(legend.text = element_text(size = 17))
-#ggplotly(cg)
+    cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters', label = T) 
+    cg + scale_color_brewer(palette = "Paired") + theme(legend.text = element_text(size = 17))
+    #ggplotly(cg)
+}
 
 ```
 
 
 ### Total reads per cell
 ```{r}
-ss$log10_nCount = log10(ss$nCount_ATAC)
-#fg <- FeaturePlot(ss, features = 'log10_nCount', reduction = 'umap') + ggtitle('') +
-#   scale_fill_viridis()
+if(file.exists(seurat_file)){
+    ss$log10_nCount = log10(ss$nCount_ATAC)
+    #fg <- FeaturePlot(ss, features = 'log10_nCount', reduction = 'umap') + ggtitle('') +
+    #   scale_fill_viridis()
 
-dat = data.table('logN' = ss$log10_nCount, 'UMAP_1' = ss@reductions$umap@cell.embeddings[, 1], 'UMAP_2' = ss@reductions$umap@cell.embeddings[, 2])
+    dat = data.table('logN' = ss$log10_nCount, 'UMAP_1' = ss@reductions$umap@cell.embeddings[, 1], 'UMAP_2' = ss@reductions$umap@cell.embeddings[, 2])
 ggplot(data = dat, aes(x = UMAP_1, y = UMAP_2, colour = logN)) + geom_point(size = 1.1) +
   scale_colour_viridis() + theme(legend.title=element_blank(), axis.title = element_text(size = 15), axis.text = element_text(size = 15), legend.text = element_text(size = 17))
-
+}
 
 ```
 
@@ -303,8 +307,12 @@ do_DA <- function(mtx_score, clusters, test = 'wilcox',
   return(res)
 }
 
-metaData = ss@meta.data
-rm(ss)
+
+if(file.exists(seurat_file)){
+    metaData = ss@meta.data
+    rm(ss)
+}
+
 if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
   chromVar.obj = readRDS(paste0(params$downstream_dir, '/chromVar_obj.rds'))
   #variability <- computeVariability(chromVar.obj)

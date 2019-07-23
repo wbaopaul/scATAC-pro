@@ -137,6 +137,12 @@ else
 fi
 
 
+# perl
+which perl > /dev/null 2>&1
+if [ $? != "0" ]; then
+    echo -e "$RED""Can not proceed without perl, please install and re-run""$NORMAL"
+    exit 1;
+fi
 
 
 
@@ -385,7 +391,72 @@ if [ $wasInstalled == 0 ]; then
     fi
 fi
 
+
+
+##################################################################################
+## install HINT through rgt
+##################################################################################
 wasInstalled=0
+which rgt-hint > /dev/null
+
+if [ $? = "0" ]; then
+
+    hver=`rgt-hint --version 2>&1 | cut -d"-" -f3 | cut -d 'v' -f2`
+    vercomp $hver "0.12.1"
+    if [[ $? == 2 ]]; then
+        echo -e "$RED""rgt-hint v0.12.1 or higher is needed [$dver detected].""$NORMAL"
+        echo -e "$RED""I will try to install v0.12.1 now ...""$NORMAL"
+    else
+        echo -e "$BLUE""rgt-hint appears to be already installed. ""$NORMAL"
+        wasInstalled=1;
+    fi
+fi
+
+
+if [ $wasInstalled == 0 ]; then
+    echo "Installing rgt-hint through installing RGT suite..."
+    
+    echo "Since it needs python2 to install RGT, I will try to use anaconda ..."
+    which conda > /dev/null 2>&1
+    if [ $? != "0" ]; then
+        echo "I will install anaconda now ..."
+        if [ "$os" = "Darwin" ]; then 
+            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+        else
+            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-ppc64le.sh
+        fi
+        bash tmp.sh
+    fi
+    
+    if [ $? != '0'  ]; then 
+        echo -e "$RED""anaconda not install successfully, thus I cannot install RGT" "$NORMAL"; 
+        echo -e "$RED""If you want to run footprinting analysis, please install RGT by yourself!""$NORMAL";
+    else
+        conda create --name py2 python=2.7
+        source activate py2
+        unset PYTHONPATH 
+        ## from pip
+        pip install --user cython scipy numpy
+        pip install --user RGT
+
+        conda deactivate 
+        check=`rgt-hint --version `;
+        if [ $? = "0" ]; then
+            echo -e "$BLUE""rgt-hint appears to be installed successfully""$NORMAL"
+        else
+            echo -e "$RED""rgt-hint NOT installed successfully""$NORMAL"; 
+            echo -e "$RED""If you want to run footprinting analysis, please install RGT by yourself!""$NORMAL";
+        fi
+    fi
+fi
+
+
+echo "Installaing GEM as alternative peak calling algorithm"
+$get gem.v3.4.tar.gz http://groups.csail.mit.edu/cgs/gem/download/gem.v3.4.tar.gz
+tar xzvf gem.v3.4.tar.gz
+cp -r gem ${PREFIX_BIN}/
+GEM_PATH=${PREFIX_BIN}/gem
+
 ###################################################################################
 ## Install R packages 
 ###################################################################################
@@ -567,12 +638,24 @@ if [ $? = "0" ]; then
     echo "MACS2_PATH = "`dirname $(which macs2)` >> configure_system.txt
 fi
 
+which perl > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "PERL_PATH = "`dirname $(which perl)` >> configure_system.txt
+fi
+
 which trim_galore > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo "TRIM_GALORE_PATH = "`dirname $(which trim_galore)` >> configure_system.txt
 fi
 
+
+which rgt-hint > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "HINT_PATH = "`dirname $(which rgt-hint)` >> configure_system.txt
+fi
+
 echo "TRIMMOMATIC_PATH = " $TRIMMOMATIC_PATH >> configure_system.txt
+echo "GEM_PATH = " $GEM_PATH >> configure_system.txt
 
 ## check rights in PREFIX folder
 

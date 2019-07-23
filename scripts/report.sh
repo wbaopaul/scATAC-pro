@@ -21,7 +21,7 @@ mkdir -p $downstream_dir
 mapping_qc_file=${abs_out_dir}/summary/${OUTPUT_PREFIX}.${MAPPING_METHOD}.MappingStats
 bc_stat_file=${abs_out_dir}/summary/${OUTPUT_PREFIX}.${MAPPING_METHOD}.qc_per_barcode.bed
 barcode_file=${abs_out_dir}/filtered_matrix/${CELL_CALLER}/barcodes.txt
-fragments_file=${abs_out_dir}/raw_matrix/fragments.bed
+fragments_file=${abs_out_dir}/summary/fragments.bed
 tss_escore_file=${abs_out_dir}/signal/${OUTPUT_PREFIX}.${MAPPING_METHOD}.aggregate.mtx
 
 curr_dir=`dirname $0`

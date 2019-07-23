@@ -7,7 +7,7 @@ use strict;
 #Receive options from command line
 use Getopt::Long;
 
-my $region_file; 
+my $samtools_path; 
 my $read_file;
 my $output_file;
 

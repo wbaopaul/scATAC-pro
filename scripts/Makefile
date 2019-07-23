@@ -108,7 +108,7 @@ call_peak: config_check
 get_mtx:  config_check
 	@echo "--------------------------------------------" 
 	@date 
-	@echo "Getting peak by barcode matrix ..." 
+	@echo "Getting peak/bin by barcode matrix ..." 
 	@$(SCRIPTS)/get_mtx.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
@@ -150,6 +150,16 @@ preprocess: config_check
 	@date 
 	@echo "Preprocessing ..." 
 	@$(SCRIPTS)/preprocess.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
+## preprocess without demultiplex
+#######################################
+preprocess_no_dex: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Preprocessing without demultiplexing..." 
+	@$(SCRIPTS)/preprocess_no_dex.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
