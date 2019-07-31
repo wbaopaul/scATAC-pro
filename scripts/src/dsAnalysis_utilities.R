@@ -113,6 +113,55 @@ doBasicSeurat <- function(mtx, npc = 100, top.variable = 0.2, doLog = T,
 }
 doBasicSeurat = cmpfun(doBasicSeurat)
 
+regress_on_pca <- function(seurat.obj, reg.var = 'nCount_ATAC'){
+
+  pcs = seurat.obj@reductions$pca@cell.embeddings
+  pcs.reg = pcs
+  for(i in 1:length(reg.var)){
+
+    reg.var0 = seurat.obj[[reg.var[i]]][[1]]
+    pcs.reg = apply(pcs.reg, 2, function(x) lm(x ~ reg.var0)$residual )
+
+  }
+   colnames(pcs.reg) = colnames(pcs)
+  seurat.obj@reductions$pca@cell.embeddings = pcs.reg
+  return(seurat.obj)
+}
+
+
+doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2, doLog = T,
+                          doScale = T, doCenter = T, assay = 'ATAC',
+                          reg.var = NULL, binarization = F){
+
+  # top.variabl -- use top most variable features
+  if(doLog) mtx = log2(1 + mtx)
+  seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = assay,
+                                  names.delim = '-')
+  cell.names = colnames(mtx)
+
+
+  seurat.obj <- FindVariableFeatures(object = seurat.obj,
+                                     selection.method = 'vst',
+                                     nfeatures = floor(nrow(mtx) * top.variable))
+  seurat.obj <- ScaleData(object = seurat.obj,
+                          features = VariableFeatures(seurat.obj),
+                          vars.to.regress = NULL, do.scale = doScale,
+                          do.center = doCenter)
+
+
+  seurat.obj <- RunPCA(object = seurat.obj,
+                       features = VariableFeatures(object = seurat.obj),
+                       verbose = FALSE, seed.use = 10, npc = npc)
+  if(length(reg.var) > 0 ) seurat.obj = regress_on_pca(seurat.obj, reg.var)
+
+  if(binarization) seurat.obj <- RunLSI(seurat.obj, n = npc,
+                       features = VariableFeatures(object = seurat.obj))
+
+return(seurat.obj)
+}
+doBasicSeurat_new = cmpfun(doBasicSeurat_new)
+
+
 # get the right resolution parater given number of expected cluster
 queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc = 20, 
                                    min_resl = 0.1, max_resl = 1, max_iter = 15, doPCA = F){

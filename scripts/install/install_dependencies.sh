@@ -475,6 +475,12 @@ fi
 
 
 ##################################################################################
+## install python packages
+##################################################################################
+pip install --user umap-learn
+
+
+##################################################################################
 ## Trimmer: trimgalore  and Trimmomatic
 ##################################################################################
 echo "install Trimmomatic"
@@ -663,6 +669,6 @@ if [ ! -w $install_dir ]; then
     die "Cannot install scATAC-pro in $install_dir directory. Maybe missing super-user (root) permissions to write there. Please specify another directory using 'make configure prefix=YOUR_INSTALL_PATH' ";
 fi 
 
-echo "All Done: run 'make install' now! " ;
+echo -e "$RED""All Done: run 'make install' now!""$NORMAL" ;
 
 

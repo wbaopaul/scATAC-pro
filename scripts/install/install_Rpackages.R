@@ -4,7 +4,8 @@ if(!require(BiocManager)){
     install.packages('BiocManager')
 }
 
-pks = c('devtools', 'png', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',  'optparse', 'magrittr', 'readr', 'Seurat')
+pks = c('devtools', 'png', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',
+  'optparse', 'magrittr', 'readr', 'Seurat', 'reticulate', 'bedr')
 
 for(pk in pks){
     if(!require(pk, character.only = T)) {

@@ -36,17 +36,12 @@ fi
 ${curr_dir}/mapping.sh $mapping_inputs $2 $3
 
 ## 4.call peak
-bam_file=${OUTPUT_DIR}/mapping_result/${outfile_prefix}.positionsort.MAPQ${MAPQ}.bam
+bam_file=${OUTPUT_DIR}/mapping_result/${outfile_prefix}.positionsort.MAPQ${MAPQ}.noDuplicates.bam
 ${curr_dir}/call_peak.sh $bam_file $2 $3
 
 ## 5.generate matrix
-USE_BIN=`echo $USE_BIN | tr a-z A-Z`
 
-if [ "$USE_BIN" = "FALSE" ]; then
-    feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${outfile_prefix}_peaks_BlacklistRemoved.bed
-else
-    feature_file="xx"
-fi
+feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${outfile_prefix}_features_BlacklistRemoved.bed
 ${curr_dir}/get_mtx.sh $feature_file $2 $3 &
 
 ## 6.generate aggregated signal
@@ -55,11 +50,7 @@ wait
 
 
 ## qc and call cell
-if [ "$USE_BIN" = "TRUE" ]; then
-    mat_file=${OUTPUT_DIR}/raw_matrix/bin_mat_resl${BIN_RESL}/${outfile_prefix}.bin_resl${BIN_RESL}.mtx
-else
-    mat_file=${OUTPUT_DIR}/raw_matrix/peak_mat/${outfile_prefix}.peak.barcode.mtx
-fi
+mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
 
 frag_file=${OUTPUT_DIR}/summary/fragments.bed
 
@@ -81,3 +72,4 @@ fi
 wait
 ## report preprocessing QC
 ${curr_dir}/report.sh $OUTPUT_DIR/summary $2 $3
+

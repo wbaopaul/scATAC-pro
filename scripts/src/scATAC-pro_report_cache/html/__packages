@@ -1,8 +1,0 @@
-base
-flexdashboard
-data.table
-magrittr
-kableExtra
-RColorBrewer
-ggplot2
-plotly

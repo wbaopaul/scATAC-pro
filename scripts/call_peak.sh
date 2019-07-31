@@ -14,18 +14,17 @@ mkdir -p $peaks_dir
 out_prefix=${OUTPUT_PREFIX}.${MAPPING_METHOD}
 
 ## call peaks
-if [ ${PEAK_CALLER} = 'macs2' ];then
+if [ ${PEAK_CALLER} = 'MACS2' ];then
 	echo "--Using macs2... "
 	unset PYTHONPATH
-	work_dir=${peaks_dir}/macs2
+	work_dir=${peaks_dir}/MACS2
 	mkdir -p $work_dir
-    echo $out_prefix
 	${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $work_dir -n $out_prefix -f BAM $MACS2_OPTS 
 	#${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $peaks_dir -f BAM $MACS2_OPTS --nomodel --extsize 147
 
 	## remove peaks overlapped with blacklist
 	${BEDTOOLS_PATH}/bedtools intersect -a ${work_dir}/${out_prefix}_peaks.narrowPeak -b $BLACKLIST -v \
-	    > ${work_dir}/${out_prefix}_peaks_BlacklistRemoved.bed
+	    > ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed
 fi
 
 
@@ -60,7 +59,22 @@ if [ ${PEAK_CALLER} = 'GEM' ];then
 
 	## remove peaks overlapped with blacklist
 	${BEDTOOLS_PATH}/bedtools intersect -a ${work_dir}/${out_prefix}_peaks.bed -b $BLACKLIST -v \
-	    > ${peaks_dir}/${out_prefix}_peaks_BlacklistRemoved.bed
+	    > ${peaks_dir}/${out_prefix}_features_BlacklistRemoved.bed
 fi
 
+if [${PEAK_CALLER} = 'COMBINED' ];then
+    curr_dir=`dirname $0`
+    ${curr_dir}/iter_peak.sh $1 $2 $3
+fi
+
+if [${PEAK_CALLER} = 'BIN' ];then
+    echo "--Binning genome"
+	work_dir=${peaks_dir}/BIN
+	mkdir -p $work_dir
+    bin_file=${mat_dir}/${output_prefix}_bin.bed
+    ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > $bin_file
+	${BEDTOOLS_PATH}/bedtools intersect -a ${work_dir}/${out_prefix}_bin.bed -b $BLACKLIST -v \
+	    > ${peaks_dir}/${out_prefix}_features_BlacklistRemoved.bed
+fi
+   
 echo "Call peaks done !"

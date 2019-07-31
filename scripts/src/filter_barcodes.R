@@ -14,7 +14,7 @@ parser <- add_option(parser, c("-out", "--output_dir"), type="character", defaul
                      help="output mtx directory [default %default]")
 
 
-parser <- add_option(parser, c("-bs", "--bc_stat_file"), type="character", default='fragments.bed',
+parser <- add_option(parser, c("-bs", "--bc_stat_file"), type="character", default='NULL',
                      help="barcodes with summary stat file [default %default]")
 
 parser <- add_option(parser, c("-tp", "--total_frags"), type="integer", default=100,

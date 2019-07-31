@@ -52,6 +52,8 @@ args = commandArgs(T)
 frags.file = args[1]
 region.file = args[2]
 out_dir = args[3]
+min_total_frag = as.integer(args[4])  ##default 5
+min_cell = as.integer(args[5])        ## default 5
 
 frags = fread(frags.file, select=1:5, header = F)
 names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
@@ -65,7 +67,7 @@ frags[, 'ndup' := NULL]
 
 
 frags[, 'depth_per_bc' := .N, by = bc]
-frags = frags[depth_per_bc > 5]
+frags = frags[depth_per_bc > min_total_frag]
 frags[, depth_per_bc := NULL]
 
 regions = fread(region.file, select=1:3, header = F)
@@ -94,8 +96,8 @@ mtx[, 'count' := .N, by = list(bc, region)]
 mtx = mtx[!duplicated(mtx), ]
 mtx = mtx[, 'n_per_region' := .N, by = region]
 mtx = mtx[, 'n_per_bc' := .N, by = bc]
-mtx = mtx[n_per_region > 5]
-mtx = mtx[n_per_bc > 5]
+mtx = mtx[n_per_bc > min_total_frag]
+mtx = mtx[n_per_region > min_cell]
 mtx[, c('n_per_region', 'n_per_bc') := NULL]
 
 # covert to sparse matrix

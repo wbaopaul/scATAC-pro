@@ -13,9 +13,14 @@ cluster_method = args[2]
 k = as.integer(args[3])
 output_dir = args[4]
 genome_name = args[5]
+python_path = args[6]
+
+library(reticulate)
+use_python(paste0(python_path, '/python'))
 
 mtx = read_mtx_scATACpro(mtx_file)
 mtx = filterMat(mtx)
+
 
 
 if(file.exists(paste0(output_dir, '/seurat_obj_withCluster.rds'))){
@@ -23,10 +28,10 @@ if(file.exists(paste0(output_dir, '/seurat_obj_withCluster.rds'))){
 }else if(file.exists(paste0(output_dir, '/seurat_obj_withDR.rds'))){
   seurat.obj = readRDS(paste0(output_dir, '/seurat_obj_withDR.rds'))
 }else{
-  seurat.obj = doBasicSeurat(mtx, npc = 100, top.variable = 0.2)
+  seurat.obj = doBasicSeurat_new(mtx, npc = 30, top.variable = 0.2, reg.var = 'nCount_ATAC')
   
-  seurat.obj = RunTSNE(seurat.obj, dims = 1:50)
-  seurat.obj = RunUMAP(seurat.obj, dims = 1:50, verbose = F)
+  seurat.obj = RunTSNE(seurat.obj, dims = 1:30)
+  seurat.obj = RunUMAP(seurat.obj, dims = 1:30, verbose = F)
   saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_withDR.rds'))
 }
 
@@ -36,9 +41,13 @@ if(file.exists(paste0(output_dir, '/seurat_obj_withCluster.rds'))){
 ## clustering
 if(cluster_method == 'seurat'){
   ## seurat implemented louvain algorithm
-  seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca')
-  resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 50, k = k,
-                                min_resl = 0.05)
+  seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:30, k.param = 50)
+  if (k == 0 || is.null(k)){
+    resl = 0.2
+  }else{
+    resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 30, k = k,
+                                min_resl = 0.01)
+  }
   seurat.obj = FindClusters(seurat.obj, resolution = resl)
   seurat.obj$seurat_clusters = seurat.obj@active.ident
   seurat.obj$active_clusters = seurat.obj$seurat_clusters
@@ -54,8 +63,8 @@ if(cluster_method == 'cisTopic'){
   seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
 }
 
-if(cluster_method == 'LSI'){
-  seurat.obj$LSI_clusters = run_LSI(mtx, k = k)
+if(cluster_method == 'LSA'){
+  seurat.obj$LSA_clusters = run_LSI(mtx, k = k)
   seurat.obj$active_clusters = seurat.obj$LSI_clusters
 }
 
@@ -77,7 +86,7 @@ if(cluster_method == 'chromVar'){
   pca_coords = doDimReduction4mat(obj@assays$data$z)[[1]]
   
   seurat.obj$chromVar_clusters = cutree(hclust(dist(pca_coords)), k = k)
-  seurat.obj$active_clusters = seurat.obj$chromVar_clusters
+  seurat.obj$active_clusters = as.factor(seurat.obj$chromVar_clusters)
   
   
 }

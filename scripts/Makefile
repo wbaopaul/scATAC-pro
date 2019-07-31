@@ -103,6 +103,16 @@ call_peak: config_check
 
 
 #######################################
+## recall peak
+#######################################
+recall_peak: config_check 
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Recalling peaks given cell barcodes..." 
+	@$(SCRIPTS)/recall_peak.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## get peak/bin barcode matrix
 #######################################
 get_mtx:  config_check

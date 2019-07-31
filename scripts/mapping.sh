@@ -80,7 +80,5 @@ echo "Getting bed file for read pair (fragment) information"
 ${PERL_PATH}/perl ${curr_dir}/src/simply_bam2frags.pl --read_file ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam \
         --output_file ${qc_dir}/fragments.bed --samtools_path $SAMTOOLS_PATH
 
-n_frag_uniq=$(wc -l ${qc_dir}/fragments.bed)
-
-
-
+echo "Remove duplicates"
+${SAMTOOLS_PATH}/samtools markdup -@ $ncore -r ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ30.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ30.noDuplicates.bam 

@@ -40,60 +40,43 @@ else
     mapping_inputs=${fq1},${fq2}
 fi
  
-#make INPUT_FILE=$mapping_inputs CONFIG_FILE=$2 CONFIG_SYS=$3 mapping > ${logDir}/mapping.log 2>&1  
 ${curr_dir}/mapping.sh $mapping_inputs $2 $3
 
 ## 4.call peak
-bam_file=${OUTPUT_DIR}/mapping_result/${outfile_prefix}.positionsort.MAPQ${MAPQ}.bam
-#make INPUT_FILE=$bam_file CONFIG_FILE=$2 CONFIG_SYS=$3 call_peak > ${logDir}/call_peak.log 2>&1  
+bam_file=${OUTPUT_DIR}/mapping_result/${outfile_prefix}.positionsort.MAPQ${MAPQ}.noDuplicates.bam
 ${curr_dir}/call_peak.sh $bam_file $2 $3
 
 ## 5.generate matrix
-USE_BIN=`echo $USE_BIN | tr a-z A-Z`
 
-if [ "$USE_BIN" = "FALSE" ]; then
-    feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${outfile_prefix}_peaks_BlacklistRemoved.bed
-else
-    feature_file="xx"
-fi
-#make INPUT_FILE=$feature_file CONFIG_FILE=$2 CONFIG_SYS=$3 get_mtx > ${logDir}/get_mtx.log 2>&1 & 
+feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${outfile_prefix}_features_BlacklistRemoved.bed
+
 ${curr_dir}/get_mtx.sh $feature_file $2 $3 &
 
 ## 6.generate aggregated signal
-#make INPUT_FILE=$bam_file CONFIG_FILE=$2 CONFIG_SYS=$3 aggr_signal > ${logDir}/aggr_signal.log 2>&1 & 
 ${curr_dir}/generate_signal.sh $bam_file $2 $3 &
 wait
 
 
 ## qc and call cell
-if [ "$USE_BIN" = "TRUE" ]; then
-    mat_file=${OUTPUT_DIR}/raw_matrix/bin_mat_resl${BIN_RESL}/${outfile_prefix}.bin_resl${BIN_RESL}.mtx
-else
-    mat_file=${OUTPUT_DIR}/raw_matrix/peak_mat/${outfile_prefix}.peak.barcode.mtx
-fi
+mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
 
-frag_file=${OUTPUT_DIR}/raw_matrix/fragments.bed
+frag_file=${OUTPUT_DIR}/summary/fragments.bed
 
 if [ "$CELL_CALLER" != "filtering" ]; then
     ## 7.qc per barcode
-    #make INPUT_FILE=$frag_file CONFIG_FILE=$2 CONFIG_SYS=$3 qc_per_barcode > ${logDir}/qc_per_barcode.log 2>&1 &
     ${curr_dir}/qc_per_barcode.sh $frag_file $2 $3 &
     ## 8.call cell
-    #make INPUT_FILE=$mat_file CONFIG_FILE=$2 CONFIG_SYS=$3 call_cell > ${logDir}/call_cell.log 2>&1 &
 
     ${curr_dir}/call_cell.sh $mat_file $2 $3 &
 else
     ## 7.qc per barcode
-    #make INPUT_FILE=$frag_file CONFIG_FILE=$2 CONFIG_SYS=$3 qc_per_barcode > ${logDir}/qc_per_barcode.log 2>&1 
     
     ${curr_dir}/qc_per_barcode.sh $frag_file $2 $3 
     ## 8.call cell
-    #make INPUT_FILE=$mat_file CONFIG_FILE=$2 CONFIG_SYS=$3 call_cell > ${logDir}/call_cell.log 2>&1
 
     ${curr_dir}/call_cell.sh $mat_file $2 $3 
 fi
 
 wait
 ## report preprocessing QC
-#make INPUT_FILE=$OUTPUT_DIR CONFIG_FILE=$2 CONFIG_SYS=$3 report > ${logDir}/report.log 2>&1
 ${curr_dir}/report.sh $OUTPUT_DIR/summary $2 $3

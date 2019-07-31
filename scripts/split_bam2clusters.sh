@@ -13,12 +13,9 @@ read_conf "$3"
 output_dir=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster
 mkdir -p $output_dir
 
-input_bam=${OUTPUT_DIR}/mapping_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam  ## suppose path for bam file
+input_bam=${OUTPUT_DIR}/mapping_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.noDuplicates.bam  ## suppose path for bam file
 
 curr_dir=`dirname $0`
-
-## save header
-${SAMTOOLS_PATH}/samtools view -H $input_bam > header.txt
 
 
 
@@ -29,18 +26,17 @@ ${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters.pl --cluster_file $ff --bam
 unset PYTHONPATH
 ncore=$(nproc --all)
 ncore=$(($ncore - 1))
-for file0 in $(find $output_dir -name *cluster*.sam); do
-    fname_bam=${file0/.sam/.bam}
-    cat header.txt $file0 > ${file0}.wheader
-    ${SAMTOOLS_PATH}/samtools view -bS -@ $ncore ${file0}.wheader > $fname_bam 
-    rm ${file0}.wheader
-    rm $file0
+for file0 in $(find $output_dir -name *cluster*.bam); do
     echo "generate bw file..."
-    fname_bw=${file0/.sam/.bw}
-    ${SAMTOOLS_PATH}/samtools index -@ $ncore $fname_bam
+    fname_bw=${file0/.bam/.bw}
+    ${SAMTOOLS_PATH}/samtools index -@ $ncore $file0
     ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max --normalizeUsing BPM \
-         --bam $fname_bam --binSize 10 --skipNonCoveredRegions \
+         --bam $file0 --binSize 10 --skipNonCoveredRegions \
          --outFileName $fname_bw
+    fname_bedgraph=${file0/.bam/.bedgraph}
+    ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max --normalizeUsing BPM \
+         --outFileFormat bedgraph --bam $file0 --binSize 10 --skipNonCoveredRegions \
+         --outFileName $fname_bedgraph
 done
 
 

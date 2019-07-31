@@ -31,7 +31,7 @@ if [ ! -f "$RGT_HINT_PATH" ]; then
     echo "RGT_HINT_PATH not provided or installed, trying to install rgt-hint:"
 fi
 
-input_peak=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_peaks_BlacklistRemoved.bed  ## suppose path for peak file
+input_peak=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_features_BlacklistRemoved.bed  ## suppose path for peak file
 
 
 unset PYTHONPATH
