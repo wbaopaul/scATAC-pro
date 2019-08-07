@@ -10,11 +10,11 @@ read_conf $3
 
 
 ## 1.first bin genome
-mat_dir=${OUTPUT_DIR}/raw_matrix
+mtx_dir=${OUTPUT_DIR}/raw_matrix
 echo "Getting bin by barcode matrix ..."
-mtx_bin_dir=${mat_dir}/${PEAK_CALLER}
+mtx_bin_dir=${mtx_dir}/${PEAK_CALLER}
 mkdir -p $mtx_bin_dir
-bin_file=${mat_bin_dir}/${OUTPUT_PREFIX}_bin.bed
+bin_file=${mtx_bin_dir}/${OUTPUT_PREFIX}_bin.bed
 ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > $bin_file
 ${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/fragments.bed $bin_file ${mtx_bin_dir} 5000 50 < ${curr_dir}/src/get_mtx.R
 rm $bin_file

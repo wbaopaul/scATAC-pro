@@ -6,11 +6,12 @@ source_local <- function(fname){
 
 source_local('dsAnalysis_utilities.R')
 
+library(ggplot2)
 library(parallel)
 args = commandArgs(T)
 mtx_file = args[1]
 cluster_method = args[2]
-k = as.integer(args[3])
+k = (args[3])
 output_dir = args[4]
 genome_name = args[5]
 python_path = args[6]
@@ -42,9 +43,10 @@ if(file.exists(paste0(output_dir, '/seurat_obj_withCluster.rds'))){
 if(cluster_method == 'seurat'){
   ## seurat implemented louvain algorithm
   seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:30, k.param = 50)
-  if (k == 0 || is.null(k)){
-    resl = 0.2
+  if (toupper(k) == 'NULL' || k == '0'){
+    resl = 0.6
   }else{
+    k = as.integer(k)
     resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 30, k = k,
                                 min_resl = 0.01)
   }
@@ -100,4 +102,9 @@ setkey(bc_cls, Cluster)
 
 write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table.txt'), sep = '\t',
             quote = F, row.names = F)
+
+cg <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', label = T) + theme(legend.text = element_text(size = 17))
+    
+   pfname = paste0(output_dir, '/umap_clusters.eps')
+   ggsave(cg, file = pfname, device = 'eps', width = 6, height = 6)
 

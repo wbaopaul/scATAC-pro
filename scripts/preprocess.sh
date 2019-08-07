@@ -43,7 +43,7 @@ fi
 ${curr_dir}/mapping.sh $mapping_inputs $2 $3
 
 ## 4.call peak
-bam_file=${OUTPUT_DIR}/mapping_result/${outfile_prefix}.positionsort.MAPQ${MAPQ}.noDuplicates.bam
+bam_file=${OUTPUT_DIR}/mapping_result/${outfile_prefix}.positionsort.MAPQ${MAPQ}.bam
 ${curr_dir}/call_peak.sh $bam_file $2 $3
 
 ## 5.generate matrix
@@ -62,7 +62,7 @@ mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
 
 frag_file=${OUTPUT_DIR}/summary/fragments.bed
 
-if [ "$CELL_CALLER" != "filtering" ]; then
+if [ "$CELL_CALLER" != "FILTER" ]; then
     ## 7.qc per barcode
     ${curr_dir}/qc_per_barcode.sh $frag_file $2 $3 &
     ## 8.call cell

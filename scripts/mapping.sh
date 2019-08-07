@@ -14,9 +14,9 @@ mapRes_dir="${OUTPUT_DIR}/mapping_result"
 mkdir -p $mapRes_dir
 curr_dir=`dirname $0`
 
-if [ $MAPPING_METHOD == "bwa" ];then
+if [ $MAPPING_METHOD = "bwa" ];then
      ${curr_dir}/mapping_bwa.sh $fastqs $mapRes_dir
-elif [ $MAPPING_METHOD == "bowtie" ];then
+elif [ $MAPPING_METHOD = "bowtie" ];then
      ${curr_dir}/mapping_bowtie.sh $fastqs $mapRes_dir
 else
      ${curr_dir}/mapping_bowtie2.sh $fastqs $mapRes_dir
@@ -34,7 +34,7 @@ ncore=$(nproc --all)
 ncore=$(($ncore - 1))
 mkdir -p ${mapRes_dir}/tmp
 ${SAMTOOLS_PATH}/samtools sort -T ${mapRes_dir}/tmp/ -@ $ncore -n -o ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam
-
+rm ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.bam
 
 ## to mark duplicates
 ${SAMTOOLS_PATH}/samtools fixmate -@ $ncore -m ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
@@ -49,6 +49,7 @@ ${SAMTOOLS_PATH}/samtools markdup -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAP
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort0.bam
 
 
+if(cluster2 == 'others') cluster2 = NULL
 ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam 
 
 
@@ -58,6 +59,10 @@ ${SAMTOOLS_PATH}/samtools view -f 0x2 -b -h -q 30 -@ $ncore ${mapRes_dir}/${OUTP
 ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ30.bam 
 
 
+if [ $MAPQ -ne 30 ]; then
+     ${SAMTOOLS_PATH}/samtools view -f 0x2 -b -h -q $MAPQ -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam 
+fi
+
 
 ## mapping stats
 echo "Summarizing mapping stats ..."
@@ -65,12 +70,8 @@ echo "Summarizing mapping stats ..."
 curr_dir=`dirname $0`
 qc_dir=${OUTPUT_DIR}/summary
 mkdir -p $qc_dir
-bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $qc_dir
+bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $2 $3
 
-
-if [ $MAPQ -ne 30 ]; then
-     ${SAMTOOLS_PATH}/samtools view -f 0x2 -b -h -q $MAPQ -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam 
-fi
 
 
 

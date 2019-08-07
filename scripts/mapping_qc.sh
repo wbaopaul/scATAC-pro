@@ -3,7 +3,13 @@
 ## output mapping qc results
 
 input_dir=$1  ## the directory where the mapping results are
-output_dir=${2}
+
+curr_dir=`dirname $0`
+source ${curr_dir}/read_conf.sh
+read_conf "$2"
+read_conf "$3"
+
+output_dir=${OUTPUT_DIR}/summary
 mkdir -p $output_dir
 
 ncore=$(nproc --all)
@@ -16,7 +22,7 @@ ${SAMTOOLS_PATH}/samtools flagstat -@ $ncore ${input_pre}.positionsort.bam > ${o
 ${SAMTOOLS_PATH}/samtools idxstats -@ $ncore ${input_pre}.positionsort.bam > ${output_pre}.idxstat.txt
 
 if [[ ! -f ${input_pre}.positionsort.MAPQ${MAPQ}.bam ]];then
-	${SAMTOOLS_PATH}/samtools view -@ $ncore -h -b -q 30 ${input_pre}.positionsort.bam > ${input_pre}.positionsort.MAPQ${MAPQ}.bam
+	${SAMTOOLS_PATH}/samtools view -@ $ncore -h -b -q ${MAPQ} ${input_pre}.positionsort.bam > ${input_pre}.positionsort.MAPQ${MAPQ}.bam
 fi
 
 if [[ ! -f ${input_pre}.positionsort.MAPQ${MAPQ}.bam.bai ]];then
@@ -54,12 +60,12 @@ total_dups=$((${total_dups}/2))
 
 
 
-total_pairs_MAPQ${MAPQ}=$(grep 'with itself and mate mapped'  ${output_pre}.MAPQ${MAPQ}.flagstat.txt | cut -d ' ' -f1)
-total_pairs_MAPQ${MAPQ}=$((${total_pairs_MAPQ${MAPQ}}/2)) 
-total_mito_MAPQ${MAPQ}=$(grep chrM ${output_pre}.MAPQ${MAPQ}.idxstat.txt | cut -f3)
-total_mito_MAPQ${MAPQ}=$((${total_mito_MAPQ${MAPQ}}/2))
-total_dups_MAPQ${MAPQ}=$(grep 'duplicates' ${output_pre}.MAPQ${MAPQ}.flagstat.txt | cut -d ' ' -f1)
-total_dups_MAPQ${MAPQ}=$((${total_dups_MAPQ${MAPQ}}/2))
+total_pairs_MAPQH=$(grep 'with itself and mate mapped'  ${output_pre}.MAPQ${MAPQ}.flagstat.txt | cut -d ' ' -f1)
+total_pairs_MAPQH=$((${total_pairs_MAPQH}/2)) 
+total_mito_MAPQH=$(grep chrM ${output_pre}.MAPQ${MAPQ}.idxstat.txt | cut -f3)
+total_mito_MAPQH=$((${total_mito_MAPQH}/2))
+total_dups_MAPQH=$(grep 'duplicates' ${output_pre}.MAPQ${MAPQ}.flagstat.txt | cut -d ' ' -f1)
+total_dups_MAPQH=$((${total_dups_MAPQH}/2))
 
 rm ${output_pre}.idxstat.txt 
 rm ${output_pre}.flagstat.txt 
@@ -76,33 +82,11 @@ echo "Total_Mito_Mapped    $total_mito_mapped" >> ${output_pre}.MappingStats
 echo "Total_Dups    $total_dups" >> ${output_pre}.MappingStats 
 
 
-echo "Total_Pairs_MAPQ${MAPQ}    $total_pairs_MAPQ${MAPQ}" >> ${output_pre}.MappingStats 
-echo "Total_Mito_MAPQ${MAPQ}    $total_mito_MAPQ${MAPQ}" >> ${output_pre}.MappingStats 
-echo "Total_Dups_MAPQ${MAPQ}    $total_dups_MAPQ${MAPQ}" >> ${output_pre}.MappingStats 
+echo "Total_Pairs_MAPQ${MAPQ}    $total_pairs_MAPQH" >> ${output_pre}.MappingStats 
+echo "Total_Mito_MAPQ${MAPQ}    $total_mito_MAPQH" >> ${output_pre}.MappingStats 
+echo "Total_Dups_MAPQ${MAPQ}    $total_dups_MAPQH" >> ${output_pre}.MappingStats 
 
 rm $tmp_sam_file
 
 
 
-echo "MAPPING QC Done!"
-rm ${output_pre}.MAPQ${MAPQ}.idxstat.txt 
-rm ${output_pre}.MAPQ${MAPQ}.flagstat.txt 
-
-#print to file
-echo "Total_Pairs    $total_pairs" > ${output_pre}.MappingStats 
-echo "Total_Pairs_Mapped    $total_pairs_mapped" >> ${output_pre}.MappingStats 
-echo "Total_Uniq_Mapped    $total_uniq_mapped" >> ${output_pre}.MappingStats 
-#echo "Total_Mito    $total_mito" >> ${output_pre}.MappingStats 
-echo "Total_Mito_Mapped    $total_mito_mapped" >> ${output_pre}.MappingStats 
-echo "Total_Dups    $total_dups" >> ${output_pre}.MappingStats 
-
-
-echo "Total_Pairs_MAPQ${MAPQ}    $total_pairs_MAPQ${MAPQ}" >> ${output_pre}.MappingStats 
-echo "Total_Mito_MAPQ${MAPQ}    $total_mito_MAPQ${MAPQ}" >> ${output_pre}.MappingStats 
-echo "Total_Dups_MAPQ${MAPQ}    $total_dups_MAPQ${MAPQ}" >> ${output_pre}.MappingStats 
-
-rm $tmp_sam_file
-
-
-
-echo "MAPPING QC Done!"

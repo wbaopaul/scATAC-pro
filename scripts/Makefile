@@ -192,6 +192,16 @@ motif_analysis: config_check
 	@$(SCRIPTS)/motif_analysis.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
+#######################################
+## doDA
+#######################################
+doDA: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Doing DA ..." 
+	@$(SCRIPTS)/doDA.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
 ################################################
 ## split bam and generate track (bigwig)
 ################################################

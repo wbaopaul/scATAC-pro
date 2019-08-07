@@ -16,7 +16,10 @@ bamName=${input_bam##*/}   ## use input bam filename as prefix
 # index bam file
 ncore=`nproc --all`
 ncore=$(($ncore - 1))
-#${SAMTOOLS_PATH}/samtools index -@ $ncore $input_bam
+
+if [[ ! -f ${input_bam}.bai ]];then
+    ${SAMTOOLS_PATH}/samtools index -@ $ncore ${input_bam}.bam
+fi
 
 echo "generate bw file..."
 unset PYTHONPATH

@@ -14,7 +14,7 @@ mkdir -p $peaks_dir
 out_prefix=${OUTPUT_PREFIX}.${MAPPING_METHOD}
 
 ## call peaks
-if [ ${PEAK_CALLER} = 'MACS2' ];then
+if [ "${PEAK_CALLER}" = 'MACS2' ];then
 	echo "--Using macs2... "
 	unset PYTHONPATH
 	work_dir=${peaks_dir}/MACS2
@@ -28,7 +28,7 @@ if [ ${PEAK_CALLER} = 'MACS2' ];then
 fi
 
 
-if [ ${PEAK_CALLER} = 'MUSIC' ];then
+if [ "${PEAK_CALLER}" = 'MUSIC' ];then
 	echo "--Using MUSIC..."
 	work_dir=${peaks_dir}/MUSIC
 	mkdir -p $work_dir/chip/sorted
@@ -47,7 +47,7 @@ fi
 
 
 
-if [ ${PEAK_CALLER} = 'GEM' ];then
+if [ "${PEAK_CALLER}" = 'GEM' ];then
 	echo "--Using GEM..."
 	work_dir=${peaks_dir}/GEM
 	mkdir -p $work_dir
@@ -62,12 +62,12 @@ if [ ${PEAK_CALLER} = 'GEM' ];then
 	    > ${peaks_dir}/${out_prefix}_features_BlacklistRemoved.bed
 fi
 
-if [${PEAK_CALLER} = 'COMBINED' ];then
+if [ "${PEAK_CALLER}" = 'COMBINED' ];then
     curr_dir=`dirname $0`
     ${curr_dir}/iter_peak.sh $1 $2 $3
 fi
 
-if [${PEAK_CALLER} = 'BIN' ];then
+if [ "${PEAK_CALLER}" = 'BINNING' ];then
     echo "--Binning genome"
 	work_dir=${peaks_dir}/BIN
 	mkdir -p $work_dir

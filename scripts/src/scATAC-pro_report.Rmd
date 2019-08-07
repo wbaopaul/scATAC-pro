@@ -6,12 +6,8 @@ output:
     social: menu
     theme: united
 params:
-  bc_stat_file: ~/yuw1/run_scATAC-pro/output/qc_result/ss.bwa.qc_per_barcode.bed
-  selected_bcs: ~/yuw1/run_scATAC-pro/output/filtered_matrix/EmptyDrop/barcodes.txt
-  mapping_qc_file: ~/yuw1/run_scATAC-pro/output/qc_result/ss.bwa.summary
-  fragments_file: ~/yuw1/run_scATAC-pro/output/fragments/fragments_MAPQ30.bed
-  downstream_dir: ~/yuw1/run_scATAC-pro/output/downstream_analysis/EmptyDrop
-  tss_escore_file: ~/yuw1/run_scATAC-pro/output/signal/ss.bwa.dedup.paired.MAPQ30.bam.mtx
+  output_dir: ~/yuw1/run_scATAC-pro/PBMC10k/output
+  configure_user: ~/yuw1/run_scATAC-pro/PBMC10k/configure_user.txt
   
 ---
 
@@ -63,7 +59,29 @@ Column {data-width=400}
 ### Global mapping statistics
 
 ```{r}
-mapping_qc = fread(params$mapping_qc_file, header = F)
+
+read_conf <- function(){
+  
+  system(paste('grep =', params$configure_user, "|grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' > vrs.txt "))
+  
+  system(paste('grep =', params$configure_user, "|grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' > vls.txt "))
+  
+  vrs = readLines('vrs.txt')
+  vls = readLines('vls.txt')
+  for(i in 1:length(vrs)){
+    assign(vrs[i], vls[i], envir = .GlobalEnv)
+  }
+  system('rm vrs.txt')
+  system('rm vls.txt')
+}
+
+read_conf()
+plotEPS = as.logical(plotEPS)
+
+mapping_qc_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX, '.',
+                         MAPPING_METHOD, '.MappingStats')
+
+mapping_qc = fread(mapping_qc_file, header = F)
 mapping_qc$frac = round(mapping_qc$V2/mapping_qc$V2[1], 3)
 mapping_qc$frac = paste0(100*mapping_qc$frac, '%')
 
@@ -77,25 +95,31 @@ Column {data-width=400}
 ### Mapping statistics for cell barcodes
 
 ```{r}
-bc_stat = fread(params$bc_stat_file)
+bc_stat_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX, '.',
+                         MAPPING_METHOD, '.qc_per_barcode.txt')
+selected_bcs = paste0(params$output_dir, '/filtered_matrix/', CELL_CALLER, '/barcodes.txt')
 
-barcodes = fread(params$selected_bcs, header = F)$V1
+bc_stat = fread(bc_stat_file)
+
+barcodes = fread(selected_bcs, header = F)$V1
 
 qc_sele = bc_stat[bc %in% barcodes, ]
 qc_nonsele = bc_stat[!bc %in% barcodes, ]
 
-frags = fread(params$fragments_file)
+fragments_file = paste0(params$output_dir, '/summary/fragments.bed')
+frags = fread(fragments_file)
 names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
 
 frags = frags[bc %in% barcodes]
 
 ncells = length(barcodes)
 frac.in.cell = paste0(round(sum(frags$ndup)/mapping_qc$V2[1], 3) * 100, '%')
+med.frag.per.cell = round(median(qc_sele$total_frags))
 frac.uniq = paste0(round(nrow(frags)/sum(frags$ndup), 3) * 100, '%')
 
-cell.table = data.frame(c(paste0(ncells), frac.in.cell, frac.uniq)) 
-rownames(cell.table) = c('Estimated # of cells', 'Fraction of MAPQ30 in cells', 
-                         'Library Complexity (non redudant fraction)')  
+cell.table = data.frame(c(CELL_CALLER, paste0(ncells), frac.in.cell, paste0(med.frag.per.cell), frac.uniq)) 
+rownames(cell.table) = c('Cell called by', 'Estimated # of cells', 'Fraction of MAPQ30 in cells', 
+                        'Median fragments per cell', 'Library Complexity (non redudant fraction)')  
 kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
   kable_styling("striped", full_width = F, position = 'left')
 
@@ -113,8 +137,10 @@ Row
 --------------------------------------------------------------------
 ### TSS enrichment score profile
 ```{r}
+tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.', MAPPING_METHOD, '.aggregated.mtx.gz')
+
 set.cols = brewer.pal(n=5, name = 'Dark2')
-tss.mat = fread(params$tss_escore_file)
+tss.mat = fread(tss_escore_file)
 tss.mat = tss.mat[, -c(1:6)]
 tss.mat[is.na(tss.mat)] = 0
 tss.escore = colSums(tss.mat)
@@ -122,8 +148,19 @@ ma <- function(x, n = 10){stats::filter(x, rep(1 / n, n), sides = 2)}
 tss.escore = ma(tss.escore)
 tss.escore = tss.escore[14:213]
 df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
-ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1]) +
+
+p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1]) +
   xlab('Distance to TSS') + ylab('TSS enrichment score(bp)') + theme(legend.title=element_blank(), axis.text = element_text(size = 15), axis.title = element_text(size = 15))
+
+p0
+
+
+if(plotEPS){
+  system(paste0('mkdir -p', params$output_dir, '/summary/Figures'))
+  pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
+  ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
+}
+
 
 ```
 
@@ -137,6 +174,12 @@ p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fr
   geom_boxplot(outlier.size = 0.01) +  theme(legend.position = 'none', axis.text = element_text(size = 15), axis.title.x = element_blank(), axis.title.y = element_text(size = 15)) + xlab('')
 #ggplotly(p0)
 p0
+
+if(plotEPS){
+  pfname = paste0(params$output_dir, '/summary/Figures/overlap_annotation.eps')
+  ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
+}
+
 
 ```
 
@@ -206,6 +249,12 @@ g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], aes(x = total_frags,
 
 #ggplotly(g)
 g
+
+if(plotEPS){
+  pfname = paste0(params$output_dir, '/summary/Figures/fracInPeak_vs_totalFragments.eps')
+  ggsave(g, file = pfname, device = 'eps', width = 6, height = 6)
+}
+
 ```
 
 
@@ -219,7 +268,12 @@ p1 <- ggplot(data = frags[isize < 800], aes(x = isize)) +
   geom_density() + xlab('Insert size') + ylab('Density') +  theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15))
 
 p1
-#ggplotly(p1)
+
+if(plotEPS){
+  pfname = paste0(params$output_dir, '/summary/Figures/dist_insert_size.eps')
+  ggsave(p1, file = pfname, device = 'eps', width = 6, height = 6)
+}
+
 
 rm(frags)
 ```
@@ -235,15 +289,24 @@ Column
 ### Clustering 
 ```{r}
 library(Seurat)
-rm(frags, bc_stat, qc_sele)
-seurat_file = paste0(params$downstream_dir, '/seurat_obj_withCluster.rds')
+
+down.dir = paste0(params$output_dir, '/downstream_analysis/', CELL_CALLER)
+seurat_file = paste0(down.dir, '/seurat_obj_withCluster.rds')
 if(file.exists(seurat_file)){
     ss = readRDS(seurat_file)
 
-    cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters', label = T) 
-    cg + scale_color_brewer(palette = "Paired") + theme(legend.text = element_text(size = 17))
-    #ggplotly(cg)
+    cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters', label = T) + scale_color_brewer(palette = "Paired") + theme(legend.text = element_text(size = 17))
+    
+    
+    
+    if(plotEPS){
+      pfname = paste0(params$output_dir, '/summary/Figures/umap_clusters.eps')
+      ggsave(cg, file = pfname, device = 'eps', width = 6, height = 6)
+    }
+    
+    cg
 }
+
 
 ```
 
@@ -313,8 +376,8 @@ if(file.exists(seurat_file)){
     rm(ss)
 }
 
-if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
-  chromVar.obj = readRDS(paste0(params$downstream_dir, '/chromVar_obj.rds'))
+if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
+  chromVar.obj = readRDS(paste0(down.dir, '/chromVar_obj.rds'))
   #variability <- computeVariability(chromVar.obj)
   #variability = data.table(variability, stringsAsFactors = F)
   #variability = variability[order(-variability), ]
@@ -323,7 +386,7 @@ if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
   da.res = do_DA(chromVar.obj@assays$data$deviations, 
                  clusters = data.table('barcode' = rownames(metaData),
                                        'cluster' = metaData$active_clusters))
-  write.csv(da.res, file = paste0(params$downstream_dir, '/differential_TF_accessibility.csv'), quote = F, row.names = F )
+  write.csv(da.res, file = paste0(down.dir, '/differential_TF_accessibility.csv'), quote = F, row.names = F )
   
   
   ## plot enriched TFs in heatmap
@@ -334,7 +397,9 @@ if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
   
   # change tf name to be more readable
   rnames = rownames(sele.zscores)
-  rownames(sele.zscores) = sapply(rnames, function(x) unlist(strsplit(x, '_'))[2])
+  nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+  nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
+  rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
   
   metaData$active_clusters = as.character(metaData$active_clusters)  
   metaData = data.table(metaData, keep.rownames = T)
@@ -358,11 +423,19 @@ if(file.exists(paste0(params$downstream_dir, '/chromVar_obj.rds'))){
   rids = sort(sample(1:ncol(sele.zscores), floor(ncol(sele.zscores)/6)))
   ann_col0 = ann_col[rids, ]
   rownames(ann_col0) = colnames(sele.zscores)[rids]
-  pheatmap::pheatmap(sele.zscores[, rids], cluster_cols = F,
+  ph <- pheatmap::pheatmap(sele.zscores[, rids], cluster_cols = F,
                      cluster_rows = T, show_colnames = F, fontsize = 13,
                      annotation_col = ann_col0, color = viridis(100),
                      annotation_colors = ann_colors, fontsize_row = 9)
   
+  if(plotEPS){
+  pfname = paste0(params$output_dir, '/summary/Figures/heatmap_motif_enrich.eps')
+  #postscript(file = pfname, width = 9, height = 12)
+  
+  ggsave(ph, filename = pfname, device = 'eps', height = 12,
+         width = 9)
+  #dev.off()
+}
 
 }
 
@@ -376,12 +449,12 @@ Column
 ### Footprinting Analysis: Comparing two clusters
 
 ```{r, out.width='\\textwidth'}
-
-footprint_stats.file = paste0(params$downstream_dir, '/data_by_cluster/footprint/cluster_0_cluster_1/cluster_0_cluster_1_statistics.txt')
+comp_cls = paste0('cluster_', cluster1, '_cluster_', cluster2)
+footprint_stats.file = paste0(down.dir, '/data_by_cluster/footprint/', comp_cls, '/', comp_cls, '_statistics.txt')
 if(file.exists(footprint_stats.file)){
   library(ggrepel)
   library(gridExtra)
-  library(grid)
+#  library(grid)
   footprint_stats = fread(footprint_stats.file)
 
   footprint_stats[, 'motif1' := unlist(strsplit(Motif, '.', fixed = T))[3], by = Motif]
@@ -390,14 +463,27 @@ if(file.exists(footprint_stats.file)){
   footprint_stats[, 'motif' := paste0(motif1, motif2)]
   footprint_stats[, c('motif1', 'motif2') := NULL]
   
-  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05, 'Differentiated', 'non-Differentiated')]
+  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05, 'differentiated', 'non-differentiated')]
+  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity > 0, paste0('cluster', cluster2, '_high'), isSig)]
+   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity < 0, paste0('cluster', cluster1, '_high'), isSig)]
   footprint_stats$motif_show = ""
   footprint_stats[P_values <= 0.05]$motif_show = footprint_stats[P_values <= 0.05]$motif
- p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + ylab('TF Activity Difference') + theme(legend.text = element_text(size=15), axis.title = element_text(size = 15), axis.text.x = element_blank(), legend.title = element_blank(), legend.direction = 'horizontal', plot.title = element_text(size = 15, face = 'bold')) + ggtitle('TF Activity difference: cluster_1 - cluster_0') 
+  
+  
+  
+ p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + ylab('TF Activity Difference') + theme(legend.text = element_text(size=15), axis.title = element_text(size = 15), axis.text.x = element_blank(), legend.title = element_blank(), legend.direction = 'horizontal', plot.title = element_text(size = 15, face = 'bold')) + ggtitle(paste0('TF Activity difference: cluster', cluster2, '-', 'cluster', cluster1  )) + geom_text_repel(force = 10) + theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') + scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40'))
  
-p + geom_text_repel(force = 10) + theme(plot.margin=unit(c(0.2, 0, 0.2, 0),"cm"), legend.position = 'bottom')
  
- 
+
+if(plotEPS){
+  pfname = paste0(params$output_dir, '/summary/Figures/footprint_tf_activity.eps')
+  
+  ggsave(p, filename = pfname, device = 'eps', height = 6,
+         width = 6)
+  
+}
+p
+
 }
 
 ```
@@ -407,23 +493,36 @@ p + geom_text_repel(force = 10) + theme(plot.margin=unit(c(0.2, 0, 0.2, 0),"cm")
 ```{r, out.width='\\textwidth'}
 if(file.exists(footprint_stats.file)){
  
+  fdir = dirname(footprint_stats.file)
  #select a TF to show
- sele.motif = 'CEBPE'
- tf.file.name = footprint_stats[motif == sele.motif]$Motif
- tf.file.name = paste0(params$downstream_dir, '/data_by_cluster/footprint/cluster_0_cluster_1/Lineplots/', tf.file.name, '.txt')
+ 
+ tf.file.name = footprint_stats[which.min(P_values)]$Motif
+ sele.motif = footprint_stats[which.min(P_values)]$motif
+ tf.file.name = paste0(fdir, '/Lineplots/', tf.file.name, '.txt')
  
  dd = fread(tf.file.name)
  dd[, 'id' := -99:100]
- dd0 = rbind(subset(dd, select = - cluster_1))
- dd1 = rbind(subset(dd, select = - cluster_0))
- names(dd0)[1] = names(dd1)[1] = 'score'
- dd = rbind(dd1, dd0)
- dd$cluster = rep(c('cluster_1', 'cluster_0'), each = nrow(dd0))
- 
- p2 = ggplot(data = dd, aes(x = id, y = score, colour = cluster)) + geom_line(aes(linetype = cluster), size = 1.1) + ggtitle(sele.motif) + xlab('Distance to Motif') + theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15), legend.position = c(0.8, 0.8), plot.title = element_text(size = 15, face = 'bold')) + theme(plot.margin=unit(c(0.2,0,0.2,0),"cm"))
+ dd1 = rbind(subset(dd, select = c('id', paste0('cluster_', cluster1))))
+ dd2 = rbind(subset(dd, select = c('id', paste0('cluster_', cluster2))))
+ names(dd1)[2] = names(dd2)[2] = 'score'
+ dd = rbind(dd2, dd1)
+ dd$cluster = rep(c(paste0('cluster_', cluster2), paste0('cluster_', cluster1)), each = nrow(dd1))
  
  
- p2
+ p2 = ggplot(data = dd, aes(x = id, y = score, colour = cluster)) + geom_line(aes(linetype = cluster), size = 1.1) + ggtitle(sele.motif) + xlab('Distance to Motif') + theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15), legend.position = c(0.8, 0.8), plot.title = element_text(size = 15, face = 'bold')) + theme(plot.margin=unit(c(0.2,0,0.2,0),"cm")) + scale_color_manual(values = c('#F8766D', '#619CFF'))
+ 
+ 
+
+ if(plotEPS){
+  pfname = paste0(params$output_dir, '/summary/Figures/example_footprint_tf_activity.eps')
+  #postscript(file = pfname, width = 9, height = 12)
+  
+  ggsave(p2, filename = pfname, device = 'eps', height = 6,
+         width = 6)
+  #dev.off()
+}
+
+  p2
 }
 
 ```

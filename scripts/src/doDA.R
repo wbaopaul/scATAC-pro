@@ -20,21 +20,24 @@ if(file.exists(paste0(output_dir, '/seurat_obj_withCluster.rds'))){
   stop('Should do clustering analysis first!')
 }
 
+confVar = 'nCount_ATAC'
+if(test_use == 'wilxon' || test_use == 'DESeq2') confVar = NULL
+
 if(cluster2 == 'others') cluster2 = NULL
 if(cluster1 == 'all') {
    cls = unique(seurat.obj$active_clusters)
    markers = NULL
    if(cluster2 == 'others' || cluster2 == 'all') cluster2 = NULL
    for(cluster0 in cls){
-        mm = FindMarkers(seurat.obj, group.by = active_clusters, ident.1 = cluster0, ident.2 = cluster2,
-                test.use = test_use, max.cell.per.ident = 500, only.pos = T)
+        mm = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = cluster0, ident.2 = cluster2,
+                test.use = test_use, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
         markers = rbind(markers, mm)
    }
 }else{
-    markers = FindMarkers(seurat.obj, group.by = active_clusters, ident.1 = cluster1, ident.2 = cluster2, 
-    test.use = test_use, max.cell.per.ident = 500, only.pos = T)
+    markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = cluster1, ident.2 = cluster2, 
+    test.use = test_use, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
 }
 
-write.table(markers, file = paste0(output_dir, '/differential_accessible_peaks.txt'), sep = '\t',
+write.table(markers, file = paste0(output_dir, '/differential_peak_cluster_table.txt'), sep = '\t',
             quote = F, row.names = F)
 

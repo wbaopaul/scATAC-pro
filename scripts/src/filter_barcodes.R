@@ -17,7 +17,7 @@ parser <- add_option(parser, c("-out", "--output_dir"), type="character", defaul
 parser <- add_option(parser, c("-bs", "--bc_stat_file"), type="character", default='NULL',
                      help="barcodes with summary stat file [default %default]")
 
-parser <- add_option(parser, c("-tp", "--total_frags"), type="integer", default=100,
+parser <- add_option(parser, c("-tp", "--total_frags"), type="integer", default=1000,
                 help="minimal of total pairs per barcode [default %default]",
                 metavar="number")
 
@@ -71,6 +71,6 @@ system(paste('mkdir -p', output_dir))
 writeMM(mtx, file = paste0(output_dir, '/matrix.mtx'))
 write.table(colnames(mtx), file = paste0(output_dir, '/barcodes.txt'), 
             sep = '\t', row.names = F, quote = F, col.names = F)
-system(paste0('cp ', mtx_file, '/features.txt ', output_dir, '/features.txt'))
+system(paste0('cp ', dirname(mtx_file), '/features.txt ', output_dir, '/features.txt'))
 
 

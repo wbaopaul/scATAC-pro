@@ -13,7 +13,7 @@ read_conf "$3"
 output_dir=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster
 mkdir -p $output_dir
 
-input_bam=${OUTPUT_DIR}/mapping_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.noDuplicates.bam  ## suppose path for bam file
+input_bam=${OUTPUT_DIR}/mapping_result/${OUTPUT_PREFIX}.${MAPPING_METHOD}.positionsort.MAPQ${MAPQ}.bam  ## suppose path for bam file
 
 curr_dir=`dirname $0`
 
