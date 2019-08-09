@@ -25,4 +25,3 @@ if(grepl(genome_name, pattern = 'mm10'))genomeName = 'BSgenome.Mmusculus.UCSC.mm
 ncore = detectCores()
 obj = run_chromVAR(mtx, genomeName, max(1, ncore - 1))
 saveRDS(obj, file = paste0(output_dir, '/chromVar_obj.rds'))
-

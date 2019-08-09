@@ -23,12 +23,14 @@ if [ $USE_BIN ]; then
     exit
 fi
 
-if [ ! -f "$HINT_PATH" ]; then
+if [ ! -z "$HINT_PATH" || ! -d "$HINT_PATH" ]; then
     which rgt-hint > /dev/null
-    if [ $? == 0 ]; then
+    if [ $? = "0" ]; then
         HINT_PATH=$(dirname `which rgt-hint`)
+    else
+        echo "HINT_PATH not provided or detected, please install rgt-hint!"
+        exit
     fi
-    echo "HINT_PATH not provided or detected, trying to install rgt-hint:"
 fi
 
 input_peak=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_features_BlacklistRemoved.bed  ## suppose path for peak file
@@ -50,11 +52,8 @@ ${HINT_PATH}/rgt-hint footprinting --atac-seq --paired-end --organism=${GENOME_N
 echo "overlap with motif annotation ... "
 ${HINT_PATH}/rgt-motifanalysis matching --organism=${GENOME_NAME} --input-files ${output_dir}/${cluster1}.bed ${output_dir}/${cluster2}.bed --output-location $output_dir
 
-ncore=$(nproc --all)
-ncore=$(($ncore - 1))
-echo "number of cores: $ncore"
 echo "Differential binding analysis ..."
-${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc 10 --mpbs-file1=${output_dir}/${cluster1}_mpbs.bed \
+${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc 4 --mpbs-file1=${output_dir}/${cluster1}_mpbs.bed \
     --mpbs-file2=${output_dir}/${cluster1}_mpbs.bed --reads-file1=$bam1 --reads-file2=$bam2 --condition1=$cluster1 --condition2=$cluster2 --output-location=${output_dir}/${cluster1}_${cluster2}
 
 

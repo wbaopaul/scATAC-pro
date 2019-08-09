@@ -39,7 +39,7 @@ for file0 in $(find $output_dir -name *cluster*.bam); do
          --outFileName $fname_bedgraph
 done
 
-
+echo "The bam file was split into different clusters!"
 
 
 

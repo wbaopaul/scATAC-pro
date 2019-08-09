@@ -89,7 +89,7 @@ doBasicSeurat <- function(mtx, npc = 100, top.variable = 0.2, doLog = T,
                           reg.var = 'nCount_ATAC'){
   
   # top.variabl -- use top most variable features
-  if(doLog) mtx = log2(1 + mtx)
+  if(doLog) mtx = round(log2(1 + mtx))
   seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = assay,
                                   names.delim = '-')
   cell.names = colnames(mtx)
@@ -134,7 +134,7 @@ doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2, doLog = T,
                           reg.var = NULL, binarization = F){
 
   # top.variabl -- use top most variable features
-  if(doLog) mtx = log2(1 + mtx)
+  if(doLog) mtx = round(log2(1 + mtx))
   seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = assay,
                                   names.delim = '-')
   cell.names = colnames(mtx)
@@ -413,4 +413,53 @@ do_DA <- function(mtx_score, clusters, test = 'wilcox',
     res = rbind(res, res0)
   }
   return(res)
+}
+
+
+#fg_genes: vector of forground genes
+#bg_genes: background genes
+#type: BP, CC, kegg
+do_GO <- function(fg_genes, bg_genes, type = "BP", qCutoff = 0.05,
+                 organism = c("mmu",  "hsa")) {
+  if(organism =="mmu") {
+    orgdb <- "org.Mm.eg.db"
+    fromType = "SYMBOL"
+    
+  } else if(organism == "hsa") {
+    orgdb <- "org.Hs.eg.db"
+    fromType = "SYMBOL"
+    
+  }
+  
+  bg.df <- bitr(bg_genes, fromType = fromType,
+                toType = c("SYMBOL", "ENTREZID"),
+                OrgDb = orgdb)
+  gene.df <- bitr(fg_genes, fromType = fromType,
+                  toType = c("SYMBOL", "ENTREZID"),
+                  OrgDb = orgdb)
+  
+  if(type == "kegg") {
+    kegg_gene <- gene.df$ENTREZID
+    kegg_bg <- bg.df$ENTREZID
+    
+    enrich_list <- enrichKEGG(
+      gene          = kegg_gene,
+      universe      = kegg_bg,
+      organism      = organism,
+      pAdjustMethod = "BH",
+      qvalueCutoff  = qCutoff)
+    
+    
+  }else {
+    enrich_list <- enrichGO(gene        = gene.df$ENTREZID,
+                            universe      = bg.df$ENTREZID,
+                            OrgDb         = orgdb,
+                            ont           = type,
+                            pAdjustMethod = "BH",
+                            pvalueCutoff  = 0.01,
+                            qvalueCutoff  = qCutoff,
+                            readable      = TRUE)
+  }
+  
+  return(enrich_list@result[enrich_list@result$qvalue <= qCutoff, ])
 }

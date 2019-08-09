@@ -24,16 +24,14 @@ mtx = filterMat(mtx)
 
 
 
-if(file.exists(paste0(output_dir, '/seurat_obj_withCluster.rds'))){
-  seurat.obj = readRDS(paste0(output_dir, '/seurat_obj_withCluster.rds'))
-}else if(file.exists(paste0(output_dir, '/seurat_obj_withDR.rds'))){
-  seurat.obj = readRDS(paste0(output_dir, '/seurat_obj_withDR.rds'))
+if(file.exists(paste0(output_dir, '/seurat_obj.rds'))){
+  seurat.obj = readRDS(paste0(output_dir, '/seurat_obj.rds'))
 }else{
-  seurat.obj = doBasicSeurat_new(mtx, npc = 30, top.variable = 0.2, reg.var = 'nCount_ATAC')
+  seurat.obj = doBasicSeurat_new(mtx, npc = 50, doLog = T, top.variable = 0.2, reg.var = 'nCount_ATAC')
   
-  seurat.obj = RunTSNE(seurat.obj, dims = 1:30)
-  seurat.obj = RunUMAP(seurat.obj, dims = 1:30, verbose = F)
-  saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_withDR.rds'))
+  seurat.obj = RunTSNE(seurat.obj, dims = 1:50)
+  seurat.obj = RunUMAP(seurat.obj, dims = 1:50, verbose = F)
+  saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj.rds'))
 }
 
 
@@ -42,12 +40,12 @@ if(file.exists(paste0(output_dir, '/seurat_obj_withCluster.rds'))){
 ## clustering
 if(cluster_method == 'seurat'){
   ## seurat implemented louvain algorithm
-  seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:30, k.param = 50)
+  seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:50, k.param = 50)
   if (toupper(k) == 'NULL' || k == '0'){
     resl = 0.6
   }else{
     k = as.integer(k)
-    resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 30, k = k,
+    resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 50, k = k,
                                 min_resl = 0.01)
   }
   seurat.obj = FindClusters(seurat.obj, resolution = resl)
@@ -93,8 +91,7 @@ if(cluster_method == 'chromVar'){
   
 }
 
-saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_withCluster.rds'))
-
+saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj.rds'))
 
 #output bacrcode cluster information
 bc_cls = data.table('Barcode' = rownames(seurat.obj@meta.data), 'Cluster' = seurat.obj@meta.data$active_clusters)

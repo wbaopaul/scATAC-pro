@@ -39,7 +39,7 @@ DO_FOOTPRINT=${DO_FOOTPRINT^^}
 if [ "$DO_FOOTPRINT" = "TRUE" ]; then
     bam1=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster1}.bam
     bam2=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster2}.bam
-    ${curr_dir}/footprint.sh ${bam1},${bam2} $2 $3 
+    ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam2} $2 $3 
 fi
 
 ${curr_dir}/report.sh ${OUTPUT_DIR}/summary $2 $3

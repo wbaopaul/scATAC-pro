@@ -193,13 +193,23 @@ motif_analysis: config_check
 	@echo 
 
 #######################################
-## doDA
+## runDA
 #######################################
-doDA: config_check
+runDA: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Doing DA ..." 
-	@$(SCRIPTS)/doDA.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@$(SCRIPTS)/runDA.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
+## runGO
+#######################################
+runDA: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Doing GO analysis ..." 
+	@$(SCRIPTS)/runGO.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 ################################################

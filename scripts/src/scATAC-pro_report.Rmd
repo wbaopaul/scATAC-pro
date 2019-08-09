@@ -291,7 +291,7 @@ Column
 library(Seurat)
 
 down.dir = paste0(params$output_dir, '/downstream_analysis/', CELL_CALLER)
-seurat_file = paste0(down.dir, '/seurat_obj_withCluster.rds')
+seurat_file = paste0(down.dir, '/seurat_obj.rds')
 if(file.exists(seurat_file)){
     ss = readRDS(seurat_file)
 
@@ -386,7 +386,7 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   da.res = do_DA(chromVar.obj@assays$data$deviations, 
                  clusters = data.table('barcode' = rownames(metaData),
                                        'cluster' = metaData$active_clusters))
-  write.csv(da.res, file = paste0(down.dir, '/differential_TF_accessibility.csv'), quote = F, row.names = F )
+  write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
   
   
   ## plot enriched TFs in heatmap
@@ -411,8 +411,8 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   ann_col = data.table('cluster' = metaData$active_clusters)
   rownames(ann_col) = metaData$rn
   
-  sele.zscores[sele.zscores > 10] = 10
-  sele.zscores[sele.zscores < -10] = -10
+  sele.zscores[sele.zscores > 10] = 8
+  sele.zscores[sele.zscores < -10] = -8
   
   cluster = brewer.pal(n=length(unique(metaData$active_clusters)), name = 'Paired')
   names(cluster) = sort(unique(metaData$active_clusters))

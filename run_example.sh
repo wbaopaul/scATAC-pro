@@ -4,12 +4,9 @@
 #### run step by step #####
 
 
-./scATAC-pro -s demplx_fastq -i test_fastq/test_R1.fastq,test_fastq/test_R2.fastq -c configure.txt -o ../tmp_output 
-./scATAC-pro -s demplx_fastq -i test_fastq/test_R3.fastq,test_fastq/test_R2.fastq -c configure.txt -o ../tmp_output 
-## note there should be no space after comma,
+scATAC-pro -s demplx_fastq -i test_R1.fastq,test_R3.fastq,test_R2.fastq -c configure.txt 
 
 
-./scATAC-pro -s trimming -i test_fastq/test_R1.fastq,test_fastq/test_R3.fastq -c configure.txt -o ../tmp_output 
 
 ./scATAC-pro -s mapping -i ../tmp_output/demplxed_fastq/test_R1.fastq.dex,../tmp_output/demplxed_fastq/test_R3.fastq.dex -c configure.txt -o ../tmp_output > logs/map.log
 
