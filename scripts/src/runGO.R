@@ -32,6 +32,25 @@ read_conf(configure_user)
 
 markers = fread(de_file)
 
+## annotated genes with tss within each DA 
+tss = fread(TSS)
+names(tss)[1:7] = c('chr', 'start', 'end', 'gene_name', 'score', 'strand', 'gene_type')
+tss = tss[gene_type %in% c('protein_coding', 'miRNA', 'lincRNA')]
+markers = as.data.table(markers)
+markers[, 'chr' := unlist(strsplit(peak, '-'))[1], by = peak]
+markers[, 'start' := as.integer(unlist(strsplit(peak, '-'))[2]), by = peak]
+markers[, 'end' := as.integer(unlist(strsplit(peak, '-'))[3]), by = peak]
+
+markers$genes = 'No_TSS'
+for(i in 1:nrow(markers)){
+  tss0 = tss[chr == markers$chr[i]]
+  tss0 = tss0[start >= markers$start[i] & end <= markers$end[i]]
+  if(nrow(tss0) > 0) markers$genes[i] = paste(unique(tss0$gene_name), collapse = ',')
+}
+
+write.table(markers, file = paste0(de_file), sep = '\t',
+            quote = F, row.names = F)
+
 
 ## do GO analysis ####
 if(!require('clusterProfiler')){

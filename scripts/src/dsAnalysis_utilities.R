@@ -6,7 +6,7 @@ library(motifmatchr)
 library(SummarizedExperiment)
 library(BiocParallel)
 #library(JASPAR2016)
-#library(cisTopic)
+library(cisTopic)
 library(compiler)
 library(readr)
 

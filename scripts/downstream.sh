@@ -37,8 +37,8 @@ wait
 ## footprinting analysis
 DO_FOOTPRINT=${DO_FOOTPRINT^^}
 if [ "$DO_FOOTPRINT" = "TRUE" ]; then
-    bam1=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster1}.bam
-    bam2=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster2}.bam
+    bam1=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster1_fp}.bam
+    bam2=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster2_fp}.bam
     ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam2} $2 $3 
 fi
 

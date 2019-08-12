@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-mtx_file=$1
+seuratObj_file=$1  ## seurat obj after clustering
  
 # reading configure file
 curr_dir=`dirname $0`
@@ -14,6 +14,6 @@ mkdir -p $output_dir
 
 curr_dir=`dirname $0`
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $output_dir $2
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seuratObj_file $output_dir $cluster1 $cluster2 $test_use
 
 echo "Differential analysis done!"

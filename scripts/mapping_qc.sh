@@ -15,8 +15,8 @@ mkdir -p $output_dir
 ncore=$(nproc --all)
 ncore=$(($ncore - 1))
 
-input_pre=${input_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}
-output_pre=${output_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}
+input_pre=${input_dir}/${OUTPUT_PREFIX}
+output_pre=${output_dir}/${OUTPUT_PREFIX}
 
 ${SAMTOOLS_PATH}/samtools flagstat -@ $ncore ${input_pre}.positionsort.bam > ${output_pre}.flagstat.txt
 ${SAMTOOLS_PATH}/samtools idxstats -@ $ncore ${input_pre}.positionsort.bam > ${output_pre}.idxstat.txt

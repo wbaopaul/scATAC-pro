@@ -205,7 +205,7 @@ runDA: config_check
 #######################################
 ## runGO
 #######################################
-runDA: config_check
+runGO: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Doing GO analysis ..." 

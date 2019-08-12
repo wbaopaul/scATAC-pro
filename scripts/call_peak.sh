@@ -11,7 +11,7 @@ read_conf $3
 peaks_dir="${OUTPUT_DIR}/peaks"
 mkdir -p $peaks_dir
 
-out_prefix=${OUTPUT_PREFIX}.${MAPPING_METHOD}
+out_prefix=${OUTPUT_PREFIX}
 
 ## call peaks
 if [ "${PEAK_CALLER}" = 'MACS2' ];then

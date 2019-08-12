@@ -8,31 +8,13 @@ source_local('dsAnalysis_utilities.R')
 
 
 args = commandArgs(T)
-output_dir = args[1]
-configure_user = args[2]
+seuratObj_file = args[1]
+output_dir = args[2]
+group1 = args[3]
+group2 = args[4]
+test_use = args[5]
 
-read_conf <- function(configure_user){
-  
-  system(paste('grep =', configure_user, "|grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' > vrs.txt "))
-  
-  system(paste('grep =', configure_user, "|grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' > vls.txt "))
-  
-  vrs = readLines('vrs.txt')
-  vls = readLines('vls.txt')
-  for(i in 1:length(vrs)){
-    assign(vrs[i], vls[i], envir = .GlobalEnv)
-  }
-  system('rm vrs.txt')
-  system('rm vls.txt')
-}
-
-read_conf(configure_user)
-
-if(file.exists(paste0(output_dir, '/seurat_obj.rds'))){
-  seurat.obj = readRDS(paste0(output_dir, '/seurat_obj.rds'))
-}else{
-  stop('Should do clustering analysis first!')
-}
+seurat.obj = readRDS(seuratObj_file)
 
 confVar = 'nCount_ATAC'
 if(test_use == 'wilxon' || test_use == 'DESeq2') confVar = NULL
@@ -58,29 +40,13 @@ if(group1 == 'all') {
     }else{
         markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, 
                   test.use = test_use, max.cell.per.ident = 500, only.pos = F, latent.vars = confVar)
-        markers$cluster = ifelse(markders$avg_logFC > 0, group1, group2)
+        markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
     }
   
   markers$peak = rownames(markers)
 }
 
 
-
-## annotated genes with tss within each DA 
-tss = fread(TSS)
-names(tss)[1:7] = c('chr', 'start', 'end', 'gene_name', 'score', 'strand', 'gene_type')
-tss = tss[gene_type %in% c('protein_coding', 'miRNA', 'lincRNA')]
-
-markers[, 'chr' := unlist(strsplit(peak, '-'))[1], by = peak]
-markers[, 'start' := as.integer(unlist(strsplit(peak, '-'))[2]), by = peak]
-markers[, 'end' := as.integer(unlist(strsplit(peak, '-'))[3]), by = peak]
-
-markers$genes = 'No_TSS'
-for(i in 1:nrow(markers)){
-tss0 = tss[chr == markers$chr[i]]
-tss0 = tss0[start >= markers$start[i] & end <= markers$end[i]]
-if(nrow(tss0) > 0) markers$genes[i] = paste(unique(tss0$gene_name), collapse = ',')
-}
-
 write.table(markers, file = paste0(output_dir, '/differential_peak_cluster_table.txt'), sep = '\t',
             quote = F, row.names = F)
+

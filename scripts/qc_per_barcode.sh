@@ -18,7 +18,7 @@ mkdir -p $qc_dir
 ## use perl script to get the matrix
 curr_dir=`dirname $0`
 
-file_prefix=${OUTPUT_PREFIX}.${MAPPING_METHOD}
+file_prefix=${OUTPUT_PREFIX}
 
 peaks=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${file_prefix}_features_BlacklistRemoved.bed
 

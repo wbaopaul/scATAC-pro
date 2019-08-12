@@ -24,9 +24,8 @@ fi
 
 
 ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
-prefix0=${fastqs[0]}
-prefix0=${prefix0##*/}
 
+prefix0=$(basename ${fastqs[0]})
 prefix1=$(basename ${fastqs[1]})
 ncore=$(nproc --all)
 ncore=$(($nproc - 1))
@@ -40,7 +39,7 @@ if [ "$TRIM_METHOD" = 'Trimmomatic' ]; then
 
     trimmed_fastq1=${output_dir}/trimmed_paired_${prefix0}
     trimmed_fastq2=${output_dir}/trimmed_paired_${prefix1}
-    if [ -f $trimmed_fastq1 && -f $trimmed_fastq2 ]; then
+    if [ -f "$trimmed_fastq1" && -f "$trimmed_fastq2" ]; then
         echo -e "Trimmed fastq file $trimmed_fastq1 and $trimmed_fastq2 exist, I will skip trimming
                 reads!"
         exit
@@ -56,7 +55,7 @@ elif [ "$TRIM_METHOD" = 'trim_galore' ]; then
     dfastq2_pre=`echo $prefix1 | awk -F. '{print $1}'`
     trimmed_fastq1=${OUTPUT_DIR}/trimmed_fastq/${dfastq1_pre}_val_1.fq.gz
     trimmed_fastq2=${OUTPUT_DIR}/trimmed_fastq/${dfastq2_pre}_val_2.fq.gz
-    if [ -f $trimmed_fastq1 && -f $trimmed_fastq2 ]; then
+    if [ -f "$trimmed_fastq1" && -f "$trimmed_fastq2" ]; then
         echo -e "Trimmed fastq file $trimmed_fastq1 and $trimmed_fastq2 exist, I will skip trimming
                 reads!"
         exit

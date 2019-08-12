@@ -23,5 +23,23 @@ if(grepl(genome_name, pattern = 'mm9'))genomeName = 'BSgenome.Mmusculus.UCSC.mm9
 if(grepl(genome_name, pattern = 'mm10'))genomeName = 'BSgenome.Mmusculus.UCSC.mm10'
 
 ncore = detectCores()
+
+if(T){
+## select variable features first
+      seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = 'ATAC',
+                                  names.delim = '-')
+
+
+      seurat.obj <- FindVariableFeatures(object = seurat.obj,
+                                         selection.method = 'vst',
+                                         nfeatures = floor(nrow(mtx) * 0.3))
+      vFeatures = VariableFeatures(seurat.obj)
+      rm(seurat.obj)
+      rnames = rownames(mtx)
+      mtx = mtx[rnames %in% vFeatures, ]
+}
+
+
 obj = run_chromVAR(mtx, genomeName, max(1, ncore - 1))
 saveRDS(obj, file = paste0(output_dir, '/chromVar_obj.rds'))
+

@@ -6,7 +6,7 @@ args = commandArgs(T)
 peak_cluster_dir = args[1]
 
 files = dir(peak_cluster_dir)
-files = files[grepl(files, pattern = "cluster.+Blacklist")]
+files = files[grepl(files, pattern = "Blacklist")]
 
 peaks = NULL
 
