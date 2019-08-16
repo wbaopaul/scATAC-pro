@@ -39,16 +39,18 @@ if [ -f ${output_dir}/demplxed_${dex_prefix1} ]; then
     exit
 fi
 
-${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[2]}
+${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[2]} &
 
-${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[1]} ${output_dir}/demplxed_${dex_prefix2}  ${fastqs[2]}
+${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[1]} ${output_dir}/demplxed_${dex_prefix2}  ${fastqs[2]} &
+wait
 
 ## for the round of barcodes, add them to the read name after @, concatenate the original name by _
 if [[ $kk>3 ]];then
 	for (( i==3; i<=$kk; i++ ))
 	do
-        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]}
-        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]}
+        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} &
+        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} &
+        wait
         mv ${output_dir}/demplxed_${dex_prefix1}_$i ${output_dir}/demplxed_${dex_prefix1}
         mv ${output_dir}/demplxed_${dex_prefix2}_$i ${output_dir}/demplxed_${dex_prefix2}
 	done

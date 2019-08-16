@@ -105,7 +105,7 @@ barcodes = fread(selected_bcs, header = F)$V1
 qc_sele = bc_stat[bc %in% barcodes, ]
 qc_nonsele = bc_stat[!bc %in% barcodes, ]
 
-fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  'fragments.bed')
+fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.bed')
 frags = fread(fragments_file)
 names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
 
@@ -155,7 +155,7 @@ p0
 
 
 if(plotEPS){
-  system(paste0('mkdir -p', params$output_dir, '/summary/Figures'))
+  system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
   pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
   ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
 }
@@ -470,7 +470,7 @@ if(file.exists(footprint_stats.file)){
   
   
   
- p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + ylab('TF Activity Difference') + theme(legend.text = element_text(size=15), axis.title = element_text(size = 15), axis.text.x = element_blank(), legend.title = element_blank(), legend.direction = 'horizontal', plot.title = element_text(size = 15, face = 'bold')) + ggtitle(paste0('TF Activity difference: cluster', cluster2, '-', 'cluster', cluster1  )) + geom_text_repel(force = 10) + theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') + scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40'))
+ p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + ylab('TF Activity Difference') + theme(legend.text = element_text(size=15), axis.title = element_text(size = 15), axis.text.x = element_blank(), legend.title = element_blank(), legend.direction = 'horizontal', plot.title = element_text(size = 15, face = 'bold')) + ggtitle(paste0('TF Activity difference: cluster', cluster2_fp, '-', 'cluster', cluster1_fp  )) + geom_text_repel(force = 10) + theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') + scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40'))
  
  
 

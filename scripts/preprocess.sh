@@ -10,10 +10,7 @@ source ${curr_dir}/read_conf.sh
 read_conf $2
 read_conf $3
 
-outfile_prefix=${OUTPUT_PREFIX}.${MAPPING_METHOD}
-
 ## 1.demultiplexing
-#make INPUT_FILE=$input_fastqs CONFIG_FILE=$2 CONFIG_SYS=$3 demplx_fastq > ${logDir}/demplx.log 2>&1  
 ${curr_dir}/dex_fastq.sh $1 $2 $3
 
 ## 2.trimming
@@ -22,7 +19,6 @@ dfastq1=demplxed_$(basename ${fastqs[0]})
 dfastq2=demplxed_$(basename ${fastqs[1]})
 fq1=${OUTPUT_DIR}/demplxed_fastq/${dfastq1}
 fq2=${OUTPUT_DIR}/demplxed_fastq/${dfastq2}
-#make INPUT_FILE=${fq1},${fq2} CONFIG_FILE=$2 CONFIG_SYS=$3 trimming > ${logDir}/trimming.log 2>&1  
 ${curr_dir}/trimming.sh ${fq1},${fq2} $2 $3
 
 ## 3.mapping 
@@ -39,44 +35,35 @@ elif [ "$TRIM_METHOD" = "Trimmomatic" ]; then
 else
     mapping_inputs=${fq1},${fq2}
 fi
- 
+echo "Start mapping ..." 
 ${curr_dir}/mapping.sh $mapping_inputs $2 $3
 
 ## 4.call peak
-bam_file=${OUTPUT_DIR}/mapping_result/${outfile_prefix}.positionsort.MAPQ${MAPQ}.bam
-${curr_dir}/call_peak.sh $bam_file $2 $3
+echo "Calling peaks ..."
+bam_file=${OUTPUT_DIR}/mapping_result/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam
+${curr_dir}/call_peak.sh $bam_file $2 $3 &
 
-## 5.generate matrix
-
-feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${outfile_prefix}_features_BlacklistRemoved.bed
-
-${curr_dir}/get_mtx.sh $feature_file $2 $3 &
-
-## 6.generate aggregated signal
+## 5.generate aggregated signal
+echo "generating aggregated signal ..."
 ${curr_dir}/generate_signal.sh $bam_file $2 $3 &
 wait
 
+## 6.generate matrix
+echo "generating raw matrix and qc per barcode..."
+feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}_features_BlacklistRemoved.bed
+${curr_dir}/get_mtx.sh $feature_file $2 $3 &
 
-## qc and call cell
-mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
-
-frag_file=${OUTPUT_DIR}/summary/fragments.bed
-
-if [ "$CELL_CALLER" != "FILTER" ]; then
-    ## 7.qc per barcode
-    ${curr_dir}/qc_per_barcode.sh $frag_file $2 $3 &
-    ## 8.call cell
-
-    ${curr_dir}/call_cell.sh $mat_file $2 $3 &
-else
-    ## 7.qc per barcode
-    
-    ${curr_dir}/qc_per_barcode.sh $frag_file $2 $3 
-    ## 8.call cell
-
-    ${curr_dir}/call_cell.sh $mat_file $2 $3 
-fi
+echo "QC per cell ..."
+frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.bed
+${curr_dir}/qc_per_barcode.sh $frag_file $2 $3 &
 
 wait
+
+## 7.call cell
+echo "call cell ..."
+mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
+${curr_dir}/call_cell.sh $mat_file $2 $3 
+
 ## report preprocessing QC
+echo "generating report ..."
 ${curr_dir}/report.sh $OUTPUT_DIR/summary $2 $3

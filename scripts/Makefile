@@ -243,6 +243,16 @@ downstream: config_check
 	@echo 
 
 #######################################
+## integrate
+#######################################
+integrate: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Doing integrating analysis ..." 
+	@$(SCRIPTS)/integrate.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## report
 #######################################
 report: config_check

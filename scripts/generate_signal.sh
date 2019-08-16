@@ -11,7 +11,6 @@ signal_dir=${OUTPUT_DIR}/signal
 
 mkdir -p $signal_dir
 
-bamName=${input_bam##*/}   ## use input bam filename as prefix
 
 # index bam file
 ncore=`nproc --all`
@@ -25,13 +24,13 @@ echo "generate bw file..."
 unset PYTHONPATH
 ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
   --bam $input_bam --binSize 20 --skipNonCoveredRegions --normalizeUsing BPM \
-  --outFileName ${signal_dir}/${OUTPUT_PREFIX}.aggregated.bw
+  --outFileName ${signal_dir}/${OUTPUT_PREFIX}.aggregated.bw &
 
 #echo "generate bedgraph..."
 ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
   --bam $input_bam --binSize 20 --skipNonCoveredRegions -- --normalizeUsing BPM \
-  --outFileFormat bedgraph --outFileName ${signal_dir}/${OUTPUT_PREFIX}.aggregated.bedgraph
-
+  --outFileFormat bedgraph --outFileName ${signal_dir}/${OUTPUT_PREFIX}.aggregated.bedgraph &
+wait
 
 echo "generate count around TSS..."
 ${DEEPTOOLS_PATH}/computeMatrix reference-point -S ${signal_dir}/${OUTPUT_PREFIX}.aggregated.bw -R $TSS \

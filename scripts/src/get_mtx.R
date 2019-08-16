@@ -60,8 +60,8 @@ names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
 setkey(frags, chr, start)
 
 #save sorted results
-write.table(frags, file = frags.file, quote = F, 
-            row.names = F, col.names = F, sep = '\t')
+#write.table(frags, file = frags.file, quote = F, 
+#            row.names = F, col.names = F, sep = '\t')
 
 frags[, 'ndup' := NULL]
 
@@ -73,6 +73,8 @@ frags[, depth_per_bc := NULL]
 regions = fread(region.file, select=1:3, header = F)
 names(regions) = c('chr', 'start', 'end')
 setkey(regions, chr, start)
+regions = regions[!grepl(chr, pattern = 'random', ignore.case = T), ]
+regions = regions[!grepl(chr, pattern = 'Un', ignore.case = T), ]
 
 chrs = unique(regions$chr)
 

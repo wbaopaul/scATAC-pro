@@ -10,9 +10,8 @@ source ${curr_dir}/read_conf.sh
 read_conf $2
 read_conf $3
 
-outfile_prefix=${OUTPUT_PREFIX}.${MAPPING_METHOD}
 
-frag_file=${OUTPUT_DIR}/summary/fragments.bed
+frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.bed
 
 ## clustering
 ${curr_dir}/clustering.sh $input_mtx $2 $3 &
@@ -21,9 +20,9 @@ ${curr_dir}/clustering.sh $input_mtx $2 $3 &
 ${curr_dir}/motif_analysis.sh $input_mtx $2 $3 &
 
 wait
-
+seurat_obj=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/seurat_obj.rds
 ## do DA
-${curr_dir}/doDA.sh $input_mtx $2 $3 &
+${curr_dir}/runDA.sh $seurat_obj $2 $3 &
 
 SPLIT_BAM2CLUSTER=${SPLIT_BAM2CLUSTER^^}
 ## split bam to cluster

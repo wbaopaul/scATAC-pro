@@ -36,10 +36,6 @@ markers = fread(de_file)
 tss = fread(TSS)
 names(tss)[1:7] = c('chr', 'start', 'end', 'gene_name', 'score', 'strand', 'gene_type')
 tss = tss[gene_type %in% c('protein_coding', 'miRNA', 'lincRNA')]
-markers = as.data.table(markers)
-markers[, 'chr' := unlist(strsplit(peak, '-'))[1], by = peak]
-markers[, 'start' := as.integer(unlist(strsplit(peak, '-'))[2]), by = peak]
-markers[, 'end' := as.integer(unlist(strsplit(peak, '-'))[3]), by = peak]
 
 markers$genes = 'No_TSS'
 for(i in 1:nrow(markers)){

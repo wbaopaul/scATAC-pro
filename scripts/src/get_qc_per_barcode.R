@@ -64,6 +64,8 @@ setkey(frags, chr, start)
 frags[, 'total_frags' := .N, by = bc]
 frags = frags[total_frags > 5]
 
+frags = frags[!grepl(chr, pattern = 'random', ignore.case = T)]
+frags = frags[!grepl(chr, pattern ='un', ignore.case = T)]
 
 peaks = fread(peaks.file, select=1:3, header = F)
 promoters = fread(promoters.file, select=1:3, header = F)

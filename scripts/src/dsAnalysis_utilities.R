@@ -456,7 +456,7 @@ do_GO <- function(fg_genes, bg_genes, type = "BP", qCutoff = 0.05,
                             OrgDb         = orgdb,
                             ont           = type,
                             pAdjustMethod = "BH",
-                            pvalueCutoff  = 0.01,
+                            pvalueCutoff  = 0.05,
                             qvalueCutoff  = qCutoff,
                             readable      = TRUE)
   }

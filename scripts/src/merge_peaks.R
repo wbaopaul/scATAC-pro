@@ -6,7 +6,7 @@ args = commandArgs(T)
 peak_cluster_dir = args[1]
 
 files = dir(peak_cluster_dir)
-files = files[grepl(files, pattern = "Blacklist")]
+files = files[grepl(files, pattern = "narrowPeak")]
 
 peaks = NULL
 
@@ -14,8 +14,8 @@ for(file0 in files){
     peaks = rbind(peaks, fread(paste0(peak_cluster_dir, '/', file0)))
 }
 
-peaks = peaks[!grepl(V1, pattern = 'random'), by = V1]
-peaks = peaks[!grepl(V1, pattern = 'Un'), by = V1]
+peaks = peaks[!grepl(V1, pattern = 'random', ignore.case = T)]
+peaks = peaks[!grepl(V1, pattern = 'Un', ignore.case = T)]
 
 regions = paste0(peaks$V1, ':', peaks$V2, '-', peaks$V3)
 a.sort   <- bedr.sort.region(regions)

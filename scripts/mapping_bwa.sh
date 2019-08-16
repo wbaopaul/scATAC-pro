@@ -5,7 +5,14 @@
 input_ff=$1
 fastqs=(${input_ff//,/ })
 
-mapRes_dir="${2}"
+
+# reading configure file
+curr_dir=`dirname $0`
+source ${curr_dir}/read_conf.sh
+read_conf "$2"
+read_conf "$3"
+
+mapRes_dir="${OUTPUT_DIR}/mapping_result"
 
 if [[ -z "$BWA_PATH" || ! -d "$BWA_PATH" ]];then
     echo "$BWA_PATH not found: please check you bwa installation path"
@@ -27,9 +34,9 @@ ${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_d
 echo "BWA Mapping Done!"
 
 
-## convert to bam
+echo "convert to bam ... "
 ncore=$(nproc --all)
-ncore=$(($ncore - 1))
+ncore=$((${ncore}/2))
 
 echo "Converting sam to bam ... "
 ${SAMTOOLS_PATH}/samtools view -@ $ncore -h -bS ${mapRes_dir}/${OUTPUT_PREFIX}.sam > ${mapRes_dir}/${OUTPUT_PREFIX}.bam

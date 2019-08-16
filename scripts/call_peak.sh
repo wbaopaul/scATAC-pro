@@ -15,7 +15,7 @@ out_prefix=${OUTPUT_PREFIX}
 
 ## call peaks
 if [ "${PEAK_CALLER}" = 'MACS2' ];then
-	echo "--Using macs2... "
+	echo "--Using MACS2... "
 	unset PYTHONPATH
 	work_dir=${peaks_dir}/MACS2
 	mkdir -p $work_dir

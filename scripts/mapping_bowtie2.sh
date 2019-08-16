@@ -4,8 +4,13 @@
 
 input_ff=$1
 fastqs=(${input_ff//,/ })
+# reading configure file
+curr_dir=`dirname $0`
+source ${curr_dir}/read_conf.sh
+read_conf "$2"
+read_conf "$3"
 
-mapRes_dir="${2}"
+mapRes_dir="${OUTPUT_DIR}/mapping_result"
 
 
 echo "Starting bowtie2 alignment ... "

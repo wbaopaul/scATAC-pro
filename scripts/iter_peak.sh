@@ -16,7 +16,7 @@ mtx_bin_dir=${mtx_dir}/${PEAK_CALLER}
 mkdir -p $mtx_bin_dir
 bin_file=${mtx_bin_dir}/${OUTPUT_PREFIX}_bin.bed
 ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > $bin_file
-${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/fragments.bed $bin_file ${mtx_bin_dir} 5000 50 < ${curr_dir}/src/get_mtx.R
+${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.bed $bin_file ${mtx_bin_dir} 5000 50 < ${curr_dir}/src/get_mtx.R
 rm $bin_file
 
 
@@ -37,19 +37,19 @@ unset PYTHONPATH
 for input_bam0 in $(find $output_dir -name *.bam); do
     pre=$(basename $input_bam0)
     pre=${pre/.bam/}
-    ${MACS2_PATH}/macs2 callpeak -t $input_bam0 --outdir $output_dir -n $pre -f BAM $MACS2_OPTS
-    ## remove peaks overlapped with blacklist
-    ${BEDTOOLS_PATH}/bedtools intersect -a ${output_dir}/${pre}_peaks.narrowPeak -b $BLACKLIST -v \
-        > ${output_dir}/${pre}_features_BlacklistRemoved.bed   
-    rm $input_bam0
+    ${MACS2_PATH}/macs2 callpeak -t $input_bam0 --outdir $output_dir -n $pre -f BAM $MACS2_OPTS &
 done
-
-
+wait
 
 
 
 ## 4. merge peaks
 ${R_PATH}/R --vanilla --args $output_dir < ${curr_dir}/src/merge_peaks.R
-mv ${output_dir}/merged_peaks.bed ${output_dir}/${OUTPUT_PREFIX}.${MAPPING_METHOD}_features_BlacklistRemoved.bed
 
+## remove peaks overlapped with blacklist
+${BEDTOOLS_PATH}/bedtools intersect -a ${output_dir}/merged_peaks.bed -b $BLACKLIST -v \
+    > ${output_dir}/${OUTPUT_PREFIX}_features_BlacklistRemoved.bed   
+
+## remove intemediate files
+rm ${output_dir}/cluster*
 

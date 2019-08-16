@@ -15,11 +15,11 @@ mkdir -p $mapRes_dir
 curr_dir=`dirname $0`
 
 if [ $MAPPING_METHOD = "bwa" ];then
-     ${curr_dir}/mapping_bwa.sh $fastqs $mapRes_dir
+     ${curr_dir}/mapping_bwa.sh $fastqs $2 $3
 elif [ $MAPPING_METHOD = "bowtie" ];then
-     ${curr_dir}/mapping_bowtie.sh $fastqs $mapRes_dir
+     ${curr_dir}/mapping_bowtie.sh $fastqs $2 $3
 else
-     ${curr_dir}/mapping_bowtie2.sh $fastqs $mapRes_dir
+     ${curr_dir}/mapping_bowtie2.sh $fastqs $2 $3
 fi
 
 ## sort
@@ -75,5 +75,6 @@ echo "Getting bed file for read pair (fragment) information"
 ${PERL_PATH}/perl ${curr_dir}/src/simply_bam2frags.pl --read_file ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam \
         --output_file ${qc_dir}/${OUTPUT_PREFIX}.fragments.bed --samtools_path $SAMTOOLS_PATH
 
-echo "Remove duplicates"
-${SAMTOOLS_PATH}/samtools markdup -@ $ncore -r ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ30.bam ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ30.noDuplicates.bam 
+#echo "Remove duplicates"
+#${SAMTOOLS_PATH}/samtools markdup -@ $ncore -r ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ30.bam ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ30.noDuplicates.bam 
+rm ${mapRes_dir}/${OUTPUT_PREFIX}.bam*
