@@ -60,9 +60,9 @@ read_mtx_scATACpro <- function(mtx_path){
 }
 
 
-filterMat <- function(atac.mtx, minFrac_in_cell = 0.01, min_depth = 1000){
+filterMat <- function(atac.mtx, minFrac_in_cell = 0.01, min_depth = 200, max_depth = 100000){
   depth.cell = Matrix::colSums(atac.mtx)
-  atac.mtx = atac.mtx[, depth.cell > min_depth]
+  atac.mtx = atac.mtx[, depth.cell > min_depth & depth.cell < max_depth]
   frac.in.cell = Matrix::rowSums(atac.mtx > 0)
   atac.mtx = atac.mtx[frac.in.cell > minFrac_in_cell, ]
   return(atac.mtx)
@@ -131,11 +131,11 @@ regress_on_pca <- function(seurat.obj, reg.var = 'nCount_ATAC'){
 
 doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2, doLog = T,
                           doScale = T, doCenter = T, assay = 'ATAC',
-                          reg.var = NULL, binarization = F){
+                          reg.var = NULL, binarization = F, project = 'scATAC'){
 
   # top.variabl -- use top most variable features
   if(doLog) mtx = round(log2(1 + mtx))
-  seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = assay,
+  seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
                                   names.delim = '-')
   cell.names = colnames(mtx)
 
@@ -463,3 +463,68 @@ do_GO <- function(fg_genes, bg_genes, type = "BP", qCutoff = 0.05,
   
   return(enrich_list@result[enrich_list@result$qvalue <= qCutoff, ])
 }
+
+
+
+#integrate two seurat object (with the same rownames)
+integrateTwoSeurat <- function(seurat1, seurat2, npc = 50, reg.var = NULL,
+                               reduction = 'pca'){
+  seurat2$obj = 'obj2'
+  seurat1$obj = 'obj1'
+  comb.list = list('Obj1' = seurat1, 'Obj2' = seurat2)
+  comb.anchors <- FindIntegrationAnchors(comb.list, scale = F, dims = 1:npc,
+                                         anchor.features = 
+                                        union(VariableFeatures(seurat1), 
+                                              VariableFeatures(seurat2) ))
+  comb.integrated <- IntegrateData(anchorset = comb.anchors, dims = 1:npc)
+  
+  # run standard workflow for integrated object
+  DefaultAssay(object = comb.integrated) <- "integrated"
+  comb.integrated <- ScaleData(object = comb.integrated, verbose = FALSE,
+                               vars.to.regress = reg.var)
+  if(reduction == 'pca'){
+    comb.integrated <- RunPCA(object = comb.integrated, npcs = npc, verbose = FALSE)
+  }
+  if(reduction == 'lsi'){
+    comb.integrated <- RunLSI(object = comb.integrated, n = npc, verbose = FALSE)
+  }
+  
+  #comb.integrated <- RunTSNE(object = comb.integrated, reduction = reduction, 
+  #                           dims = 1:npc)
+  comb.integrated <- RunUMAP(object = comb.integrated, reduction = reduction, 
+                             dims = 1:npc, verbose = F)
+  return(comb.integrated)
+}
+
+#integrate seurat objects (with the same rownames)
+integrateSeurats_atac <- function(seurat_list, npc = 50, reg.var = NULL,
+                               reduction = 'pca'){
+  #seurat2$sample = seurat2@project.name
+  #seurat1$sample = seurat1@project.name
+ 
+  ufeatures = lapply(seurat_list, function(x) VariableFeatures(x))
+  ufeatures = unique(do.call('c', ufeatures))
+  comb.anchors <- FindIntegrationAnchors(seurat_list, scale = F, dims = 1:npc,
+                                         anchor.features = 6000)
+  
+  comb.integrated <- IntegrateData(anchorset = comb.anchors, dims = 1:npc)
+  
+  # run standard workflow for integrated object
+  DefaultAssay(object = comb.integrated) <- "integrated"
+  comb.integrated <- ScaleData(object = comb.integrated, verbose = FALSE,
+                               vars.to.regress = NULL)
+  if(reduction == 'pca'){
+    comb.integrated <- RunPCA(object = comb.integrated, npcs = npc, verbose = FALSE)
+    if(!is.null(reg.var)) comb.integrated <- regress_on_pca(comb.integrated, reg.var = reg.var)
+  }
+  if(reduction == 'lsi'){
+    comb.integrated <- RunLSI(object = comb.integrated, n = npc, verbose = FALSE)
+  }
+  
+  #comb.integrated <- RunTSNE(object = comb.integrated, reduction = reduction, 
+  #                           dims = 1:npc)
+  comb.integrated <- RunUMAP(object = comb.integrated, reduction = reduction, 
+                             dims = 1:npc, verbose = F)
+  return(comb.integrated)
+}
+

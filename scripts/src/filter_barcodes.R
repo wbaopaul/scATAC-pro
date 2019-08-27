@@ -17,8 +17,12 @@ parser <- add_option(parser, c("-out", "--output_dir"), type="character", defaul
 parser <- add_option(parser, c("-bs", "--bc_stat_file"), type="character", default='NULL',
                      help="barcodes with summary stat file [default %default]")
 
-parser <- add_option(parser, c("-tp", "--total_frags"), type="integer", default=1000,
-                help="minimal of total pairs per barcode [default %default]",
+parser <- add_option(parser, c("-m", "--min_uniq_frags"), type="integer", default=3000,
+                help="minimal of total unique fragments per barcode [default %default]",
+                metavar="number")
+
+parser <- add_option(parser, c("-M", "--max_uniq_frags"), type="integer", default=50000,
+                help="maximal of total unique per barcode [default %default]",
                 metavar="number")
 
 
@@ -48,14 +52,16 @@ mtx_file = opt$raw_mtx_file
 output_dir = opt$output_dir
 qc_bc_stat = fread(opt$bc_stat_file)
 
-cut.total = opt$total_frags
+cut.min.frag = opt$min_uniq_frags
+cut.max.frag = opt$max_uniq_frags
 cut.mito = opt$frac_mito
 cut.peak = opt$frac_peak
 cut.tss = opt$frac_tss
 cut.promoter = opt$frac_promoter
 cut.enh = opt$frac_enhancer
 
-qc_sele = qc_bc_stat[total_frags >= cut.total & frac_mito <= cut.mito &
+qc_sele = qc_bc_stat[total_frags >= cut.min.frag & total_frags <= cut.max.frag &
+                       frac_mito <= cut.mito &
                        frac_peak >= cut.peak &
                        frac_tss >= cut.tss &
                        frac_promoter >= cut.promoter &

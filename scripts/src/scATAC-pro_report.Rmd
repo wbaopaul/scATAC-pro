@@ -85,7 +85,7 @@ mapping_qc = fread(mapping_qc_file, header = F)
 mapping_qc$frac = round(mapping_qc$V2/mapping_qc$V2[1], 3)
 mapping_qc$frac = paste0(100*mapping_qc$frac, '%')
 
-kable(mapping_qc, col.names = NULL, format = 'html') %>%
+kable(mapping_qc, col.names = NULL, format = 'html', caption = paste('Sample:', OUTPUT_PREFIX)) %>%
   kable_styling("striped", full_width = F, position = 'left')
 ```
 
@@ -404,7 +404,10 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   metaData = data.table(metaData, keep.rownames = T)
   setkey(metaData, active_clusters)
   
-  sele.zscores = sele.zscores[, metaData$rn]
+  rr = metaData$rn[metaData$rn %in% colnames(sele.zscores)]
+  sele.zscores = sele.zscores[, rr]
+  
+  
   sele.zscores = sele.zscores[!duplicated(sele.zscores), ]
   
   ann_col = data.table('cluster' = metaData$active_clusters)

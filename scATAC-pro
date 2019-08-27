@@ -44,7 +44,7 @@ function help {
     echo "      qc_per_barcode: quality control per barcode
                                 input: fragment.bed file
                                 output: qc_per_barcode.summary"
-    echo "      preprocess: perform preprocessing - including dex_fastq, mapping, call_peak, get_mtx,
+    echo "      process: processing data - including dex_fastq, mapping, call_peak, get_mtx,
                             aggr_signal, qc_per_barcode abd call_cell
                             input: fastq files for both reads and index, separated by comma like:
                                    fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
@@ -171,16 +171,16 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "mapping_qc" "after_mapping" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "clustering" "motif_analysis" "runDA" "runGO" "split_bam" "footprint" "report" "preprocess" "preprocess_no_dex" "integrate" "downstream" "all")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "mapping_qc" "after_mapping" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "clustering" "motif_analysis" "runDA" "runGO" "split_bam" "footprint" "report" "process" "process_no_dex" "integrate" "downstream" "all" "integrate_seu")
 
 
 check_s=0
 for i in ${AVAILABLE_STEP_ARRAY[@]}; do
-	    if [[ "$i" == "$STEP" ]]; then check_s=1; fi
+	    if [[ "$i" = "$STEP" ]]; then check_s=1; fi
 done
 
 
-if [[ $check_s == 0 ]]; then die "Unknown STEP option (\"-s $s\"). Use $0 --help for usage information."; fi
+if [[ $check_s = 0 ]]; then die "Unknown STEP option (\"-s $s\"). Use $0 --help for usage information."; fi
 
 
 ############################
@@ -190,7 +190,7 @@ if [[ $check_s == 0 ]]; then die "Unknown STEP option (\"-s $s\"). Use $0 --help
 
 
 
-if [ $CLUSTER == 0 ]; then
+if [ $CLUSTER = 0 ]; then
     echo "Run scATAC-pro "${VERSION}
 
 fi
@@ -207,6 +207,10 @@ declare -x logDir
 mkdir -p $OUTPUT_DIR
 
 logDir=${OUTPUT_DIR}/logs
+if [ "$STEP" = "integrate" ]; then
+    logDir=${OUTPUT_DIR}/integrated/logs
+fi
+
 mkdir -p $logDir
 
 ###################################################

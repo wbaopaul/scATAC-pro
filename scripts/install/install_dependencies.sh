@@ -224,9 +224,10 @@ if [ $? != "0" ]; then
     if [ $? != '0'  ]; then 
         echo "anaconda not install successfully, please install anaconda or macs2 manually!" 
     fi
-    conda create --name py2 python=2.7
-    source activate py2
     unset PYTHONPATH 
+    unset PYTHONHOME 
+    conda create --name py2 python=2.7
+    conda activate py2
     pip install --user --upgrade pip
     pip install --user --upgrade Numpy 
     pip install --user macs2 
@@ -461,6 +462,7 @@ GEM_PATH=${PREFIX_BIN}/gem
 ## Install R packages 
 ###################################################################################
 #Install R Packages
+wasInstalled=0
 if [ $wasInstalled == 0 ]; then
     echo "Installing missing R packages ..."
     #R CMD BATCH ../scripts/install/install_Rpackages.R install_Rpackages.Rout

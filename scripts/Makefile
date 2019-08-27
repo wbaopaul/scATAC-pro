@@ -82,7 +82,7 @@ mapping_qc: config_check
 
 ######################################
 ## after mapping
-## call_peak to end of preprocess
+## call_peak to end of process
 ######################################
 
 after_mapping: config_check
@@ -153,23 +153,23 @@ call_cell: config_check
 	@echo 
 
 #######################################
-## preprocess
+## process
 #######################################
-preprocess: config_check
+process: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Preprocessing ..." 
-	@$(SCRIPTS)/preprocess.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@$(SCRIPTS)/process.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
-## preprocess without demultiplex
+## process without demultiplex
 #######################################
-preprocess_no_dex: config_check
+process_no_dex: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Preprocessing without demultiplexing..." 
-	@$(SCRIPTS)/preprocess_no_dex.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@$(SCRIPTS)/process_no_dex.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
@@ -250,6 +250,16 @@ integrate: config_check
 	@date 
 	@echo "Doing integrating analysis ..." 
 	@$(SCRIPTS)/integrate.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
+## integrate_seu
+#######################################
+integrate_seu: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Doing integrating mtx by seurat ..." 
+	@$(SCRIPTS)/integrate_seu.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################

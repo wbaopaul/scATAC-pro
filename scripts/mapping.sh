@@ -77,4 +77,4 @@ ${PERL_PATH}/perl ${curr_dir}/src/simply_bam2frags.pl --read_file ${mapRes_dir}/
 
 #echo "Remove duplicates"
 #${SAMTOOLS_PATH}/samtools markdup -@ $ncore -r ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ30.bam ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ30.noDuplicates.bam 
-rm ${mapRes_dir}/${OUTPUT_PREFIX}.bam*
+#rm ${mapRes_dir}/${OUTPUT_PREFIX}.bam*

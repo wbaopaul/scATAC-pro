@@ -19,13 +19,14 @@ seurat.obj = readRDS(seuratObj_file)
 confVar = 'nCount_ATAC'
 if(test_use == 'wilxon' || test_use == 'DESeq2') confVar = NULL
 
-if(group2 == 'others' || group2 == 'all') group2 = NULL
+if(group2 == 'rest') group2 = NULL
 if(group1 == 'all') {
    cls = unique(seurat.obj$active_clusters)
    markers = NULL
    for(cluster0 in cls){
         mm = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = cluster0, ident.2 = group2,
-                test.use = test_use, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
+                test.use = test_use, logfc.threshold = 0.15, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
+
         mm$cluster = cluster0
         
         mm$peak = rownames(mm)
@@ -35,16 +36,16 @@ if(group1 == 'all') {
 }else{
     if(is.null(group2)){
         markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, 
-                          test.use = test_use, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
+                          test.use = test_use, logfc.threshold = 0.15, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
         markers$cluster = group1
     }else{
-        markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, 
-                  test.use = test_use, max.cell.per.ident = 500, only.pos = F, latent.vars = confVar)
+        markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, test.use = test_use, max.cell.per.ident = 500, logfc.threshold = 0.15, only.pos = F, latent.vars = confVar)
         markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
     }
   
   markers$peak = rownames(markers)
 }
+
 
 markers = data.table(markers)
 markers[, 'chr' := unlist(strsplit(peak, '-'))[1], by = peak]
