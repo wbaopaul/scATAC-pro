@@ -4,8 +4,8 @@ if(!require(BiocManager)){
     install.packages('BiocManager')
 }
 
-pks = c('devtools', 'png', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',
-  'optparse', 'magrittr', 'readr', 'Seurat', 'reticulate', 'bedr', 'gridExtra', 'ggrepel')
+pks = c('devtools', 'flexdashboard', 'png', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',
+  'optparse', 'magrittr', 'readr', 'Seurat', 'reticulate', 'bedr', 'gridExtra', 'ggrepel', 'kableExtra', 'viridis')
 
 for(pk in pks){
     if(!require(pk, character.only = T)) {
@@ -14,8 +14,7 @@ for(pk in pks){
     }
 }
 
-
-bioc.pks = c('motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'DESeq2')
+bioc.pks = c('RColorBrewer', 'motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'DESeq2')
 
 for(pk in bioc.pks){
     if(!require(pk, character.only = T)) {  

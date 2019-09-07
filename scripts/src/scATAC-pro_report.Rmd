@@ -45,7 +45,7 @@ library(magrittr)
 library(kableExtra)
 library(RColorBrewer)
 library(ggplot2)
-library(plotly)
+#library(plotly)
 library(viridis)
 
 ```
@@ -149,7 +149,7 @@ tss.escore = tss.escore[14:213]
 df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
 
 p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1]) +
-  xlab('Distance to TSS') + ylab('TSS enrichment score(bp)') + theme(legend.title=element_blank(), axis.text = element_text(size = 15), axis.title = element_text(size = 15))
+  xlab('Distance to TSS') + ylab('TSS enrichment score(bp)') + theme(legend.title=element_blank(), axis.text = element_text(size = 15), axis.title = element_text(size = 15)) + theme_bw()
 
 p0
 
@@ -169,9 +169,10 @@ if(plotEPS){
 
 qc_sele_df = data.table(frac = c(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$frac_promoter, qc_sele$frac_enh, qc_sele$frac_mito), 'type' = rep(c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'), each = nrow(qc_sele)))
 
+qc_sele_df$type = factor(qc_sele_df$type, levels = c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'))
+
 p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fraction') +
-  geom_boxplot(outlier.size = 0.01) +  theme(legend.position = 'none', axis.text = element_text(size = 15), axis.title.x = element_blank(), axis.title.y = element_text(size = 15)) + xlab('')
-#ggplotly(p0)
+  geom_boxplot(outlier.size = 0.01) +  theme(legend.position = 'none', axis.text = element_text(size = 15), axis.title.x = element_blank(), axis.title.y = element_text(size = 15)) + xlab('') + theme_bw() 
 p0
 
 if(plotEPS){
@@ -185,7 +186,7 @@ if(plotEPS){
 
 
 
-### Overlapping statistics
+### Overall statistics
 
 ```{r}
 
@@ -221,13 +222,21 @@ Row
 
 bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
 
-p <- ggplot(data = bc_stat, aes(x = total_frags, col = group)) + 
-  geom_density() + scale_x_continuous(trans = 'log10') +
+p <- ggplot(data = bc_stat, aes(x = total_frags, fill = group)) + 
+  geom_density() + scale_x_continuous(trans = 'log10') + theme_bw() +
   theme(legend.position=c(.1, .9)) +  theme(legend.title=element_blank(),
                                             axis.title = element_text(size = 15),
                                             axis.text = element_text(size = 15)) + xlab('Total #fragments') + ylab('Density')
 p
 #ggplotly(p)
+
+if(plotEPS){
+  system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
+  pfname = paste0(params$output_dir, '/summary/Figures/dist_frags.eps')
+  ggsave(p, file = pfname, device = 'eps', width = 6, height = 6)
+}
+
+
 ```
 
 
@@ -239,7 +248,7 @@ p
 
 library(ggplot2)
 library(plotly)
-g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], aes(x = total_frags, y = frac_peak, col = group)) + geom_point(size = 0.5) + scale_x_continuous(trans='log10') +
+g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], aes(x = total_frags, y = frac_peak, col = group)) + geom_point(size = 0.5) + scale_x_continuous(trans='log10') + theme_bw() +
       theme(legend.position=c(.9, .9)) +  theme(legend.title=element_blank(),
                                                 legend.text = element_text(size=15),
                                                 legend.background = NULL,
@@ -264,7 +273,7 @@ frags[, 'isize' := end - start]
 frags = frags[sample(1:nrow(frags), 1000000), ]
 
 p1 <- ggplot(data = frags[isize < 800], aes(x = isize)) +
-  geom_density() + xlab('Insert size') + ylab('Density') +  theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15))
+  geom_density(fill = 'lightblue') + xlab('Insert size') + ylab('Density') +  theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15)) + theme_bw()
 
 p1
 
@@ -318,7 +327,7 @@ if(file.exists(seurat_file)){
     #   scale_fill_viridis()
 
     dat = data.table('logN' = ss$log10_nCount, 'UMAP_1' = ss@reductions$umap@cell.embeddings[, 1], 'UMAP_2' = ss@reductions$umap@cell.embeddings[, 2])
-ggplot(data = dat, aes(x = UMAP_1, y = UMAP_2, colour = logN)) + geom_point(size = 1.1) +
+ggplot(data = dat, aes(x = UMAP_1, y = UMAP_2, colour = logN)) + geom_point(size = 1.1) + theme_bw() +
   scale_colour_viridis() + theme(legend.title=element_blank(), axis.title = element_text(size = 15), axis.text = element_text(size = 15), legend.text = element_text(size = 17))
 }
 
@@ -473,7 +482,7 @@ if(file.exists(footprint_stats.file)){
   
   
   
- p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + ylab('TF Activity Difference') + theme(legend.text = element_text(size=15), axis.title = element_text(size = 15), axis.text.x = element_blank(), legend.title = element_blank(), legend.direction = 'horizontal', plot.title = element_text(size = 15, face = 'bold')) + ggtitle(paste0('TF Activity difference: cluster', cluster2_fp, '-', 'cluster', cluster1_fp  )) + geom_text_repel(force = 10) + theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') + scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40'))
+ p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + ylab('TF Activity Difference') + theme(legend.text = element_text(size=15), axis.title = element_text(size = 15), axis.text.x = element_blank(), legend.title = element_blank(), legend.direction = 'horizontal', plot.title = element_text(size = 15, face = 'bold')) + ggtitle(paste0('TF Activity difference: cluster', cluster2_fp, '-', 'cluster', cluster1_fp  )) + geom_text_repel(force = 10) + theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') + scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40')) + theme_bw()
  
  
 
@@ -511,7 +520,7 @@ if(file.exists(footprint_stats.file)){
  dd$cluster = rep(c(paste0('cluster_', cluster2_fp), paste0('cluster_', cluster1_fp)), each = nrow(dd1))
  
  
- p2 = ggplot(data = dd, aes(x = id, y = score, colour = cluster)) + geom_line(aes(linetype = cluster), size = 1.1) + ggtitle(sele.motif) + xlab('Distance to Motif') + theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15), legend.position = c(0.8, 0.8), plot.title = element_text(size = 15, face = 'bold')) + theme(plot.margin=unit(c(0.2,0,0.2,0),"cm")) + scale_color_manual(values = c('#F8766D', '#619CFF'))
+ p2 = ggplot(data = dd, aes(x = id, y = score, colour = cluster)) + geom_line(aes(linetype = cluster), size = 1.1) + ggtitle(sele.motif) + xlab('Distance to Motif') + theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15), legend.position = c(0.8, 0.8), plot.title = element_text(size = 15, face = 'bold')) + theme(plot.margin=unit(c(0.2,0,0.2,0),"cm")) + scale_color_manual(values = c('#F8766D', '#619CFF')) + theme_bw()
  
  
 

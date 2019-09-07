@@ -30,7 +30,7 @@ for(i in 1:length(mtx_files)){
     dir0 = dirname(file0)
     mtx = read_mtx_scATACpro(file0)
     mtx = filterMat(mtx)
-    colnames(mtx) = paste0('rep', i, '_', colanmes(mtx))
+    colnames(mtx) = paste0('rep', i, '_', colnames(mtx))
     seurat.obj = doBasicSeurat_new(mtx, npc = 30, doLog = T, top.variable = 0.1, 
                                        reg.var = 'nCount_ATAC')
     

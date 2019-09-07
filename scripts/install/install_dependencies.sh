@@ -224,46 +224,26 @@ if [ $? != "0" ]; then
     if [ $? != '0'  ]; then 
         echo "anaconda not install successfully, please install anaconda or macs2 manually!" 
     fi
-    unset PYTHONPATH 
     unset PYTHONHOME 
-    conda create --name py2 python=2.7
-    conda activate py2
-    pip install --user --upgrade pip
-    pip install --user --upgrade Numpy 
-    pip install --user macs2 
-    conda deactivate 
-fi
-
-macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
-if [ $? != '0' ]; then    
-    which conda > /dev/null 2>&1
-    if [ $? != "0" ]; then
-        echo "Install anaconda:"
-        if [ "$os" = "Darwin" ]; then 
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
-        else
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-ppc64le.sh
-        fi
-        bash tmp.sh
-    fi
-    
-    conda_path=$(dirname `which conda`)
-    if [ $? != '0'  ]; then 
-        echo "anaconda not install successfully, please install anaconda or macs2 manually!" 
-    fi
-    conda create --name py2 python=2.7
-    source activate py2
     unset PYTHONPATH 
-    pip install --user --upgrade pip
-    pip install --user --upgrade Numpy 
-    pip install --user macs2 
+    conda create -y --name py2 python=2.7
+    conda init --all
+    source ~/.bashrc
+    conda activate py2
+    pip install --upgrade pip
+    pip install --upgrade Numpy 
+    pip install --upgrade macs2 
+    
+    MACS2_PATH=$(dirname `which macs2`)
+    macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
+    if [ $? != '0' ]; then
+        conda deactivate 
+        conda deactivate
+        echo -e  "$RED"" I cannot install macs2, please install it manually! ].""NORMAL"
+        exit 
+    fi
     conda deactivate 
-fi
-
-macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
-if [ $? != '0' ]; then
-    echo -e "$RED"" macs2 Not installed successfully ].""NORMAL"
-    exit 
+    conda deactivate
 fi
 
 vercomp $macs2ver "2.1.1"
@@ -428,26 +408,35 @@ if [ $wasInstalled == 0 ]; then
         fi
         bash tmp.sh
     fi
-    
+ 
     if [ $? != '0'  ]; then 
         echo -e "$RED""anaconda not install successfully, thus I cannot install RGT" "$NORMAL"; 
         echo -e "$RED""If you want to run footprinting analysis, please install RGT by yourself!""$NORMAL";
     else
-        conda create --name py2 python=2.7
-        source activate py2
+        unset PYTHONHOME 
         unset PYTHONPATH 
-        ## from pip
-        pip install --user cython scipy numpy
-        pip install --user RGT
+        isPy2=$(conda env list | grep py2 | cut -f1 -d " ")
+        if [ $isPy2 != "py2" ]; then
+            conda create -y --name py2 python=2.7
+            conda init --all
+            source ~/.bashrc
+        fi
+        conda activate py2
+        pip install --upgrade pip
+        pip install --upgrade cython scipy numpy
+        pip install --upgrade RGT
 
-        conda deactivate 
         check=`rgt-hint --version `;
         if [ $? = "0" ]; then
             echo -e "$BLUE""rgt-hint appears to be installed successfully""$NORMAL"
+            HINT_PATH=$(dirname `which rgt-hint`)
+            #HINT_PATH=$PREFIX_BIN
         else
             echo -e "$RED""rgt-hint NOT installed successfully""$NORMAL"; 
             echo -e "$RED""If you want to run footprinting analysis, please install RGT by yourself!""$NORMAL";
         fi
+        conda deactivate 
+        conda deactivate 
     fi
 fi
 
@@ -662,6 +651,8 @@ if [ $? = "0" ]; then
     echo "HINT_PATH = "`dirname $(which rgt-hint)` >> configure_system.txt
 fi
 
+echo "MACS2_PATH = " $MACS2_PATH >> configure_system.txt
+echo "HINT_PATH = " $HINT_PATH >> configure_system.txt
 echo "TRIMMOMATIC_PATH = " $TRIMMOMATIC_PATH >> configure_system.txt
 echo "GEM_PATH = " $GEM_PATH >> configure_system.txt
 

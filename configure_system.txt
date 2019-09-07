@@ -6,16 +6,18 @@
 ## If not specified, the program will try to locate the executable
 ## using the 'which' command
 #######################################################################
-INSTALL_PREFIX = /mnt/isilon/tan_lab/yuw1/tmp
+INSTALL_PREFIX = /mnt/isilon/tan_lab/yuw1/local_tools/bin
 PYTHON_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
-R_PATH = /mnt/isilon/linux_pool_software/R/3.6.0/lib64/R/bin
+R_PATH = /cm/shared/apps_chop/R/3.6.0/lib64/R/bin
 SAMTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 DEEPTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
-BEDTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin
-BWA_PATH = /mnt/isilon/tan_lab/yuw1/tmp/bwa-0.7.17
-MACS2_PATH = /home/yuw1/.local/bin
+BEDTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bedtools2/bin
+BWA_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bwa-0.7.17
+BOWTIE2_PATH = /home/yuw1/.local/bin/bowtie2.2.9
+BOWTIE_PATH = /home/yuw1/.local/bin/bowtie-1.2.2
 PERL_PATH = /usr/bin
-TRIM_GALORE_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin
-HINT_PATH = /home/yuw1/.local/bin
-TRIMMOMATIC_PATH =  /mnt/isilon/tan_lab/yuw1/tmp/Trimmomatic-0.39
-GEM_PATH =  /mnt/isilon/tan_lab/yuw1/tmp/gem
+TRIM_GALORE_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/TrimGalore-0.6.3
+MACS2_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/envs/py2/bin
+HINT_PATH = 
+TRIMMOMATIC_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/Trimmomatic-0.39
+GEM_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/gem

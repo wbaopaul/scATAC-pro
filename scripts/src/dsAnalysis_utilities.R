@@ -6,7 +6,7 @@ library(motifmatchr)
 library(SummarizedExperiment)
 library(BiocParallel)
 #library(JASPAR2016)
-library(cisTopic)
+#library(cisTopic)
 library(compiler)
 library(readr)
 
@@ -89,7 +89,7 @@ doBasicSeurat <- function(mtx, npc = 100, top.variable = 0.2, doLog = T,
                           reg.var = 'nCount_ATAC'){
   
   # top.variabl -- use top most variable features
-  if(doLog) mtx = round(log2(1 + mtx))
+  if(doLog) mtx = round(log1p(mtx)/log(2))
   seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = assay,
                                   names.delim = '-')
   cell.names = colnames(mtx)
@@ -134,7 +134,7 @@ doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2, doLog = T,
                           reg.var = NULL, binarization = F, project = 'scATAC'){
 
   # top.variabl -- use top most variable features
-  if(doLog) mtx = round(log2(1 + mtx))
+  if(doLog) mtx = round(log1p(mtx)/log(2))
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
                                   names.delim = '-')
   cell.names = colnames(mtx)

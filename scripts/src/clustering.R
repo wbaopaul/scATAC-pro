@@ -16,8 +16,8 @@ output_dir = args[4]
 genome_name = args[5]
 python_path = args[6]
 
-library(reticulate)
-use_python(paste0(python_path, '/python'))
+#library(reticulate)
+#use_python(paste0(python_path, '/python'))
 
 mtx = read_mtx_scATACpro(mtx_file)
 #mtx = filterMat(mtx)
@@ -40,7 +40,7 @@ if(cluster_method == 'seurat'){
   if (toupper(k) == 'NULL' || k == '0'){
     resl = 0.4
   }else{
-    k = as.integer(k)
+   k = as.integer(k)
     resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 30, k = k,
                                 min_resl = 0.01)
   }
