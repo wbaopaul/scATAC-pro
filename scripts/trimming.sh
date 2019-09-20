@@ -51,6 +51,8 @@ if [ "$TRIM_METHOD" = 'Trimmomatic' ]; then
     echo "Trimming Done!" 
 elif [ "$TRIM_METHOD" = 'trim_galore' ]; then
     echo "Using trim_galore ..." 
+    unset PYTHONHOME
+    unset PYTHONPATH
     dfastq1_pre=`echo $prefix0 | awk -F. '{print $1}'`
     dfastq2_pre=`echo $prefix1 | awk -F. '{print $1}'`
     trimmed_fastq1=${OUTPUT_DIR}/trimmed_fastq/${dfastq1_pre}_val_1.fq.gz

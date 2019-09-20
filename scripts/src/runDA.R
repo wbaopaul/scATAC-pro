@@ -48,9 +48,10 @@ if(group1 == 'all') {
 
 
 markers = data.table(markers)
-markers[, 'chr' := unlist(strsplit(peak, '-'))[1], by = peak]
-markers[, 'start' := unlist(strsplit(peak, '-'))[2], by = peak]
-markers[, 'end' := unlist(strsplit(peak, '-'))[3], by = peak]
+markers[, 'peak0' := unlist(strsplit(peak, ','))[1], by = peak]
+markers[, 'chr' := unlist(strsplit(peak, '-'))[1], by = peak0]
+markers[, 'start' := unlist(strsplit(peak, '-'))[2], by = peak0]
+markers[, 'end' := unlist(strsplit(peak, '-'))[3], by = peak0]
 
 setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2', 'p_val_adj','cluster', 'peak'))
 write.table(markers, file = paste0(output_dir, '/differential_peak_cluster_table.txt'), sep = '\t',

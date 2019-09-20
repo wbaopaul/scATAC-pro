@@ -14,13 +14,18 @@ cluster_method = args[2]
 k = (args[3])
 output_dir = args[4]
 genome_name = args[5]
-python_path = args[6]
+tss_path = args[6]
 
 mtx_files = unlist(strsplit(mtx_files, ','))
 
+tss_ann <- fread(tss_path, header = F)
+names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
+tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
 
-library(reticulate)
-use_python(paste0(python_path, '/python'))
+
+
+#library(reticulate)
+#use_python(paste0(python_path, '/python'))
 
 ## do seurat individually
 seu.all = list()
@@ -29,13 +34,13 @@ for(i in 1:length(mtx_files)){
     file0 = mtx_files[i]
     dir0 = dirname(file0)
     mtx = read_mtx_scATACpro(file0)
-    mtx = filterMat(mtx)
+    mtx = assignGene2Peak(mtx, tss_ann)
     colnames(mtx) = paste0('rep', i, '_', colnames(mtx))
-    seurat.obj = doBasicSeurat_new(mtx, npc = 30, doLog = T, top.variable = 0.1, 
+    seurat.obj = doBasicSeurat_new(mtx, npc = 30, norm_by = 'tf-idf', top.variable = 0.1, 
                                        reg.var = 'nCount_ATAC')
     
     seurat.obj$sample = basename(dir0)
-    #seurat.obj = RunTSNE(seurat.obj, dims = 1:30)
+    seurat.obj = RunTSNE(seurat.obj, dims = 1:30, check_duplicates = F)
     seurat.obj = RunUMAP(seurat.obj, dims = 1:30, verbose = F)
     saveRDS(seurat.obj, file = paste0(dir0, '/seurat_obj.rds'))
    
@@ -44,11 +49,10 @@ for(i in 1:length(mtx_files)){
 }
 
 
-seurat.obj <- FindIntegrationAnchors(object.list = seu.all, anchor.features = 5000)
+seurat.obj <- FindIntegrationAnchors(object.list = seu.all, anchor.features = 3000)
 rm(seu.all)
 seurat.obj <- IntegrateData(anchorset = seurat.obj, dims = 1:30)
 DefaultAssay(seurat.obj) <- "integrated"
-seurat.obj <- NormalizeData(seurat.obj)
 seurat.obj <- ScaleData(seurat.obj, verbose = FALSE,
                      features = VariableFeatures(seurat.obj), assay = "integrated")
 seurat.obj <- RunPCA(seurat.obj, npcs = 30, verbose = FALSE)

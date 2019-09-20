@@ -105,12 +105,12 @@ my $elapsed = $etime - $btime;
 
 print("It takes $elapsed seconds totally.\n");
 
-print(" Now I am sorting the fragment file...\n");
+#print(" Now I am sorting the fragment file...\n");
 
-`sort -k1,1 -k2n,3n $output_file > tmp_frags`;
-`mv tmp_frags $output_file`;
+#`sort -k1,1 -k2n,3n $output_file > tmp_frags`;
+#`mv tmp_frags $output_file`;
 
-print("Output matrix is in the file $output_file  . \n");
+print("Output fragments is in the file $output_file  . \n");
 
 
 

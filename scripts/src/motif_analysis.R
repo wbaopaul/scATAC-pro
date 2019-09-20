@@ -15,7 +15,7 @@ genome_name = args[2]
 output_dir = args[3]
 
 mtx = read_mtx_scATACpro(mtx_file)
-mtx = filterMat(mtx)
+#mtx = filterMat(mtx)
 genomeName = 'BSgenome.Hsapiens.UCSC.hg38'
 if(grepl(genome_name, pattern = '38'))genomeName = 'BSgenome.Hsapiens.UCSC.hg38'
 if(grepl(genome_name, pattern = '19'))genomeName = 'BSgenome.Hsapiens.UCSC.hg19'
@@ -32,7 +32,7 @@ if(T){
 
       seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                          selection.method = 'vst',
-                                         nfeatures = floor(nrow(mtx) * 0.3))
+                                         nfeatures = min(floor(nrow(mtx) * 0.3), 20000))
       vFeatures = VariableFeatures(seurat.obj)
       rm(seurat.obj)
       rnames = rownames(mtx)

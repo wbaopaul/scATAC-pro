@@ -84,7 +84,7 @@ atac_tfidf = function(atac_matrix, site_frequency_threshold=0.03) {
 
 
 # do normalization, pca using Seurat
-doBasicSeurat <- function(mtx, npc = 100, top.variable = 0.2, doLog = T, 
+doBasicSeurat <- function(mtx, npc = 100, top.variable = 0.2, norm_by = 'log', 
                           doScale = T, doCenter = T, assay = 'ATAC', 
                           reg.var = 'nCount_ATAC'){
   
@@ -92,8 +92,9 @@ doBasicSeurat <- function(mtx, npc = 100, top.variable = 0.2, doLog = T,
   if(doLog) mtx = round(log1p(mtx)/log(2))
   seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = assay,
                                   names.delim = '-')
-  cell.names = colnames(mtx)
   
+  if(norm_by == 'log') seurat.obj@assays$ATAC@data <- log1p(seurat.obj@assays$ATAC@data)/log2
+  if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data <- TF.IDF(seurat.obj@assays$ATAC@data)
   #seurat.obj <- NormalizeData(seurat.obj, normalization.method = 'LogNormalize',
   #                            scale.factor = 1e4)
   
@@ -129,16 +130,17 @@ regress_on_pca <- function(seurat.obj, reg.var = 'nCount_ATAC'){
 }
 
 
-doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2, doLog = T,
+#could be normalized by log, tf-idf or none
+doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2, 
                           doScale = T, doCenter = T, assay = 'ATAC',
-                          reg.var = NULL, binarization = F, project = 'scATAC'){
+                          reg.var = NULL, norm_by = 'log', project = 'scATAC'){
 
   # top.variabl -- use top most variable features
-  if(doLog) mtx = round(log1p(mtx)/log(2))
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
                                   names.delim = '-')
-  cell.names = colnames(mtx)
-
+ 
+  if(norm_by == 'log') seurat.obj@assays$ATAC@data <- log1p(seurat.obj@assays$ATAC@data)/log(2)
+  if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data <- TF.IDF(seurat.obj@assays$ATAC@data)
 
   seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                      selection.method = 'vst',
@@ -154,12 +156,65 @@ doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2, doLog = T,
                        verbose = FALSE, seed.use = 10, npc = npc)
   if(length(reg.var) > 0 ) seurat.obj = regress_on_pca(seurat.obj, reg.var)
 
-  if(binarization) seurat.obj <- RunLSI(seurat.obj, n = npc,
-                       features = VariableFeatures(object = seurat.obj))
+ # seurat.obj <- RunLSI(seurat.obj, n = npc,
+ #                      features = VariableFeatures(object = seurat.obj))
 
 return(seurat.obj)
 }
 doBasicSeurat_new = cmpfun(doBasicSeurat_new)
+
+# assign gene to nearest peak and mark a gene if its tss within the peak
+assignGene2Peak <- function(mtx, tss_ann){
+  #tss_ann[, 'tss' := ifelse(strand == '+', start, end)]
+  
+  tss_ann[, 'tss' := start]
+  peaks = tidyr::separate(data.table(x=rownames(mtx)),
+                          col = x,
+                          into = c('chr', 'start', 'end'))
+  
+  
+  peaks$peak_name = rownames(mtx)
+  class(peaks$start) = 'integer'
+  class(peaks$end) = 'integer'
+  
+  
+  chrs = unique(peaks$chr)
+  peaks_ann = NULL
+  for(chr0 in chrs){
+    peaks0 = peaks[chr == chr0]
+    genes0 = tss_ann[chr == chr0]
+    peaks0[, 'id' := which.min(abs(genes0$tss - start/2 - end/2)), by = 'peak_name']
+    peaks0[, 'gene_name' := genes0[id, gene_name]]
+    peaks0$tss_name = ''
+    for(i in 1:nrow(peaks0)){
+      tss0 = genes0[tss <= peaks0$end[i] & tss >= peaks0$start[i]]
+      if(nrow(tss0) > 0 ) {
+        if(peaks0$gene_name[i] %in% tss0$gene_name) peaks0$gene_name[i] <- ''
+        peaks0$tss_name[i] = paste(paste0(tss0$gene_name, '-Tss'), 
+                                                collapse = ',')
+      }
+    }
+    
+    peaks_ann = rbind(peaks_ann, peaks0)
+  }
+  peaks_ann[, 'id':= NULL]
+  
+  peaks_ann[, 'peak_new_name' := ifelse(!is.na(gene_name) & nchar(gene_name) > 1, 
+                                        paste0(peak_name, ',', gene_name), peak_name)]
+  
+  
+  peaks_ann[, 'peak_new_name' := ifelse(!is.na(tss_name) & nchar(tss_name) > 1, 
+                                         paste0(peak_new_name, ',', tss_name), peak_new_name)]
+  setkey(peaks_ann, peak_name)
+  
+  
+  
+  rownames(mtx) = peaks_ann[rownames(mtx)]$peak_new_name
+  
+  return(mtx)
+  
+  
+}
 
 
 # get the right resolution parater given number of expected cluster
@@ -526,5 +581,144 @@ integrateSeurats_atac <- function(seurat_list, npc = 50, reg.var = NULL,
   comb.integrated <- RunUMAP(object = comb.integrated, reduction = reduction, 
                              dims = 1:npc, verbose = F)
   return(comb.integrated)
+}
+
+# mtx: gene by cell matrix, or peak/bin by cell matrix
+# seurat.obj: optional, if not provided, will construct one (which will clustering on pca1:50),
+# if seurat.obj is provided, assume it did pca
+# norm_mtx: normalized matrix, equals to log(mtx +1) if not provided
+# extraDims: do extra dimension reduction on 10, 30, 100  etc
+# subSamples: provided a subsample version
+# vFeatures: given variable features; if NULL using default variable features
+prepInput4Cello <- function(mtx, seurat.obj, norm_mtx = NULL,
+                            cello.name = 'scATAC', assay = 'ATAC', 
+                            resl4clust = 0.6, top.variable = 0.2, 
+                            extraDims = c(10, 20, 30, 50, 80, 100),
+                            subSamples = NULL, subCelloName = 'sub',
+                            vars.to.regOnPca = NULL,
+                            vFeatures = NULL){
+  
+  if(!is.null(vFeatures)) seurat.obj <- ScaleData(seurat.obj, features = vFeatures)
+  if(is.null(vFeatures)) vFeatures = VariableFeatures(seurat.obj)  
+  DefaultAssay(seurat.obj) = assay
+  
+  ndefault = ncol(seurat.obj@reductions$pca@cell.embeddings)
+  
+  seurat.obj <- RunPCA(seurat.obj, npcs = ndefault, verbose = F,
+                       assay = assay, features = vFeatures)
+  
+  if(!is.null(vars.to.regOnPca)) seurat.obj = regress_on_pca(seurat.obj, vars.to.regOnPca)
+  
+  seurat.obj <- RunTSNE(seurat.obj, dims = 1:ndefault, check_duplicates = FALSE,
+                        assay = assay)
+  seurat.obj <- RunUMAP(seurat.obj, dims = 1:ndefault, verbose = F,
+                        assay = assay)
+  my_tsne_proj <- seurat.obj@reductions$tsne@cell.embeddings
+  my_umap_proj <- seurat.obj@reductions$umap@cell.embeddings 
+  
+  
+  
+  if(ndefault < 100){
+    
+    seurat.obj <- RunPCA(seurat.obj, npcs = 100, verbose = F,
+                         assay = assay, features = vFeatures)
+    
+    if(!is.null(vars.to.regOnPca)) seurat.obj = regress_on_pca(seurat.obj, vars.to.regOnPca)
+    
+    seurat.obj <- RunTSNE(seurat.obj, dims = 1:100, check_duplicates = FALSE,
+                          assay = assay)
+    seurat.obj <- RunUMAP(seurat.obj, dims = 1:100, verbose = F,
+                          assay = assay)
+    my_tsne_proj100 <- seurat.obj@reductions$tsne@cell.embeddings
+    my_umap_proj100 <- seurat.obj@reductions$umap@cell.embeddings 
+    
+    
+    
+  }
+  
+  
+  
+  #mtx = mtx[rownames(mtx) %in% rownames(seurat.obj), ]
+  mtx = mtx[, colnames(mtx) %in% colnames(seurat.obj)]
+  
+  meta = seurat.obj@meta.data
+  fmeta <- data.frame(symbol = rownames(mtx)) 
+  rownames(fmeta) <- fmeta$symbol
+  
+  # preparing expression matrix
+  if(is.null(norm_mtx)) norm_mtx = log2(mtx + 1)
+  eset <- new("ExpressionSet",
+              assayData = assayDataNew("environment", 
+                                       exprs = mtx, 
+                                       norm_exprs = norm_mtx),
+              phenoData =  new("AnnotatedDataFrame", data = meta),
+              featureData = new("AnnotatedDataFrame", data = fmeta))
+  
+  # Creating a cello 
+  Cello <- setClass("Cello",
+                    slots = c(
+                      name = "character", # The name of cvis
+                      idx = "numeric", # The index of global cds object
+                      proj = "list", # The projections as a list of data frame
+                      pmeta = "data.frame", # The local meta data
+                      notes = "character" # Other information to display to the user
+                    )
+  )
+  
+  cello1 <- new("Cello", name = cello.name, idx = 1:ncol(mtx)) 
+  
+  my_pca_proj100 <- seurat.obj@reductions$pca@cell.embeddings
+  my_tsne_proj100 <- seurat.obj@reductions$tsne@cell.embeddings
+  my_umap_proj100 <- seurat.obj@reductions$umap@cell.embeddings 
+  
+  cello1@proj <- list("PCA" = my_pca_proj100) 
+  if(is.null(extraDims)) extraDims = unique(c(ndefault, 100))
+  
+  for(dim0 in extraDims){
+    if(dim0 != 100 & dim0 != ndefault){
+      
+      seurat.obj <- RunTSNE(seurat.obj, dims = 1:dim0, check_duplicates = FALSE,
+                            assay = assay)
+      seurat.obj <- RunUMAP(seurat.obj, dims = 1:dim0, verbose = F,
+                            assay = assay)
+      my_tsne_proj0 <- seurat.obj@reductions$tsne@cell.embeddings
+      my_umap_proj0 <- seurat.obj@reductions$umap@cell.embeddings 
+    }
+    
+    if(dim0 == ndefault){
+      my_tsne_proj0 <- my_tsne_proj
+      my_umap_proj0 <- my_umap_proj
+    }
+    
+    if(dim0 == 100 & dim0 != ndefault){
+      my_tsne_proj0 <- my_tsne_proj100
+      my_umap_proj0 <- my_umap_proj100
+    }
+    
+    cello1@proj[[paste0('t-SEN', dim0)]] <- my_tsne_proj0
+    cello1@proj[[paste0('UMAP', dim0)]] <- my_umap_proj0
+    
+  }
+  
+  #cello1@proj = cello1@proj[order(names(cello1@proj))]
+  
+  clist <- list()
+  clist[[cello.name]] <- cello1
+  
+  if(!is.null(subSamples)){
+    ids = which(colnames(seurat.obj) %in% subSamples)
+    cello2 <- new("Cello", name = cello.name, idx = ids) 
+    
+    
+    cello2@proj <- list("PCA" = my_pca_proj[ids, ], 
+                        't-SNE50' = my_tsne_proj50[ids, ],
+                        "UMAP50" = my_umap_proj50[ids, ]) 
+    
+    cello.name.sub = paste0(cello.name, '_', subCelloName)
+    clist[[cello.name.sub]] <- cello2
+  }
+  
+  
+  return(list('eset' = eset, 'clist' = clist))
 }
 

@@ -19,7 +19,7 @@ peaks = peaks[!grepl(V1, pattern = 'Un', ignore.case = T)]
 
 regions = paste0(peaks$V1, ':', peaks$V2, '-', peaks$V3)
 a.sort   <- bedr.sort.region(regions)
-a.merged <- bedr.merge.region(a.sort, distance = 25)
+a.merged <- bedr.merge.region(a.sort, distance = 200)
 
 dd = data.table('peak' = a.merged)
 dd[, 'chr' := unlist(strsplit(peak, ':'))[1], by = peak]

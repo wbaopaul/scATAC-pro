@@ -14,17 +14,21 @@ cluster_method = args[2]
 k = args[3]
 output_dir = args[4]
 genome_name = args[5]
-python_path = args[6]
+tss_path = args[6]
 
 #library(reticulate)
 #use_python(paste0(python_path, '/python'))
 
 mtx = read_mtx_scATACpro(mtx_file)
-#mtx = filterMat(mtx)
 
+tss_ann <- fread(tss_path, header = F)
+names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
+tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
 
+mtx = assignGene2Peak(mtx, tss_ann)
 
-seurat.obj = doBasicSeurat_new(mtx, npc = 50, doLog = T, top.variable = 0.1, reg.var = 'nCount_ATAC')
+seurat.obj = doBasicSeurat_new(mtx, npc = 50, norm_by = 'tf-idf', 
+                               top.variable = 0.1, reg.var = 'nCount_ATAC')
 
 seurat.obj = RunTSNE(seurat.obj, dims = 1:30, reduction = 'pca')
 seurat.obj = RunUMAP(seurat.obj, dims = 1:30, reduction = 'pca', verbose = F)

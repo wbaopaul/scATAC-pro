@@ -18,6 +18,7 @@ bam2=${bams[1]}
 OUTPUT_DIR=${OUTPUT_DIR}/integrated
 mkdir -p $OUTPUT_DIR
 echo "call peaks..."
+unset PYTHONHOME
 unset PYTHONPATH
 peak_dir=${OUTPUT_DIR}/peaks
 mkdir -p $peak_dir
@@ -40,7 +41,8 @@ ${R_PATH}/R --vanilla --args $peak_dir < ${curr_dir}/src/merge_peaks.R
 ## remove peaks overlapped with blacklist
 ${BEDTOOLS_PATH}/bedtools intersect -a ${peak_dir}/merged_peaks.bed -b $BLACKLIST -v \
     > ${peak_dir}/${OUTPUT_PREFIX}_features_BlacklistRemoved.bed 
-find ${peak_dir}/* -not -name "*Blacklist*" | xargs rm
+
+find ${peak_dir}/* -not -name "*Blacklist*" | grep -v narrow | xargs rm
 
 
 echo "Constructing raw peak-by-cell matrix for each sample ..."
@@ -101,6 +103,7 @@ rm tmpJob*
 
 echo "Integrate by Seurat v3 ..."
 mtx_files=${mtx_files/TMP,/}
-${curr_dir}/integrate_seu.sh $mtx_files $2 $3
+#${curr_dir}/integrate_seu.sh $mtx_files $2 $3
 
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_seu.R $mtx_files $CLUSTERING_METHOD $K_CLUSTERS $OUTPUT_DIR $GENOME_NAME $TSS
 

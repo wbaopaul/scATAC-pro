@@ -323,6 +323,7 @@ if [ $wasInstalled == 0 ]; then
     cd ..
     cp -r bedtools2 $PREFIX_BIN/
     export PATH=$PREFIX_BIN/bedtools2/bin:$PATH
+    echo export PATH=$PREFIX_BIN/bedtools2/bin:"$$"PATH >> ~/.bashrc
 
     check=`bedtools | grep -i options`;
     if [ $? = "0" ]; then
@@ -493,6 +494,11 @@ if [ $wasInstalled == 0 ]; then
     echo "trim_galore was not detected!"
     echo "Installing trimgalore as default trimmer ..."
     #From sources
+    cutadapt --version
+    if [ $? != "0" ]; then
+        pip install --user --upgrade cutadapt
+    fi
+
     $get TrimGalore-0.6.3.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.6.3.tar.gz 
     tar -xzvf TrimGalore-0.6.3.tar.gz
     cp -r TrimGalore-0.6.3 $PREFIX_BIN/

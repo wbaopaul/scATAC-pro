@@ -25,14 +25,20 @@ rm $bin_file
 output_dir=${OUTPUT_DIR}/peaks/${PEAK_CALLER}
 mkdir -p $output_dir
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.mtx seurat 0 $output_dir $GENOME_NAME $PYTHON_PATH
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.mtx seurat 0 $output_dir $GENOME_NAME $TSS
+
+
+## remove cluster with less than 100 cells
+
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/rm_minor_cluster.R ${output_dir}/cell_cluster_table.txt 100
 
 ## 3.call peaks per cluster by macs2
 ## split bam into cluster
-${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters.pl --cluster_file ${output_dir}/cell_cluster_table.txt --bam_file $input_bam \
+${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters.pl --cluster_file ${output_dir}/filtered_cell_cluster_table.txt --bam_file $input_bam \
     --output_dir $output_dir --samtools_path $SAMTOOLS_PATH
 
 ## call peaks per cluster
+unset PYTHONHOME
 unset PYTHONPATH
 for input_bam0 in $(find $output_dir -name *.bam); do
     pre=$(basename $input_bam0)
