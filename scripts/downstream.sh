@@ -22,7 +22,9 @@ ${curr_dir}/motif_analysis.sh $input_mtx $2 $3 &
 wait
 seurat_obj=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/seurat_obj.rds
 ## do DA
-${curr_dir}/runDA.sh $seurat_obj $2 $3 &
+if [ "$RUN_DA" = "TRUE" ]; then
+    ${curr_dir}/runDA.sh $seurat_obj $2 $3 &
+fi
 
 SPLIT_BAM2CLUSTER=${SPLIT_BAM2CLUSTER^^}
 ## split bam to cluster

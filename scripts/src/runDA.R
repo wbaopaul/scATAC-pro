@@ -25,7 +25,7 @@ if(group1 == 'all') {
    markers = NULL
    for(cluster0 in cls){
         mm = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = cluster0, ident.2 = group2,
-                test.use = test_use, logfc.threshold = 0.15, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
+                test.use = test_use, logfc.threshold = 0.0, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
 
         mm$cluster = cluster0
         
@@ -36,10 +36,10 @@ if(group1 == 'all') {
 }else{
     if(is.null(group2)){
         markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, 
-                          test.use = test_use, logfc.threshold = 0.15, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
+                          test.use = test_use, logfc.threshold = 0.0, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
         markers$cluster = group1
     }else{
-        markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, test.use = test_use, max.cell.per.ident = 500, logfc.threshold = 0.15, only.pos = F, latent.vars = confVar)
+        markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, test.use = test_use, max.cell.per.ident = 500, logfc.threshold = 0.0, only.pos = F, latent.vars = confVar)
         markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
     }
   
@@ -54,6 +54,7 @@ markers[, 'start' := unlist(strsplit(peak, '-'))[2], by = peak0]
 markers[, 'end' := unlist(strsplit(peak, '-'))[3], by = peak0]
 
 setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2', 'p_val_adj','cluster', 'peak'))
+markers = markers[abs(avg_logFC) > 0.1, ]
 write.table(markers, file = paste0(output_dir, '/differential_peak_cluster_table.txt'), sep = '\t',
             quote = F, row.names = F)
 

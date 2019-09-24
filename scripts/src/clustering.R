@@ -15,6 +15,7 @@ k = args[3]
 output_dir = args[4]
 genome_name = args[5]
 tss_path = args[6]
+norm_by = args[7]
 
 #library(reticulate)
 #use_python(paste0(python_path, '/python'))
@@ -27,7 +28,7 @@ tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
 
 mtx = assignGene2Peak(mtx, tss_ann)
 
-seurat.obj = doBasicSeurat_new(mtx, npc = 50, norm_by = 'tf-idf', 
+seurat.obj = doBasicSeurat_new(mtx, npc = 30, norm_by = norm_by, 
                                top.variable = 0.1, reg.var = 'nCount_ATAC')
 
 seurat.obj = RunTSNE(seurat.obj, dims = 1:30, reduction = 'pca')
@@ -42,7 +43,7 @@ if(cluster_method == 'seurat'){
   ## seurat implemented louvain algorithm
   seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:30, k.param = 20)
   if (toupper(k) == 'NULL' || k == '0'){
-    resl = 0.4
+    resl = 0.2
   }else{
    k = as.integer(k)
     resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 30, k = k,
