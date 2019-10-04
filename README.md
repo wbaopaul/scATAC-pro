@@ -8,12 +8,10 @@ Workflow
 
 scATAC-pro incorporates two main steps, preprocessing and downstream analysis. The preprocessing step takes raw fastq files as input and outputs peak-by-cell count matrix. It consists of demultiplexing, adaptor trimming, mapping, peak calling, cell calling, signal generating and quality controlling modules. The downstream analysis is comprised of dimension reduction, cell clustering, differential accessibility analysis, TF motif enrichment analysis and footprinting analysis. We provide flexible options for most of the modules.
 
-<center>
-<img src="doc/fig1_v2.png"
-     alt="Workflow"
-     style="margin-right: 5px; height: 11cm; width: 11cm" />
-</center>
 
+<p align="center">
+  <img src="doc/fig1_v2.png" width="350" title="">
+</p>
 
 Installation
 ------------
