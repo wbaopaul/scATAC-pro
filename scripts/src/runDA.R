@@ -76,12 +76,12 @@ if(group1 == 'all') {
 
 markers = data.table(markers)
 markers[, 'peak0' := unlist(strsplit(peak, ','))[1], by = peak]
-markers[, 'chr' := unlist(strsplit(peak, '-'))[1], by = peak0]
-markers[, 'start' := unlist(strsplit(peak, '-'))[2], by = peak0]
-markers[, 'end' := unlist(strsplit(peak, '-'))[3], by = peak0]
+markers[, 'chr' := unlist(strsplit(peak0, '-'))[1], by = peak0]
+markers[, 'start' := unlist(strsplit(peak0, '-'))[2], by = peak0]
+markers[, 'end' := unlist(strsplit(peak0, '-'))[3], by = peak0]
 
 setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2', 
-                       'p_val_adj', 'fdr', 'cluster', 'peak'))
+                       'p_val_adj', 'fdr', 'cluster', 'peak', 'peak0'))
 
 #markers = markers[abs(avg_logFC) > 0, ]
 markers = markers[fdr <= 0.05, ]

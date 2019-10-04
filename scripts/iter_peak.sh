@@ -37,13 +37,19 @@ ${R_PATH}/Rscript --vanilla ${curr_dir}/src/rm_minor_cluster.R ${output_dir}/cel
 ${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters.pl --cluster_file ${output_dir}/filtered_cell_cluster_table.txt --bam_file $input_bam \
     --output_dir $output_dir --samtools_path $SAMTOOLS_PATH
 
+
+organism=hs
+if [[ $GENOME_NAME =~ "mm" ]]; then
+    organism=mm
+fi
+
 ## call peaks per cluster
 unset PYTHONHOME
 unset PYTHONPATH
 for input_bam0 in $(find $output_dir -name *.bam); do
     pre=$(basename $input_bam0)
     pre=${pre/.bam/}
-    ${MACS2_PATH}/macs2 callpeak -t $input_bam0 --outdir $output_dir -n $pre -f BAM $MACS2_OPTS &
+    ${MACS2_PATH}/macs2 callpeak -t $input_bam0 --outdir $output_dir -n $pre -f BAM -g $organism $MACS2_OPTS &
 done
 wait
 
