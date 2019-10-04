@@ -35,15 +35,15 @@ BWA_OPTS = -t 16
 
 BOWTIE_OPTS = --quiet -p 16 
 
-BOWTIE2_OPTS=--end-to-end -p 16
+BOWTIE2_OPTS = --end-to-end -p 16
 
-BWA_INDEX=/mnt/isilon/tan_lab/yuw1/local_tools/annotation/hg38_genome/hg38_genome.fa
+BWA_INDEX = hg38_genome/hg38_genome.fa
 
-BOWTIE_INDEX="/mnt/isilon/tan_lab/yuw1/local_tools/bowtie-1.2.2/indexes/GRCh38/GRCh38_no_alt"
+BOWTIE_INDEX = bowtie-1.2.2/indexes/GRCh38/GRCh38_no_alt
 
-BOWTIE2_INDEX="/mnt/isilon/tan_lab/yuw1/local_tools/bowtie2.2.9/indexes/GRCh38/GRCh38"
+BOWTIE2_INDEX = bowtie2.2.9/indexes/GRCh38/GRCh38
 
-MAPQ=30  ## filter bam by MAPQ for downstream analysis 
+MAPQ = 30  ## filter bam by MAPQ for downstream analysis 
 
 
 
@@ -57,16 +57,16 @@ PEAK_CALLER = COMBINED  ## bin geneome + cluster + call_peak_per_cluster
 MACS2_OPTS = -q 0.01  
 
 BIN_RESL = 5000    ## bin resolution in bp
-CHROM_SIZE_FILE = /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/chrom_hg38.sizes
+CHROM_SIZE_FILE = annotation/chrom_hg38.sizes
 
 
 #######################################
 ## annotation files(blacklist, promoters, enhancers, TSS, etc)
 #######################################
-BLACKLIST = /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_blacklist.bed
-PROMOTERS = /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_promoter.bed
-ENHANCERS = /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_enhancer.bed
-TSS = /mnt/isilon/tan_lab/yuw1/scATAC-pro/annotation/hg38_tss.bed
+BLACKLIST = annotation/hg38_blacklist.bed
+PROMOTERS = annotation/hg38_promoter.bed
+ENHANCERS = annotation/hg38_enhancer.bed
+TSS = annotation/hg38_tss.bed
 
 
 

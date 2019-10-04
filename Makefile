@@ -66,6 +66,7 @@ ifneq ($(realpath $(MK_PATH)), $(realpath $(INSTALL_PATH)))
 	@cp -Ri $(MK_PATH) $(INSTALL_PATH)
 endif
 	 @echo export PATH=$(INSTALL_PATH):"$$"PATH >> ~/.bashrc
+	 @bash
 
 	@echo "scATAC-pro installed in $(shell realpath $(INSTALL_PATH)) !"
 

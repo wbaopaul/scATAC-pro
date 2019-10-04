@@ -8,8 +8,11 @@ Workflow
 
 scATAC-pro incorporates two main steps, preprocessing and downstream analysis. The preprocessing step takes raw fastq files as input and outputs peak-by-cell count matrix. It consists of demultiplexing, adaptor trimming, mapping, peak calling, cell calling, signal generating and quality controlling modules. The downstream analysis is comprised of dimension reduction, cell clustering, differential accessibility analysis, TF motif enrichment analysis and footprinting analysis. We provide flexible options for most of the modules.
 
-<img src="/Users/wenbaoyu/fig1_v2.png" width="70%" style="display: block; margin: auto;" />
-
+<center>
+<img src="/Users/wenbaoyu/fig1_v2.png"
+     alt="Workflow"
+     style="margin-right: 5px; height: 15cm; width: 15cm" />
+</center>
 Installation
 ------------
 
@@ -29,13 +32,13 @@ Dependencies
 ### Tools users should install
 
 -   R (&gt;=3.6.0)
+-   Python (&gt;=3.6.0)
 -   bowtie/bowtie2 (if users don't want to use bwa aligner)
 
 ### Tools required
 
 **Will be automatically installed if NOT detected.**
 
--   conda (&gt;=4.7.10)
 -   BWA (&gt;=0.7.17)
 -   MACS2 (&gt;=2.1.1)
 -   samtools (&gt;=1.9)
@@ -46,15 +49,14 @@ Dependencies
 
 ### Tools for additional modules or options
 
+-   RGT (for footprint analysis, will ask whether you want to install it since the installation is done through conda, which takes a while and you may not want to conduct footprint analysis)
 -   Trimmomatic
--   RGT (for footprint analysis)
 -   R packages (DESeq2, cisTopic, RcisTarget, AUCell, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Hsapiens.UCSC.hg19, BSgenome.Mmusculus.UCSC.mm10, BSgenome.Mmusculus.UCSC.mm9, clusterProfiler, VisCello)
 
 Quick start
 -----------
 
 -   **IMPORTANT**: the paramters and options should be specified in a configure file in text format: Copy and edit the configure\_user.txt file in this repository and then in your terminal run:
--   The output will be saved under ./output as default
 
 <!-- -->
 
@@ -72,13 +74,28 @@ Quick start
 <!-- -->
 
     $ scATAC-pro -s process_no_dex 
-                 -i pe1_fastq,pe2_fastq_file
+                 -i pe1_fastq,pe2_fastq
                  -c configure_user.txt 
+
+-   The **output** will be saved under ./output as default
 
 Run scATAC-pro step by step
 ---------------------------
 
--   **IMPORTANT**: you can run the pipeline sequentially. The input of the later step was saved in output of previous step.
+-   **IMPORTANT**: you can run the pipeline sequentially. The input of the later step was saved in output of previous step. The following commands using fastq files downloaded from [PBMC10k 10X Genomics](https://support.10xgenomics.com/single-cell-atac/datasets/1.1.0/atac_v1_pbmc_10k?) as an example:
+
+-   *Combine data from different lanes*
+
+<!-- -->
+
+
+    $ cat atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq
+
+    $ cat atac_pbmc_10k_v1_S1_L001_R3_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R3_001.fastq.gz > pe2_fastq
+
+    $ cat atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq
+
+-   *Run the pipeline sequentially*
 
 <!-- -->
 
