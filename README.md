@@ -11,7 +11,7 @@ scATAC-pro incorporates two main steps, preprocessing and downstream analysis. T
 <center>
 <img src="doc/fig1_v2.png"
      alt="Workflow"
-     style="margin-right: 5px; height: 15cm; width: 15cm" />
+     style="margin-right: 5px; height: 11cm; width: 11cm" />
 </center>
 
 
