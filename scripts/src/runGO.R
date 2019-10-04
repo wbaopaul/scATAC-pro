@@ -10,7 +10,8 @@ source_local('dsAnalysis_utilities.R')
 args = commandArgs(T)
 de_file = args[1]
 output_dir = args[2]
-
+GENOME_NAME = args[3]
+GO_TYPE = args[4]
 
 markers = fread(de_file)
 
@@ -23,7 +24,7 @@ library(clusterProfiler)
 ## genes with tss within DA for each cluster
 
 markers = markers[grepl(peak, pattern = 'Tss')]
-markers[, 'genes' := unlist(strsplit(peak, ','))[-1]]
+markers[, 'genes' := paste(unlist(strsplit(peak, ','))[-1], collapse = ','), by = peak]
 
 ## do go cluster by cluster, genes in other clusters as background
 genesInDA = list()

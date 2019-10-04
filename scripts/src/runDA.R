@@ -17,30 +17,57 @@ test_use = args[5]
 seurat.obj = readRDS(seuratObj_file)
 
 confVar = 'nCount_ATAC'
-if(test_use == 'wilxon' || test_use == 'DESeq2') confVar = NULL
+if(test_use == 'wilcox' || test_use == 'DESeq2') confVar = NULL
 
+mtx = seurat.obj@assays$ATAC@data
+
+if(test_use %in% c('DESeq2', 'negbinom')){
+  mtx = seurat.obj@assays$ATAC@counts
+}
+
+seurat.obj$active_clusters = as.character(seurat.obj$active_clusters)
 if(group2 == 'rest') group2 = NULL
 if(group1 == 'all') {
-   cls = unique(seurat.obj$active_clusters)
+   cls = sort(unique(seurat.obj$active_clusters))
    markers = NULL
    for(cluster0 in cls){
-        mm = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = cluster0, ident.2 = group2,
-                test.use = test_use, logfc.threshold = 0.0, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
+        cells1 = names(which(seurat.obj$active_clusters == cluster0))
+        if(is.null(group2)) {
+          cells2 = names(which(seurat.obj$active_clusters != cluster0))
+        }else{
+          cells2 = names(which(seurat.obj$active_clusters == group2))
+        }
+        if(length(cells1) <= 10 || length(cells2) <= 10) next
+        mm = FindMarkers(mtx, 
+                         cells.1 = cells1, cells.2 = cells2,
+                         test.use = test_use, logfc.threshold = 0.0, 
+                         max.cells.per.ident = 500, 
+                         only.pos = T, latent.vars = confVar)
 
         mm$cluster = cluster0
-        
+        mm$fdr = p.adjust(mm$p_val, method = 'fdr')
         mm$peak = rownames(mm)
         markers = rbind(markers, mm)
 
    }
 }else{
+  cells1 = names(which(seurat.obj$active_clusters == group1))
     if(is.null(group2)){
-        markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, 
-                          test.use = test_use, logfc.threshold = 0.0, max.cell.per.ident = 500, only.pos = T, latent.vars = confVar)
+        cells2 = names(which(seurat.obj$active_clusters != cluster0))
+        markers = FindMarkers(mtx, 
+                              cells.1 = cells1, cells.2 = cells2, test.use = test_use, 
+                              logfc.threshold = 0.0, max.cells.per.ident = 500,
+                              only.pos = T, latent.vars = confVar)
         markers$cluster = group1
+        markers$fdr = p.adjust(markers$p_val, method = 'fdr')
     }else{
-        markers = FindMarkers(seurat.obj, group.by = "active_clusters", ident.1 = group1, ident.2 = group2, test.use = test_use, max.cell.per.ident = 500, logfc.threshold = 0.0, only.pos = F, latent.vars = confVar)
+        cells2 = names(which(seurat.obj$active_clusters == group2))
+        markers = FindMarkers(mtx,  
+                              cells.1 = cells1, cells.2 = cells2, test.use = test_use,
+                              max.cells.per.ident = 500, logfc.threshold = 0.0, 
+                              only.pos = F, latent.vars = confVar)
         markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
+        markers$fdr = p.adjust(markers$p_val, method = 'fdr')
     }
   
   markers$peak = rownames(markers)
@@ -53,8 +80,11 @@ markers[, 'chr' := unlist(strsplit(peak, '-'))[1], by = peak0]
 markers[, 'start' := unlist(strsplit(peak, '-'))[2], by = peak0]
 markers[, 'end' := unlist(strsplit(peak, '-'))[3], by = peak0]
 
-setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2', 'p_val_adj','cluster', 'peak'))
-markers = markers[abs(avg_logFC) > 0.1, ]
+setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2', 
+                       'p_val_adj', 'fdr', 'cluster', 'peak'))
+
+#markers = markers[abs(avg_logFC) > 0, ]
+markers = markers[fdr <= 0.05, ]
 write.table(markers, file = paste0(output_dir, '/differential_peak_cluster_table.txt'), sep = '\t',
             quote = F, row.names = F)
 

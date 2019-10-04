@@ -13,12 +13,13 @@ args = commandArgs(T)
 mtx_file = args[1]
 genome_name = args[2]
 output_dir = args[3]
+norm_by = args[4]
 
 mtx = read_mtx_scATACpro(mtx_file)
 #mtx = filterMat(mtx)
 genomeName = 'BSgenome.Hsapiens.UCSC.hg38'
 if(grepl(genome_name, pattern = '38'))genomeName = 'BSgenome.Hsapiens.UCSC.hg38'
-if(grepl(genome_name, pattern = '19'))genomeName = 'BSgenome.Hsapiens.UCSC.hg19'
+if(grepl(genome_name, pattern = '19') || grepl(genome_name, pattern = '37'))genomeName = 'BSgenome.Hsapiens.UCSC.hg19'
 if(grepl(genome_name, pattern = 'mm9'))genomeName = 'BSgenome.Mmusculus.UCSC.mm9'
 if(grepl(genome_name, pattern = 'mm10'))genomeName = 'BSgenome.Mmusculus.UCSC.mm10'
 
@@ -29,10 +30,12 @@ if(T){
       seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = 'ATAC',
                                   names.delim = '-')
 
-
+      if(norm_by == 'log') seurat.obj@assays$ATAC@data = log1p(seurat.obj@assays$ATAC@counts)
+      if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data = TF.IDF(seurat.obj@assays$ATAC@counts)
+      
       seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                          selection.method = 'vst',
-                                         nfeatures = min(floor(nrow(mtx) * 0.3), 20000))
+                                         nfeatures = floor(nrow(mtx) * 0.3))
       vFeatures = VariableFeatures(seurat.obj)
       rm(seurat.obj)
       rnames = rownames(mtx)

@@ -7,6 +7,7 @@ MK_PATH = $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 
 VNUM = $(shell $(MK_PATH)/scATAC-pro --version | cut -d " " -f 3)
 
+softPATH = $(shell dirname $(shell which scATAC-pro))
 
 INST_SCRIPTS=$(MK_PATH)/scripts
 INST_SOURCES=$(INST_SCRIPTS)/src
@@ -60,9 +61,11 @@ cp:
 	@if [ -d $(INSTALL_PATH) ]; then \
 		rm -rf $(INSTALL_PATH); \
 	fi
+
 ifneq ($(realpath $(MK_PATH)), $(realpath $(INSTALL_PATH)))
 	@cp -Ri $(MK_PATH) $(INSTALL_PATH)
-	@echo export PATH=$(INSTALL_PATH):"$$"PATH >> ~/.bashrc
 endif
+	 @echo export PATH=$(INSTALL_PATH):"$$"PATH >> ~/.bashrc
+
 	@echo "scATAC-pro installed in $(shell realpath $(INSTALL_PATH)) !"
 

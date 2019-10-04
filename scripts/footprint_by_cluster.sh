@@ -19,7 +19,7 @@ output_dir=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/foot
 mkdir -p $output_dir
 
 
-if [ ! -z "$HINT_PATH" || ! -d "$HINT_PATH" ]; then
+if [[ ! -d "$HINT_PATH" ]]; then
     which rgt-hint > /dev/null
     if [ $? = "0" ]; then
         HINT_PATH=$(dirname `which rgt-hint`)

@@ -83,7 +83,7 @@ setkey(enhs, chr, start)
 chrs = unique(frags$chr)
 
 tss[, 'start' := start - 1000]
-tss[, 'end' := end + 100]
+tss[, 'end' := end + 1000]
 fragsInRegion = NULL
 for(chr0 in chrs){
   peaks0 = peaks[chr == chr0]

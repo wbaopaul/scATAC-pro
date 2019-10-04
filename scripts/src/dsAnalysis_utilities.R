@@ -159,7 +159,7 @@ doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2,
  # seurat.obj <- RunLSI(seurat.obj, n = npc,
  #                      features = VariableFeatures(object = seurat.obj))
 
-return(seurat.obj)
+  return(seurat.obj)
 }
 doBasicSeurat_new = cmpfun(doBasicSeurat_new)
 
@@ -190,7 +190,7 @@ assignGene2Peak <- function(mtx, tss_ann){
       tss0 = genes0[tss <= peaks0$end[i] & tss >= peaks0$start[i]]
       if(nrow(tss0) > 0 ) {
         if(peaks0$gene_name[i] %in% tss0$gene_name) peaks0$gene_name[i] <- ''
-        peaks0$tss_name[i] = paste(paste0(tss0$gene_name, '-Tss'), 
+        peaks0$tss_name[i] = paste(paste0(unique(tss0$gene_name), '-Tss'), 
                                                 collapse = ',')
       }
     }
@@ -479,9 +479,11 @@ do_GO <- function(fg_genes, bg_genes, type = "BP", qCutoff = 0.05,
   if(organism =="mmu") {
     orgdb <- "org.Mm.eg.db"
     fromType = "SYMBOL"
+    if(!require("org.Mm.eg.db")) BiocManager::install("org.Mm.eg.db")
     
   } else if(organism == "hsa") {
     orgdb <- "org.Hs.eg.db"
+    if(!require("org.Hs.eg.db")) BiocManager::install("org.Hs.eg.db")
     fromType = "SYMBOL"
     
   }

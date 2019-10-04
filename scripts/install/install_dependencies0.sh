@@ -179,45 +179,6 @@ else
     get="wget --no-check-certificate -O"
 fi
 
-
-
-#conda -- will use conda to handle different python3 and python2
-which conda > /dev/null 2>&1
-if [ $? != "0" ]; then
-    echo -e "$RED""Can not proceed without Conda, I will install it now ...""$NORMAL"
-    echo "Install anaconda:"
-        if [ "$os" = "Darwin" ]; then
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
-        else
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
-        fi
-        bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
-        conda_path=$PREFIX_BIN/anaconda3/condabin
-        export PATH=$conda_path:$PATH
-else
-    conda_path=$(dirname `which conda`)
-    pver=`conda --version 2>&1 | cut -d" " -f2`
-    vercomp $pver "4.7.10"
-    if [[ $? == 2 ]]; then
-        echo -e "$RED""conda v4.7.10 or higher is needed [$pver detected], I will updated it now...""$NORMAL"
-
-        if [ "$os" = "Darwin" ]; then
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
-        else
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
-        fi
-        bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
-        conda_path=$PREFIX_BIN/anaconda3/condabin
-        export PATH=$conda_path:$PATH
-    fi
-fi
-
-if [ $? != "0" ]; then
-    "Cannot install conda, please install it manually!"
-fi
-anaconda_path=$(dirname $conda_path)
-export PATH=$anaconda_path/bin:$PATH
-
 # python
 which python > /dev/null 2>&1
 if [ $? != "0" ]; then
@@ -233,6 +194,9 @@ else
 fi
 
 
+
+
+
 if [ -d ./tmp ]; then
     rm -r ./tmp
 fi
@@ -245,13 +209,19 @@ cd ./tmp
 wasInstalled=0;
 which macs2 > /dev/null 2>&1
 if [ $? != "0" ]; then
-    pip install macs2
+    echo -e  "$RED"" macs2 not detected, trying to install it now ...""$NORMAL"
+    pip install --upgrade -t $PREFIX_BIN pip
+    export PATH=$PREFIX_BIN/bin:$PATH
+    pip install -t $PREFIX_BIN pyBigWig==0.3.12
+    pip install --upgrade -t $PREFIX_BIN macs2
 fi
+    
 MACS2_PATH=$(dirname `which macs2`)
+
 
 macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
 if [ $? != '0' ]; then
-    echo -e  "$RED"" I cannot install macs2, please install it manually! ].""NORMAL"
+    echo -e  "$RED"" I cannot install macs2, please install it manually! ].""$NORMAL"
     exit 
 fi
 
@@ -261,6 +231,82 @@ if [[ $? == 2 ]]; then
     exit 1;
 else
     echo -e "$BLUE""macs2 appears to be installed successfully""$NORMAL"
+fi
+
+##########################
+## RGT
+##########################
+wasInstalled=0;
+which rgt-hint > /dev/null 2>&1
+if [ $? != "0" ]; then
+    echo -e "$RED""rgt not installed, trying to install it through anaconda...""$NORMAL"
+    which conda > /dev/null 2>&1
+    if [ $? != "0" ]; then
+        echo "Install anaconda:"
+            if [ "$os" = "Darwin" ]; then
+                $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+            else
+                $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
+            fi
+            bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
+            conda_path=$PREFIX_BIN/anaconda3/condabin
+            export PATH=$conda_path:$PATH
+    else
+        conda_path=$(dirname `which conda`)
+        pver=`conda --version 2>&1 | cut -d" " -f2`
+        vercomp $pver "4.7.0"
+        if [[ $? == 2 ]]; then
+            echo -e "$RED""conda v4.7.0 or higher is needed [$pver detected], I will updated it now...""$NORMAL"
+
+            if [ "$os" = "Darwin" ]; then
+                $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+            else
+                $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
+            fi
+            bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
+            conda_path=$PREFIX_BIN/anaconda3/condabin
+            export PATH=$conda_path:$PATH
+        fi
+    fi
+
+    which conda > /dev/null 2>&1
+    if [ $? != "0" ]; then
+        "Cannot install conda, please install it manually!"
+    else
+        anaconda_path=$(dirname $conda_path)
+        export PATH=$anaconda_path/bin:$PATH
+        unset PYTHONHOME 
+        unset PYTHONPATH 
+        conda create -y --name py2 python=2.7
+        conda init --all
+        source ~/.bashrc
+        conda activate py2
+        pip install --upgrade pip
+        pip install --upgrade os cython scipy numpy
+        pip install --upgrade RGT 
+    
+        HINT_PATH=$(dirname `which rgt-hint`)
+        if [ $? != '0' ]; then
+            echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually! ].""NORMAL"
+            exit 
+        fi
+        conda deactivate 
+        conda deactivate
+    fi
+else
+        HINT_PATH=$(dirname `which rgt-hint`)
+fi
+
+
+
+##################################################################################
+##check whether hint is installed correctly
+##################################################################################
+wasInstalled=0
+if [[ ! -d $HINT_PATH ]]; then
+  echo -e "$RED""RGT for rgt-hint NOT installed successfully. Please manually install it!"
+else
+    echo -e "$BLUE""rgt-hint appears to be installed successfully""$NORMAL"
 fi
 
 
@@ -371,7 +417,7 @@ if [ $wasInstalled == 0 ]; then
     echo "Installing deeptools ..."
     
     ## from pip
-    pip install deeptools==3.2.1
+    pip install --user --upgrade deeptools
 
     check=`deeptools --version `;
     if [ $? = "0" ]; then
@@ -505,40 +551,6 @@ echo -e "$RED""Dependencies checked !""$NORMAL"
 
 
 
-##########################
-## install RGT
-##########################
-wasInstalled=0;
-which rgt-hint > /dev/null 2>&1
-if [ $? != "0" ]; then
-    echo -e "$RED""rgt not installed, trying to install it through anaconda...""$NORMAL"
-    unset PYTHONHOME 
-    unset PYTHONPATH 
-    conda create -y --name py2 python=2.7
-    conda init --all
-    source ~/.bashrc
-    conda activate py2
-    #pip install --upgrade pip
-    pip install --upgrade HTSeq cython scipy numpy
-    pip install --upgrade RGT 
-    
-    HINT_PATH=$(dirname `which rgt-hint`)
-    if [ $? != '0' ]; then
-        echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually if you want to run footprinting analysis! ""$NORMAL"
-    fi
-    conda deactivate 
-    conda deactivate
-else
-    HINT_PATH=$(dirname `which rgt-hint`)
-fi
-
-
-##check whether hint is installed correctly
-if [[ ! -d $HINT_PATH ]]; then
-  echo -e "$RED""RGT for rgt-hint NOT installed successfully. Please manually install it!"
-else
-    echo -e "$BLUE""rgt-hint appears to be installed successfully""$NORMAL"
-fi
 #############################################################################
 ## Create the configure_system file 
 #############################################################################
@@ -632,21 +644,15 @@ fi
 
 
 echo -e "MACS2_PATH = " $MACS2_PATH >> configure_system.txt
+echo -e "HINT_PATH = " $HINT_PATH >> configure_system.txt
 echo -e "TRIMMOMATIC_PATH = " $TRIMMOMATIC_PATH >> configure_system.txt
 echo -e "GEM_PATH = " $GEM_PATH >> configure_system.txt
-
 
 ## check rights in PREFIX folder
 
 if [ ! -w $install_dir ]; then
     die "Cannot install scATAC-pro in $install_dir directory. Maybe missing super-user (root) permissions to write there. Please specify another directory using 'make configure prefix=YOUR_INSTALL_PATH' ";
 fi 
-
-
-echo -e "HINT_PATH = " $HINT_PATH >> configure_system.txt
-
-
-
 
 echo -e "$RED""All Done: run 'make install' now!""$NORMAL" ;
 

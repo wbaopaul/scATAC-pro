@@ -50,7 +50,7 @@ library(viridis)
 
 ```
 
-<span style="font-size:20px;"> Mapping QC </span>
+<span style="font-size:20px;"> General QC </span>
 ==========================================
 
 Column {data-width=400}
@@ -172,7 +172,7 @@ qc_sele_df = data.table(frac = c(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$fr
 qc_sele_df$type = factor(qc_sele_df$type, levels = c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'))
 
 p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fraction') +
-  geom_boxplot(outlier.size = 0.01) +  theme(legend.position = 'none', axis.text = element_text(size = 15), axis.title.x = element_blank(), axis.title.y = element_text(size = 15)) + xlab('') + theme_bw() 
+  geom_boxplot(outlier.size = 0.01, show.legend = FALSE) +  theme(legend.position = 'none', axis.text = element_text(size = 17), axis.title.x = element_blank(), axis.title.y = element_text(size = 17)) + xlab('') + theme_bw() 
 p0
 
 if(plotEPS){
@@ -226,7 +226,7 @@ p <- ggplot(data = bc_stat, aes(x = total_frags, fill = group)) +
   geom_density() + scale_x_continuous(trans = 'log10') + theme_bw() +
   theme(legend.position=c(.1, .9)) +  theme(legend.title=element_blank(),
                                             axis.title = element_text(size = 15),
-                                            axis.text = element_text(size = 15)) + xlab('Total #fragments') + ylab('Density')
+                                            axis.text = element_text(size = 15)) + xlab('Total #unique fragments') + ylab('Density')
 p
 #ggplotly(p)
 
@@ -253,7 +253,7 @@ g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], aes(x = total_frags,
                                                 legend.text = element_text(size=15),
                                                 legend.background = NULL,
                                                 axis.text = element_text(size = 15),
-                                                axis.title = element_text(size = 15)) + xlab('Total #fragments') + ylab('Fraction in Peak')
+                                                axis.title = element_text(size = 15)) + xlab('Total #unique fragments') + ylab('Fraction in Peak')
 
 #ggplotly(g)
 g
@@ -361,13 +361,13 @@ do_DA <- function(mtx_score, clusters, test = 'wilcox',
     mu2 = sapply(1:length(features), function(x) mean(mtx2[x, ]))
     
    
-    pvs = sapply(1:length(features), function(x) wilcox.test(mtx1[x, ], mtx2[x, ])$p.value )
+    pvs = sapply(1:length(features), function(x) wilcox.test(mtx1[x, ], mtx2[x, ], alternative = 'greater')$p.value )
     pvs.adj = p.adjust(pvs, method = 'fdr')
     res0 = data.table('feature' = features, 'cluster' = cluster0,
                       'mean1' = mu1, 'mean2' = mu2,
                        'pv' = pvs, 'pv_adjust' = pvs.adj)
     
-    if(only.pos) res0 = res0[mean1 > 0]
+    #if(only.pos) res0 = res0[mean1 > 0]
     
     res0 = res0[order(pv_adjust), ]
     res0 = res0[pv_adjust <= fdr]
@@ -409,7 +409,7 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
   rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
   
-  metaData$active_clusters = as.character(metaData$active_clusters)  
+  metaData$active_clusters = as.character(metaData$active_clusters)
   metaData = data.table(metaData, keep.rownames = T)
   setkey(metaData, active_clusters)
   
@@ -419,11 +419,13 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   
   sele.zscores = sele.zscores[!duplicated(sele.zscores), ]
   
-  ann_col = data.table('cluster' = metaData$active_clusters)
+  ann_col = data.frame('cluster' = metaData$active_clusters)
   rownames(ann_col) = metaData$rn
   
-  sele.zscores[sele.zscores > 10] = 8
-  sele.zscores[sele.zscores < -10] = -8
+  up_cut = quantile(sele.zscores, 0.95)
+  low_cut = quantile(sele.zscores, 0.05)
+  sele.zscores[sele.zscores > up_cut] = up_cut
+  sele.zscores[sele.zscores < low_cut] = low_cut
   
   cluster = brewer.pal(n=length(unique(metaData$active_clusters)), name = 'Paired')
   names(cluster) = sort(unique(metaData$active_clusters))
@@ -432,9 +434,11 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   # resample to reduce memory used
   set.seed(2019)
   rids = sort(sample(1:ncol(sele.zscores), floor(ncol(sele.zscores)/6)))
-  ann_col0 = ann_col[rids, ]
+  ann_col0 = data.frame(ann_col[rids, ])
   rownames(ann_col0) = colnames(sele.zscores)[rids]
-  ph <- pheatmap::pheatmap(sele.zscores[, rids], cluster_cols = F,
+  mtx0 = sele.zscores[, rids]
+  names(ann_col0) = 'cluster'
+  ph <- pheatmap::pheatmap(mtx0, cluster_cols = F,
                      cluster_rows = T, show_colnames = F, fontsize = 13,
                      annotation_col = ann_col0, color = viridis(100),
                      annotation_colors = ann_colors, fontsize_row = 9)

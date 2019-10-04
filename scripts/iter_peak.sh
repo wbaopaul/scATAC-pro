@@ -16,7 +16,7 @@ mtx_bin_dir=${mtx_dir}/${PEAK_CALLER}
 mkdir -p $mtx_bin_dir
 bin_file=${mtx_bin_dir}/${OUTPUT_PREFIX}_bin.bed
 ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > $bin_file
-${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.bed $bin_file ${mtx_bin_dir} 5000 50 < ${curr_dir}/src/get_mtx.R
+${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.bed $bin_file ${mtx_bin_dir} 2000 50 < ${curr_dir}/src/get_mtx.R
 rm $bin_file
 
 
@@ -25,7 +25,7 @@ rm $bin_file
 output_dir=${OUTPUT_DIR}/peaks/${PEAK_CALLER}
 mkdir -p $output_dir
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.mtx seurat 0 $output_dir $GENOME_NAME $TSS
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.mtx seurat 0 $output_dir $GENOME_NAME $TSS $norm_by
 
 
 ## remove cluster with less than 100 cells

@@ -15,8 +15,8 @@ bams=(${input_bam//,/ })
 bam1=${bams[0]}
 bam2=${bams[1]}
 
-OUTPUT_DIR=${OUTPUT_DIR}/integrated
-mkdir -p $OUTPUT_DIR
+#OUTPUT_DIR=${OUTPUT_DIR}/integrated
+#mkdir -p $OUTPUT_DIR
 echo "call peaks..."
 unset PYTHONHOME
 unset PYTHONPATH
