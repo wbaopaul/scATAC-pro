@@ -311,6 +311,7 @@ if [ $wasInstalled == 0 ]; then
     check=`bedtools | grep -i options`;
     if [ $? = "0" ]; then
         echo -e "$BLUE""bedtools appears to be installed successfully""$NORMAL"
+        BEDTOOLS_PATH=`dirname $(which bedtools)`
         echo -e export PATH=$PREFIX_BIN/bedtools2/bin:"\$"PATH >> ~/.bashrc
     else
         echo -e "$RED""bedtools NOT installed successfully""$NORMAL"; exit 1;
@@ -341,7 +342,8 @@ if [ $wasInstalled == 0 ]; then
     echo "Installing deeptools ..."
     
     ## from pip
-    pip install --user --upgrade deeptools
+    pip install --upgrade -t $PREFIX_BIN deeptools
+    export PATH=$PREFIX_BIN/bin:$PATH
 
     check=`deeptools --version `;
     if [ $? = "0" ]; then
@@ -598,15 +600,17 @@ which deeptools > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo "DEEPTOOLS_PATH = "`dirname $(which deeptools)` >> configure_system.txt
 else
-    die "DEEPTOOLS_PATH not found. Exit." 
+    echo "DEEPTOOLS_PATH not found" 
 fi
 
 
 which bedtools > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo "BEDTOOLS_PATH = "`dirname $(which bedtools)` >> configure_system.txt
+elif [[ -d $BEDTOOLS_PATH ]]
+    echo -e "BEDTOOLS_PATH = " $BEDTOOLS_PATH >> configure_system.txt
 else
-    die "BEDTOOLS_PATH not found. Exit." 
+    echo "BEDTOOLS_PATH not found." 
 fi
 
 
@@ -642,7 +646,6 @@ if [ $? = "0" ]; then
 fi
 
 
-echo -e "MACS2_PATH = " $MACS2_PATH >> configure_system.txt
 echo -e "HINT_PATH = " $HINT_PATH >> configure_system.txt
 echo -e "TRIMMOMATIC_PATH = " $TRIMMOMATIC_PATH >> configure_system.txt
 echo -e "GEM_PATH = " $GEM_PATH >> configure_system.txt
