@@ -519,7 +519,7 @@ if [ $? != "0" ]; then
             source ~/.bashrc
             conda activate py2
             pip install --upgrade pip
-            pip install --upgrade cython scipy numpy
+            pip install --upgrade os cython scipy numpy
             pip install --upgrade RGT 
         
             HINT_PATH=$(dirname `which rgt-hint`)

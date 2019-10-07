@@ -152,9 +152,9 @@ if [ $? != "0" ]; then
     exit 1;
 else
     pver=`R --version 2>&1 | head -1 | cut -d" " -f3`
-    vercomp $pver "3.6.0"
+    vercomp $pver "3.5.3"
     if [[ $? == 2 ]]; then
-    echo -e "$RED""R v3.6.0 or higher is needed [$pver detected].""$NORMAL"
+    echo -e "$RED""R v3.5.3 or higher is needed [$pver detected].""$NORMAL"
     exit 1;
     fi
 fi
@@ -519,7 +519,7 @@ if [ $? != "0" ]; then
             source ~/.bashrc
             conda activate py2
             pip install --upgrade pip
-            pip install --upgrade cython scipy numpy
+            pip install --upgrade os cython scipy numpy
             pip install --upgrade RGT 
         
             HINT_PATH=$(dirname `which rgt-hint`)

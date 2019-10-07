@@ -24,7 +24,7 @@ function help {
     echo "OPTIONS"
     echo
     echo "   [-s|--step ANALYSIS_STEP] : run a analytic step (or combinatorial steps) of the $SOFT workflow, supportting steps:"
-    echo "      dex_fastq: perform demultiplexing
+    echo "      demplx_fastq: perform demultiplexing
                            input: fastq files for both reads and index, separated by comma like:
                                   fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...;
                            output: demultiplexed fastq1 and fastq2 files "

@@ -33,7 +33,6 @@ Dependencies
 
 -   R (&gt;=3.6.0)
 -   Python (&gt;=3.6.0)
--   bowtie/bowtie2 (if users don't want to use bwa aligner)
 
 ### Tools required
 
@@ -51,6 +50,7 @@ Dependencies
 
 -   RGT (for footprint analysis, will ask whether you want to install it since the installation is done through conda, which takes a while and you may not want to conduct footprint analysis)
 -   Trimmomatic
+-   bowtie/bowtie2 (user install them if don't want to use bwa)
 -   R packages (DESeq2, cisTopic, RcisTarget, AUCell, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Hsapiens.UCSC.hg19, BSgenome.Mmusculus.UCSC.mm10, BSgenome.Mmusculus.UCSC.mm9, clusterProfiler, VisCello)
 
 Quick start
@@ -182,7 +182,7 @@ Detailed Usage
     OPTIONS
 
        [-s|--step ANALYSIS_STEP] : run a analytic step (or combinatorial steps) of the scATAC-pro workflow, supportting steps:
-          dex_fastq: perform demultiplexing
+          demplx_fastq: perform demultiplexing
                                input: fastq files for both reads and index, separated by comma like:
                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...;
                                output: demultiplexed fastq1 and fastq2 files 
