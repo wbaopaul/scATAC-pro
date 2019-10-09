@@ -263,6 +263,16 @@ integrate_seu: config_check
 	@echo 
 
 #######################################
+## call_cnv
+#######################################
+call_cnv: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Calling CNV ..." 
+	@$(SCRIPTS)/call_cvn.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## report
 #######################################
 report: config_check

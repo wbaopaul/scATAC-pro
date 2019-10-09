@@ -14,7 +14,7 @@ for(pk in pks){
     }
 }
 
-bioc.pks = c('RColorBrewer','pheatmap','motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'DESeq2')
+bioc.pks = c('RColorBrewer','pheatmap','motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'DESeq2', 'edgeR', 'matrixStats')
 
 for(pk in bioc.pks){
     if(!require(pk, character.only = T)) {  

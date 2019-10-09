@@ -76,8 +76,7 @@ echo "overlap with motif annotation ... "
 ${HINT_PATH}/rgt-motifanalysis matching --organism=${GENOME_NAME} --input-files ${output_dir}/${cluster1}.bed ${output_dir}/${cluster2}.bed --output-location $output_dir
 
 echo "Differential binding analysis ..."
-${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc 4 --mpbs-file1=${output_dir}/${cluster1}_mpbs.bed \
-    --mpbs-file2=${output_dir}/${cluster2}_mpbs.bed --reads-file1=$bam1 --reads-file2=$bam2 --condition1=$cluster1 --condition2=$cluster2 --output-location=${output_dir}/${cluster1}_${cluster2}
+${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc 4 --mpbs-files=${output_dir}/${cluster1}_mpbs.bed,${output_dir}/${cluster2}_mpbs.bed --reads-files=$bam1,$bam2 --conditions=$cluster1,$cluster2 --output-location=${output_dir}/${cluster1}_${cluster2}
 
 if [ -d "$TMP0" ]; then
     rm -r TMP0

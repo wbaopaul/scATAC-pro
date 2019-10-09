@@ -465,7 +465,7 @@ Column
 
 ```{r, out.width='\\textwidth'}
 comp_cls = paste0('cluster_', cluster1_fp, '_cluster_', cluster2_fp)
-footprint_stats.file = paste0(down.dir, '/data_by_cluster/footprint/', comp_cls, '/', comp_cls, '_statistics.txt')
+footprint_stats.file = paste0(down.dir, '/data_by_cluster/footprint/', comp_cls, '/differential_statistics.txt')
 if(file.exists(footprint_stats.file)){
   library(ggrepel)
   library(gridExtra)

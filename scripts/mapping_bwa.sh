@@ -19,17 +19,25 @@ if [[ -z "$BWA_PATH" || ! -d "$BWA_PATH" ]];then
     exit
 fi
 
-## index
-
-#echo "Indexing genome ... "
-#${BWA_PATH}/bwa index $BWA_INDEX
 
 echo "Starting alignment ... "
 if [[ -z "$BWA_INDEX" || ! -f "$BWA_INDEX" ]];then
-    echo "$BWA_INDEX not found: please check you bwa index file path"
+    echo "Fasta file not found: please specifie the .fa file path in the user configure file"
     exit
 fi
+
+BWA_INDEX_PATH=$(dirname ${BWA_INDEX})
+BWA_FA=$(basename ${BWA_INDEX})
+BWA_AMB=$BWA_INDEX_PATH/${BWA_FA}.amb
+
+if [[ ! -z "$BWA_AMB" ]];then
+    echo "No index file detected: I will conduct bwa index, it will takes a few hours..."
+    echo "Indexing genome ... "
+    ${BWA_PATH}/bwa index $BWA_INDEX
+fi
+
 ${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
+
 
 echo "BWA Mapping Done!"
 
