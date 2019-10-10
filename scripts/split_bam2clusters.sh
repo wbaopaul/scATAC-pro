@@ -38,8 +38,8 @@ do
     ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max --normalizeUsing BPM \
          --outFileFormat bedgraph --bam $file0 --binSize 100 --skipNonCoveredRegions \
          --outFileName $fname_bedgraph &
+    wait
 done
-wait
 
 ## move signal to output/signal
 mv ${output_dir}/*bw ${OUTPUT_DIR}/signal/

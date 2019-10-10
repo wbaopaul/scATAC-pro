@@ -169,7 +169,7 @@ Run scATAC-pro step by step
                  -i bam_file1,bam_file2,(bam_file3...)
                  -c configure_user.txt
                 
-- After clustering, user can interactively visualization the cis-element chromatin accessibility using [VisCello](https://github.com/qinzhu/VisCello), in R/RStudio:
+- After clustering, user can interactively visualize the cis-element chromatin accessibility using [VisCello](https://github.com/qinzhu/VisCello), in R:
 
 ```
 library(VisCello)

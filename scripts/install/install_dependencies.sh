@@ -607,7 +607,7 @@ fi
 which bedtools > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo "BEDTOOLS_PATH = "`dirname $(which bedtools)` >> configure_system.txt
-elif [[ -d $BEDTOOLS_PATH ]]
+elif [[ -d $BEDTOOLS_PATH ]]; then
     echo -e "BEDTOOLS_PATH = " $BEDTOOLS_PATH >> configure_system.txt
 else
     echo "BEDTOOLS_PATH not found." 
