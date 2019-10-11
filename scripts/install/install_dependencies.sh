@@ -342,8 +342,9 @@ if [ $wasInstalled == 0 ]; then
     echo "Installing deeptools ..."
     
     ## from pip
-    pip install --upgrade -t $PREFIX_BIN deeptools
+    pip install --upgrade -t $PREFIX_BIN numpy scipy py2bit pyBigWig pysam matplotlib
     export PATH=$PREFIX_BIN/bin:$PATH
+    pip install --upgrade -t $PREFIX_BIN deeptools
 
     check=`deeptools --version `;
     if [ $? = "0" ]; then

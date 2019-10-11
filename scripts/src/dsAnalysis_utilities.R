@@ -774,7 +774,7 @@ prepInput4Cello <- function(mtx, seurat.obj, norm_mtx = NULL,
   ndefault = ncol(seurat.obj@reductions$pca@cell.embeddings)
   
   seurat.obj <- RunPCA(seurat.obj, npcs = ndefault, verbose = F,
-                       assay = assay, features = vFeatures)
+                       assay = assay, seed.use = 10, features = vFeatures)
   
   if(!is.null(vars.to.regOnPca)) seurat.obj = regress_on_pca(seurat.obj, vars.to.regOnPca)
   
