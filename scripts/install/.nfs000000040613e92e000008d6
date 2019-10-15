@@ -210,13 +210,11 @@ wasInstalled=0;
 which macs2 > /dev/null 2>&1
 if [ $? != "0" ]; then
     echo -e  "$RED"" macs2 not detected, trying to install it now ...""$NORMAL"
-    #pip install --upgrade -t $PREFIX_BIN pip
+    pip install --upgrade -t $PREFIX_BIN pip
     #pip install --upgrade --user pip
-    #export PATH=$PREFIX_BIN/bin:$PATH
-    #pip install -t $PREFIX_BIN pyBigWig==0.3.12
-    #pip install --upgrade -t $PREFIX_BIN macs2
-    pip install --upgrade --user macs2
-    export PATH=~/.local/bin:$PATH
+    export PATH=$PREFIX_BIN/bin:$PATH
+    pip install -t $PREFIX_BIN pyBigWig==0.3.12
+    pip install --upgrade -t $PREFIX_BIN macs2
 fi
     
 MACS2_PATH=$(dirname `which macs2`)
@@ -345,18 +343,17 @@ if [ $wasInstalled == 0 ]; then
     echo "Installing deeptools ..."
     
     ## from pip
-    pip install --upgrade --user numpy scipy py2bit pyBigWig pysam matplotlib
+    pip install --upgrade -t $PREFIX_BIN numpy scipy py2bit pyBigWig pysam matplotlib
+    export PATH=$PREFIX_BIN/bin:$PATH
     #pip install --upgrade -t $PREFIX_BIN deeptools
-    pip install --upgrade --user deeptools
 
-    export PATH=~/.local/bin:$PATH
     ## from souce code
-    #get deeptools.tar.gz https://github.com/deeptools/deepTools/archive/3.3.1.tar.gz
-    #tar -xzvf deeptools.tar.gz
-    #cd deepTools-3.3.1
-    #python setup.py install --prefix $PREFIX_BIN
-    #export PATH=$PREFIX_BIN:$PATH
-    #cd ..
+    get deeptools.tar.gz https://github.com/deeptools/deepTools/archive/3.3.1.tar.gz
+    tar -xzvf deeptools.tar.gz
+    cd deeptools
+    python setup.py install --prefix $PREFIX_BIN/deeptools3.3.1
+    export PATH=$PREFIX_BIN/deeptools3.3.1:$PATH
+    cd ..
 
     check=`deeptools --version `;
     if [ $? = "0" ]; then
