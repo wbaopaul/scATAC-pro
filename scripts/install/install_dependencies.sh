@@ -194,7 +194,7 @@ else
 fi
 
 
-
+PYTHON_PATH=$(dirname `which python`)
 
 
 if [ -d ./tmp ]; then
@@ -215,8 +215,12 @@ if [ $? != "0" ]; then
     #export PATH=$PREFIX_BIN/bin:$PATH
     #pip install -t $PREFIX_BIN pyBigWig==0.3.12
     #pip install --upgrade -t $PREFIX_BIN macs2
-    pip install --upgrade --user macs2
-    export PATH=~/.local/bin:$PATH
+    if [[ $PYTHON_PATH =~ "anaconda" ]];then
+        conda install macs2 -y --channel bioconda
+    else
+        pip install --upgrade --user macs2
+        export PATH=~/.local/bin:$PATH
+    fi
 fi
     
 MACS2_PATH=$(dirname `which macs2`)
@@ -343,13 +347,16 @@ fi
 
 if [ $wasInstalled == 0 ]; then
     echo "Installing deeptools ..."
-    
-    ## from pip
-    pip install --upgrade --user numpy scipy py2bit pyBigWig pysam matplotlib
+    if [[ $PYTHON_PATH =~ "anaconda" ]];then
+        conda install deeptools -y --channel bioconda
+    else
+        pip install --upgrade --user numpy scipy py2bit pyBigWig pysam matplotlib
+        pip install --upgrade --user deeptools
+        export PATH=~/.local/bin:$PATH
+    fi
+ 
     #pip install --upgrade -t $PREFIX_BIN deeptools
-    pip install --upgrade --user deeptools
 
-    export PATH=~/.local/bin:$PATH
     ## from souce code
     #get deeptools.tar.gz https://github.com/deeptools/deepTools/archive/3.3.1.tar.gz
     #tar -xzvf deeptools.tar.gz
