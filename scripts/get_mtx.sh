@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### will search fragments.bed under output_dir/summary
+### will search fragments.txt under output_dir/summary
 set -e
 feature_file=$1  ## peak file
 
@@ -20,7 +20,7 @@ echo "Getting peak by barcode matrix..."
     # this R script will output sorted fragments as well
     mtx_peak_dir=${mat_dir}/${PEAK_CALLER}
     mkdir -p ${mtx_peak_dir}
-    ${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.bed $feature_file ${mtx_peak_dir} 5 5 < ${curr_dir}/src/get_mtx.R 
+    ${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt $feature_file ${mtx_peak_dir} 5 5 < ${curr_dir}/src/get_mtx.R 
 
 
 echo "Get Matrix Done!"

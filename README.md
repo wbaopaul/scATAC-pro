@@ -123,11 +123,11 @@ Run scATAC-pro step by step
                  -c configure.txt 
                  
     $ scATAC-pro -s get_mtx 
-                 -i output/summary/pbmc10k.fragments.bed 
+                 -i output/summary/pbmc10k.fragments.txt 
                  -c configure.txt 
 
     $ scATAC-pro -s qc_per_barcode 
-                 -i output/summary/pbmc10k.fragments.bed 
+                 -i output/summary/pbmc10k.fragments.txt 
                  -c configure.txt
 
     $ scATAC-pro -s call_cell

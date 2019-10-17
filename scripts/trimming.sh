@@ -21,7 +21,7 @@ ncore=$(nproc --all)
 ncore=$(($nproc - 1))
 
 
-if [[ "$isSingleEnd" = "TRUE" ]] then;
+if [[ "$isSingleEnd" = "TRUE" ]]; then
     prefix0=$(basename ${fastqs[0]})
     if [ "$TRIM_METHOD" = 'Trimmomatic' ]; then
         echo "Using Trimmomatic ..."  

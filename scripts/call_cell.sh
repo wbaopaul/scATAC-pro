@@ -13,7 +13,7 @@ ABS_PATH=`cd "$OUTPUT_DIR"; pwd`
 
 bc_stat_file=${ABS_PATH}/summary/${OUTPUT_PREFIX}.qc_per_barcode.txt
 mapping_qc_file=${ABS_PATH}/summary/${OUTPUT_PREFIX}.MappingStats
-fragments_file=${ABS_PATH}/summary/${OUTPUT_PREFIX}.fragments.bed
+fragments_file=${ABS_PATH}/summary/${OUTPUT_PREFIX}.fragments.txt
 output_dir=${ABS_PATH}/filtered_matrix
 
 curr_dir=`dirname $0`

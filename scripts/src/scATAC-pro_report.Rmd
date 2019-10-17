@@ -105,7 +105,7 @@ barcodes = fread(selected_bcs, header = F)$V1
 qc_sele = bc_stat[bc %in% barcodes, ]
 qc_nonsele = bc_stat[!bc %in% barcodes, ]
 
-fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.bed')
+fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt')
 frags = fread(fragments_file)
 names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
 

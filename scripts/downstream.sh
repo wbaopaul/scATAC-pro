@@ -11,7 +11,7 @@ read_conf $2
 read_conf $3
 
 
-frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.bed
+frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt
 
 ## clustering
 ${curr_dir}/clustering.sh $input_mtx $2 $3 &

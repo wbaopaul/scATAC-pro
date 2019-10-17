@@ -37,7 +37,7 @@ if [[ ! -z "$BWA_AMB" ]];then
 fi
 
 
-if [[ "$isSingleEnd" = "TRUE" ]] then;
+if [[ "$isSingleEnd" = "TRUE" ]]; then
     ${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
 else
     ${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam

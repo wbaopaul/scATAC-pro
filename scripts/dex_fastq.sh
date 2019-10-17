@@ -22,7 +22,7 @@ kk=$(( $nfile ))
 curr_dir=`dirname $0`
 
 isSingleEnd=${isSingleEnd^^}
-if [[ "$isSingleEnd" = "TRUE" ]] then;
+if [[ "$isSingleEnd" = "TRUE" ]]; then
     
     if [[ $kk < 2 ]];then
       echo -e "Erro: Provide at least two fastq files: one for read the other for index (barcode) " >&2

@@ -37,7 +37,7 @@ else
     mat_file=${OUTPUT_DIR}/raw_matrix/peak_mat/${outfile_prefix}.peak.barcode.mtx
 fi
 
-frag_file=${OUTPUT_DIR}/raw_matrix/fragments.bed
+frag_file=${OUTPUT_DIR}/raw_matrix/fragments.txt
 
 if [ "$CELL_CALLER" != "filtering" ]; then
     ## 7.qc per barcode
