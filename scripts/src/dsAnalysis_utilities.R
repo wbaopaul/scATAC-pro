@@ -626,7 +626,7 @@ do_DA <- function(mtx_score, clusters, test = 'wilcox',
                       'mean1' = mu1, 'mean2' = mu2,
                        'pv' = pvs, 'pv_adjust' = pvs.adj)
     
-    if(only.pos) res0 = res0[mean1 > 0]
+    if(only.pos) res0 = res0[mean1 > mean2]
     
     res0 = res0[order(pv_adjust), ]
     res0 = res0[pv_adjust <= fdr]

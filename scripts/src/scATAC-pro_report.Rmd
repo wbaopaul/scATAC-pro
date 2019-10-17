@@ -367,7 +367,6 @@ do_DA <- function(mtx_score, clusters, test = 'wilcox',
                       'mean1' = mu1, 'mean2' = mu2,
                        'pv' = pvs, 'pv_adjust' = pvs.adj)
     
-    #if(only.pos) res0 = res0[mean1 > 0]
     
     res0 = res0[order(pv_adjust), ]
     res0 = res0[pv_adjust <= fdr]
@@ -393,7 +392,8 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   ## calculate DA
   da.res = do_DA(chromVar.obj@assays$data$deviations, 
                  clusters = data.table('barcode' = rownames(metaData),
-                                       'cluster' = metaData$active_clusters))
+                                       'cluster' = metaData$active_clusters),
+                 topn = 10)
   write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
   
   

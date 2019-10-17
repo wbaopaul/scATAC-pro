@@ -7,11 +7,11 @@
 
 
 #####################################
-## output dir and prefix ##
+## output prefix ##
 #####################################
 
 OUTPUT_PREFIX = pbmc10k     ## prefix for ouput file name
-
+isSingleEnd = FALSE         ## scTHS-seq uses single end sequencing
 
 #####################################
 ## Adapter trimming ##

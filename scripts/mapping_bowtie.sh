@@ -14,8 +14,11 @@ mapRes_dir="${OUTPUT_DIR}/mapping_result"
 
 
 echo "Starting bowtie alignment ... "
-${BOWTIE_PATH}/bowtie -1 ${fastqs[0]} -2 ${fastqs[1]} $BOWTIE_INDEX -S $BOWTIE_OPTS > ${mapRes_dir}/${OUTPUT_PREFIX}.sam 
-
+if [[ "$isSingleEnd" = "TRUE" ]] then;
+    ${BOWTIE_PATH}/bowtie -U ${fastqs[0]} $BOWTIE_INDEX -S $BOWTIE_OPTS > ${mapRes_dir}/${OUTPUT_PREFIX}.sam 
+else
+    ${BOWTIE_PATH}/bowtie -1 ${fastqs[0]} -2 ${fastqs[1]} $BOWTIE_INDEX -S $BOWTIE_OPTS > ${mapRes_dir}/${OUTPUT_PREFIX}.sam 
+fi
 echo "Bowtie Mapping Done!"
 
 

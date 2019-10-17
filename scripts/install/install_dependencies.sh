@@ -338,7 +338,7 @@ if [ $? = "0" ]; then
     vercomp $dver "3.2.1"
     if [[ $? == 2 ]]; then
         echo -e "$RED""deeptools v3.2.1 or higher is needed [$dver detected].""$NORMAL"
-        echo -e "$RED""I will try to install v3.2.1 now ...""$NORMAL"
+        echo -e "$RED""I will try to install it now ...""$NORMAL"
     else
         echo -e "$BLUE""deeptools appears to be already installed. ""$NORMAL"
         wasInstalled=1;
@@ -369,7 +369,10 @@ if [ $wasInstalled == 0 ]; then
     if [ $? = "0" ]; then
         echo -e "$BLUE""deeptools apyypears to be installed successfully""$NORMAL"
         DEEPTOOLS_PATH=`dirname $(which deeptools)`
-        echo -e export PATH=$DEEPTOOLS_PATH:"\$"PATH >> ~/.bashrc
+        if [[ $PYTHON_PATH != *"anaconda"* ]];then
+            echo -e export PATH=$DEEPTOOLS_PATH:"\$"PATH >> ~/.bashrc
+        fi
+
     else
         echo -e "$RED""deeptools NOT installed successfully""$NORMAL"; exit 1;
     fi
@@ -431,7 +434,11 @@ if [ $wasInstalled == 0 ]; then
     #From sources
     cutadapt --version
     if [ $? != "0" ]; then
-        pip install --user --upgrade cutadapt
+        if [[ $PYTHON_PATH =~ "anaconda" ]];then
+            conda install cutadapt -y --channel bioconda
+        else
+            pip install --user --upgrade cutadapt
+        fi
     fi
 
     $get TrimGalore-0.6.3.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.6.3.tar.gz 

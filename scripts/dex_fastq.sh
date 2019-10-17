@@ -19,43 +19,72 @@ mkdir -p $output_dir
 fastqs=(${input_fastqs//,/ }) ## suppose the first two fastqs is the read file, the others are index fastq files
 nfile=${#fastqs[@]}
 kk=$(( $nfile ))
-
-if [[ $kk < 3 ]];then
-  echo -e "Erro: Provide at least three fastq files: with the first two as read fastqs, the others as index fastq files" >&2
-  exit
-fi
-
-
-
 curr_dir=`dirname $0`
 
-## the first barcode was add to the read name after @, and : was used to concatenate to the original name
-dex_prefix1=$(basename ${fastqs[0]})
-dex_prefix2=$(basename ${fastqs[1]})
+isSingleEnd=${isSingleEnd^^}
+if [[ "$isSingleEnd" = "TRUE" ]] then;
+    
+    if [[ $kk < 2 ]];then
+      echo -e "Erro: Provide at least two fastq files: one for read the other for index (barcode) " >&2
+      exit
+    fi
+    ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
+    dex_prefix1=$(basename ${fastqs[0]})
 
 
-if [ -f ${output_dir}/demplxed_${dex_prefix1} ]; then
-    echo "I will exit because demultiplexed fastq file exists: delete it to redo it if necessary!"
-    exit
+    if [ -f ${output_dir}/demplxed_${dex_prefix1} ]; then
+        echo "I will exit because demultiplexed fastq file exists: delete it to redo it if necessary!"
+        exit
+    fi
+
+    ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[1]} 
+
+
+    ## for extra round of barcodes, add them to the read name after @, concatenate the original name by _
+    if [[ $kk>2 ]];then
+        for (( i==2; i<=$kk; i++ ))
+        do
+            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} 
+            mv ${output_dir}/demplxed_${dex_prefix1}_$i ${output_dir}/demplxed_${dex_prefix1}
+        done
+    fi
+else
+    if [[ $kk < 3 ]];then
+      echo -e "Erro: Provide at least three fastq files: the first two for paired-end reads the other for index (barcode) " >&2
+      exit
+    fi
+    
+    ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
+    dex_prefix1=$(basename ${fastqs[0]})
+    dex_prefix2=$(basename ${fastqs[1]})
+
+
+    if [ -f ${output_dir}/demplxed_${dex_prefix1} ]; then
+        echo "I will exit because demultiplexed fastq file exists: delete it to redo it if necessary!"
+        exit
+    fi
+
+    ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[2]} &
+
+    ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[1]} ${output_dir}/demplxed_${dex_prefix2}  ${fastqs[2]} &
+    wait
+
+    ## for the round of barcodes, add them to the read name after @, concatenate the original name by _
+    if [[ $kk>3 ]];then
+        for (( i==3; i<=$kk; i++ ))
+        do
+            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} &
+            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} &
+            wait
+            mv ${output_dir}/demplxed_${dex_prefix1}_$i ${output_dir}/demplxed_${dex_prefix1}
+            mv ${output_dir}/demplxed_${dex_prefix2}_$i ${output_dir}/demplxed_${dex_prefix2}
+        done
+    fi
+
+
+
 fi
-
-${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[2]} &
-
-${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[1]} ${output_dir}/demplxed_${dex_prefix2}  ${fastqs[2]} &
-wait
-
-## for the round of barcodes, add them to the read name after @, concatenate the original name by _
-if [[ $kk>3 ]];then
-	for (( i==3; i<=$kk; i++ ))
-	do
-        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} &
-        ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} &
-        wait
-        mv ${output_dir}/demplxed_${dex_prefix1}_$i ${output_dir}/demplxed_${dex_prefix1}
-        mv ${output_dir}/demplxed_${dex_prefix2}_$i ${output_dir}/demplxed_${dex_prefix2}
-	done
-fi
-
 
 
 echo "Demultiplexing Done!"
+

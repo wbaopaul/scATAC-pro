@@ -11,7 +11,7 @@ curr_dir=`dirname $0`
 source ${curr_dir}/read_conf.sh
 read_conf "$2"
 read_conf "$3"
-
+isSingleEnd=${isSingleEnd^^}
 mapRes_dir="${OUTPUT_DIR}/mapping_result"
 
 if [[ -z "$BWA_PATH" || ! -d "$BWA_PATH" ]];then
@@ -36,8 +36,12 @@ if [[ ! -z "$BWA_AMB" ]];then
     ${BWA_PATH}/bwa index $BWA_INDEX
 fi
 
-${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
 
+if [[ "$isSingleEnd" = "TRUE" ]] then;
+    ${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
+else
+    ${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
+fi
 
 echo "BWA Mapping Done!"
 
