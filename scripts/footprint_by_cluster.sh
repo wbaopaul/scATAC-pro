@@ -41,11 +41,11 @@ cl1=${cluster1/cluster_/}
 cl2=${cluster2/cluster_/}
 
 
-input_peak=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/differential_peak_cluster_table.txt
+input_peak=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/differential_peak_cluster_${cl1}_VS_cluster_${cl2}.txt
 if [ ! -e "$input_peak" ]; then
     echo "do DA..."
     mkdir -p TMP0
-    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seurat_obj TMP0 all others LR 
+    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seurat_obj TMP0 $cl1 $cl2 wilcox 
     echo "DA done succefully!"
 #    echo 'library(data.table); dd = fread("TMP0/differential_peak_cluster_table.txt");
 #                dd[, "chr" := unlist(strsplit(peak, "-"))[1], by = peak];
@@ -57,7 +57,7 @@ if [ ! -e "$input_peak" ]; then
 #                            quote = F, sep = "\t") 
 #    ' > TMP0/tmp.R
 #    ${R_PATH}/R --vanilla < TMP0/tmp.R
-    input_peak=TMP0/differential_peak_cluster_table.txt
+    input_peak=TMP0/differential_peak_cluster_${cl1}_VS_cluster_${cl2}.txt
 fi
 
 

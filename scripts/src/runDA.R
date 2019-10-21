@@ -16,6 +16,11 @@ test_use = args[5]
 
 seurat.obj = readRDS(seuratObj_file)
 
+seurat.obj$active_clusters = as.character(seurat.obj$active_clusters)
+
+group1 = tolower(group1)
+group2 = tolower(group2)
+
 confVar = 'nCount_ATAC'
 if(test_use == 'wilcox' || test_use == 'DESeq2') confVar = NULL
 
@@ -25,14 +30,31 @@ if(test_use %in% c('DESeq2', 'negbinom')){
   mtx = seurat.obj@assays$ATAC@counts
 }
 
-seurat.obj$active_clusters = as.character(seurat.obj$active_clusters)
-if(group2 == 'rest') group2 = NULL
+## features that are only expressed less than 15% in any of the cluster
+cls = unique(seurat.obj$active_clusters)
+mean_frac_cls = sapply(cls, function(x){
+    dat0 = mtx[, seurat.obj$active_clusters == x]
+    Matrix::rowMeans(dat0 > 0)
+})
+
+sele.features = rownames(mean_frac_cls)[rowSums(mean_frac_cls > 0.15) > 1]
+
+
+## select variable features
+#seurat.obj <- FindVariableFeatures(object = seurat.obj,
+#                                         selection.method = 'vst',
+#                                         nfeatures = floor(nrow(mtx) * 0.5))
+#vFeatures = VariableFeatures(seurat.obj)
+rnames = rownames(mtx)
+mtx = mtx[rnames %in% sele.features, ]
+
+
 if(group1 == 'all') {
    cls = sort(unique(seurat.obj$active_clusters))
    markers = NULL
    for(cluster0 in cls){
         cells1 = names(which(seurat.obj$active_clusters == cluster0))
-        if(is.null(group2)) {
+        if(group2 == 'rest') {
           cells2 = names(which(seurat.obj$active_clusters != cluster0))
         }else{
           cells2 = names(which(seurat.obj$active_clusters == group2))
@@ -52,7 +74,7 @@ if(group1 == 'all') {
    }
 }else{
   cells1 = names(which(seurat.obj$active_clusters == group1))
-    if(is.null(group2)){
+    if(group2 == 'rest'){
         cells2 = names(which(seurat.obj$active_clusters != cluster0))
         markers = FindMarkers(mtx, 
                               cells.1 = cells1, cells.2 = cells2, test.use = test_use, 
@@ -85,6 +107,6 @@ setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2
 
 #markers = markers[abs(avg_logFC) > 0, ]
 markers = markers[fdr <= 0.05, ]
-write.table(markers, file = paste0(output_dir, '/differential_peak_cluster_table.txt'), sep = '\t',
+write.table(markers, file = paste0(output_dir, '/differential_peak_cluster_', group1, '_VS_cluster_', group2, '.txt'), sep = '\t',
             quote = F, row.names = F)
 

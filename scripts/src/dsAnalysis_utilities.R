@@ -12,7 +12,7 @@ library(readr)
 library(matrixStats)
 library(GenomicRanges)
 library(edgeR)
-
+library(cicero)
 
 ## do reverse complemente of a DNA sequence
 rev.comp <- function(x, rev=TRUE){
@@ -217,6 +217,60 @@ assignGene2Peak <- function(mtx, tss_ann){
   
   return(mtx)
   
+  
+}
+
+
+
+# assign gene to nearest peak and mark a gene if its tss within the peak
+# input peak_coords with chr-start-end, format
+assignGene2Peak_coords <- function(peak_coords, tss_ann){
+  tss_ann[, 'tss' := start]
+  peaks = tidyr::separate(data.table(x = peak_coords),
+                          col = x,
+                          into = c('chr', 'start', 'end'))
+  
+  
+  peaks$peak_name = peak_coords
+  class(peaks$start) = 'integer'
+  class(peaks$end) = 'integer'
+  
+  geneTssInPeak <- function(tss_ids, genes0){
+    if(!is.na(tss))
+      rr = genes0[tss <= end & tss >= start]$gene_name
+    return(paste(rr, collapse = ','))
+  }
+  
+  chrs = unique(peaks$chr)
+  peaks_ann = NULL
+  for(chr0 in chrs){
+    peaks0 = peaks[chr == chr0]
+    genes0 = tss_ann[chr == chr0]
+    peaks0[, 'id' := which.min(abs(genes0$tss - start/2 - end/2)), by = 'peak_name']
+    peaks0[, 'gene_name' := genes0[id, gene_name]]
+    peaks0$tss_name = ''
+    for(i in 1:nrow(peaks0)){
+      tss0 = genes0[tss <= peaks0$end[i] & tss >= peaks0$start[i]]
+      if(nrow(tss0) > 0 ) {
+        if(peaks0$gene_name[i] %in% tss0$gene_name) peaks0$gene_name[i] <- ''
+        peaks0$tss_name[i] = paste(paste0(unique(tss0$gene_name), '-Tss'), 
+                                   collapse = ',')
+      }
+    }
+    
+    peaks_ann = rbind(peaks_ann, peaks0)
+  }
+  peaks_ann[, 'id':= NULL]
+  
+  peaks_ann[, 'peak_new_name' := ifelse(!is.na(gene_name) & nchar(gene_name) > 1, 
+                                        paste0(peak_name, ',', gene_name), peak_name)]
+  
+  
+  peaks_ann[, 'peak_new_name' := ifelse(!is.na(tss_name) & nchar(tss_name) > 1, 
+                                        paste0(peak_new_name, ',', tss_name), peak_new_name)]
+  setkey(peaks_ann, peak_name)
+  
+  return(peaks_ann[peak_coords, ]$peak_new_name)
   
 }
 
@@ -890,4 +944,124 @@ prepInput4Cello <- function(mtx, seurat.obj, norm_mtx = NULL,
   
   return(list('eset' = eset, 'clist' = clist))
 }
+
+
+# do cicero given a Seurat object, output gene activity score
+doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
+                            gene_ann, npc = 30, coaccess_thr = 0.25){
+  ## gene_ann: the first four columns: chr, start, end, gene name
+  set.seed(2019)
+  
+  mtx = GetAssayData(seurat.obj, slot = 'counts')
+  # change rownames using _ to delimited
+  rnames = rownames(mtx)
+  new.rnames = sapply(rnames, function(x) unlist(strsplit(x, ','))[1])
+  new.rnames = sapply(new.rnames, function(x) gsub('-', '_', x))
+  rownames(mtx) <- new.rnames
+  
+  dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  rm(mtx)
+  dt = dt[dt$count > 0, ]
+  names(dt) = c('Peak', 'Cell', 'Count')
+  dt$Cell = as.character(dt$Cell)
+  dt$Peak = as.character(dt$Peak)
+  
+  input_cds <- make_atac_cds(dt, binarize = T)
+  rm(dt)
+  input_cds <- detectGenes(input_cds)
+  input_cds <- estimateSizeFactors(input_cds)
+  
+  if(reduction == 'tsne') {
+    if(is.null(seurat.obj@reductions$tsne))
+      seurat.obj <- RunTSNE(seurat.obj, dims = 1:npc)
+    redu.coords = seurat.obj@reductions$tsne@cell.embeddings
+  }
+  if(reduction == 'umap') {
+    if(is.null(seurat.obj@reductions$umap))
+      seurat.object <- RunUMAP(seurat.object, dims = 1:npc)
+    redu.coords = seurat.obj@reductions$umap@cell.embeddings
+  }
+  
+  #make the cell id consistet
+  
+  cicero_cds <- make_cicero_cds(input_cds, reduced_coordinates = redu.coords)
+  
+  ## get connections
+  
+  conns <- run_cicero(cicero_cds, chr_sizes)
+  
+  ## get cicero gene activity score
+  names(gene_ann)[4] <- "gene"
+  
+  input_cds <- annotate_cds_by_site(input_cds, gene_ann)
+  
+  # generate unnormalized gene activity matrix
+  unnorm_ga <- build_gene_activity_matrix(input_cds, conns)
+  
+  # make a list of num_genes_expressed
+  num_genes <- pData(input_cds)$num_genes_expressed
+  names(num_genes) <- row.names(pData(input_cds))
+  
+  # normalize
+  cicero_gene_activities <- normalize_gene_activities(unnorm_ga, num_genes)
+  
+  # if you had two datasets to normalize, you would pass both:
+  # num_genes should then include all cells from both sets
+  #unnorm_ga2 <- unnorm_ga
+  #cicero_gene_activities <- normalize_gene_activities(list(unnorm_ga, unnorm_ga2), num_genes)
+  conns = data.table(conns)
+  conns = conns[coaccess > coaccess_thr, ]
+  res = list('conns' = conns, 'ga_score' = cicero_gene_activities)
+  
+}
+
+
+# do cicero given a Seurat object, just return the connection 
+doCicero_conn <- function(seurat.obj, reduction = 'tsne', 
+                          chr_sizes, npc = 30, coaccess_thr = 0.25){
+  ## gene_ann: the first four columns: chr, start, end, gene name
+  set.seed(2019)
+  
+  mtx = GetAssayData(seurat.obj, slot = 'counts')
+  # change rownames using _ to delimited
+  rnames = rownames(mtx)
+  new.rnames = sapply(rnames, function(x) unlist(strsplit(x, ','))[1])
+  new.rnames = sapply(new.rnames, function(x) gsub('-', '_', x))
+  rownames(mtx) <- new.rnames
+  
+  dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  rm(mtx)
+  dt = dt[dt$count > 0, ]
+  names(dt) = c('Peak', 'Cell', 'Count')
+  dt$Cell = as.character(dt$Cell)
+  dt$Peak = as.character(dt$Peak)
+  input_cds <- make_atac_cds(dt, binarize = T)
+  rm(dt)
+  input_cds <- detectGenes(input_cds)
+  input_cds <- estimateSizeFactors(input_cds)
+  
+  if(reduction == 'tsne') {
+    if(is.null(seurat.obj@reductions$tsne))
+      seurat.obj <- RunTSNE(seurat.obj, dims = 1:npc)
+    redu.coords = seurat.obj@reductions$tsne@cell.embeddings
+  }
+  if(reduction == 'umap') {
+    if(is.null(seurat.obj@reductions$umap))
+      seurat.object <- RunUMAP(seurat.object, dims = 1:npc)
+    redu.coords = seurat.obj@reductions$umap@cell.embeddings
+  }
+  
+  #make the cell id consistet
+  
+  cicero_cds <- make_cicero_cds(input_cds, reduced_coordinates = redu.coords)
+  
+  ## get connections
+  
+  conns <- run_cicero(cicero_cds, chr_sizes)
+  conns = data.table(conns)
+  conns = conns[coaccess > coaccess_thr, ]
+  return(conns)
+}
+
+
 

@@ -30,7 +30,7 @@ BWA_INDEX_PATH=$(dirname ${BWA_INDEX})
 BWA_FA=$(basename ${BWA_INDEX})
 BWA_AMB=$BWA_INDEX_PATH/${BWA_FA}.amb
 
-if [[ ! -z "$BWA_AMB" ]];then
+if [[ -z "$BWA_AMB" ]];then
     echo "No index file detected: I will conduct bwa index, it will takes a few hours..."
     echo "Indexing genome ... "
     ${BWA_PATH}/bwa index $BWA_INDEX

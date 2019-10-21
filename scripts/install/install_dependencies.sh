@@ -158,7 +158,7 @@ else
     exit 1;
     fi
 fi
-
+R_PATH=$(dirname `which R`)
 
 # perl
 which perl > /dev/null 2>&1
@@ -602,19 +602,9 @@ echo "#######################################################################" >
 echo "INSTALL_PREFIX = "${install_dir} >> configure_system.txt
 
 
-which python > /dev/null 2>&1
-if [ $? = "0" ]; then
-    echo "PYTHON_PATH = "`dirname $(which python)` >> configure_system.txt
-else
-    die "PYTHON_PATH not found. Exit."
-fi
 
-which R > /dev/null 2>&1
-if [ $? = "0" ]; then
-    echo "R_PATH = "`dirname $(which R)` >> configure_system.txt
-else
-    die "R_PATH not found. Exit." 
-fi
+echo "PYTHON_PATH = " $PYTHON_PATH >> configure_system.txt
+echo "R_PATH = " $R_PATH >> configure_system.txt
 
 which samtools > /dev/null 2>&1
 if [ $? = "0" ]; then

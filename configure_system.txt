@@ -7,8 +7,8 @@
 ## using the 'which' command
 #######################################################################
 INSTALL_PREFIX = /mnt/isilon/tan_lab/yuw1/local_tools/bin
-PYTHON_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
-R_PATH = /cm/shared/apps_chop/R/3.6.0/lib64/R/bin
+PYTHON_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
+R_PATH =  /cm/shared/apps_chop/R/3.6.0/lib64/R/bin
 SAMTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/samtools-1.9
 DEEPTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 BEDTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bedtools2/bin
@@ -18,6 +18,6 @@ BOWTIE_PATH = /home/yuw1/.local/bin/bowtie-1.2.2
 MACS2_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/bin
 PERL_PATH = /usr/bin
 TRIM_GALORE_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/TrimGalore-0.6.3
-HINT_PATH = 
+HINT_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/envs/py2/bin
 TRIMMOMATIC_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/Trimmomatic-0.39
 GEM_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/gem

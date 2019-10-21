@@ -35,6 +35,15 @@ fi
 
 wait
 
+## go analysis
+if [ "$RUN_GO" = "TRUE" ]; then
+    ${curr_dir}/runGO.sh ${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/differential_peak_cluster_${group1}_VS_cluster_${group2}.txt $2 $3 &
+fi
+
+if [ "$RUN_Cicero" = "TRUE" ]; then
+    ${curr_dir}/runCicero.sh $seurat_obj $2 $3 &
+fi
+
 ## footprinting analysis
 DO_FOOTPRINT=${DO_FOOTPRINT^^}
 if [ "$DO_FOOTPRINT" = "TRUE" ]; then
@@ -42,6 +51,7 @@ if [ "$DO_FOOTPRINT" = "TRUE" ]; then
     bam2=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster2_fp}.bam
     ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam2} $2 $3 
 fi
+
 
 ${curr_dir}/report.sh ${OUTPUT_DIR}/summary $2 $3
 

@@ -15,6 +15,7 @@ GO_TYPE = args[4]
 
 markers = fread(de_file)
 
+de_basename = basename(de_file)
 
 ## do GO analysis ####
 if(!require('clusterProfiler')){
@@ -40,15 +41,15 @@ for(cl0 in cls){
 }
 
 goByCl = list()
-go_out_file = paste0(output_dir, '/enrichedGO_by_cluster.xlsx')
+go_out_file = paste0(output_dir, '/enrichedGO_', de_basename, '.xlsx')
 
 organism = ifelse(grepl(GENOME_NAME, pattern = 'mm'), 'mmu', 'hsa')
 for(cl0 in cls){
-markers0 = markers[cluster == cl0]$genes
-genes0 = lapply(markers0, function(x) unlist(strsplit(x, ',')))
-goByCl[[paste0('cluster', cl0)]] = do_GO(genesInDA[[paste0('cluster', cl0)]],
+    markers0 = markers[cluster == cl0]$genes
+    genes0 = lapply(markers0, function(x) unlist(strsplit(x, ',')))
+    goByCl[[paste0('cluster', cl0)]] = do_GO(genesInDA[[paste0('cluster', cl0)]],
                                         bg_genes = unique(do.call('c', genesInDA)),
-                                        type = GO_TYPE, qCutoff = 0.05, organism = organism)
+                                        type = GO_TYPE, qCutoff = 0.1, organism = organism)
 
 
 }

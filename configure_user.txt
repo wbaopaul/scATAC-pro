@@ -99,9 +99,9 @@ prepCello = TRUE  ## generate object for VisCello (for visualization)
 #######################################
 # compare two cluster, for example (as default): every single cluster vs the other
 RUN_DA = TRUE  ## run differential analysis or not
-cluster1 = all    ## can be a cluster name (0, 1, 2,...) or 'all' 
+cluster1 = all    ## can be a cluster name (0, 1, 2,...), or 'all' 
 cluster2 = rest  ## can be cluster name or 'rest'
-test_use = wilcox  ## one of negbinom,LR,wilcox,t,DESeq2
+test_use = wilcox  ## one of negbinom, LR, wilcox, t, DESeq2
 
 
 #######################################

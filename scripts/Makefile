@@ -273,6 +273,16 @@ call_cnv: config_check
 	@echo 
 
 #######################################
+## run_cicero
+#######################################
+runCicero: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Run cicero ..." 
+	@$(SCRIPTS)/runCicero.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## report
 #######################################
 report: config_check
