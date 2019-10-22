@@ -223,9 +223,19 @@ Detailed Usage
           motif_analysis: doing motif analysis
                                input: filtered peak by cell matrix file path
                                output: TF by cell matrix indicating TF accessibility (chromVAR object)
+          runDA: doing differential accessibility analysis
+                           input: seurat_obj.rds path from clustering analysis
+                           output: differential peaks in txt format saved at the same directory as seurat_obj.rds
+          runGO: doing GO analysis
+                           input: result of runDA module (.txt file)
+                           output: enriched GO terms in .xlsx saved at the same directory as the input file
+          runCicero: run cicero for calculating gene activity score and predicting interactions
+                           input: seurat_obj.rds path from clustering analysis
+                           output: gene activity in .rds format and predicted interactions in .txt format
+
           split_bam: split bam file into different clusters
                                input: barcodes with cluster label (.txt file, outputed from clustering)
-                               output: .bam (saved under downstream/CELL_CALLER/data_by_cluster), .bw, .bedgr                                                            aph (save under output/signal/) file for each cluster
+                               output: .bam (saved under downstream/CELL_CALLER/data_by_cluster), .bw, .bedgraph (save under output/signal/) file for each cluster
           footprint: doing footprinting analysis
                                input: bam files of two clusters, separated by comma like, bam1,bam2
                                output: footprint summary statistics (saved under output/downstream/CELL_CALLE                                                            R/footprinting/)
