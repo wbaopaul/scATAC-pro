@@ -75,12 +75,12 @@ if(group1 == 'all') {
 }else{
   cells1 = names(which(seurat.obj$active_clusters == group1))
     if(group2 == 'rest'){
-        cells2 = names(which(seurat.obj$active_clusters != cluster0))
+        cells2 = names(which(seurat.obj$active_clusters != group1))
         markers = FindMarkers(mtx, 
                               cells.1 = cells1, cells.2 = cells2, test.use = test_use, 
                               logfc.threshold = 0.0, max.cells.per.ident = 500,
-                              only.pos = T, latent.vars = confVar)
-        markers$cluster = group1
+                              only.pos = F, latent.vars = confVar)
+        markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
         markers$fdr = p.adjust(markers$p_val, method = 'fdr')
     }else{
         cells2 = names(which(seurat.obj$active_clusters == group2))

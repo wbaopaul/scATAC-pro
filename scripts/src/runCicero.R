@@ -31,6 +31,7 @@ saveRDS(ga_score, file = paste0(output_dir, '/cicero_gene_activity.rds'))
 
 #conns$Peak1 = assignGene2Peak_coords(conns$Peak1, tss_ann)
 #conns$Peak2 = assignGene2Peak_coords(conns$Peak2, tss_ann)
-write.table(conns, file = paste0(output_dir, '/cicero_interactions.txt'))
+write.table(conns, file = paste0(output_dir, '/cicero_interactions.txt'), row.names = F,
+            sep = '\t', quote = F)
 
 

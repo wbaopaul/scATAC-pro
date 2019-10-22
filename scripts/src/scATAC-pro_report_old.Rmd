@@ -45,7 +45,7 @@ library(magrittr)
 library(kableExtra)
 library(RColorBrewer)
 library(ggplot2)
-library(cicero)
+#library(plotly)
 library(viridis)
 
 ```
@@ -149,9 +149,7 @@ tss.escore = tss.escore[14:213]
 df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
 
 p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1]) +
-  xlab('Distance to TSS (bp)') + ylab('TSS enrichment score') + theme(legend.title=element_blank(),
-      axis.text = element_text(size = 15), 
-      axis.title = element_text(size = 15)) + theme_bw()
+  xlab('Distance to TSS') + ylab('TSS enrichment score(bp)') + theme(legend.title=element_blank(), axis.text = element_text(size = 15), axis.title = element_text(size = 15)) + theme_bw()
 
 p0
 
@@ -173,12 +171,8 @@ qc_sele_df = data.table(frac = c(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$fr
 
 qc_sele_df$type = factor(qc_sele_df$type, levels = c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'))
 
-p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fraction') + theme_bw() +
-  geom_boxplot(outlier.size = 0.01, show.legend = FALSE) +  
-  theme(legend.position = 'none', 
-        axis.text = element_text(size = 15), 
-        axis.title.x = element_blank(), 
-        axis.title.y = element_text(size = 15)) + xlab('') 
+p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fraction') +
+  geom_boxplot(outlier.size = 0.01, show.legend = FALSE) +  theme(legend.position = 'none', axis.text = element_text(size = 17), axis.title.x = element_blank(), axis.title.y = element_text(size = 17)) + xlab('') + theme_bw() 
 p0
 
 if(plotEPS){
@@ -222,7 +216,7 @@ Row
 -------------------------------------------------------------------
 
 
-### Distribution of number of unique fragments
+### Distribution of fragments
 
 ```{r}
 
@@ -230,21 +224,9 @@ bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
 
 p <- ggplot(data = bc_stat, aes(x = total_frags, fill = group)) + 
   geom_density() + scale_x_continuous(trans = 'log10') + theme_bw() +
-  theme(legend.position='none', legend.title=element_blank(),
-        axis.title = element_text(size = 15),
-        axis.text = element_text(size = 15)) + 
-  xlab('Total #unique fragments') + ylab('Density') 
-
-#bb = ggplot_build(p)
-#cols = unique(bb$data[[1]][['fill']])
-
-text1 <- grobTree(textGrob("Cell", x=0.8,  y=0.93, hjust=0,
-  gp=gpar(col='#F8766D', fontsize=15)))
-text2 <- grobTree(textGrob("Non-cell", x=0.8,  y=0.83, hjust=0,
-  gp=gpar(col='#00BFC4', fontsize=15)))
-
-p <- p + annotation_custom(text1) + annotation_custom(text2)
-
+  theme(legend.position=c(.1, .9)) +  theme(legend.title=element_blank(),
+                                            axis.title = element_text(size = 15),
+                                            axis.text = element_text(size = 15)) + xlab('Total #unique fragments') + ylab('Density')
 p
 #ggplotly(p)
 
@@ -265,27 +247,15 @@ if(plotEPS){
 ```{r}
 
 library(ggplot2)
-library(grid)
-g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], 
-            aes(x = total_frags, y = frac_peak, col = group)) + 
-  geom_point(size = 0.5) + scale_x_continuous(trans='log10') + theme_bw() +
-      theme(legend.position = 'none', 
-            legend.title=element_blank(),
-            legend.text = element_text(size=15),
-            axis.text = element_text(size = 15),
-            axis.title = element_text(size = 15)) +
-  xlab('Total #unique fragments') + ylab('Fraction in Peak')
+library(plotly)
+g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], aes(x = total_frags, y = frac_peak, col = group)) + geom_point(size = 0.5) + scale_x_continuous(trans='log10') + theme_bw() +
+      theme(legend.position=c(.9, .9)) +  theme(legend.title=element_blank(),
+                                                legend.text = element_text(size=15),
+                                                legend.background = NULL,
+                                                axis.text = element_text(size = 15),
+                                                axis.title = element_text(size = 15)) + xlab('Total #unique fragments') + ylab('Fraction in Peak')
 
-#bb = ggplot_build(g)
-#cols = unique(bb[[1]][[1]]$colour)
-
-text1 <- grobTree(textGrob("Cell", x=0.8,  y=0.93, hjust=0,
-  gp=gpar(col='#F8766D', fontsize=15)))
-text2 <- grobTree(textGrob("Non-cell", x=0.8,  y=0.83, hjust=0,
-  gp=gpar(col='#00BFC4', fontsize=15)))
-
-
-g <- g + annotation_custom(text1) + annotation_custom(text2)
+#ggplotly(g)
 g
 
 if(plotEPS){
@@ -303,11 +273,7 @@ frags[, 'isize' := end - start]
 frags = frags[sample(1:nrow(frags), 1000000), ]
 
 p1 <- ggplot(data = frags[isize < 800], aes(x = isize)) +
-  geom_density(fill = 'lightblue') + xlab('Insert size') + ylab('Density') + theme_bw() +  theme(legend.title=element_blank(), 
-                    legend.text = element_text(size=15), 
-                    legend.background = NULL, 
-                    axis.text = element_text(size = 15), 
-                    axis.title = element_text(size = 15)) 
+  geom_density(fill = 'lightblue') + xlab('Insert size') + ylab('Density') +  theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15)) + theme_bw()
 
 p1
 
@@ -353,22 +319,16 @@ if(file.exists(seurat_file)){
 ```
 
 
-### Go Analysis
+### Total reads per cell
 ```{r}
-go_file = paste0(down.dir, '/enrichedGO_differential_peak_cluster_', group1, 
-                  '_VS_cluster_', group2, '.txt.rds')
-if(file.exists(go_file)){
-    library(clusterProfiler)
-    go_list = readRDS(go_file)
-    ego = go_list[[paste0('cluster', group1)]]
-    p_go <- dotplot(ego, showCategory=20) + ggtitle(paste0("Enriched GO terms for cluster", group1))
-    p_go
-    
-  if(plotEPS){
-    pfname = paste0(params$output_dir, '/summary/Figures/enriched_GO.eps')
-    ggsave(p_go, file = pfname, device = 'eps', width = 10, height = 6)
-  }
-    
+if(file.exists(seurat_file)){
+    ss$log10_nCount = log10(ss$nCount_ATAC)
+    #fg <- FeaturePlot(ss, features = 'log10_nCount', reduction = 'umap') + ggtitle('') +
+    #   scale_fill_viridis()
+
+    dat = data.table('logN' = ss$log10_nCount, 'UMAP_1' = ss@reductions$umap@cell.embeddings[, 1], 'UMAP_2' = ss@reductions$umap@cell.embeddings[, 2])
+ggplot(data = dat, aes(x = UMAP_1, y = UMAP_2, colour = logN)) + geom_point(size = 1.1) + theme_bw() +
+  scale_colour_viridis() + theme(legend.title=element_blank(), axis.title = element_text(size = 15), axis.text = element_text(size = 15), legend.text = element_text(size = 17))
 }
 
 ```
@@ -533,7 +493,7 @@ if(file.exists(footprint_stats.file)){
          axis.title = element_text(size = 15), 
          axis.text.x = element_blank(), legend.title = element_blank(),
          legend.direction = 'horizontal', plot.title = element_text(size = 15,
-         face = 'bold'), panel.background = element_rect(fill = "white"))  + geom_text_repel(force = 10) + 
+         face = 'bold'), panel.background = element_rect(fill = "white")) + + geom_text_repel(force = 10) + 
    theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') +
    scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40')) 
  
@@ -553,42 +513,43 @@ p
 ```
 
 
-### Predicted Interactions at CD14 locus
+### An example 
 ```{r, out.width='\\textwidth'}
-cicero_conn.file = paste0(down.dir, '/cicero_interactions.txt')
-if(file.exists(cicero_conn.file)){
- conns = fread(cicero_conn.file)
- conns = data.frame(conns)
- temp <- tempfile()
- download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz', temp)
- gene_anno <- rtracklayer::readGFF(temp)
- unlink(temp)
+if(file.exists(footprint_stats.file)){
  
- # rename some columns to match requirements
- gene_anno$chromosome <- paste0("chr", gene_anno$seqid)
- gene_anno$gene <- gene_anno$gene_id
- gene_anno$transcript <- gene_anno$transcript_id
- gene_anno$symbol <- gene_anno$gene_name
- gene_anno = subset(gene_anno, select = c(chromosome, start, end, strand, 
-                                          transcript, gene, symbol))
- gene_anno = gene_anno[complete.cases(gene_anno), ]
- plot_connections(conns, "chr5", 140600000, 140650000,
-                 gene_model = gene_anno, 
-                 coaccess_cutoff = .65, 
-                 connection_width = 1, 
-                 collapseTranscripts = "longest",
-                 viewpoint_alpha = 0)
+  fdir = dirname(footprint_stats.file)
+ #select a TF to show
+ 
+ tf.file.name = footprint_stats[which.min(P_values)]$Motif
+# sele.motif = footprint_stats[which.min(P_values)]$motif
+ sele.motif = 'CEBPA'
+ tf.file.name = paste0(fdir, '/Lineplots/', tf.file.name, '.txt')
+ 
+ dd = fread(tf.file.name)
+ dd[, 'id' := -99:100]
+ dd1 = rbind(subset(dd, select = c('id', paste0('cluster_', cluster1_fp))))
+ dd2 = rbind(subset(dd, select = c('id', paste0('cluster_', cluster2_fp))))
+ names(dd1)[2] = names(dd2)[2] = 'score'
+ dd = rbind(dd2, dd1)
+ dd$cluster = rep(c(paste0('cluster_', cluster2_fp), paste0('cluster_', cluster1_fp)), each = nrow(dd1))
+ 
+ 
+ p2 <- ggplot(data = dd, aes(x = id, y = score, colour = cluster)) + geom_line(aes(linetype = cluster), size = 1.1) + ggtitle(sele.motif) + xlab('Distance to Motif') + 
+    theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15), legend.position = c(0.8, 0.8), plot.title = element_text(size = 15, face = 'bold')) + theme(plot.margin=unit(c(0.2,0,0.2,0),"cm")) +
+   scale_color_manual(values = c('#F8766D', '#619CFF')) + theme_bw()
+ 
+ 
+
  if(plotEPS){
-   postscript(paste0(params$output_dir,'/summary/Figures/interactions_CD14_locus.eps'), width = 8, height = 5, fonts = 'sans')
-   plot_connections(conns, "chr5", 140600000, 140650000,
-                 gene_model = gene_anno, 
-                 coaccess_cutoff = .65, 
-                 connection_width = 1, 
-                 collapseTranscripts = "longest",
-                 viewpoint_alpha = -1)
-   dev.off()
+  pfname = paste0(params$output_dir, '/summary/Figures/example_footprint_tf_activity.eps')
+  #postscript(file = pfname, width = 9, height = 12)
   
- }
+  ggsave(p2, filename = pfname, device = 'eps', height = 6,
+         width = 6)
+  #dev.off()
+}
+
+  p2
 }
 
 ```

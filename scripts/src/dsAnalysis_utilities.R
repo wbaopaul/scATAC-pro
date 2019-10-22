@@ -739,7 +739,8 @@ do_GO <- function(fg_genes, bg_genes, type = "BP", qCutoff = 0.05,
                             readable      = TRUE)
   }
   
-  return(enrich_list@result[enrich_list@result$qvalue <= qCutoff, ])
+  #return(enrich_list@result[enrich_list@result$qvalue <= qCutoff, ])
+  return(enrich_list)
 }
 
 

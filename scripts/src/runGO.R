@@ -41,16 +41,20 @@ for(cl0 in cls){
 }
 
 goByCl = list()
+interm_goByCl = list()
 go_out_file = paste0(output_dir, '/enrichedGO_', de_basename, '.xlsx')
 
 organism = ifelse(grepl(GENOME_NAME, pattern = 'mm'), 'mmu', 'hsa')
 for(cl0 in cls){
+    bg_genes = unique(do.call('c', genesInDA))
+    #if(length(cls) == 1) bg_genes = NULL
     markers0 = markers[cluster == cl0]$genes
     genes0 = lapply(markers0, function(x) unlist(strsplit(x, ',')))
-    goByCl[[paste0('cluster', cl0)]] = do_GO(genesInDA[[paste0('cluster', cl0)]],
-                                        bg_genes = unique(do.call('c', genesInDA)),
+    tmp = do_GO(genesInDA[[paste0('cluster', cl0)]],
+                                        bg_genes = bg_genes,
                                         type = GO_TYPE, qCutoff = 0.1, organism = organism)
-
+    interm_goByCl[[paste0('cluster', cl0)]] = tmp
+    goByCl[[paste0('cluster', cl0)]] = tmp@result[tmp@result$qvalue <= 0.1, ] 
 
 }
 if(!require('writexl')){
@@ -58,5 +62,9 @@ if(!require('writexl')){
 }
 library(writexl)
 write_xlsx(goByCl, path = go_out_file)
+
+## save intermediate GO result in rds
+saveRDS(interm_goByCl, file = paste0(output_dir, '/enrichedGO_', de_basename, '.rds'))
+
 
 
