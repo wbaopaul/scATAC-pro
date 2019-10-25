@@ -153,6 +153,16 @@ call_cell: config_check
 	@echo 
 
 #######################################
+## extract bam for cell barcodes
+#######################################
+get_bam4Cells: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Extracting bam for cell barcodes ..." 
+	@$(SCRIPTS)/get_bam4Cells.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## process
 #######################################
 process: config_check

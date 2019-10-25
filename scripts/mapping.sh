@@ -71,7 +71,7 @@ bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $2 $3
 
 echo "Simple mapping stats summary Done!"
 
-echo "Getting bed file for read pair (fragment) information"
+echo "Getting txt file for read pair (fragment) information"
 ${PERL_PATH}/perl ${curr_dir}/src/simply_bam2frags.pl --read_file ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam \
         --output_file ${qc_dir}/${OUTPUT_PREFIX}.fragments.txt --samtools_path $SAMTOOLS_PATH
 
