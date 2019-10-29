@@ -10,7 +10,7 @@ scATAC-pro incorporates two main steps, preprocessing and downstream analysis. T
 
 
 <p align="center">
-  <img src="doc/fig1_v2.png" width="480" title="">
+  <img src="doc/fig1.png" width="480" title="">
 </p>
 
 Installation
