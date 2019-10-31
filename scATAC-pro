@@ -52,6 +52,9 @@ function help {
     echo "      call_cell: cell calling
                            input: raw peak barcode sparse matrix file path
                            output: filtered peak by cell matrix"
+    echo "      get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
+                           input: bam file for all barcodes
+                           output: bam file for cell barcodes and mappign stats"
     echo "      clustering: cell clustering
                            input: filtered peak by cell matrix file path
                            output: seurat objects with clustering label in the metadata (.rds file) and 

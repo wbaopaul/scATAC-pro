@@ -350,9 +350,9 @@ if [ $wasInstalled == 0 ]; then
     if [[ $PYTHON_PATH =~ "anaconda" ]];then
         conda install deeptools -y --channel bioconda
     else
-        pip install --upgrade --user numpy scipy py2bit pyBigWig pysam matplotlib
-        pip install --upgrade --user deeptools
         export PATH=~/.local/bin:$PATH
+        pip install --upgrade --user pip numpy scipy py2bit pyBigWig pysam matplotlib
+        pip install --upgrade --user deeptools
     fi
  
     #pip install --upgrade -t $PREFIX_BIN deeptools

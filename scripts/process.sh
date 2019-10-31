@@ -81,6 +81,17 @@ echo "call cell ..."
 mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
 ${curr_dir}/call_cell.sh $mat_file $2 $3 
 
+## 8. mapping qc for cell barcodes
+map_dir=${OUTPUT_DIR}/mapping_result
+input_bam=${map_dir}/${OUTPUT_PREFIX}.positionsort.bam
+ff=${OUTPUT_DIR}/filtered_matrix/${CELL_CALLER}/barcodes.txt
+${PERL_PATH}/perl ${curr_dir}/src/extract_bam4Cells.pl --cellbarcode_file $ff --bam_file $input_bam \
+        --output_dir $map_dir --samtools_path $SAMTOOLS_PATH
+    echo "The bam file was split between cell and non-cell!"
+
+bash ${curr_dir}/cell_mapping_qc.sh $map_dir $2 $3
+
+
 ## report preprocessing QC
 echo "generating report ..."
 ${curr_dir}/report.sh $OUTPUT_DIR/summary $2 $3

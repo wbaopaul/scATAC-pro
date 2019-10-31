@@ -216,6 +216,10 @@ Detailed Usage
           call_cell: cell calling
                                input: raw peak barcode sparse matrix file path
                                output: filtered peak by cell matrix
+          get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
+                               input: bam file for all barcodes
+                               output: bam file for cell barcodes and mappign stats
+
           clustering: cell clustering
                                input: filtered peak by cell matrix file path
                                output: seurat objects with clustering label in the metadata (.rds file) and 
@@ -254,3 +258,10 @@ Detailed Usage
        [-o|--output_dir : folder to save results, default output/ under the curret directory; sub-folder will be created automatically for each step
        [-h|--help]: help
        [-v|--version]: version
+
+
+
+Citation
+--------------------------------------
+Yu W, Uzun Y, Zhu Q, Chen C, Tan K. bioRxiv.org; 2019 
+doi: https://doi.org/10.1101/824326 
