@@ -46,11 +46,10 @@ do
     ${SAMTOOLS_PATH}/samtools index -@ $ncore $file0
     ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max --normalizeUsing BPM \
          --bam $file0 --binSize 20 --skipNonCoveredRegions \
-         --outFileName $fname_bw  &
+         --outFileName $fname_bw  
     echo "generate count around TSS..."
     ${DEEPTOOLS_PATH}/computeMatrix reference-point -S $fname_bw -R $TSS \
-        -a 1200 -b 1200 -o ${signal_dir}/${pre}.aggregated.mtx.gz &
-    wait
+        -a 1200 -b 1200 -o ${signal_dir}/${pre}.aggregated.mtx.gz 
 done
 
 rm ${map_dir}/non_cell_barcodes.bam

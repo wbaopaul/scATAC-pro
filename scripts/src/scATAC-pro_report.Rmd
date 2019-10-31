@@ -233,7 +233,8 @@ if(plotEPS){
 
 ### TSS enrichment score profile
 ```{r}
-tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
+#tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
+tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.aggregated.mtx.gz')
 
 set.cols = brewer.pal(n=5, name = 'Dark2')
 tss.mat = fread(tss_escore_file)
