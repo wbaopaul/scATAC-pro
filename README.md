@@ -134,6 +134,10 @@ Run scATAC-pro step by step
                  -i output/raw_matrix/YOUR_PEAK_CALLER/matrix.mtx
                  -c configure.txt
                  
+    $ scATAC-pro -s get_bam4Cells
+                 -i output/mapping_result/pbmc10k.positionsort.bam
+                 -c configure.txt
+
     $ scATAC-pro -s clustering
                  -i output/filtered_matrix/YOUR_CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
@@ -263,5 +267,5 @@ Detailed Usage
 
 Citation
 --------------------------------------
-Yu W, Uzun Y, Zhu Q, Chen C, Tan K. bioRxiv.org; 2019 
+Yu W, Uzun Y, Zhu Q, Chen C, Tan K. *scATAC-pro: a comprehensive workbench for single-cell chromatin accessibility sequencing data.* bioRxiv.org; 2019 
 doi: https://doi.org/10.1101/824326 
