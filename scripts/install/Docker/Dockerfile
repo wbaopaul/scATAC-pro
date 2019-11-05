@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
     libncurses5-dev libcurl4-openssl-dev libssl-dev libfreetype6-dev zlib1g-dev \
     python3 python3-setuptools python3-pip \
     git wget unzip pkg-config libboost-dev libhdf5-dev \
-    default-jre apt-transport-https tabix vim \
+    default-jre apt-transport-https tabix vim pandoc \
     r-base libimage-magick-perl libgsl-dev libxml2 libxml2-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -27,7 +27,7 @@ RUN mkdir /software
 ENV PATH="/software:${PATH}"
 
 
-COPY install_Rpackages.R /software/install_Rpackages.R
+COPY install_Rpackages_docker.R /software/install_Rpackages_docker.R
 WORKDIR /software
 RUN Rscript -e "source('install_Rpackages_docker.R')"
 

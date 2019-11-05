@@ -5,7 +5,7 @@ if(!require(BiocManager)){
 }
 
 pks = c('devtools', 'flexdashboard', 'png', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',
-  'optparse', 'magrittr', 'readr', 'Seurat', 'bedr', 'gridExtra', 'ggrepel', 'kableExtra', 'viridis')
+  'optparse', 'magrittr', 'readr', 'Seurat', 'bedr', 'gridExtra', 'ggrepel', 'kableExtra', 'viridis', 'writexl')
 
 for(pk in pks){
     if(!require(pk, character.only = T)) {

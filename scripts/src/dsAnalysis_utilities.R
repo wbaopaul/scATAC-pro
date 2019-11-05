@@ -281,7 +281,7 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
   max.dim = ifelse(reduction == 'pca', npc, 2)
   if(doPCA) {
     seurat.obj <- RunPCA(seurat.obj, npcs = npc, verbose = F)
-    seurat.obj <- RunTSNE(seurat.obj, dims = 1:npc, verbose = F)
+    seurat.obj <- RunTSNE(seurat.obj, dims = 1:npc, verbose = F, check_duplicates = F)
     seurat.obj <- RunUMAP(seurat.obj, dims = 1:npc, verbose = F)
   }
   
@@ -974,7 +974,7 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
   
   if(reduction == 'tsne') {
     if(is.null(seurat.obj@reductions$tsne))
-      seurat.obj <- RunTSNE(seurat.obj, dims = 1:npc)
+      seurat.obj <- RunTSNE(seurat.obj, dims = 1:npc, check_duplicates = F)
     redu.coords = seurat.obj@reductions$tsne@cell.embeddings
   }
   if(reduction == 'umap') {
@@ -1043,7 +1043,7 @@ doCicero_conn <- function(seurat.obj, reduction = 'tsne',
   
   if(reduction == 'tsne') {
     if(is.null(seurat.obj@reductions$tsne))
-      seurat.obj <- RunTSNE(seurat.obj, dims = 1:npc)
+      seurat.obj <- RunTSNE(seurat.obj, dims = 1:npc, check_duplicates = F)
     redu.coords = seurat.obj@reductions$tsne@cell.embeddings
   }
   if(reduction == 'umap') {
