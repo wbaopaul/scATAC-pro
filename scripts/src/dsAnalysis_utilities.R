@@ -486,7 +486,7 @@ run_cisTopic <- function(mtx, nCores = 4){
   rownames(mtx) = rnames
   
   cisTopicObject <- createcisTopicObject(mtx, project.name='scATAC')
-  cisTopicObject <- runModels(cisTopicObject, topic = c(5, 10, 15, 20, 30, 40,
+  cisTopicObject <- runModels(cisTopicObject, topic = c(10, 20, 30, 40,
                                                         50, 60, 70, 80, 90, 100), seed = 987, nCores = nCores, 
                               burnin = 120, iterations = 150, addModels = T)
   #cisTopicObject <- selectModel(cisTopicObject, keepBinarymatrix = F, keepModels = F)

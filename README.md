@@ -268,7 +268,7 @@ Detailed Usage
 
 Run the dockerized version
 ----------------------------------
-In case you have problem of installing dependencies, you can run the dockerized version, there are two options:
+In case you have problem of installing dependencies, you can run the dockerized version in following three ways:
 1. you can run the prebuilt dockerized version [here](https://cloud.docker.com/u/wbaopaul/repository/docker/wbaopaul/scatac-pro) (which is not automatically updated)
 
 2. you can build your own docker image using the Dockfile in this repository (under scripts/install/Docker/) by running:
@@ -279,10 +279,18 @@ $ docker build -t YOU_PREFERED_NAME .
 $ docker run -v YOUR_WORK_DIR:/software -it YOUR_PREFERED_NAME 
 $ scATAC-pro --help
 
-## NOTE: YOUR_WORK_DIR is your host directory where the inputs provided and the outputs be saved
+
+```
+3. you can run it through singularity (which is more fridenly with HPC) by running:
+
+```
+$ singularity pull docker://wbaopaul/scatac-pro
+$ singularity run -H YOUR_WORK_DIR --cleanevn scatac-pro_latest
+$ scATAC-pro --help
 
 ```
 
+- **NOTE**: YOUR_WORK_DIR is your host directory where the inputs provided and the outputs will be saved
 
 Citation
 --------------------------------------

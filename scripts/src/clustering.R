@@ -62,6 +62,7 @@ if(cluster_method == 'cisTopic'){
   cell_topic <- t(modelMatSelection(sele.cisTopic, 'cell', 'Probability'))
   seurat.obj$cisTopic_clusters = generalCluster(cell_topic, method = 'hclust', k = k)
   seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
+  saveRDS(cell_topic, file = paste0(output_dir, '/cell_topic_obj.rds'))
 }
 
 if(cluster_method == 'LSA'){

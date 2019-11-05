@@ -6,7 +6,7 @@ source_local <- function(fname){
 
 source_local('dsAnalysis_utilities.R')
 
-
+library(edgeR)
 args = commandArgs(T)
 seuratObj_file = args[1]
 output_dir = args[2]

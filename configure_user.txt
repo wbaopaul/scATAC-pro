@@ -19,28 +19,28 @@ isSingleEnd = FALSE         ## scTHS-seq uses single end sequencing
 TRIM_METHOD = trim_galore   ## one of trim_galore (default), Trimmomatic or not specified (means DONOT trim)
 
 ## adapter sequence should be speficied if Trimmomatic was used to trim
+## you dont need to specify this if your TRIM_METHOD is trim_galore or not specified
 ADAPTER_SEQ = /mnt/isilon/tan_lab/yuw1/local_tools/Trimmomatic-0.39/adapters/NexteraPE-PE.fa
 
 
 
 
-#####################################
+#########################################################
 ## mapping ##
-#####################################
+## if your bwa is selected, you don't
+## have to specify options for bowtie/bowtie2, vice versa
+#########################################################
 
 MAPPING_METHOD = bwa  ## one of bwa/bowtie/bowtie2
 
 ## extra mapping options (NO NEED TO SPECIFY INPUT FASTQS AND OUTPUT FILE/DIRECTORY)
 BWA_OPTS = -t 16
-
-BOWTIE_OPTS = --quiet -p 16 
-
-BOWTIE2_OPTS = --end-to-end -p 16
-
 BWA_INDEX = hg38_genome/hg38_genome.fa
 
+BOWTIE_OPTS = --quiet -p 16 
 BOWTIE_INDEX = bowtie-1.2.2/indexes/GRCh38/GRCh38_no_alt
 
+BOWTIE2_OPTS = --end-to-end -p 16
 BOWTIE2_INDEX = bowtie2.2.9/indexes/GRCh38/GRCh38
 
 MAPQ = 30  ## filter bam by MAPQ for downstream analysis 
@@ -61,7 +61,8 @@ CHROM_SIZE_FILE = annotation/chrom_hg38.sizes
 
 
 #######################################
-## annotation files(blacklist, promoters, enhancers, TSS, etc)
+## annotation files(blacklist, promoters, 
+## enhancers, TSS, etc)
 #######################################
 BLACKLIST = annotation/hg38_blacklist.bed
 PROMOTERS = annotation/hg38_promoter.bed
@@ -74,7 +75,6 @@ TSS = annotation/hg38_tss.bed
 ## cell calling
 ########################################
 CELL_CALLER = FILTER  ## EmptyDrop/cellranger/FILTER
-
 
 EmptyDrop_FDR = 0.001
 
@@ -94,6 +94,8 @@ K_CLUSTERS = NULL  ## the number of cluster, will set resolution as 0.2 if it's 
 
 prepCello = TRUE  ## generate object for VisCello (for visualization)
 
+
+
 #######################################
 ## differential accessible analysis
 #######################################
@@ -105,12 +107,11 @@ test_use = wilcox  ## one of negbinom, LR, wilcox, t, DESeq2
 
 
 #######################################
-## GO analysis (need do differential 
+## GO analysis (need to do differential 
 ## analysis first)
 #######################################
 RUN_GO = TRUE ## run GO analysis after DA
 GO_TYPE = BP  ## BP/CC/kegg
-
 
 
 #######################################
