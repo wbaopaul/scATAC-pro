@@ -309,9 +309,11 @@ $ scATAC-pro --help
 4. To use it on HPC cluster:
 
 ```
-# write a script includes:
+# write a script called mapping.sh for example:
+#!/bin/bash
 module load singularity
-singularity exec -H YOUR_WORK_DIR --cleanevn scatac-pro_latest.sif scATAC-pro -s mapping -i fastq1,fastq2,fastq3 -c configure_user.txt
+singularity exec -H YOUR_WORK_DIR --cleanevn scatac-pro_latest.sif scATAC-pro -s mapping -i fastq_file1,fastq_file2,fastq_file3 -c configure_user.txt
+# and then qsub mapping.sh
 
 ```
 
