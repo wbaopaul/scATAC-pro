@@ -266,12 +266,13 @@ Detailed Usage
 
 
 
-Run the dockerized version
+Run through docker or singularity
 ----------------------------------
-In case you have problem of installing dependencies, you can run the dockerized version in following three ways:
-1. you can run the prebuilt dockerized version [here](https://cloud.docker.com/u/wbaopaul/repository/docker/wbaopaul/scatac-pro) (which is not automatically updated)
+In case you have problem of installing dependencies, you can run it without installing dependencies in following three ways:
 
-2. you can build your own docker image using the Dockfile in this repository (under scripts/install/Docker/) by running:
+1. Run the pre-built dockerized version [here](https://cloud.docker.com/u/wbaopaul/repository/docker/wbaopaul/scatac-pro) (which is not automatically updated)
+
+2. Build your own docker image using the Dockfile in this repository (under scripts/install/Docker/) by running:
 
 ```
 $ cd scripts/install/Docker
@@ -281,7 +282,7 @@ $ scATAC-pro --help
 
 
 ```
-3. you can run it through singularity (which is more fridenly with HPC) by running:
+3. Run it through singularity (which is more fridenly with HPC or linux server) by running:
 
 ```
 $ singularity pull docker://wbaopaul/scatac-pro
