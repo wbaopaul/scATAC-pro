@@ -1,7 +1,22 @@
 scATAC-pro
-================
 
 A comprehensive pipeline for single cell ATAC-seq data processing and analysis
+
+=================
+
+   * [scATAC-pro](#scatac-pro)
+      * [Workflow](#workflow)
+      * [Installation](#installation)
+      * [Dependencies](#dependencies)
+         * [Tools users should install](#tools-users-should-install)
+         * [Tools required](#tools-required)
+         * [Tools for additional modules or options](#tools-for-additional-modules-or-options)
+      * [Quick start](#quick-start)
+      * [Run scATAC-pro step by step](#run-scatac-pro-step-by-step)
+      * [Detailed Usage](#detailed-usage)
+      * [Run through docker or singularity](#run-through-docker-or-singularity)
+      * [Citation](#citation)
+
 
 Workflow
 --------
@@ -286,12 +301,23 @@ $ scATAC-pro --help
 
 ```
 $ singularity pull docker://wbaopaul/scatac-pro
-$ singularity run -H YOUR_WORK_DIR --cleanevn scatac-pro_latest
+$ singularity run -H YOUR_WORK_DIR --cleanevn scatac-pro_latest.sif
 $ scATAC-pro --help
 
 ```
 
+4. To use it on HPC cluster:
+
+```
+# write a script includes:
+module load singularity
+singularity exec -H YOUR_WORK_DIR --cleanevn scatac-pro_latest.sif scATAC-pro -s mapping -i fastq1,fastq2,fastq3 -c configure_user.txt
+
+```
+
 - **NOTE**: YOUR_WORK_DIR is your host directory where the inputs provided and the outputs will be saved
+- **NOTE**: all inputs including configure_user.txt should be available under YOUR_WORK_DIR
+
 
 Citation
 --------------------------------------
