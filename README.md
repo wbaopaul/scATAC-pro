@@ -265,6 +265,25 @@ Detailed Usage
 
 
 
+
+Run the dockerized version
+----------------------------------
+In case you have problem of installing dependencies, you can run the dockerized version, there are two options:
+1. you can run the prebuilt dockerized version [here](https://cloud.docker.com/u/wbaopaul/repository/docker/wbaopaul/scatac-pro) (which is not automatically updated)
+
+2. you can build your own docker image using the Dockfile in this repository (under scripts/install/Docker/) by running:
+
+```
+$ cd scripts/install/Docker
+$ docker build -t YOU_PREFERED_NAME .
+$ docker run -v YOUR_WORK_DIR:/software -it YOUR_PREFERED_NAME 
+$ scATAC-pro --help
+
+## NOTE: YOUR_WORK_DIR is your host directory where the inputs provided and the outputs be saved
+
+```
+
+
 Citation
 --------------------------------------
 Yu W, Uzun Y, Zhu Q, Chen C, Tan K. *scATAC-pro: a comprehensive workbench for single-cell chromatin accessibility sequencing data.* bioRxiv.org; 2019 

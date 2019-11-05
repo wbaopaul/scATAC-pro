@@ -31,7 +31,7 @@ mtx = assignGene2Peak(mtx, tss_ann)
 seurat.obj = doBasicSeurat_new(mtx, npc = 30, norm_by = norm_by, 
                                top.variable = 0.1, reg.var = 'nCount_ATAC')
 
-seurat.obj = RunTSNE(seurat.obj, dims = 1:30, reduction = 'pca')
+seurat.obj = RunTSNE(seurat.obj, dims = 1:30, reduction = 'pca', check_duplicates = FALSE)
 seurat.obj = RunUMAP(seurat.obj, dims = 1:30, reduction = 'pca', verbose = F)
 saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj.rds'))
 
