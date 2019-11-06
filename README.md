@@ -1,8 +1,8 @@
 scATAC-pro
+=================
 
 A comprehensive pipeline for single cell ATAC-seq data processing and analysis
 
-=================
 
    * [scATAC-pro](#scatac-pro)
       * [Workflow](#workflow)
@@ -31,6 +31,7 @@ scATAC-pro incorporates two main steps, preprocessing and downstream analysis. T
 Installation
 ------------
 
+-   Note: you don't have to install it, you can use the docker or sigularity version if you prefer (see [Run through docker or singularity](#run-through-docker-or-singularity) )
 -   Run the following command under your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.0.0
 
 <!-- -->
@@ -283,11 +284,11 @@ Detailed Usage
 
 Run through docker or singularity
 ----------------------------------
-In case you have problem of installing dependencies, you can run it without installing dependencies in following three ways:
+In case you have problem in installing dependencies, you can run it without installing dependencies in following ways:
 
 1. Run the pre-built dockerized version [here](https://cloud.docker.com/u/wbaopaul/repository/docker/wbaopaul/scatac-pro) (which is not automatically updated)
 
-2. Build your own docker image using the Dockfile in this repository (under scripts/install/Docker/) by running:
+2. Build your own docker image using the Dockfile in this repository (under scripts/install/Docker/, which is automatically updated) by running:
 
 ```
 $ cd scripts/install/Docker
@@ -301,7 +302,7 @@ $ scATAC-pro --help
 
 ```
 $ singularity pull docker://wbaopaul/scatac-pro
-$ singularity run -H YOUR_WORK_DIR --cleanevn scatac-pro_latest.sif
+$ singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif
 $ scATAC-pro --help
 
 ```
@@ -309,7 +310,7 @@ $ scATAC-pro --help
 4. To use it on HPC cluster:
 
 ```
-# write a script called mapping.sh for example:
+# write a script mapping.sh for mapping as an example:
 #!/bin/bash
 module load singularity
 singularity exec -H YOUR_WORK_DIR --cleanevn scatac-pro_latest.sif scATAC-pro -s mapping -i fastq_file1,fastq_file2,fastq_file3 -c configure_user.txt
