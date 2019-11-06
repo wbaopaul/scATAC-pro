@@ -475,8 +475,8 @@ run_LSI <- function(mtx, ncell.peak = 150,  max_pc = 10, k = 5){
 run_cisTopic <- function(mtx, nCores = 4){
   # prepare the right format of rownames
   if(!require(cisTopic)){
-    if(!require(RcisTarge)) devtools::install_github("aertslab/RcisTarget")
-    if(!require(AUCell)) devtools::install_github("aertslab/AUCell") 
+   # if(!require(RcisTarge)) devtools::install_github("aertslab/RcisTarget")
+   # if(!require(AUCell)) devtools::install_github("aertslab/AUCell") 
     devtools::install_github("aertslab/cisTopic")
   }
   library(cisTopic)

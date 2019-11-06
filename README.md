@@ -313,13 +313,17 @@ $ scATAC-pro --help
 # write a script mapping.sh for mapping as an example:
 #!/bin/bash
 module load singularity
-singularity exec -H YOUR_WORK_DIR --cleanevn scatac-pro_latest.sif scATAC-pro -s mapping -i fastq_file1,fastq_file2,fastq_file3 -c configure_user.txt
+singularity pull docker://wbaopaul/scatac-pro
+singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s mapping -i fastq_file1,fastq_file2,fastq_file3 -c configure_user.txt
 # and then qsub mapping.sh
+
 
 ```
 
-- **NOTE**: YOUR_WORK_DIR is your host directory where the inputs provided and the outputs will be saved
-- **NOTE**: all inputs including configure_user.txt should be available under YOUR_WORK_DIR
+- **NOTE**: YOUR_WORK_DIR is your working directory, where the outputs will be saved and all data under YOUR_WORK_DIR will
+be available to scATAC-pro
+
+- **NOTE**: all inputs including data paths specified in configure_user.txt should be available under YOUR_WORK_DIR
 
 
 Citation
