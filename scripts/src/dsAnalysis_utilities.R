@@ -491,8 +491,8 @@ run_cisTopic <- function(mtx, nCores = 4, frac_in_cell = 0.05){
   mtx = mtx[rr >= frac_in_cell, ]
      
   cisTopicObject <- createcisTopicObject(mtx, project.name='scATAC')
-  cisTopicObject <- runModels(cisTopicObject, topic = c(10, 20, 30, 40,
-                                                        50, 60, 70, 80, 90, 100), seed = 987, nCores = nCores, 
+  cisTopicObject <- runModels(cisTopicObject, topic = c(10, 20, 30,
+                                                        50, 80, 100), seed = 987, nCores = nCores, 
                               burnin = 120, iterations = 150, addModels = T)
   #cisTopicObject <- selectModel(cisTopicObject, keepBinarymatrix = F, keepModels = F)
   #cellassign <- t(modelMatSelection(cisTopicObject, 'cell', 'Probability'))

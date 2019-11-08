@@ -30,9 +30,12 @@ mtx = assignGene2Peak(mtx, tss_ann)
 
 seurat.obj = doBasicSeurat_new(mtx, npc = 30, norm_by = norm_by, 
                                top.variable = 0.1, reg.var = 'nCount_ATAC')
+if(cluster_method != 'cisTopic'){
 
-seurat.obj = RunTSNE(seurat.obj, dims = 1:30, reduction = 'pca', check_duplicates = FALSE)
-seurat.obj = RunUMAP(seurat.obj, dims = 1:30, reduction = 'pca', verbose = F)
+    seurat.obj = RunTSNE(seurat.obj, dims = 1:30, reduction = 'pca', check_duplicates = FALSE)
+    seurat.obj = RunUMAP(seurat.obj, dims = 1:30, reduction = 'pca', verbose = F)
+}
+
 saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj.rds'))
 
 
@@ -62,7 +65,11 @@ if(cluster_method == 'cisTopic'){
   cell_topic <- t(modelMatSelection(sele.cisTopic, 'cell', 'Probability'))
   seurat.obj$cisTopic_clusters = generalCluster(cell_topic, method = 'hclust', k = k)
   seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
-  saveRDS(cell_topic, file = paste0(output_dir, '/cell_topic_obj.rds'))
+  seurat.obj[['lda']] <- CreateDimReducObject(embeddings = cell_topic, 
+                                              key = 'Topic', assay = Default(seurat.obj))
+    seurat.obj = RunTSNE(seurat.obj, dims = 1:ncol(cell_topic), reduction = 'lda', check_duplicates = FALSE)
+    seurat.obj = RunUMAP(seurat.obj, dims = 1:ncol(cell_topic), reduction = 'lda', verbose = F)
+  #saveRDS(cell_topic, file = paste0(output_dir, '/cell_topic_obj.rds'))
 }
 
 if(cluster_method == 'LSA'){
