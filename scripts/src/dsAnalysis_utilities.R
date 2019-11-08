@@ -472,7 +472,7 @@ run_LSI <- function(mtx, ncell.peak = 150,  max_pc = 10, k = 5){
   return(cl.labels)
 }
 
-run_cisTopic <- function(mtx, nCores = 4){
+run_cisTopic <- function(mtx, nCores = 4, frac_in_cell = 0.05){
   # prepare the right format of rownames
   if(!require(cisTopic)){
    # if(!require(RcisTarge)) devtools::install_github("aertslab/RcisTarget")
@@ -487,8 +487,8 @@ run_cisTopic <- function(mtx, nCores = 4){
  
   ## reduce # of features to speed up
   mtx = 1 * (mtx > 0)
-  rr = Matrix::rowMeas(mtx)
-  mtx = mtx[rr > 0.05, ]
+  rr = Matrix::rowMeans(mtx)
+  mtx = mtx[rr >= frac_in_cell, ]
      
   cisTopicObject <- createcisTopicObject(mtx, project.name='scATAC')
   cisTopicObject <- runModels(cisTopicObject, topic = c(10, 20, 30, 40,
