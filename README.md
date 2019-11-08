@@ -314,7 +314,8 @@ $ scATAC-pro --help
 #!/bin/bash
 module load singularity
 singularity pull docker://wbaopaul/scatac-pro
-singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s mapping -i fastq_file1,fastq_file2,fastq_file3 -c configure_user.txt
+singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s mapping
+                            -i fastq_file1,fastq_file2,fastq_file3 -c configure_user.txt
 # and then qsub mapping.sh
 
 

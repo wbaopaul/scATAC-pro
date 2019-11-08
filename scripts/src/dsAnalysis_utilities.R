@@ -484,7 +484,12 @@ run_cisTopic <- function(mtx, nCores = 4){
   tmp = tidyr::separate(rnames, col = 'region', into = c('chr', 'start', 'end'))
   rnames = paste0(tmp$chr, ':', tmp$start, '-', tmp$end)
   rownames(mtx) = rnames
-  
+ 
+  ## reduce # of features to speed up
+  mtx = 1 * (mtx > 0)
+  rr = Matrix::rowMeas(mtx)
+  mtx = mtx[rr > 0.05, ]
+     
   cisTopicObject <- createcisTopicObject(mtx, project.name='scATAC')
   cisTopicObject <- runModels(cisTopicObject, topic = c(10, 20, 30, 40,
                                                         50, 60, 70, 80, 90, 100), seed = 987, nCores = nCores, 
