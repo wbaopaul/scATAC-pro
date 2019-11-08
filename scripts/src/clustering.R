@@ -56,7 +56,7 @@ if(cluster_method == 'seurat'){
 
 if(cluster_method == 'cisTopic'){
   nc = detectCores()
-  cis.obj = run_cisTopic(mtx, nCores = max(1, nc - 1))
+  cis.obj = run_cisTopic(mtx, nCores = min(10, nc))
   sele.cisTopic <- selectModel(cis.obj, 
                                keepBinaryMatrix = F, keepModels = F)
   cell_topic <- t(modelMatSelection(sele.cisTopic, 'cell', 'Probability'))
