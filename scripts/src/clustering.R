@@ -66,7 +66,7 @@ if(cluster_method == 'cisTopic'){
   seurat.obj$cisTopic_clusters = generalCluster(cell_topic, method = 'hclust', k = k)
   seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
   seurat.obj[['lda']] <- CreateDimReducObject(embeddings = cell_topic, 
-                                              key = 'Topic', assay = Default(seurat.obj))
+                                              key = 'Topic', assay = DefaultAssay(seurat.obj))
     seurat.obj = RunTSNE(seurat.obj, dims = 1:ncol(cell_topic), reduction = 'lda', check_duplicates = FALSE)
     seurat.obj = RunUMAP(seurat.obj, dims = 1:ncol(cell_topic), reduction = 'lda', verbose = F)
   #saveRDS(cell_topic, file = paste0(output_dir, '/cell_topic_obj.rds'))
