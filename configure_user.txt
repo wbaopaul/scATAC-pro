@@ -51,7 +51,7 @@ MAPQ = 30  ## filter bam by MAPQ for downstream analysis
 ## peak calling
 ######################################
 
-PEAK_CALLER = COMBINED  ## bin geneome + cluster + call_peak_per_cluster
+PEAK_CALLER = MACS2  ## one of MACS2, BIN, and COMBINED
 
 ## provided extra options for macs2 (NO NEED TO SPECIFY -t, -n, -f -g here)
 MACS2_OPTS = -q 0.01  
