@@ -7,41 +7,41 @@ library(Matrix)
 ## get input options
 parser = OptionParser()
 
-parser <- add_option(parser, c("-mf", "--raw_mtx_file"), type="character", default='peak_barcode.mtx',
+parser <- add_option(parser, c("-r", "--raw_mtx_file"), type="character", default='peak_barcode.mtx',
                      help="original peak barcode file [default %default]")
 
-parser <- add_option(parser, c("-out", "--output_dir"), type="character", default='filtered',
+parser <- add_option(parser, c("-o", "--output_dir"), type="character", default='filtered',
                      help="output mtx directory [default %default]")
 
 
-parser <- add_option(parser, c("-bs", "--bc_stat_file"), type="character", default='NULL',
+parser <- add_option(parser, c("-b", "--bc_stat_file"), type="character", default='NULL',
                      help="barcodes with summary stat file [default %default]")
 
-parser <- add_option(parser, c("-m", "--min_uniq_frags"), type="integer", default=3000,
+parser <- add_option(parser, c("-u", "--min_uniq_frags"), type="integer", default=3000,
                 help="minimal of total unique fragments per barcode [default %default]",
                 metavar="number")
 
-parser <- add_option(parser, c("-M", "--max_uniq_frags"), type="integer", default=50000,
+parser <- add_option(parser, c("-U", "--max_uniq_frags"), type="integer", default=50000,
                 help="maximal of total unique per barcode [default %default]",
                 metavar="number")
 
 
-parser <- add_option(parser, c("-fk", "--frac_peak"), type="double", default=0.05,
+parser <- add_option(parser, c("-k", "--frac_peak"), type="double", default=0.05,
                 help="minimal fraction of total pairs in peaks per barcode [default %default]",
                 metavar="number")
 
-parser <- add_option(parser, c("-ft", "--frac_tss"), type="double", default=0,
+parser <- add_option(parser, c("-t", "--frac_tss"), type="double", default=0,
                 help="minimal fraction of total pairs overlapping with tss per barcode [default %default]",
                 metavar="number")
 
-parser <- add_option(parser, c("-fe", "--frac_enhancer"), type="double", default=0,
+parser <- add_option(parser, c("-e", "--frac_enhancer"), type="double", default=0,
                 help="minimal fraction of total pairs in enhancer regions per barcode [default %default]",
                 metavar="number")
 
-parser <- add_option(parser, c("-fp", "--frac_promoter"), type="double", default=0,
+parser <- add_option(parser, c("-p", "--frac_promoter"), type="double", default=0,
                 help="minimal fraction of total pairs in tss per barcode [default %default]",
                 metavar="number")
-parser <- add_option(parser, c("-fm", "--frac_mito"), type="double", default=0.2,
+parser <- add_option(parser, c("-m", "--frac_mito"), type="double", default=0.2,
                      help="minimal fraction of total pairs in Mitocondrial per barcode [default %default]",
                      metavar="number")
 

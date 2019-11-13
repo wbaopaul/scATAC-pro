@@ -55,6 +55,6 @@ fi
 
 
 ## generate report
-${curr_dir}/report.sh ${OUTPUT_DIR}/summary $2 $3
+#${curr_dir}/report.sh ${OUTPUT_DIR}/summary $2 $3
 
 
