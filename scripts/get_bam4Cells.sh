@@ -29,6 +29,8 @@ if [[ ! -e "${map_dir}/cell_barcodes.bam" ]]; then
 fi
 wait
 
+rm ${map_dir}/*cell_barcodes.sam
+
 ## QC using cell barcodes bam
 if [[ ! -e "${OUTPUT_DIR}/summary/cell_barcodes.MappingStats" ]]; then
     echo "generate mapping stats for aggregated cell barcodes file..."
