@@ -23,9 +23,11 @@ curr_dir=`dirname $0`
 if [[ ! -e "${map_dir}/cell_barcodes.bam" ]]; then
     ${PERL_PATH}/perl ${curr_dir}/src/extract_bam4Cells.pl --cellbarcode_file $ff --bam_file $input_bam \
         --output_dir $map_dir --samtools_path $SAMTOOLS_PATH
+    ${SAMTOOLS_PATH}/samtools view -@ 4 -bS ${map_dir}/cell_barcodes.sam > ${map_dir}/cell_barcodes.bam &
+    ${SAMTOOLS_PATH}/samtools view -@ 4 -bS ${map_dir}/non_cell_barcodes.sam > ${map_dir}/non_cell_barcodes.bam &
     echo "The bam file was split between cell and non-cell!"
 fi
-
+wait
 
 ## QC using cell barcodes bam
 if [[ ! -e "${OUTPUT_DIR}/summary/cell_barcodes.MappingStats" ]]; then

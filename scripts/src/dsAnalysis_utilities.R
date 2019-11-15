@@ -1018,7 +1018,7 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
   conns = data.table(conns)
   conns = conns[coaccess > coaccess_thr, ]
   res = list('conns' = conns, 'ga_score' = cicero_gene_activities)
-  
+  return(res)  
 }
 
 

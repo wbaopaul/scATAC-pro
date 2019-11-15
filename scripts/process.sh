@@ -87,7 +87,11 @@ input_bam=${map_dir}/${OUTPUT_PREFIX}.positionsort.bam
 ff=${OUTPUT_DIR}/filtered_matrix/${CELL_CALLER}/barcodes.txt
 ${PERL_PATH}/perl ${curr_dir}/src/extract_bam4Cells.pl --cellbarcode_file $ff --bam_file $input_bam \
         --output_dir $map_dir --samtools_path $SAMTOOLS_PATH
-    echo "The bam file was split between cell and non-cell!"
+echo "The bam file was split between cell and non-cell!"
+
+${SAMTOOLS_PATH}/samtools view -@ 4 -bS ${map_dir}/cell_barcodes.sam > ${map_dir}/cell_barcodes.bam &
+${SAMTOOLS_PATH}/samtools view -@ 4 -bS ${map_dir}/non_cell_barcodes.sam > ${map_dir}/non_cell_barcodes.bam &
+wait
 
 bash ${curr_dir}/cell_mapping_qc.sh $map_dir $2 $3
 

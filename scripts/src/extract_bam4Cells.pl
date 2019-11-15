@@ -99,13 +99,13 @@ while(my $line = <BAM>)
 }#while(<BAM>)
 
 print("I have read $bam_line_counter reads from input BAM file: $bam_file .\n");
-print("I have written $matching_line_counter reads into $output_dir for selected barcodes .\n");
+print("I have written $matching_line_counter reads into $output_sam for selected barcodes .\n");
 
 print "convert sam to bam file:\n";
 my $output_bam=$output_dir."/cell_barcodes.bam";
 my $output_bam1=$output_dir."/non_cell_barcodes.bam";
-system("$samtools_path/samtools view -@ 4 -bS $output_sam > $output_bam &");
-system("$samtools_path/samtools view -@ 4 -bS $output_sam1 > $output_bam1 &");
-system("wait");
-system("rm $output_sam");
-system("rm $output_sam1");
+#system("$samtools_path/samtools view -@ 4 -bS $output_sam > $output_bam &");
+#system("$samtools_path/samtools view -@ 4 -bS $output_sam1 > $output_bam1 &");
+#system("wait");
+#system("rm $output_sam");
+#system("rm $output_sam1");
