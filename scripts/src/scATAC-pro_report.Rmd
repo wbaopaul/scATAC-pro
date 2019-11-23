@@ -62,17 +62,17 @@ Column
 
 read_conf <- function(){
   
-  system(paste('grep =', params$configure_user, "|grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' > vrs.txt "))
+  system(paste0('grep = ', params$configure_user, " | grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' > ", params$output_dir, "/vrs.txt"))
   
-  system(paste('grep =', params$configure_user, "|grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' > vls.txt "))
+  system(paste0('grep = ', params$configure_user, " | grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' > ", params$output_dir, "/vls.txt"))
   
-  vrs = readLines('vrs.txt')
-  vls = readLines('vls.txt')
+  vrs = readLines(paste0(params$output_dir, '/vrs.txt'))
+  vls = readLines(paste0(params$output_dir, '/vls.txt'))
   for(i in 1:length(vrs)){
     assign(vrs[i], vls[i], envir = .GlobalEnv)
   }
-  system('rm vrs.txt')
-  system('rm vls.txt')
+#  system(paste0('rm', params$output_dir, '/vrs.txt'))
+#  system(paste0('rm', params$output_dir, '/vls.txt'))
 }
 
 read_conf()
@@ -174,6 +174,7 @@ Row
 ### Total fragments VS fraction in peaks
 
 ```{r}
+
 bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
 
 library(ggplot2)
@@ -199,6 +200,7 @@ g <- g + annotation_custom(text1) + annotation_custom(text2)
 g
 
 if(plotEPS){
+  system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
   pfname = paste0(params$output_dir, '/summary/Figures/fracInPeak_vs_totalFragments.eps')
   ggsave(g, file = pfname, device = 'eps', width = 6, height = 6)
 }
@@ -255,7 +257,7 @@ p0
 
 
 if(plotEPS){
-  system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
+
   pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
   ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
 }
