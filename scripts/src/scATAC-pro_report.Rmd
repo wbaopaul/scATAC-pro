@@ -489,7 +489,7 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
                  clusters = data.table('barcode' = rownames(metaData),
                                        'cluster' = metaData$active_clusters),
                  topn = 10)
-  write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
+ # write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
   
   
   ## plot enriched TFs in heatmap
