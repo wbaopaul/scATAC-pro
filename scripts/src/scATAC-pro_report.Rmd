@@ -613,9 +613,9 @@ p
 
 
 ### Predicted Interactions at CD14 locus
-```{r, out.width='\\textwidth', message=F}
+```{r, out.width='\\textwidth'}
 cicero_conn.file = paste0(down.dir, '/cicero_interactions.txt')
-options(warn=-1)
+
 if(file.exists(cicero_conn.file)){
  conns = fread(cicero_conn.file)
  conns = data.frame(conns)
@@ -634,7 +634,7 @@ if(file.exists(cicero_conn.file)){
  gene_anno = gene_anno[complete.cases(gene_anno), ]
  
  if(plotEPS){
-   postscript(paste0(params$output_dir,'/summary/Figures/interactions_CD14_locus.eps'), width = 8, height = 5, fonts = 'sans')
+   pdf(paste0(params$output_dir,'/summary/Figures/interactions_CD14_locus.pdf'), width = 8, height = 5, fonts = 'sans')
     plot_connections(conns, "chr5", 140610000, 140640000,
                  gene_model = gene_anno, 
                  coaccess_cutoff = .4, 
