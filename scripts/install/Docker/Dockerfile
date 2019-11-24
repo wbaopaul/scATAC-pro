@@ -45,8 +45,8 @@ RUN echo `R --version`
 RUN echo `which pip`
 
 # Install bedtools 2.29.0
-#RUN git clone --branch v2.29.0 --single-branch https://github.com/arq5x/bedtools2.git && \
-#    cd bedtools2 && make && make install && cd ../ && rm -rf bedtools2*
+RUN git clone --branch v2.29.0 --single-branch https://github.com/arq5x/bedtools2.git && \
+    cd bedtools2 && make && make install && cd ../ && rm -rf bedtools2*
 
 # Install samtools 1.9
 RUN git clone --branch 1.9 --single-branch https://github.com/samtools/samtools.git && \
@@ -62,3 +62,4 @@ RUN rm -rf scATAC-pro
 COPY configure_user.txt /software/configure_user.txt
 RUN rm -f install_Rpackages_docker.R
 
+ENV PATH="/usr/local/bin/scATAC-pro_1.0.0:${PATH}"
