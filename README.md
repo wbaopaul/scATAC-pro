@@ -301,7 +301,7 @@ $ scATAC-pro --help
 3. Run it through singularity (which is more fridenly with HPC and linux server) by running:
 
 ```
-$ singularity pull docker://wbaopaul/scatac-pro 
+$ singularity pull -F docker://wbaopaul/scatac-pro 
 ## will output scatac-pro_latest.sif
 
 $ singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif
@@ -315,7 +315,7 @@ $ scATAC-pro --help
 # write a script mapping.sh for mapping as an example:
 #!/bin/bash
 module load singularity
-singularity pull docker://wbaopaul/scatac-pro
+singularity pull -F docker://wbaopaul/scatac-pro
 ## will output scatac-pro_latest.sif
 singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s mapping
                             -i fastq_file1,fastq_file2,fastq_file3 -c configure_user.txt
