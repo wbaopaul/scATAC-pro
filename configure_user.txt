@@ -130,7 +130,7 @@ SPLIT_BAM2CLUSTER = TRUE
 #######################################
 ## TF footprinting analysis ##
 #######################################
-DO_FOOTPRINT = TRUE
+DO_FOOTPRINT = FALSE
 
 ## comparing two clusters:
 cluster1_fp = 0   ## cluster name
