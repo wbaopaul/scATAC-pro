@@ -286,7 +286,7 @@ Run through docker or singularity
 ----------------------------------
 In case you have problem in installing dependencies, you can run it without installing dependencies in following ways:
 
-1. Run the pre-built dockerized version [here](https://cloud.docker.com/u/wbaopaul/repository/docker/wbaopaul/scatac-pro) (which is not automatically updated)
+1. Run the pre-built dockerized version [here](https://hub.docker.com/r/wbaopaul/scatac-pro) (which is not automatically updated)
 
 2. Build your own docker image using the Dockfile in this repository (under scripts/install/Docker/, which is automatically updated) by running:
 
