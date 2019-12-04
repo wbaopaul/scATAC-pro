@@ -151,7 +151,7 @@ Run scATAC-pro step by step
                  -c configure.txt
                  
     $ scATAC-pro -s get_bam4Cells
-                 -i output/mapping_result/pbmc10k.positionsort.bam
+                 -i output/mapping_result/pbmc10k.positionsort.bam,output/filtered_matrix/YOUR_CELL_CALLER/barcodes.txt
                  -c configure.txt
 
     $ scATAC-pro -s clustering
@@ -237,9 +237,9 @@ Detailed Usage
                                input: raw peak barcode sparse matrix file path
                                output: filtered peak by cell matrix
           get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
-                               input: bam file for all barcodes
-                               output: bam file for cell barcodes and mappign stats
-
+                               input: bam file for all barcodes and a txt file with each line a cell barcode, 
+                                      the two files are saved by a comma
+                               output: bam file and mapping stats (optional) for cell barcodes                          
           clustering: cell clustering
                                input: filtered peak by cell matrix file path
                                output: seurat objects with clustering label in the metadata (.rds file) and 
