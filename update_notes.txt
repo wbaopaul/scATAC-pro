@@ -1,0 +1,7 @@
+Updates for v1.1.0
+
+## Dec3, 2019 ##
+ -- module get_bam4Cells requires input a bam file and a txt file of barcodes, separated by comma
+
+## ## 
+

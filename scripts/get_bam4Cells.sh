@@ -3,10 +3,10 @@
 set -e
 ## input is the bam file and a txt file saved a cell barcode for each line, separated by comma
 inputs=$1 
-inputs=${inputs/,/}
+inputs=(${inputs//,/ })
 
-input_bam=$inputs[0]
-ff=$inputs[1]
+input_bam=${inputs[0]}
+ff=${inputs[1]}
 
 # reading configure file
 curr_dir=`dirname $0`
