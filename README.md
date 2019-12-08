@@ -15,6 +15,7 @@ A comprehensive pipeline for single cell ATAC-seq data processing and analysis
       * [Run scATAC-pro step by step](#run-scatac-pro-step-by-step)
       * [Detailed Usage](#detailed-usage)
       * [Run through docker or singularity](#run-through-docker-or-singularity)
+      * [FAQs](#FAQs)
       * [Citation](#citation)
 
 
@@ -94,6 +95,7 @@ Quick start
                  -c configure_user.txt 
 
 -   The **output** will be saved under ./output as default
+
 
 Run scATAC-pro step by step
 ---------------------------
@@ -328,6 +330,11 @@ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s
 be available to scATAC-pro
 
 - **NOTE**: all inputs including data paths specified in configure_user.txt should be available under YOUR_WORK_DIR
+
+FAQs
+--------------
+- [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+
 
 
 Citation
