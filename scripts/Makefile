@@ -81,6 +81,17 @@ mapping_qc: config_check
 
 
 ######################################
+## Convert 10x positionsort bam to scATAC-pro bam
+##
+######################################
+
+convert10xbam: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Aligning ..." 
+	@$(SCRIPTS)/convert10xbam.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+
+######################################
 ## after mapping
 ## call_peak to end of process
 ######################################

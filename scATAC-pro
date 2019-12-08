@@ -87,6 +87,9 @@ function help {
     echo "      report: generate report in html file
                         input: directory to output report
                         output: summary report in html format"
+    echo "      convert10xbam: convert10xbam
+                         input: bam file (position sorted) in 10x
+                         output: position sorted bam file in scATAC-pro style, mapping qc stat and fragment.bed"
     echo "   -i|--input INPUT : input data, different types of input data are required for different steps;"
     echo "   -c|--conf CONFIG : configuration file for parameters (if exists) for each step"
     echo "   [-o|--output_dir : folder to save results; sub-folder will be created automatically for each step"
@@ -182,7 +185,7 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "after_mapping" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "get_bam4Cells" "clustering" "motif_analysis" "call_cnv" "runDA" "runGO" "runCicero" "split_bam" "footprint" "report" "process" "process_no_dex" "integrate" "downstream" "all" "integrate_seu")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "after_mapping" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "get_bam4Cells" "clustering" "motif_analysis" "call_cnv" "runDA" "runGO" "runCicero" "split_bam" "footprint" "report" "process" "process_no_dex" "integrate" "downstream" "all" "integrate_seu" "convert10xbam")
 
 
 check_s=0
