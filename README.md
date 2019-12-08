@@ -151,7 +151,8 @@ Run scATAC-pro step by step
                  -c configure.txt
                  
     $ scATAC-pro -s get_bam4Cells
-                 -i output/mapping_result/pbmc10k.positionsort.bam,output/filtered_matrix/YOUR_CELL_CALLER/barcodes.txt
+                 -i output/mapping_result/pbmc10k.positionsort.bam,
+                    output/filtered_matrix/YOUR_CELL_CALLER/barcodes.txt
                  -c configure.txt
 
     $ scATAC-pro -s clustering
