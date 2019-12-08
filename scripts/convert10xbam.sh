@@ -26,6 +26,7 @@ cat <( cat ${mapRes_dir}/${bamName}.header ) \
 
 rm ${mapRes_dir}/${bamName}.header
 
+
 ncore=$(nproc --all)
 ncore=$(($ncore - 1))
 

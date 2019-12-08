@@ -150,16 +150,17 @@ Column
 ### Cell barcodes Mapping statistics
 
 ```{r}
+if(CELL_MAP_QC){
+    lib_complx = frac.uniq
 
-lib_complx = frac.uniq
+    cell_mapping_qc$frac = round(cell_mapping_qc$V2/cell_mapping_qc$V2[1], 3)
+    cell_mapping_qc$frac = paste0(100*cell_mapping_qc$frac, '%')
 
-cell_mapping_qc$frac = round(cell_mapping_qc$V2/cell_mapping_qc$V2[1], 3)
-cell_mapping_qc$frac = paste0(100*cell_mapping_qc$frac, '%')
+    cell_mapping_qc = rbind(cell_mapping_qc, data.frame(V1 ='Library Complexity (nonredudant fraction)', V2 = '', frac = lib_complx))
 
-cell_mapping_qc = rbind(cell_mapping_qc, data.frame(V1 ='Library Complexity (nonredudant fraction)', V2 = '', frac = lib_complx))
-
-kable(cell_mapping_qc, col.names = NULL, format = 'html') %>%
-  kable_styling("striped", full_width = F, position = 'left', font_size = 15)
+    kable(cell_mapping_qc, col.names = NULL, format = 'html') %>%
+      kable_styling("striped", full_width = F, position = 'left', font_size = 15)
+}
 ```
 
 
