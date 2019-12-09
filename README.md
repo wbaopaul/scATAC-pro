@@ -213,7 +213,9 @@ Detailed Usage
        [-s|--step ANALYSIS_STEP] : run a analytic step (or combinatorial steps) of the scATAC-pro workflow, supportting steps:
           demplx_fastq: perform demultiplexing
                                input: fastq files for both reads and index, separated by comma like:
-                                      fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...;
+                                      PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...;
+                                      differnet index will be embedded in the read name as: 
+                                      @index1_index2_index3:original_read_name
                                output: demultiplexed fastq1 and fastq2 files 
           mapping: perform reads alignment
                              input: fastq files, separated by comma for each paired end
