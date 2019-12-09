@@ -210,7 +210,7 @@ Detailed Usage
     ---------------
     OPTIONS
 
-       [-s|--step ANALYSIS_STEP] : run a analytic step (or combinatorial steps) of the scATAC-pro workflow, supportting steps:
+       [-s|--step ANALYSIS_STEP] : run an analytic step (or combinatorial steps) of the scATAC-pro workflow, supportting steps:
           demplx_fastq: perform demultiplexing
                                input: fastq files for both reads and index, separated by comma like:
                                       PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...;
