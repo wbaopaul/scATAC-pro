@@ -31,12 +31,6 @@ if [[ "$isSingleEnd" = "TRUE" ]]; then
     ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
     dex_prefix1=$(basename ${fastqs[0]})
 
-
-    if [ -f ${output_dir}/demplxed_${dex_prefix1} ]; then
-        echo "I will exit because demultiplexed fastq file exists: delete it to redo it if necessary!"
-        exit
-    fi
-
     ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[1]} 
 
 
@@ -59,10 +53,6 @@ else
     dex_prefix2=$(basename ${fastqs[1]})
 
 
-    if [ -f ${output_dir}/demplxed_${dex_prefix1} ]; then
-        echo "I will exit because demultiplexed fastq file exists: delete it to redo it if necessary!"
-        exit
-    fi
 
     ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[2]} &
 
@@ -71,13 +61,13 @@ else
 
     ## for the round of barcodes, add them to the read name after @, concatenate the original name by _
     if [[ $kk>3 ]];then
-        for (( i==3; i<=$kk; i++ ))
+        for (( i=3; i<=$kk; i++ ))
         do
-            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} &
-            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} &
+            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/tmp${i}_demplxed_${dex_prefix1} ${fastqs[$i]} &
+            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix2} ${output_dir}/tmp${i}_demplxed_${dex_prefix2} ${fastqs[$i]} &
             wait
-            mv ${output_dir}/demplxed_${dex_prefix1}_$i ${output_dir}/demplxed_${dex_prefix1}
-            mv ${output_dir}/demplxed_${dex_prefix2}_$i ${output_dir}/demplxed_${dex_prefix2}
+            mv ${output_dir}/tmp${i}_demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}
+            mv ${output_dir}/tmp${i}_demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix2}
         done
     fi
 

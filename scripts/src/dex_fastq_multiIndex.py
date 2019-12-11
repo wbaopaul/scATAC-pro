@@ -54,7 +54,10 @@ def dex_fastq(input_fastq,
         fr1 = bz2.BZ2File(input_fastq, 'r')
     elif file_type(input_fastq) == "txt":
         fr1 = open(input_fastq, 'r')
-        
+     
+    tmp_indexs = index_fastq.split(",");
+    ilen = len(tmp_indexs);
+
     if file_type(index_fastq) == "gz":
         fix = gzip.open(index_fastq, 'rb')
     elif file_type(index_fastq) == "bz2":
@@ -109,6 +112,7 @@ def dex_fastq(input_fastq,
     fr1.close()
     fix.close()
 
+#multiple index file supported in sys.argv[3], separating by comma
 dex_fastq(sys.argv[1], sys.argv[2], sys.argv[3]);
 
 
