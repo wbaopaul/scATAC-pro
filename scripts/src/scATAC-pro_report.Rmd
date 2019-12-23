@@ -486,16 +486,20 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   #variability = variability[order(-variability), ]
   
   ## calculate DA
-  da.res = do_DA(chromVar.obj@assays$data$deviations, 
+  #dev = chromVar.obj@assays$data$deviations
+  dev = deviations(chromVar.obj)
+  da.res = do_DA(dev, 
                  clusters = data.table('barcode' = rownames(metaData),
                                        'cluster' = metaData$active_clusters),
                  topn = 10)
+  rm(dev)
   write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
   
   
   ## plot enriched TFs in heatmap
   sele.tfs = da.res$feature
-  zscores = chromVar.obj@assays$data$z
+  #zscores = chromVar.obj@assays$data$z
+  zscores = deviationScores(chromVar.obj)
   sele.zscores = zscores[sele.tfs, ]
   
   

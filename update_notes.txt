@@ -1,7 +1,13 @@
 Updates for v1.1.0
 
 ## Dec3, 2019 ##
- -- module get_bam4Cells requires input a bam file and a txt file of barcodes, separated by comma
+ -- updated module get_bam4Cells, with required inputs as a bam file and a txt file of barcodes, separated by comma
 
-## ## 
+## Dec7, 2019 ##
+ -- added a module convert10xbam to convert 10x position sorted bam file to scATAC-pro style
 
+## Dec11, 2019 ## 
+ -- corrected a bug for demultiplexing multiple index files
+
+## Dec22, 2019 ## 
+ -- corrected a error arised from using older version of chromVAR
