@@ -10,4 +10,8 @@ Updates for v1.1.0
  -- corrected a bug for demultiplexing multiple index files
 
 ## Dec22, 2019 ## 
- -- corrected a error arised from using older version of chromVAR
+ -- corrected an error arised from using older version of chromVAR
+
+## Jan11, 2020 ## 
+ -- add a new module mergePeaks to merge different peak files called from different samples or conditions
+ -- add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file

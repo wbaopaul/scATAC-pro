@@ -314,6 +314,26 @@ report: config_check
 	@echo 
 
 #######################################
+## mergePeaks
+#######################################
+mergePeaks: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Merge peaks ..." 
+	@$(SCRIPTS)/mergePeaks.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
+## reconstruct matrix
+#######################################
+reconstMtx: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "reconstruct peak-cell matrix ..." 
+	@$(SCRIPTS)/reconstMtx.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## all
 #######################################
 all: config_check
