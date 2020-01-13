@@ -6,6 +6,7 @@ A comprehensive pipeline for single cell ATAC-seq data processing and analysis
 
    * [scATAC-pro](#scatac-pro)
       * [Workflow](#workflow)
+      * [Updates](#updates)
       * [Installation](#installation)
       * [Dependencies](#dependencies)
          * [Tools users should install](#tools-users-should-install)
@@ -42,6 +43,26 @@ Installation
     $ make configure prefix=YOUR_INSTALL_PATH
     $ make install
      
+Updates
+------------
+
+- Jan11, 2020 
+  -- add a new module mergePeaks to merge different peak files called from different samples or conditions
+  -- add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
+- Dec22, 2019 
+  -- corrected an error arised from using older version of chromVAR
+- Dec11, 2019 
+  -- corrected a bug for demultiplexing multiple index files
+- Dec7, 2019 
+  -- added a module convert10xbam to convert 10x position sorted bam file to scATAC-pro style
+- Dec3, 2019 
+  -- updated module get_bam4Cells, with required inputs as a bam file and a txt file of barcodes, separated by comma
+
+
+
+
+
+
 
 Dependencies
 ------------
@@ -187,11 +208,16 @@ Run scATAC-pro step by step
                  -i output/summary
                  -c configure_user.txt
                  
-    ## perform integrated analysis             
+    ## perform integrated analysis            
     $ scATAC-pro -s integrate
                  -i bam_file1,bam_file2,(bam_file3...)
                  -c configure_user.txt
                 
+    ## merge peaks that are within 200bp distance of each other            
+    $ scATAC-pro -s mergePeaks
+                 -i peak_file1,peak_file2,(peak_file3...),200
+                 -c configure_user.txt
+
 - After clustering, user can interactively visualize the cis-element chromatin accessibility using [VisCello](https://github.com/qinzhu/VisCello), in R:
 
 ```
@@ -278,6 +304,18 @@ Detailed Usage
           report: generate report in html file
                             input: directory to output report
                             output: summary report in html format
+          convert10xbam: convert bam in 10x style to bam in scATAC-pro style 
+                         input: bam file (position sorted) in 10x style
+                         output: position sorted bam file in scATAC-pro style, mapping qc stat and fragment.bed
+          mergePeaks: merge different peaks (called from differnt samples or conditions) if the distance is
+                            less than a given #basepairs (200 if not specified) 
+                         input: peak files and a distance paramter separated by comma, like:
+                                peakFile1,peakFile2,peakFile3,200
+                         output: merged peaks saved in file output/peaks/merged.bed
+          reconstMtx: reconstruct peak-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
+                         input: differnt files separated by comma, like:
+                                peakFilePath,fragmentFilePath,barcodesPath
+                         output: a reconstructed peak-cell matrix saved under the same path as barcodes.txt file
        -i|--input INPUT : input data, different types of input data are required for different steps;
        -c|--conf CONFIG : configuration file for parameters (if exists) for each step
        [-o|--output_dir : folder to save results, default output/ under the curret directory; sub-folder will be created automatically for each step
@@ -289,7 +327,7 @@ Detailed Usage
 
 Run through docker or singularity
 ----------------------------------
-In case you have problem in installing dependencies, you can run it without installing dependencies in following ways:
+In case you have problem in installing dependencies, you can run it without installing dependencies in **one of** following options:
 
 1. Run the pre-built dockerized version [here](https://hub.docker.com/r/wbaopaul/scatac-pro) (which is not automatically updated)
 
@@ -337,6 +375,8 @@ be available to scATAC-pro
 FAQs
 --------------
 - [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to merge differnt peaks called from different sampels or conditions?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 
 
 
