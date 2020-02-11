@@ -47,16 +47,16 @@ Updates
 ------------
 
 - Jan11, 2020 
-  -- add a new module mergePeaks to merge different peak files called from different samples or conditions
-  -- add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
+    -- add a new module mergePeaks to merge different peak files called from different samples or conditions
+    -- add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
 - Dec22, 2019 
-  -- corrected an error arised from using older version of chromVAR
+    -- corrected an error arised from using older version of chromVAR
 - Dec11, 2019 
-  -- corrected a bug for demultiplexing multiple index files
+    -- corrected a bug for demultiplexing multiple index files
 - Dec7, 2019 
-  -- added a module convert10xbam to convert 10x position sorted bam file to scATAC-pro style
+    -- added a module convert10xbam to convert 10x position sorted bam file to scATAC-pro style
 - Dec3, 2019 
-  -- updated module get_bam4Cells, with required inputs as a bam file and a txt file of barcodes, separated by comma
+    -- updated module get_bam4Cells, with required inputs as a bam file and a txt file of barcodes, separated by comma
 
 
 
@@ -162,7 +162,7 @@ Run scATAC-pro step by step
                  -c configure.txt 
                  
     $ scATAC-pro -s get_mtx 
-                 -i output/summary/pbmc10k.fragments.txt 
+                 -i output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
                  -c configure.txt 
 
     $ scATAC-pro -s qc_per_barcode 
@@ -250,8 +250,8 @@ Detailed Usage
                                input: BAM file path
                                output: peaks in bed file format
           get_mtx: build raw peak by barcode matrix
-                             input: BAM file path
-                             output: fragment.bed file and sparse matrix in Matrix Market format
+                             input: features/peak file path
+                             output: sparse matrix in Matrix Market format
           aggr_signal: generate aggregated signal, which can be upload to and view
                                  in genome browser
                                  input: require BAM file path

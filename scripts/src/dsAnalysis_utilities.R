@@ -135,7 +135,7 @@ regress_on_pca <- function(seurat.obj, reg.var = 'nCount_ATAC'){
 
 
 #could be normalized by log, tf-idf or none
-doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2, 
+doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2, 
                           doScale = T, doCenter = T, assay = 'ATAC',
                           reg.var = NULL, norm_by = 'log', project = 'scATAC'){
 
@@ -145,10 +145,10 @@ doBasicSeurat_new <- function(mtx, npc = 50, top.variable = 0.2,
  
   if(norm_by == 'log') seurat.obj@assays$ATAC@data <- log1p(seurat.obj@assays$ATAC@data)/log(2)
   if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data <- TF.IDF(seurat.obj@assays$ATAC@data)
-
+  nveg = ifelse(top_variable_features > 1, top_variable_features, floor(nrow(mtx) * top_varaible_features))
   seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                      selection.method = 'vst',
-                                     nfeatures = floor(nrow(mtx) * top.variable))
+                                     nfeatures = nveg))
   seurat.obj <- ScaleData(object = seurat.obj,
                           features = VariableFeatures(seurat.obj),
                           vars.to.regress = NULL, do.scale = doScale,
@@ -407,7 +407,8 @@ run_scABC <- function(mtx, k = 5){
 
 run_chromVAR <- function(mtx, genomeName = 'BSgenome.Hsapiens.UCSC.hg38',
                          ncore = 3){
-  
+  rs = Matrix::rowSums(mtx)
+  mtx = mtx[rs > 0, ]  
   register(MulticoreParam(3))
   if(!require(genomeName, character.only = T)) BiocManager::install(genomeName)  
   peaks = data.table('x' = rownames(mtx))

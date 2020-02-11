@@ -84,14 +84,19 @@ FILTER_BC_CUTOFF = --min_uniq_frags 5000 --max_uniq_frags 50000 --frac_peak 0.5 
 
 
 
-#######################################
-## clustering
-#######################################
-norm_by = tf-idf ## or log (just log transformation)
-CLUSTERING_METHOD = seurat  ## seurat/cisTopic
+##############################################################################
+## clustering and dimension reduction
+## a seurat object will be created and saved, embeded information about
+## reduced dimensions, normalized data, and 
+## cluster labels ( extract by seuat_obj$active_cluster)
+## Note if normalization method is tf-idf, then the matrix was presumely set as binary
+##############################################################################
+norm_by = tf-idf ## or log (just log transformation) or NA
+Top_Variable_Features = 0.1 ## number/fraction of variable features used for seurat
+REDUCTION = pca  ## pca/lda, note that UMAP and TSNE will be automatically calculated correspondly
+nREDUCTION = 30 ## the reduced dimension
+CLUSTERING_METHOD = seurat  ## seurat/cisTopic/kmeans/LSI/SCRAT
 K_CLUSTERS = NULL  ## the number of cluster, will set resolution as 0.2 if it's NULL
-
-
 prepCello = TRUE  ## generate object for VisCello (for visualization)
 
 

@@ -15,3 +15,8 @@ Updates for v1.1.0
 ## Jan11, 2020 ## 
  -- add a new module mergePeaks to merge different peak files called from different samples or conditions
  -- add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
+
+## Feb, 2020 ##
+ -- add new parameters: Top_Variable_Features, REDUCTION, nREDUCTION
+ -- enable clustering methods mentioned in the manuscript, along with kmeans on PCs 
+

@@ -25,7 +25,7 @@ rm $bin_file
 output_dir=${OUTPUT_DIR}/peaks/${PEAK_CALLER}
 mkdir -p $output_dir
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.mtx seurat 0 $output_dir $GENOME_NAME $TSS $norm_by
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.mtx seurat 0 $output_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features
 
 
 ## remove cluster with less than 100 cells

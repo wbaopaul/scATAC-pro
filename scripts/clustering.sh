@@ -14,7 +14,7 @@ mkdir -p $output_dir
 
 curr_dir=`dirname $0`
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R $mtx_file $CLUSTERING_METHOD $K_CLUSTERS $output_dir $GENOME_NAME $TSS $norm_by 
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R $mtx_file $CLUSTERING_METHOD $K_CLUSTERS $output_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features 
 
 if [ "$prepCello" = "TRUE" ]; then
     seurat_file=${output_dir}/seurat_obj.rds

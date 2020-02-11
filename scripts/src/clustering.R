@@ -16,9 +16,9 @@ output_dir = args[4]
 genome_name = args[5]
 tss_path = args[6]
 norm_by = args[7]
-
-#library(reticulate)
-#use_python(paste0(python_path, '/python'))
+REDUCTION = args[8]
+nREDUCTION = as.integer(args[9])
+top_variable_features = as.numeric(args[10])
 
 mtx = read_mtx_scATACpro(mtx_file)
 
@@ -28,12 +28,11 @@ tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
 
 mtx = assignGene2Peak(mtx, tss_ann)
 
-seurat.obj = doBasicSeurat_new(mtx, npc = 30, norm_by = norm_by, 
-                               top.variable = 0.1, reg.var = 'nCount_ATAC')
-if(cluster_method != 'cisTopic'){
-
-    seurat.obj = RunTSNE(seurat.obj, dims = 1:30, reduction = 'pca', check_duplicates = FALSE)
-    seurat.obj = RunUMAP(seurat.obj, dims = 1:30, reduction = 'pca', verbose = F)
+seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
+                               top_variable_feautures = top_variable_features, reg.var = 'nCount_ATAC')
+if(REDUCTION != 'lda'){
+    seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', check_duplicates = FALSE)
+    seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', verbose = F)
 }
 
 saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj.rds'))
@@ -49,34 +48,51 @@ if(cluster_method == 'seurat'){
     resl = 0.2
   }else{
    k = as.integer(k)
-    resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 30, k = k,
+    resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = nREDUCTION, k = k,
                                 min_resl = 0.01)
   }
   seurat.obj = FindClusters(seurat.obj, resolution = resl)
-  #seurat.obj$seurat_clusters = seurat.obj@active.ident
   seurat.obj$active_clusters = seurat.obj$seurat_clusters
 }
 
-if(cluster_method == 'cisTopic'){
-  nc = detectCores()
-  cis.obj = run_cisTopic(mtx, nCores = min(10, nc))
-  sele.cisTopic <- selectModel(cis.obj, 
+
+if(grepl(REDUCTION, pattern = 'lda', ignore.case = T)){
+    
+  cis.obj = run_cisTopic(mtx, nCores = 2, topic = nREDUCTION)
+  sele.cisTopic <- cisTopic::selectModel(cis.obj, select = nREDUCTION, 
                                keepBinaryMatrix = F, keepModels = F)
   cell_topic <- t(modelMatSelection(sele.cisTopic, 'cell', 'Probability'))
-  seurat.obj$cisTopic_clusters = generalCluster(cell_topic, method = 'hclust', k = k)
-  seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
   seurat.obj[['lda']] <- CreateDimReducObject(embeddings = cell_topic, 
                                               key = 'Topic', assay = DefaultAssay(seurat.obj))
     seurat.obj = RunTSNE(seurat.obj, dims = 1:ncol(cell_topic), reduction = 'lda', check_duplicates = FALSE)
     seurat.obj = RunUMAP(seurat.obj, dims = 1:ncol(cell_topic), reduction = 'lda', verbose = F)
+}
+
+if(cluster_method == 'cisTopic' ){
+  nc = detectCores()
+  topic = unique(c(10, 20, 30, 50, 80, 100, nREDUCTION)
+  cis.obj = run_cisTopic(mtx, nCores = min(10, nc), topic = topic)
+  sele.cisTopic <- cisTopic::selectModel(cis.obj,
+                               keepBinaryMatrix = F, keepModels = F)
+  cell_topic <- t(modelMatSelection(sele.cisTopic, 'cell', 'Probability'))
+  seurat.obj$cisTopic_clusters = generalCluster(cell_topic, method = 'hclust', k = k)
+  seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
+  #seurat.obj[['lda']] <- CreateDimReducObject(embeddings = cell_topic, 
+  #                                            key = 'Topic', assay = DefaultAssay(seurat.obj))
+  #  seurat.obj = RunTSNE(seurat.obj, dims = 1:ncol(cell_topic), reduction = 'lda', check_duplicates = FALSE)
+  #  seurat.obj = RunUMAP(seurat.obj, dims = 1:ncol(cell_topic), reduction = 'lda', verbose = F)
   #saveRDS(cell_topic, file = paste0(output_dir, '/cell_topic_obj.rds'))
 }
 
-if(cluster_method == 'LSA'){
+if(cluster_method == 'LSI'){
   seurat.obj$LSA_clusters = run_LSI(mtx, k = k)
   seurat.obj$active_clusters = seurat.obj$LSI_clusters
 }
 
+if(cluster_method == 'kmeans'){
+  seurat.obj$kmeans_clusters = generalCluster(seurat.obj@reductions$pca@cell.embeddings, k = k)
+  seurat.obj$active_clusters = seurat.obj$kmeans_clusters
+}
 
 if(cluster_method == 'scABC'){
   seurat.obj$scABC_clusters = run_scABC(mtx, k = k)
@@ -96,7 +112,6 @@ if(cluster_method == 'chromVar'){
   
   seurat.obj$chromVar_clusters = cutree(hclust(dist(pca_coords)), k = k)
   seurat.obj$active_clusters = as.factor(seurat.obj$chromVar_clusters)
-  
   
 }
 

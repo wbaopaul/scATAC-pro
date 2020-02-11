@@ -37,8 +37,8 @@ function help {
                            input: BAM file path
                            output: peaks in bed file format"
     echo "      get_mtx: build raw peak by barcode matrix
-                         input: BAM file path
-                         output: fragment.bed file and sparse matrix in Matrix Market format"
+                         input: features/peaks file path
+                         output: sparse matrix in Matrix Market format"
     echo "      aggr_signal: generate aggregated signal, which can be upload to and view
                              in genome browser
                              input: require BAM file path
