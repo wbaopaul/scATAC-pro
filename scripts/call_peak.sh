@@ -35,6 +35,7 @@ fi
 
 
 if [ "${PEAK_CALLER}" = 'MUSIC' ];then
+    ## not used
 	echo "--Using MUSIC..."
 	work_dir=${peaks_dir}/MUSIC
 	mkdir -p $work_dir/chip/sorted
@@ -73,14 +74,14 @@ if [ "${PEAK_CALLER}" = 'COMBINED' ];then
     ${curr_dir}/iter_peak.sh $1 $2 $3
 fi
 
-if [ "${PEAK_CALLER}" = 'BINNING' ];then
+if [ "${PEAK_CALLER}" = 'BIN' ];then
     echo "--Binning genome"
 	work_dir=${peaks_dir}/BIN
 	mkdir -p $work_dir
-    bin_file=${mat_dir}/${output_prefix}_bin.bed
-    ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > $bin_file
-	${BEDTOOLS_PATH}/bedtools intersect -a ${work_dir}/${out_prefix}_bin.bed -b $BLACKLIST -v \
-	    > ${peaks_dir}/${out_prefix}_features_BlacklistRemoved.bed
+    bin_file=${work_dir}/${OUTPUT_PREFIX}_bin.bed
+    ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > ${bin_file}
+	${BEDTOOLS_PATH}/bedtools intersect -a ${bin_file} -b $BLACKLIST -v \
+	    > ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed
 fi
    
 echo "Call peaks done !"

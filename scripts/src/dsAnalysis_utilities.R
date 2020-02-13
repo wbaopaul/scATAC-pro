@@ -148,7 +148,7 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
   nveg = ifelse(top_variable_features > 1, top_variable_features, floor(nrow(mtx) * top_varaible_features))
   seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                      selection.method = 'vst',
-                                     nfeatures = nveg))
+                                     nfeatures = nveg)
   seurat.obj <- ScaleData(object = seurat.obj,
                           features = VariableFeatures(seurat.obj),
                           vars.to.regress = NULL, do.scale = doScale,

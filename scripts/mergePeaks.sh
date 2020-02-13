@@ -11,7 +11,6 @@ set -e
 ## output file: output/peaks/merged_peaks.bed
 
 inputs=$1  
-inputs=(${inputs//,/ })
 
 # reading configure file
 curr_dir=`dirname $0`

@@ -20,7 +20,7 @@ ${curr_dir}/clustering.sh $input_mtx $2 $3 &
 ${curr_dir}/motif_analysis.sh $input_mtx $2 $3 &
 
 wait
-seurat_obj=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/seurat_obj.rds
+seurat_obj=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/seurat_obj.rds
 ## do DA
 if [ "$RUN_DA" = "TRUE" ]; then
     ${curr_dir}/runDA.sh $seurat_obj $2 $3 &
@@ -29,7 +29,7 @@ fi
 SPLIT_BAM2CLUSTER=${SPLIT_BAM2CLUSTER^^}
 ## split bam to cluster
 if [ "$SPLIT_BAM2CLUSTER" = "TRUE" ]; then
-    input_cluster_table=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/cell_cluster_table.txt 
+    input_cluster_table=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/cell_cluster_table.txt 
     ${curr_dir}/split_bam2clusters.sh $input_cluster_table $2 $3 &
 fi
 
@@ -37,7 +37,7 @@ wait
 
 ## go analysis
 if [ "$RUN_GO" = "TRUE" ]; then
-    ${curr_dir}/runGO.sh ${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/differential_peak_cluster_${group1}_VS_cluster_${group2}.txt $2 $3 &
+    ${curr_dir}/runGO.sh ${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_peak_cluster_${group1}_VS_cluster_${group2}.txt $2 $3 &
 fi
 
 if [ "$RUN_Cicero" = "TRUE" ]; then
@@ -47,8 +47,8 @@ fi
 ## footprinting analysis
 DO_FOOTPRINT=${DO_FOOTPRINT^^}
 if [ "$DO_FOOTPRINT" = "TRUE" ]; then
-    bam1=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster1_fp}.bam
-    bam2=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/cluster_${cluster2_fp}.bam
+    bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${cluster1_fp}.bam
+    bam2=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${cluster2_fp}.bam
     ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam2} $2 $3 
 fi
 

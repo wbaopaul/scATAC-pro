@@ -371,7 +371,7 @@ Column
 rm(frags)
 library(Seurat)
 
-down.dir = paste0(params$output_dir, '/downstream_analysis/', CELL_CALLER)
+down.dir = paste0(params$output_dir, '/downstream_analysis/', PEAK_CALLER, '/', CELL_CALLER)
 seurat_file = paste0(down.dir, '/seurat_obj.rds')
 if(file.exists(seurat_file)){
     ss = readRDS(seurat_file)

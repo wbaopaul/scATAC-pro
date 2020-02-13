@@ -15,7 +15,7 @@ bams=(${input_bam//,/ })
 bam1=${bams[0]}
 bam2=${bams[1]}
 
-output_dir=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/data_by_cluster/footprint
+output_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/footprint
 mkdir -p $output_dir
 
 

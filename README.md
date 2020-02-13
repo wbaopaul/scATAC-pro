@@ -175,32 +175,32 @@ Run scATAC-pro step by step
                  
     $ scATAC-pro -s get_bam4Cells
                  -i output/mapping_result/pbmc10k.positionsort.bam,
-                    output/filtered_matrix/YOUR_CELL_CALLER/barcodes.txt
+                    output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/barcodes.txt
                  -c configure.txt
 
     $ scATAC-pro -s clustering
-                 -i output/filtered_matrix/YOUR_CELL_CALLER/matrix.mtx 
+                 -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
 
     $ scATAC-pro -s motif_analysis
-                 -i output/filtered_matrix/YOUR_CELL_CALLER/matrix.mtx 
+                 -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
                  
     $ scATAC-pro -s split_bam
-                 -i output/downstream_analysis/YOUR_CELL_CALLER/cell_cluster_table.txt
+                 -i output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/cell_cluster_table.txt
                  -c configure_user.txt
 
     $ scATAC-pro -s footprint
-                 -i output/downstream_analysis/YOUR_CELL_CALLER/data_by_cluster/cluter_0.bam,
-                    output/downstream_analysis/YOUR_CELL_CALLER/data_by_cluster/cluter_1.bam
+                 -i output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/data_by_cluster/cluter_0.bam,
+                    output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/data_by_cluster/cluter_1.bam
                  -c configure_user.txt
                  
     $ scATAC-pro -s runDA
-                 -i output/filtered_matrix/YOUR_CELL_CALLER/seurat_obj.rds 
+                 -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/seurat_obj.rds 
                  -c configure_user.txt
                  
     $ scATAC-pro -s runGO
-                 -i output/filtered_matrix/YOUR_CELL_CALLER/differential_peak_cluster_table.txt 
+                 -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/differential_peak_cluster_table.txt 
                  -c configure_user.txt
       
                  
@@ -222,7 +222,7 @@ Run scATAC-pro step by step
 
 ```
 library(VisCello)
-cello('output/downstream_analysis/YOUR_CELL_CALLER/VisCello_obj')
+cello('output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/VisCello_obj')
 ```
 
 Detailed Usage

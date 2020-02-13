@@ -82,7 +82,7 @@ do
     frag0_dir=`cd "$bam0_dir"; cd "../summary"; pwd`       
     echo "Call cell for each sample ..."
     bc_stat_file=${ABS_PATH}/summary/${sample0}.qc_per_barcode.txt
-    filtered_mtx_dir=${ABS_PATH}/filtered_matrix/${CELL_CALLER}/${sample0}
+    filtered_mtx_dir=${ABS_PATH}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/${sample0}
     raw_mtx_dir=${ABS_PATH}/raw_matrix/${sample0}
     input_mtx=${raw_mtx_dir}/matrix.mtx
 

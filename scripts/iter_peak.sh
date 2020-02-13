@@ -16,7 +16,7 @@ mtx_bin_dir=${mtx_dir}/${PEAK_CALLER}
 mkdir -p $mtx_bin_dir
 bin_file=${mtx_bin_dir}/${OUTPUT_PREFIX}_bin.bed
 ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > $bin_file
-${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt $bin_file ${mtx_bin_dir} 2000 50 < ${curr_dir}/src/get_mtx.R
+${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt $bin_file ${mtx_bin_dir} 100 50 < ${curr_dir}/src/get_mtx.R
 rm $bin_file
 
 
@@ -28,9 +28,9 @@ mkdir -p $output_dir
 ${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.mtx seurat 0 $output_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features
 
 
-## remove cluster with less than 100 cells
+## remove cluster with less than 10 cells
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/rm_minor_cluster.R ${output_dir}/cell_cluster_table.txt 100
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/rm_minor_cluster.R ${output_dir}/cell_cluster_table.txt 10
 
 ## 3.call peaks per cluster by macs2
 ## split bam into cluster

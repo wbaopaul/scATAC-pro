@@ -23,14 +23,14 @@ echo "${CELL_CALLER} is used for cell calling..."
 
 
 if [ ${CELL_CALLER} = 'EmptyDrop' ];then
-	output_dir1=${output_dir}/EmptyDrop
+	output_dir1=${output_dir}/${PEAK_CALLER}/EmptyDrop
 	mkdir -p $output_dir1
 	${R_PATH}/R --vanilla --args $input_mtx_file $output_dir1 ${EmptyDrop_FDR} < ${curr_dir}/src/EmptyDrop.R
 	
   
 
 elif [ ${CELL_CALLER} = 'FILTER' ];then
-	output_dir1=${output_dir}/FILTER
+	output_dir1=${output_dir}/${PEAK_CALLER}/FILTER
 	mkdir -p $output_dir1
     
     echo "${R_PATH}/Rscript  ${curr_dir}/src/filter_barcodes.R  --bc_stat_file $bc_stat_file --raw_mtx_file $input_mtx_file --output_dir $output_dir1 ${FILTER_BC_CUTOFF}" > tmpJob
@@ -45,7 +45,7 @@ else
 	gsize=$(awk '{sum+=$2}; END {print sum}' $CHROM_SIZE_FILE)
 
 	## implement cellrange cell calling
-	output_dir1=${output_dir}/cellranger
+	output_dir1=${output_dir}/${PEAK_CALLER}/cellranger
 	mkdir -p $output_dir1
 	
     ${R_PATH}/R --vanilla --args $input_mtx_file $output_dir1 $gsize $bc_stat_file \

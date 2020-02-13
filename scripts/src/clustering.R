@@ -29,7 +29,7 @@ tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
 mtx = assignGene2Peak(mtx, tss_ann)
 
 seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
-                               top_variable_feautures = top_variable_features, reg.var = 'nCount_ATAC')
+                               top_variable_features = top_variable_features, reg.var = 'nCount_ATAC')
 if(REDUCTION != 'lda'){
     seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', check_duplicates = FALSE)
     seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', verbose = F)
@@ -70,7 +70,7 @@ if(grepl(REDUCTION, pattern = 'lda', ignore.case = T)){
 
 if(cluster_method == 'cisTopic' ){
   nc = detectCores()
-  topic = unique(c(10, 20, 30, 50, 80, 100, nREDUCTION)
+  topic = unique(c(10, 20, 30, 50, 80, 100, nREDUCTION))
   cis.obj = run_cisTopic(mtx, nCores = min(10, nc), topic = topic)
   sele.cisTopic <- cisTopic::selectModel(cis.obj,
                                keepBinaryMatrix = F, keepModels = F)
