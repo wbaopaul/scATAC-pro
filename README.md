@@ -151,32 +151,32 @@ Run scATAC-pro step by step
     $ scATAC-pro -s mapping 
                   -i output/trimmed_fastq/trimmed_pe1_fastq,
                      output/trimmed_fastq/trimmed_pe2_fastq 
-                  -c configure.txt 
+                  -c configure_user.txt 
 
     $ scATAC-pro -s call_peak 
                  -i output/mapping_result/pbmc10k.positionsort.MAPQ30.bam
-                 -c configure.txt 
+                 -c configure_user.txt 
 
     $ scATAC-pro -s aggr_signal 
                  -i output/mapping_result/pbmc10k.positionsort.MAPQ30.bam 
-                 -c configure.txt 
+                 -c configure_user.txt 
                  
     $ scATAC-pro -s get_mtx 
                  -i output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
-                 -c configure.txt 
+                 -c configure_user.txt 
 
     $ scATAC-pro -s qc_per_barcode 
-                 -i output/summary/pbmc10k.fragments.txt 
-                 -c configure.txt
+                 -i output/summary/pbmc10k.fragments.txt,output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
+                 -c configure_user.txt
 
     $ scATAC-pro -s call_cell
                  -i output/raw_matrix/YOUR_PEAK_CALLER/matrix.mtx
-                 -c configure.txt
+                 -c configure_user.txt
                  
     $ scATAC-pro -s get_bam4Cells
                  -i output/mapping_result/pbmc10k.positionsort.bam,
                     output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/barcodes.txt
-                 -c configure.txt
+                 -c configure_user.txt
 
     $ scATAC-pro -s clustering
                  -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/matrix.mtx 
@@ -257,7 +257,7 @@ Detailed Usage
                                  input: require BAM file path
                                  output: bw and bedgraph file
           qc_per_barcode: quality control per barcode
-                                    input: fragment.bed file
+                                    input: fragment.txt file and peak/feature file, separated by comma
                                     output: qc_per_barcode.summary
           process: processing data - including dex_fastq, mapping, call_peak, get_mtx,
                                 aggr_signal, qc_per_barcode abd call_cell
@@ -268,8 +268,7 @@ Detailed Usage
                                input: raw peak barcode sparse matrix file path
                                output: filtered peak by cell matrix
           get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
-                               input: bam file for all barcodes and a txt file with each line a cell barcode, 
-                                      the two files are saved by a comma
+                               input: bam file for all barcodes and a barcodes.txt file, separated by comma
                                output: bam file and mapping stats (optional) for cell barcodes                          
           clustering: cell clustering
                                input: filtered peak by cell matrix file path

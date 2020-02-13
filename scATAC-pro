@@ -9,7 +9,7 @@
 #########################                                                                   
 
 SOFT="scATAC-pro"
-VERSION="1.0.0"
+VERSION="1.1.0"
 
 function usage {
     echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]"
@@ -44,7 +44,7 @@ function help {
                              input: require BAM file path
                              output: bw and bedgraph file"
     echo "      qc_per_barcode: quality control per barcode
-                                input: fragment.bed file
+                                input: fragment.txt file and feature/peak file, separated by comma
                                 output: qc_per_barcode.summary"
     echo "      process: processing data - including dex_fastq, mapping, call_peak, get_mtx,
                             aggr_signal, qc_per_barcode abd call_cell
@@ -55,8 +55,7 @@ function help {
                            input: raw peak barcode sparse matrix file path
                            output: filtered peak by cell matrix"
     echo "      get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
-                           input: bam file for all barcodes and a txt file with each line a cell barcode, the two files
-                                  are saved by a comma
+                           input: bam file for all barcodes and barcodes.txt file, separeted by comma
                            output: bam file and mapping stats (optional) for cell barcodes"
     echo "      clustering: cell clustering
                            input: filtered peak by cell matrix file path

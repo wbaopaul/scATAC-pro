@@ -69,7 +69,8 @@ ${curr_dir}/get_mtx.sh $feature_file $2 $3 &
 
 echo "QC per cell ..."
 frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt
-${curr_dir}/qc_per_barcode.sh $frag_file $2 $3 &
+qc_inputs=${frag_file},${feature_file}
+${curr_dir}/qc_per_barcode.sh $qc_inputs $2 $3 &
 
 wait
 

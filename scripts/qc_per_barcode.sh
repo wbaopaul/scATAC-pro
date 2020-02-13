@@ -1,8 +1,10 @@
 #!/bin/bash
 
 set -e
-
-input_frags=$1  ## use read pair(fragment) bed file as input
+inputs=$1
+inputs=(${inputs//,/ })
+input_frags=${inputs[0]}  ## fragment.txt file
+peaks=${inputs[1]}  ## peak file
 
 # reading configure file
 curr_dir=`dirname $0`
@@ -20,7 +22,7 @@ curr_dir=`dirname $0`
 
 file_prefix=${OUTPUT_PREFIX}
 
-peaks=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${file_prefix}_features_BlacklistRemoved.bed
+#peaks=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${file_prefix}_features_BlacklistRemoved.bed
 
 
 ${R_PATH}/R --vanilla --args $input_frags $peaks $PROMOTERS $TSS $ENHANCERS ${qc_dir}/${file_prefix}.qc_per_barcode.txt < ${curr_dir}/src/get_qc_per_barcode.R

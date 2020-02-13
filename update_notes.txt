@@ -16,7 +16,9 @@ Updates for v1.1.0
  -- add a new module mergePeaks to merge different peak files called from different samples or conditions
  -- add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
 
+## for scATAC_1.1.0 version
 ## Feb, 2020 ##
  -- add new parameters: Top_Variable_Features, REDUCTION, nREDUCTION
  -- enable clustering methods mentioned in the manuscript, along with kmeans on PCs 
-
+ -- file path changed like downstreame_analysis/PEAK_CALLER/CELL_CALLER/...
+ -- qc_per_barcode requires too input files, separated by comma
