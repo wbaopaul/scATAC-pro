@@ -14,4 +14,4 @@ mkdir -p $output_dir
 
 curr_dir=`dirname $0`
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_seu.R $mtx_files $CLUSTERING_METHOD $K_CLUSTERS $output_dir $GENOME_NAME $PYTHON_PATH 
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_seu.R $mtx_files $CLUSTERING_METHOD $K_CLUSTERS $output_dir $GENOME_NAME $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features 

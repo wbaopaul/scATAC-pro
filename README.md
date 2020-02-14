@@ -34,7 +34,7 @@ Installation
 ------------
 
 -   Note: you don't have to install it, you can use the docker or sigularity version if you prefer (see [Run through docker or singularity](#run-through-docker-or-singularity) )
--   Run the following command under your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.0.0
+-   Run the following command under your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.0
 
 <!-- -->
 
@@ -45,7 +45,12 @@ Installation
      
 Updates
 ------------
-
+- current version: 1.1.0
+- Feb, 2020
+    -- add new parameters in configure file: Top_Variable_Features, REDUCTION, nREDUCTION
+    -- enable all clustering methods mentioned in the manuscript, along with kmeans on PCs
+    -- file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
+    -- qc_per_barcode requires too input files, separated by comma, see example and detailed usage
 - Jan11, 2020 
     -- add a new module mergePeaks to merge different peak files called from different samples or conditions
     -- add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file

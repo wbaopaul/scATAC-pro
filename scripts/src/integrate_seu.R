@@ -15,6 +15,10 @@ k = (args[3])
 output_dir = args[4]
 genome_name = args[5]
 tss_path = args[6]
+norm_by = args[7]
+REDUCTION = args[8]
+nREDUCTION = as.integer(args[9])
+top_variable_features = as.numeric(args[10])
 
 mtx_files = unlist(strsplit(mtx_files, ','))
 
@@ -22,10 +26,6 @@ tss_ann <- fread(tss_path, header = F)
 names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
 tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
 
-
-
-#library(reticulate)
-#use_python(paste0(python_path, '/python'))
 
 ## do seurat individually
 seu.all = list()
@@ -36,12 +36,13 @@ for(i in 1:length(mtx_files)){
     mtx = read_mtx_scATACpro(file0)
     mtx = assignGene2Peak(mtx, tss_ann)
     colnames(mtx) = paste0('rep', i, '_', colnames(mtx))
-    seurat.obj = doBasicSeurat_new(mtx, npc = 30, norm_by = 'tf-idf', top.variable = 0.1, 
+    seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
+                                    top_variable_features = top_variable_features, 
                                        reg.var = 'nCount_ATAC')
     
     seurat.obj$sample = basename(dir0)
-    seurat.obj = RunTSNE(seurat.obj, dims = 1:30, check_duplicates = F)
-    seurat.obj = RunUMAP(seurat.obj, dims = 1:30, verbose = F)
+    seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, check_duplicates = F)
+    seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, verbose = F)
     saveRDS(seurat.obj, file = paste0(dir0, '/seurat_obj.rds'))
    
    seu.all[[file0]] = seurat.obj
@@ -51,26 +52,24 @@ for(i in 1:length(mtx_files)){
 
 seurat.obj <- FindIntegrationAnchors(object.list = seu.all, anchor.features = 3000)
 rm(seu.all)
-seurat.obj <- IntegrateData(anchorset = seurat.obj, dims = 1:30)
+seurat.obj <- IntegrateData(anchorset = seurat.obj, dims = 1:nREDUCTION)
 DefaultAssay(seurat.obj) <- "integrated"
 seurat.obj <- ScaleData(seurat.obj, verbose = FALSE,
                      features = VariableFeatures(seurat.obj), assay = "integrated")
-seurat.obj <- RunPCA(seurat.obj, npcs = 30, verbose = FALSE)
-seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", dims = 1:30)
+seurat.obj <- RunPCA(seurat.obj, npcs = nREDUCTION, verbose = FALSE)
+seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", dims = 1:nREDUCTION)
 DimPlot(seurat.obj, reduction = "umap", group.by = "sample")
-
-#seurat.obj = RunTSNE(seurat.obj, dims = 1:30)
 
 
 ## clustering
 if(cluster_method == 'seurat'){
   ## seurat implemented louvain algorithm
-  seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:30, k.param = 20)
+  seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:nREDUCTION, k.param = 20)
   if (toupper(k) == 'NULL' || k == '0'){
-    resl = 0.4
+    resl = 0.2
   }else{
     k = as.integer(k)
-    resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = 30, k = k,
+    resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = nREDUCTION, k = k,
                                 min_resl = 0.01)
   }
   seurat.obj = FindClusters(seurat.obj, resolution = resl)
@@ -88,7 +87,7 @@ if(cluster_method == 'cisTopic'){
   seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
 }
 
-if(cluster_method == 'LSA'){
+if(cluster_method == 'LSI'){
   seurat.obj$LSA_clusters = run_LSI(mtx, k = k)
   seurat.obj$active_clusters = seurat.obj$LSI_clusters
 }

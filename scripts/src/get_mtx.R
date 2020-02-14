@@ -96,9 +96,10 @@ mtx = subset(fragsInRegion, select = c('bc', 'region'))
 setkey(mtx, bc, region)
 mtx[, 'count' := .N, by = list(bc, region)]
 mtx = mtx[!duplicated(mtx), ]
-mtx = mtx[, 'n_per_region' := .N, by = region]
 mtx = mtx[, 'n_per_bc' := .N, by = bc]
 mtx = mtx[n_per_bc > min_total_frag]
+
+mtx = mtx[, 'n_per_region' := .N, by = region]
 mtx = mtx[n_per_region > min_cell]
 mtx[, c('n_per_region', 'n_per_bc') := NULL]
 

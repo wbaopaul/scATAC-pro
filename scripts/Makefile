@@ -270,7 +270,7 @@ integrate: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Doing integrating analysis ..." 
-	@$(SCRIPTS)/integrate.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@$(SCRIPTS)/integrate_peak.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
@@ -326,11 +326,11 @@ mergePeaks: config_check
 #######################################
 ## reconstruct matrix
 #######################################
-reconstMtx: config_check
+reConstMtx: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "reconstruct peak-cell matrix ..." 
-	@$(SCRIPTS)/reconstMtx.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@$(SCRIPTS)/reConstMtx.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################

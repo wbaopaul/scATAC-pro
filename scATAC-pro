@@ -97,7 +97,7 @@ function help {
                          input: peak files and a distance paramter separated by comma, like:
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed"
-    echo "      reconstMtx: reconstruct peak-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
+    echo "      reConstMtx: reconstruct peak-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
                          input: differnt files separated by comma, like:
                                 peakFilePath,fragmentFilePath,barcodesPath
                          output: a reconstructed peak-cell matrix saved under the same path as barcodes.txt file"
@@ -196,7 +196,7 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "after_mapping" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "get_bam4Cells" "clustering" "motif_analysis" "call_cnv" "runDA" "runGO" "runCicero" "split_bam" "footprint" "report" "process" "process_no_dex" "integrate" "downstream" "all" "integrate_seu" "convert10xbam" "mergePeaks" "reconstMtx")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "mapping_qc" "after_mapping" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "get_bam4Cells" "clustering" "motif_analysis" "call_cnv" "runDA" "runGO" "runCicero" "split_bam" "footprint" "report" "process" "process_no_dex" "integrate" "downstream" "all" "integrate_seu" "convert10xbam" "mergePeaks" "reConstMtx")
 
 
 check_s=0

@@ -92,7 +92,7 @@ else
                     reads!"
             exit
         fi
-        ${TRIM_GALORE_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]}   --paired --gzip
+        ${TRIM_GALORE_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]} --paired --gzip
         echo "Trimming Done!" 
     else
         echo "You have not specify TRIM_METHOD, so I do not trim the reads"
