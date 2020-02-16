@@ -273,6 +273,13 @@ Detailed Usage
                                 input: fastq files for both reads and index, separated by comma like:
                                        fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
                                 output: cell peak matrix and all intermediate results 
+          process_no_dex: processing data without demultiplexing
+                                input: demultiplexed fastq files for both reads and index, separated by comma like:
+                                       fastq1,fastq2; 
+                                output: cell peak matrix and all intermediate results 
+          process_with_bam: processing from bam file
+                                input: bam file for aggregated data 
+                                output: cell peak matrix and all intermediate results 
           call_cell: cell calling
                                input: raw peak barcode sparse matrix file path
                                output: filtered peak by cell matrix
