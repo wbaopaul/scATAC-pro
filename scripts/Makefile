@@ -92,15 +92,15 @@ convert10xbam: config_check
 	@$(SCRIPTS)/convert10xbam.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 
 ######################################
-## after mapping
+## process using bam file
 ## call_peak to end of process
 ######################################
 
-after_mapping: config_check
+process_with_bam: config_check
 	@echo "--------------------------------------------" 
 	@date 
-	@echo "From peak_calling to filtered matrix ..." 
-	@$(SCRIPTS)/after_mapping.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo "process uing bam file ..." 
+	@$(SCRIPTS)/process_with_bam.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 
 #######################################
 ## call peak

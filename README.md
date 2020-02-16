@@ -47,6 +47,10 @@ Updates
 ------------
 - current version: 1.1.0
 - Feb, 2020
+    -- add module *process_with_bam*, allowing process from aggragated bam file
+    -- integrate from peaks files, assume each sample was processed through scATAC-pro;
+        output matrix with the same merged peaks/features and the previously called cells, along
+        with a integrated seurat object
     -- add new parameters in configure file: Top_Variable_Features, REDUCTION, nREDUCTION
     -- enable all clustering methods mentioned in the manuscript, along with kmeans on PCs
     -- file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller

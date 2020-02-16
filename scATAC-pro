@@ -51,6 +51,13 @@ function help {
                             input: fastq files for both reads and index, separated by comma like:
                                    fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
                             output: cell peak matrix and all intermediate results "
+    echo "      process_no_dex: processing data without demultiplexing
+                            input: demultiplexed fastq files for both reads and index, separated by comma like:
+                                   fastq1,fastq2; 
+                            output: cell peak matrix and all intermediate results "
+    echo "      process_with_bam: processing from bam file
+                            input: bam file for aggregated data 
+                            output: cell peak matrix and all intermediate results "
     echo "      call_cell: cell calling
                            input: raw peak barcode sparse matrix file path
                            output: filtered peak by cell matrix"
@@ -196,7 +203,7 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "mapping_qc" "after_mapping" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "get_bam4Cells" "clustering" "motif_analysis" "call_cnv" "runDA" "runGO" "runCicero" "split_bam" "footprint" "report" "process" "process_no_dex" "integrate" "downstream" "all" "integrate_seu" "convert10xbam" "mergePeaks" "reConstMtx")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "mapping_qc" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "get_bam4Cells" "clustering" "motif_analysis" "call_cnv" "runDA" "runGO" "runCicero" "split_bam" "footprint" "report" "process" "process_no_dex" "process_with_bam" "integrate" "downstream" "all" "integrate_seu" "convert10xbam" "mergePeaks" "reConstMtx")
 
 
 check_s=0
