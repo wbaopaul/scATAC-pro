@@ -33,7 +33,7 @@ scATAC-pro incorporates two main steps, preprocessing and downstream analysis. T
 Installation
 ------------
 
--   Note: you don't have to install it, you can use the docker or sigularity version if you prefer (see [Run through docker or singularity](#run-through-docker-or-singularity) )
+-   Note: you don't have to install it, you can use the docker or sigularity version if you prefer (see [Run through docker or singularity](#run-through-docker-or-singularity) ), note that the docker version was still under version 1.0.0 and will be updated to v1.1.0 soon
 -   Run the following command under your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.0
 
 <!-- -->
