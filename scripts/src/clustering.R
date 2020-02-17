@@ -23,9 +23,9 @@ top_variable_features = as.numeric(args[10])
 mtx = read_mtx_scATACpro(mtx_file)
 
 tss_ann <- fread(tss_path, header = F)
-names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
-tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
-
+#names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
+#tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
+names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
 mtx = assignGene2Peak(mtx, tss_ann)
 
 seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 

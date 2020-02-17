@@ -47,25 +47,25 @@ Updates
 ------------
 - current version: 1.1.0
 - Feb, 2020
-    -- add module *process_with_bam*, allowing process from aggragated bam file
-    -- integrate from peaks files, assume each sample was processed through scATAC-pro;
+    * add module *process_with_bam*, allowing process from aggragated bam file
+    * integrate from peaks files, assume each sample was processed through scATAC-pro;
         output matrix with the same merged peaks/features and the previously called cells, along
         with a integrated seurat object
-    -- add new parameters in configure file: Top_Variable_Features, REDUCTION, nREDUCTION
-    -- enable all clustering methods mentioned in the manuscript, along with kmeans on PCs
-    -- file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
-    -- qc_per_barcode requires too input files, separated by comma, see example and detailed usage
+    * add new parameters in configure file: Top_Variable_Features, REDUCTION, nREDUCTION
+    * enable all clustering methods mentioned in the manuscript, along with kmeans on PCs
+    * file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
+    * qc_per_barcode requires too input files, separated by comma, see example and detailed usage
 - Jan11, 2020 
-    -- add a new module mergePeaks to merge different peak files called from different samples or conditions
-    -- add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
+    * add a new module mergePeaks to merge different peak files called from different samples or conditions
+    * add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
 - Dec22, 2019 
-    -- corrected an error arised from using older version of chromVAR
+    * corrected an error arised from using older version of chromVAR
 - Dec11, 2019 
-    -- corrected a bug for demultiplexing multiple index files
+    * corrected a bug for demultiplexing multiple index files
 - Dec7, 2019 
-    -- added a module convert10xbam to convert 10x position sorted bam file to scATAC-pro style
+    * added a module convert10xbam to convert 10x position sorted bam file to scATAC-pro style
 - Dec3, 2019 
-    -- updated module get_bam4Cells, with required inputs as a bam file and a txt file of barcodes, separated by comma
+    * updated module get_bam4Cells, with required inputs as a bam file and a txt file of barcodes, separated by comma
 
 
 

@@ -10,8 +10,8 @@ source ${curr_dir}/read_conf.sh
 read_conf $2
 read_conf $3
 
-mapRes_dir=${OUTPUT_PREFIX}/mapping_result
-qc_dir=${OUTPUT_PREFIX}/summary
+mapRes_dir=${OUTPUT_DIR}/mapping_result
+qc_dir=${OUTPUT_DIR}/summary
 
 ## 1.generate mapping qc
 bash ${curr_dir}/bam2qc.sh $bam_file $2 $3
