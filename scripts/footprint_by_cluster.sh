@@ -35,13 +35,13 @@ cluster1=${bam1/.bam/}
 cluster1=$(basename $cluster1)
 cluster2=${bam2/.bam/}
 cluster2=$(basename $cluster2)
-seurat_obj=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/seurat_obj.rds
+seurat_obj=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/seurat_obj.rds
 
 cl1=${cluster1/cluster_/}
 cl2=${cluster2/cluster_/}
 
 
-input_peak=${OUTPUT_DIR}/downstream_analysis/${CELL_CALLER}/differential_peak_cluster_${cl1}_VS_cluster_${cl2}.txt
+input_peak=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_peak_cluster_${cl1}_VS_cluster_${cl2}.txt
 if [ ! -e "$input_peak" ]; then
     echo "do DA..."
     mkdir -p TMP0

@@ -145,7 +145,8 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
  
   if(norm_by == 'log') seurat.obj@assays$ATAC@data <- log1p(seurat.obj@assays$ATAC@data)/log(2)
   if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data <- TF.IDF(seurat.obj@assays$ATAC@data)
-  nveg = ifelse(top_variable_features > 1, top_variable_features, floor(nrow(mtx) * top_varaible_features))
+  nveg = ifelse(top_variable_features > 1, top_variable_features, floor(nrow(mtx) * top_variable_features))
+
   seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                      selection.method = 'vst',
                                      nfeatures = nveg)

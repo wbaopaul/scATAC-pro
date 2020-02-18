@@ -553,7 +553,7 @@ if [ $? != "0" ]; then
         
             HINT_PATH=$(dirname `which rgt-hint`)
             if [ $? != '0' ]; then
-                echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually! ].""NORMAL"
+                echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually! ].""$NORMAL"
                 exit 
             fi
             conda deactivate 
