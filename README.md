@@ -229,12 +229,13 @@ Run scATAC-pro step by step
                  -i peak_file1,peak_file2,(peak_file3...),200
                  -c configure_user.txt
 
-- After clustering, user can interactively visualize the cis-element chromatin accessibility using [VisCello](https://github.com/qinzhu/VisCello), in R:
+- After clustering, user can interactively visualize and analyze the data with module *visualize* 
 
 ```
 scATAC-pro -s visualize -i output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/VisCello_obj -c configure_user.txt
 
 ```
+- The more details about the visualization can be found at [VisCello](https://github.com/qinzhu/VisCello/tree/VisCello-atac)
 
 Detailed Usage
 --------------
