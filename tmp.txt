@@ -18,6 +18,6 @@ BOWTIE_PATH = /home/yuw1/.local/bin/bowtie-1.2.2
 MACS2_PATH = /home/yuw1/.local/bin
 PERL_PATH = /usr/bin
 TRIM_GALORE_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/TrimGalore-0.6.3
-HINT_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/conda3/envs/py2/bin
+HINT_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/anaconda3/envs/py2/bin 
 TRIMMOMATIC_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/Trimmomatic-0.39
 GEM_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/gem

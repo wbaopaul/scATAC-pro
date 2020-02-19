@@ -215,7 +215,7 @@ if [ $? != "0" ]; then
     #export PATH=$PREFIX_BIN/bin:$PATH
     #pip install -t $PREFIX_BIN pyBigWig==0.3.12
     #pip install --upgrade -t $PREFIX_BIN macs2
-    if [[ $PYTHON_PATH =~ "anaconda" ]];then
+    if [[ $PYTHON_PATH =~ "conda" ]];then
         conda install macs2 -y --channel bioconda
     else
         pip install --upgrade --user macs2
@@ -240,9 +240,6 @@ else
     echo -e "$BLUE""macs2 appears to be installed successfully""$NORMAL"
 fi
 
-
-#unset PYTHONHOME 
-#unset PYTHONPATH 
 
 ##################################################################
 ## samtools  
@@ -347,7 +344,7 @@ fi
 
 if [ $wasInstalled == 0 ]; then
     echo "Installing deeptools ..."
-    if [[ $PYTHON_PATH =~ "anaconda" ]];then
+    if [[ $PYTHON_PATH =~ "conda" ]];then
         conda install deeptools -y --channel bioconda
     else
         export PATH=~/.local/bin:$PATH
@@ -369,7 +366,7 @@ if [ $wasInstalled == 0 ]; then
     if [ $? = "0" ]; then
         echo -e "$BLUE""deeptools apyypears to be installed successfully""$NORMAL"
         DEEPTOOLS_PATH=`dirname $(which deeptools)`
-        if [[ $PYTHON_PATH != *"anaconda"* ]];then
+        if [[ $PYTHON_PATH != *"conda"* ]];then
             echo -e export PATH=$DEEPTOOLS_PATH:"\$"PATH >> ~/.bashrc
         fi
 
@@ -434,7 +431,7 @@ if [ $wasInstalled == 0 ]; then
     #From sources
     cutadapt --version
     if [ $? != "0" ]; then
-        if [[ $PYTHON_PATH =~ "anaconda" ]];then
+        if [[ $PYTHON_PATH =~ "conda" ]];then
             conda install cutadapt -y --channel bioconda
         else
             pip install --user --upgrade cutadapt
@@ -505,18 +502,18 @@ if [ $? != "0" ]; then
     echo -e -n "Do you want to install RGT for footprinting analysis (it will take a while to install it) ? (y/n) [n] : " "$NORMAL"
     read ans
     if [ XX${ans} = XXy ]; then
-        echo -e "$RED""OK, trying to install it through anaconda...""$NORMAL"
+        echo -e "$RED""OK, trying to install it through conda...""$NORMAL"
         which conda > /dev/null 2>&1
         if [ $? != "0" ]; then
-            echo "Install anaconda:"
+            echo "Install miniconda3:"
                 if [ "$os" = "Darwin" ]; then
-                    $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+                    $get tmp.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh 
                 else
-                    $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
+                    $get tmp.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
                 fi
-                bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
-                conda_path=$PREFIX_BIN/anaconda3/condabin
-                export PATH=$conda_path:$PATH
+                bash tmp.sh -b -f -p $PREFIX_BIN/conda3
+                conda_path=$PREFIX_BIN/conda3/bin
+                #export PATH=$conda_path:$PATH
         else
             conda_path=$(dirname `which conda`)
             pver=`conda --version 2>&1 | cut -d" " -f2`
@@ -525,39 +522,44 @@ if [ $? != "0" ]; then
                 echo -e "$RED""conda v4.7.0 or higher is needed [$pver detected], I will updated it now...""$NORMAL"
 
                 if [ "$os" = "Darwin" ]; then
-                    $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+                    $get tmp.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh 
                 else
-                    $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
+                        $get tmp.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
+                    fi
+                    bash tmp.sh -b -f -p $PREFIX_BIN/conda3
+                    source ~/.bashrc
+                    conda_path=$PREFIX_BIN/conda3/bin
+                    #export PATH=$conda_path:$PATH
                 fi
-                bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
-                conda_path=$PREFIX_BIN/anaconda3/condabin
-                export PATH=$conda_path:$PATH
             fi
-        fi
+            unset PYTHONPATH
+            unset PYTHONHOME
+            ${conda_path}/conda --help > /dev/null 2>&1
+            if [ $? != "0" ]; then
+                "Cannot install Miniconda3, please install it manually!"
+            else
 
-        which conda > /dev/null 2>&1
-        if [ $? != "0" ]; then
-            "Cannot install anaconda3, please install it manually!"
-        else
-            anaconda_path=$(dirname $conda_path)
-            export PATH=$anaconda_path/bin:$PATH
-            unset PYTHONHOME 
-            unset PYTHONPATH 
-            conda create -y --name py2 python=2.7
-            conda init --all
-            source ~/.bashrc
-            conda activate py2
-            pip install --upgrade pip
-            pip install --upgrade cython scipy numpy
-            pip install --upgrade RGT 
-        
-            HINT_PATH=$(dirname `which rgt-hint`)
-            if [ $? != '0' ]; then
-                echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually! ].""$NORMAL"
-                exit 
-            fi
-            conda deactivate 
-            conda deactivate
+                ${conda_path}/conda create -y --name py2 python=2.7
+                ${conda_path}/conda activate py2
+                pip install --upgrade pip
+                pip install pytz pyparsing subprocess32
+                pip install python-dateutil==2.5.0
+                pip install --upgrade cython scipy numpy
+                pip install --upgrade RGT 
+            
+                HINT_PATH=$(dirname `which rgt-hint`)
+                if [ $? != '0' ]; then
+                    echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually! ].""$NORMAL"
+                    exit 
+                fi
+                #echo "install dependent data for rgt, this will take a while"
+                #cd ~/rgtdata
+                #python setupGenomicData.py --mm9
+                #python setupGenomicData.py --mm10
+                #python setupGenomicData.py --hg19
+                #python setupGenomicData.py --hg38
+                #conda deactivate 
+                #conda deactivate
         fi
     fi
 else

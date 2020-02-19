@@ -19,7 +19,6 @@ signal_dir=${OUTPUT_DIR}/signal
 mkdir -p $map_dir
 mkdir -p $signal_dir
 
-#ff=${OUTPUT_DIR}/filtered_matrix/${CELL_CALLER}/barcodes.txt  ## cell barcodes
 
 curr_dir=`dirname $0`
 

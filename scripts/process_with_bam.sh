@@ -49,8 +49,9 @@ ${curr_dir}/call_cell.sh $mat_file $2 $3
 ## 6. mapping qc for cell barcodes
 map_dir=${OUTPUT_DIR}/mapping_result
 input_bam=${map_dir}/${OUTPUT_PREFIX}.positionsort.bam
+input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes.txt
+${curr_dir}/get_bam4Cells.sh ${input_bam},${input_bc} $2 $3
 
-${curr_dir}/get_bam4Cells.sh $input_bam $2 $3
 
 ## report preprocessing QC
 echo "generating report ..."

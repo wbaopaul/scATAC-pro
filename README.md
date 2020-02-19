@@ -47,6 +47,7 @@ Updates
 ------------
 - current version: 1.1.0
 - Feb, 2020
+    * install rgt-hint (for footprint analysis) through miniconda3
     * add module *process_with_bam*, allowing process from aggragated bam file
     * integrate from peaks files, assume each sample was processed through scATAC-pro;
         output matrix with the same merged peaks/features and the previously called cells, along

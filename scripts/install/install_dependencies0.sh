@@ -152,13 +152,13 @@ if [ $? != "0" ]; then
     exit 1;
 else
     pver=`R --version 2>&1 | head -1 | cut -d" " -f3`
-    vercomp $pver "3.5.3"
+    vercomp $pver "3.6.0"
     if [[ $? == 2 ]]; then
-    echo -e "$RED""R v3.5.3 or higher is needed [$pver detected].""$NORMAL"
+    echo -e "$RED""R v3.6.0 or higher is needed [$pver detected].""$NORMAL"
     exit 1;
     fi
 fi
-
+R_PATH=$(dirname `which R`)
 
 # perl
 which perl > /dev/null 2>&1
@@ -179,45 +179,6 @@ else
     get="wget --no-check-certificate -O"
 fi
 
-
-
-#conda -- will use conda to handle different python3 and python2
-which conda > /dev/null 2>&1
-if [ $? != "0" ]; then
-    echo -e "$RED""Can not proceed without Conda, I will install it now ...""$NORMAL"
-    echo "Install anaconda:"
-        if [ "$os" = "Darwin" ]; then
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
-        else
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
-        fi
-        bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
-        conda_path=$PREFIX_BIN/anaconda3/condabin
-        export PATH=$conda_path:$PATH
-else
-    conda_path=$(dirname `which conda`)
-    pver=`conda --version 2>&1 | cut -d" " -f2`
-    vercomp $pver "4.7.10"
-    if [[ $? == 2 ]]; then
-        echo -e "$RED""conda v4.7.10 or higher is needed [$pver detected], I will updated it now...""$NORMAL"
-
-        if [ "$os" = "Darwin" ]; then
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
-        else
-            $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
-        fi
-        bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
-        conda_path=$PREFIX_BIN/anaconda3/condabin
-        export PATH=$conda_path:$PATH
-    fi
-fi
-
-if [ $? != "0" ]; then
-    "Cannot install conda, please install it manually!"
-fi
-anaconda_path=$(dirname $conda_path)
-export PATH=$anaconda_path/bin:$PATH
-
 # python
 which python > /dev/null 2>&1
 if [ $? != "0" ]; then
@@ -233,6 +194,9 @@ else
 fi
 
 
+PYTHON_PATH=$(dirname `which python`)
+
+
 if [ -d ./tmp ]; then
     rm -r ./tmp
 fi
@@ -245,13 +209,26 @@ cd ./tmp
 wasInstalled=0;
 which macs2 > /dev/null 2>&1
 if [ $? != "0" ]; then
-    pip install macs2
+    echo -e  "$RED"" macs2 not detected, trying to install it now ...""$NORMAL"
+    #pip install --upgrade -t $PREFIX_BIN pip
+    #pip install --upgrade --user pip
+    #export PATH=$PREFIX_BIN/bin:$PATH
+    #pip install -t $PREFIX_BIN pyBigWig==0.3.12
+    #pip install --upgrade -t $PREFIX_BIN macs2
+    if [[ $PYTHON_PATH =~ "anaconda" ]];then
+        conda install macs2 -y --channel bioconda
+    else
+        pip install --upgrade --user macs2
+        export PATH=~/.local/bin:$PATH
+    fi
 fi
+    
 MACS2_PATH=$(dirname `which macs2`)
+
 
 macs2ver=`macs2 --version 2>&1 | cut -d " " -f 2`
 if [ $? != '0' ]; then
-    echo -e  "$RED"" I cannot install macs2, please install it manually! ].""NORMAL"
+    echo -e  "$RED"" I cannot install macs2, please install it manually! ].""$NORMAL"
     exit 
 fi
 
@@ -341,6 +318,7 @@ if [ $wasInstalled == 0 ]; then
     check=`bedtools | grep -i options`;
     if [ $? = "0" ]; then
         echo -e "$BLUE""bedtools appears to be installed successfully""$NORMAL"
+        BEDTOOLS_PATH=`dirname $(which bedtools)`
         echo -e export PATH=$PREFIX_BIN/bedtools2/bin:"\$"PATH >> ~/.bashrc
     else
         echo -e "$RED""bedtools NOT installed successfully""$NORMAL"; exit 1;
@@ -360,7 +338,7 @@ if [ $? = "0" ]; then
     vercomp $dver "3.2.1"
     if [[ $? == 2 ]]; then
         echo -e "$RED""deeptools v3.2.1 or higher is needed [$dver detected].""$NORMAL"
-        echo -e "$RED""I will try to install v3.2.1 now ...""$NORMAL"
+        echo -e "$RED""I will try to install it now ...""$NORMAL"
     else
         echo -e "$BLUE""deeptools appears to be already installed. ""$NORMAL"
         wasInstalled=1;
@@ -369,15 +347,32 @@ fi
 
 if [ $wasInstalled == 0 ]; then
     echo "Installing deeptools ..."
-    
-    ## from pip
-    pip install deeptools==3.2.1
+    if [[ $PYTHON_PATH =~ "anaconda" ]];then
+        conda install deeptools -y --channel bioconda
+    else
+        export PATH=~/.local/bin:$PATH
+        pip install --upgrade --user pip numpy scipy py2bit pyBigWig pysam matplotlib
+        pip install --upgrade --user deeptools
+    fi
+ 
+    #pip install --upgrade -t $PREFIX_BIN deeptools
+
+    ## from souce code
+    #get deeptools.tar.gz https://github.com/deeptools/deepTools/archive/3.3.1.tar.gz
+    #tar -xzvf deeptools.tar.gz
+    #cd deepTools-3.3.1
+    #python setup.py install --prefix $PREFIX_BIN
+    #export PATH=$PREFIX_BIN:$PATH
+    #cd ..
 
     check=`deeptools --version `;
     if [ $? = "0" ]; then
         echo -e "$BLUE""deeptools apyypears to be installed successfully""$NORMAL"
         DEEPTOOLS_PATH=`dirname $(which deeptools)`
-        echo -e export PATH=$DEEPTOOLS_PATH:"\$"PATH >> ~/.bashrc
+        if [[ $PYTHON_PATH != *"anaconda"* ]];then
+            echo -e export PATH=$DEEPTOOLS_PATH:"\$"PATH >> ~/.bashrc
+        fi
+
     else
         echo -e "$RED""deeptools NOT installed successfully""$NORMAL"; exit 1;
     fi
@@ -439,7 +434,11 @@ if [ $wasInstalled == 0 ]; then
     #From sources
     cutadapt --version
     if [ $? != "0" ]; then
-        pip install --user --upgrade cutadapt
+        if [[ $PYTHON_PATH =~ "anaconda" ]];then
+            conda install cutadapt -y --channel bioconda
+        else
+            pip install --user --upgrade cutadapt
+        fi
     fi
 
     $get TrimGalore-0.6.3.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.6.3.tar.gz 
@@ -497,6 +496,82 @@ fi
 
 wasInstalled=0
 
+##########################
+## RGT
+##########################
+which rgt-hint > /dev/null 2>&1
+if [ $? != "0" ]; then
+    echo -e "$RED""rgt not installed..."
+    echo -e -n "Do you want to install RGT for footprinting analysis (it will take a while to install it) ? (y/n) [n] : " "$NORMAL"
+    read ans
+    if [ XX${ans} = XXy ]; then
+        echo -e "$RED""OK, trying to install it through anaconda...""$NORMAL"
+        which conda > /dev/null 2>&1
+        if [ $? != "0" ]; then
+            echo "Install anaconda:"
+                if [ "$os" = "Darwin" ]; then
+                    $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+                else
+                    $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
+                fi
+                bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
+                conda_path=$PREFIX_BIN/anaconda3/condabin
+                export PATH=$conda_path:$PATH
+        else
+            conda_path=$(dirname `which conda`)
+            pver=`conda --version 2>&1 | cut -d" " -f2`
+            vercomp $pver "4.7.0"
+            if [[ $? == 2 ]]; then
+                echo -e "$RED""conda v4.7.0 or higher is needed [$pver detected], I will updated it now...""$NORMAL"
+
+                if [ "$os" = "Darwin" ]; then
+                    $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh
+                else
+                    $get tmp.sh https://repo.anaconda.com/archive/Anaconda3-2019.07-Linux-x86_64.sh
+                fi
+                bash tmp.sh -b -f -p $PREFIX_BIN/anaconda3
+                conda_path=$PREFIX_BIN/anaconda3/condabin
+                export PATH=$conda_path:$PATH
+            fi
+        fi
+
+        which conda > /dev/null 2>&1
+        if [ $? != "0" ]; then
+            "Cannot install anaconda3, please install it manually!"
+        else
+            anaconda_path=$(dirname $conda_path)
+            #export PATH=$anaconda_path/bin:$PATH
+            unset PYTHONHOME 
+            unset PYTHONPATH 
+            conda init --all
+            source ~/.bashrc
+
+            ${anaconda_path}/conda create -y --name py2 python=2.7
+            ${anaconda_path}/conda activate py2
+            pip install --upgrade pip
+            pip install --upgrade cython scipy numpy
+            pip install --upgrade RGT 
+        
+            HINT_PATH=$(dirname `which rgt-hint`)
+            if [ $? != '0' ]; then
+                echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually! ].""$NORMAL"
+                exit 
+            fi
+            conda deactivate 
+            conda deactivate
+        fi
+    fi
+else
+        HINT_PATH=$(dirname `which rgt-hint`)
+fi
+
+##check whether hint is installed correctly
+if [[ ! -d $HINT_PATH ]]; then
+    echo -e "$RED""RGT for rgt-hint NOT installed successfully."
+else
+    echo -e "$BLUE""rgt-hint appears to be installed successfully""$NORMAL"
+fi
+wasInstalled=0
 ## Clean up
 cd ..
 rm -rf ./tmp
@@ -505,40 +580,6 @@ echo -e "$RED""Dependencies checked !""$NORMAL"
 
 
 
-##########################
-## install RGT
-##########################
-wasInstalled=0;
-which rgt-hint > /dev/null 2>&1
-if [ $? != "0" ]; then
-    echo -e "$RED""rgt not installed, trying to install it through anaconda...""$NORMAL"
-    unset PYTHONHOME 
-    unset PYTHONPATH 
-    conda create -y --name py2 python=2.7
-    conda init --all
-    source ~/.bashrc
-    conda activate py2
-    #pip install --upgrade pip
-    pip install --upgrade HTSeq cython scipy numpy
-    pip install --upgrade RGT 
-    
-    HINT_PATH=$(dirname `which rgt-hint`)
-    if [ $? != '0' ]; then
-        echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually if you want to run footprinting analysis! ""$NORMAL"
-    fi
-    conda deactivate 
-    conda deactivate
-else
-    HINT_PATH=$(dirname `which rgt-hint`)
-fi
-
-
-##check whether hint is installed correctly
-if [[ ! -d $HINT_PATH ]]; then
-  echo -e "$RED""RGT for rgt-hint NOT installed successfully. Please manually install it!"
-else
-    echo -e "$BLUE""rgt-hint appears to be installed successfully""$NORMAL"
-fi
 #############################################################################
 ## Create the configure_system file 
 #############################################################################
@@ -562,19 +603,9 @@ echo "#######################################################################" >
 echo "INSTALL_PREFIX = "${install_dir} >> configure_system.txt
 
 
-which python > /dev/null 2>&1
-if [ $? = "0" ]; then
-    echo "PYTHON_PATH = "`dirname $(which python)` >> configure_system.txt
-else
-    die "PYTHON_PATH not found. Exit."
-fi
 
-which R > /dev/null 2>&1
-if [ $? = "0" ]; then
-    echo "R_PATH = "`dirname $(which R)` >> configure_system.txt
-else
-    die "R_PATH not found. Exit." 
-fi
+echo "PYTHON_PATH = " $PYTHON_PATH >> configure_system.txt
+echo "R_PATH = " $R_PATH >> configure_system.txt
 
 which samtools > /dev/null 2>&1
 if [ $? = "0" ]; then
@@ -587,15 +618,17 @@ which deeptools > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo "DEEPTOOLS_PATH = "`dirname $(which deeptools)` >> configure_system.txt
 else
-    die "DEEPTOOLS_PATH not found. Exit." 
+    echo "DEEPTOOLS_PATH not found" 
 fi
 
 
 which bedtools > /dev/null 2>&1
 if [ $? = "0" ]; then
     echo "BEDTOOLS_PATH = "`dirname $(which bedtools)` >> configure_system.txt
+elif [[ -d $BEDTOOLS_PATH ]]; then
+    echo -e "BEDTOOLS_PATH = " $BEDTOOLS_PATH >> configure_system.txt
 else
-    die "BEDTOOLS_PATH not found. Exit." 
+    echo "BEDTOOLS_PATH not found." 
 fi
 
 
@@ -631,22 +664,15 @@ if [ $? = "0" ]; then
 fi
 
 
-echo -e "MACS2_PATH = " $MACS2_PATH >> configure_system.txt
+echo -e "HINT_PATH = " $HINT_PATH >> configure_system.txt
 echo -e "TRIMMOMATIC_PATH = " $TRIMMOMATIC_PATH >> configure_system.txt
 echo -e "GEM_PATH = " $GEM_PATH >> configure_system.txt
-
 
 ## check rights in PREFIX folder
 
 if [ ! -w $install_dir ]; then
     die "Cannot install scATAC-pro in $install_dir directory. Maybe missing super-user (root) permissions to write there. Please specify another directory using 'make configure prefix=YOUR_INSTALL_PATH' ";
 fi 
-
-
-echo -e "HINT_PATH = " $HINT_PATH >> configure_system.txt
-
-
-
 
 echo -e "$RED""All Done: run 'make install' now!""$NORMAL" ;
 
