@@ -180,7 +180,8 @@ bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
 
 library(ggplot2)
 library(grid)
-g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000), ], 
+nsub_frags = min(15000, nrow(bc_stat))
+g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), nsub_frags), ], 
             aes(x = total_frags, y = frac_peak, col = group)) + 
   geom_point(size = 0.5) + scale_x_continuous(trans='log10') + theme_bw() +
       theme(legend.position = 'none', 
