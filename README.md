@@ -47,6 +47,7 @@ Updates
 ------------
 - current version: 1.1.0
 - Feb, 2020
+    * new module *visualize*, allowing interactively visualize and analysis the data
     * install rgt-hint (for footprint analysis) through miniconda3
     * add module *process_with_bam*, allowing process from aggragated bam file
     * integrate from peaks files, assume each sample was processed through scATAC-pro;
@@ -231,8 +232,8 @@ Run scATAC-pro step by step
 - After clustering, user can interactively visualize the cis-element chromatin accessibility using [VisCello](https://github.com/qinzhu/VisCello), in R:
 
 ```
-library(VisCello)
-cello('output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/VisCello_obj')
+scATAC-pro -s visualize -i output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/VisCello_obj -c configure_user.txt
+
 ```
 
 Detailed Usage
@@ -332,6 +333,10 @@ Detailed Usage
                          input: differnt files separated by comma, like:
                                 peakFilePath,fragmentFilePath,barcodesPath
                          output: a reconstructed peak-cell matrix saved under the same path as barcodes.txt file
+          visualize: interactively visualize the data through web browser
+                         input: VisCello_obj directory (created by clustering module)
+                         output: web browser pop up for interactively visualization"
+
        -i|--input INPUT : input data, different types of input data are required for different steps;
        -c|--conf CONFIG : configuration file for parameters (if exists) for each step
        [-o|--output_dir : folder to save results, default output/ under the curret directory; sub-folder will be created automatically for each step

@@ -334,6 +334,16 @@ reConstMtx: config_check
 	@echo 
 
 #######################################
+## visualize
+#######################################
+visualize: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "interactively visualize ..." 
+	@$(SCRIPTS)/visualize.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## all
 #######################################
 all: config_check
