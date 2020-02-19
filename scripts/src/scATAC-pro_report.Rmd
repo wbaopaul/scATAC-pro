@@ -457,7 +457,6 @@ do_DA <- function(mtx_score, clusters, test = 'wilcox',
     mu1 = sapply(1:length(features), function(x) mean(mtx1[x, ]))
     mu2 = sapply(1:length(features), function(x) mean(mtx2[x, ]))
     
-   
     pvs = sapply(1:length(features), function(x) wilcox.test(mtx1[x, ], mtx2[x, ], alternative = 'greater')$p.value )
     pvs.adj = p.adjust(pvs, method = 'fdr')
     res0 = data.table('feature' = features, 'cluster' = cluster0,

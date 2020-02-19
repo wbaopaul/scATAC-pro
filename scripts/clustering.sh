@@ -31,4 +31,13 @@ if [ "$prepCello" = "TRUE" ]; then
     echo "  organism: $organism " >> ${output_dir}/VisCello_obj/config.yml
     echo "  feature_name_column: 'symbol' " >> ${output_dir}/VisCello_obj/config.yml
     echo "  feature_id_column: 'symbol' " >> ${output_dir}/VisCello_obj/config.yml
+   
+    ## launch viscello 
+    echo "library(VisCello.atac)" > ${OUTPUT_DIR}/summary/launch_viscello.R
+    echo -e "VisCell.atac::cello('${output_dir}/VisCello_obj/')" >> ${OUTPUT_DIR}/summary/launch_viscello.R
+    
+    ## build shortcut
+    echo -e "${R_PATH}/Rscript ${OUTPUT_DIR}/summary/launch_viscello.R & open http://127.0.0.1:6456 " > ${OUTPUT_DIR}/summary/viscello_shortcut
+    chmod u+x ${OUTPUT_DIR}/summary/viscello_shortcut        
+ 
 fi

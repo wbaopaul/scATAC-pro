@@ -524,12 +524,12 @@ if [ $? != "0" ]; then
                 if [ "$os" = "Darwin" ]; then
                     $get tmp.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh 
                 else
-                        $get tmp.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
-                    fi
-                    bash tmp.sh -b -f -p $PREFIX_BIN/conda3
-                    source ~/.bashrc
-                    conda_path=$PREFIX_BIN/conda3/bin
-                    #export PATH=$conda_path:$PATH
+                    $get tmp.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
+                fi
+                bash tmp.sh -b -f -p $PREFIX_BIN/conda3
+                source ~/.bashrc
+                conda_path=$PREFIX_BIN/conda3/bin
+                #export PATH=$conda_path:$PATH
                 fi
             fi
             unset PYTHONPATH
@@ -538,7 +538,7 @@ if [ $? != "0" ]; then
             if [ $? != "0" ]; then
                 "Cannot install Miniconda3, please install it manually!"
             else
-
+                
                 ${conda_path}/conda create -y --name py2 python=2.7
                 ${conda_path}/conda activate py2
                 pip install --upgrade pip
