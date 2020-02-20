@@ -49,7 +49,7 @@ unset PYTHONPATH
 for input_bam0 in $(find $output_dir -name *.bam); do
     pre=$(basename $input_bam0)
     pre=${pre/.bam/}
-    ${MACS2_PATH}/macs2 callpeak -t $input_bam0 --outdir $output_dir -n $pre -f BAM -g $organism $MACS2_OPTS &
+    ${MACS2_PATH}/macs2 callpeak -t $input_bam0 --outdir $output_dir -n $pre -f BAM $MACS2_OPTS &
 done
 wait
 
