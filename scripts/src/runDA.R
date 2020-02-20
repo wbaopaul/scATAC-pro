@@ -48,19 +48,20 @@ sele.features = rownames(mean_frac_cls)[rowSums(mean_frac_cls > 0.15) > 1]
 rnames = rownames(mtx)
 mtx = mtx[rnames %in% sele.features, ]
 
-group1 = unlist(strsplit(group1, ';'))
-group2 = unlist(strsplit(group2, ';'))
+group1 = unlist(strsplit(group1, ':'))
+group2 = unlist(strsplit(group2, ':'))
 
+cn = colnames(seurat.obj)
 
 if(group1[1] == 'all') {
    cls = sort(unique(seurat.obj$active_clusters))
    markers = NULL
    for(cluster0 in cls){
-        cells1 = names(which(seurat.obj$active_clusters == cluster0))
+        cells1 = cn[which(seurat.obj$active_clusters == cluster0)]
         if(group2[1] == 'rest') {
-          cells2 = names(which(seurat.obj$active_clusters != cluster0))
+          cells2 = cn[which(seurat.obj$active_clusters != cluster0)]
         }else{
-          cells2 = names(which(seurat.obj$active_clusters %in% group2))
+          cells2 = cn[which(seurat.obj$active_clusters %in% group2)]
         }
         if(length(cells1) <= 10 || length(cells2) <= 10) next
         mm = FindMarkers(mtx, 
@@ -76,10 +77,10 @@ if(group1[1] == 'all') {
 
    }
 }else{
-  cells1 = names(which(seurat.obj$active_clusters %in% group1))
+  cells1 = cn[which(seurat.obj$active_clusters %in% group1)]
   if(length(cells1) <= 10) stop('Not enough cells in group1')
     if(group2[1] == 'rest'){
-        cells2 = names(which(!seurat.obj$active_clusters %in% group1))
+        cells2 = cn[which(!seurat.obj$active_clusters %in% group1)]
         markers = FindMarkers(mtx, 
                               cells.1 = cells1, cells.2 = cells2, test.use = test_use, 
                               logfc.threshold = 0.0, max.cells.per.ident = 500,
@@ -87,7 +88,7 @@ if(group1[1] == 'all') {
         markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
         markers$fdr = p.adjust(markers$p_val, method = 'fdr')
     }else{
-        cells2 = names(which(seurat.obj$active_clusters %in% group2))
+        cells2 = cn[which(seurat.obj$active_clusters %in% group2)]
         if(length(cells2) <= 10) stop('Not enough cells in group2')
         markers = FindMarkers(mtx,  
                               cells.1 = cells1, cells.2 = cells2, test.use = test_use,

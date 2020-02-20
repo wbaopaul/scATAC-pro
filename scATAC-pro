@@ -72,7 +72,8 @@ function help {
                            input: filtered peak by cell matrix file path
                            output: TF by cell matrix indicating TF accessibility (chromVAR object)"
     echo "      runDA: doing differential accessibility analysis
-                           input: seurat_obj.rds path from clustering analysis
+                           input: two groups separated by semicolon like: 0,1;2 
+                                  here group1 consist of cluster0 and cluster1; group2 of cluster2
                            output: differential peaks in txt format saved at the same directory as seurat_obj.rds"
     echo "      runGO: doing GO analysis
                            input: result of runDA module (.txt file)

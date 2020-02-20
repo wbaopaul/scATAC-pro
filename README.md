@@ -207,7 +207,7 @@ Run scATAC-pro step by step
                  -c configure_user.txt
                  
     $ scATAC-pro -s runDA
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/seurat_obj.rds 
+                 -i 0:1:3,2  ## group1 consist of cluster 0,1,and 3; group2 cluster2 
                  -c configure_user.txt
                  
     $ scATAC-pro -s runGO
@@ -219,15 +219,17 @@ Run scATAC-pro step by step
                  -i output/summary
                  -c configure_user.txt
                  
-    ## perform integrated analysis            
-    $ scATAC-pro -s integrate
-                 -i bam_file1,bam_file2,(bam_file3...)
-                 -c configure_user.txt
-                
     ## merge peaks that are within 200bp distance of each other            
     $ scATAC-pro -s mergePeaks
                  -i peak_file1,peak_file2,(peak_file3...),200
                  -c configure_user.txt
+
+    ## perform integrated analysis, assume each sample was processed by scATAC-pro
+    ## which means each fragments.txt and barcodes.txt files can be found correspondly            
+    $ scATAC-pro -s integrate
+                 -i peak_file1,peak_file2,(peak_file3...)   ## 
+                 -c configure_user.txt
+                
 
 - After clustering, user can interactively visualize and analyze the data with module *visualize* 
 
@@ -297,7 +299,8 @@ Detailed Usage
                                input: filtered peak by cell matrix file path
                                output: TF by cell matrix indicating TF accessibility (chromVAR object)
           runDA: doing differential accessibility analysis
-                           input: seurat_obj.rds path from clustering analysis
+                           input: two groups like 0:1,2 here group1 (consist of cluster 0 and 1),
+                                  and group2 will be cluster2
                            output: differential peaks in txt format saved at the same directory as seurat_obj.rds
           runGO: doing GO analysis
                            input: result of runDA module (.txt file)
