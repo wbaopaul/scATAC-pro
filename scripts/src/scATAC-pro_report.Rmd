@@ -633,8 +633,23 @@ if(file.exists(cicero_conn.file)){
  conns = fread(cicero_conn.file)
  conns = data.frame(conns)
  temp <- tempfile()
- download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz', temp)
- gene_anno <- rtracklayer::readGFF(temp)
+if(grepl(GENOME_NAME, pattern == 'mm10', ignore.case = T)) {
+    download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/mus_musculus/Mus_musculus.GRCm38.95.gtf.gz', temp)
+ }
+
+if(grepl(GENOME_NAME, pattern == 'mm9', ignore.case = T)) {
+    download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz', temp)
+ }
+
+if(grepl(GENOME_NAME, pattern == 'hg38', ignore.case = T)) {
+    download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz', temp)
+}
+
+if(grepl(GENOME_NAME, pattern == 'hg19', ignore.case = T)) {
+    download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz', temp)
+}
+
+gene_anno <- rtracklayer::readGFF(temp)
  unlink(temp)
  
  # rename some columns to match requirements
@@ -645,10 +660,15 @@ if(file.exists(cicero_conn.file)){
  gene_anno = subset(gene_anno, select = c(chromosome, start, end, strand, 
                                           transcript, gene, symbol))
  gene_anno = gene_anno[complete.cases(gene_anno), ]
+
+ chr0 = unilist(strsplit(Cicero_Plot_Region, ':'))[1] ## chr5:140610000-140640000
+ region0 = unilist(strsplit(Cicero_Display_Region, ':'))[2]
+ start0 = as.integer(unlist(strsplit(region0, '-'))[1])
+ end0 = as.integer(unlist(strsplit(region0, '-'))[2])
  
  if(plotEPS){
-   pdf(paste0(params$output_dir,'/summary/Figures/interactions_CD14_locus.pdf'), width = 8, height = 5, fonts = 'sans')
-    plot_connections(conns, "chr5", 140610000, 140640000,
+   pdf(paste0(params$output_dir,'/summary/Figures/interactions_example_region.pdf'), width = 8, height = 5, fonts = 'sans')
+    plot_connections(conns, chr0, start0, end0,
                  gene_model = gene_anno, 
                  coaccess_cutoff = .4, 
                  connection_width = 1, 
@@ -657,7 +677,7 @@ if(file.exists(cicero_conn.file)){
    dev.off()
   
  }
- plot_connections(conns, "chr5", 140610000, 140640000,
+    plot_connections(conns, chr0, start0, end0,
                  gene_model = gene_anno, 
                  coaccess_cutoff = .4, 
                  connection_width = 1, 

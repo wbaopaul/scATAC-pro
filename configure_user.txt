@@ -141,6 +141,14 @@ DO_FOOTPRINT = FALSE
 cluster1_fp = 0   ## cluster name
 cluster2_fp = 1
 
+############################################################################
+## cicero cis-interaction ##
+###########################################################################
 RUN_Cicero = TRUE
+## plot interactions within Cicero_Plot_Region on the summary report  
+Cicero_Plot_Region = chr5:140610000-140640000 
+
+
 plotEPS = TRUE  ## print figures in eps format
+
 
