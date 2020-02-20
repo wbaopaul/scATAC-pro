@@ -2,7 +2,7 @@
 
 set -e
 
-input_bam=$1  ## two input bam file for two cluster, seperated by ,
+inputs=$1  ## two input bam file for two cluster, seperated by ,
 
 # reading configure file
 curr_dir=`dirname $0`
@@ -10,13 +10,16 @@ source ${curr_dir}/read_conf.sh
 read_conf "$2"
 read_conf "$3"
 
-bams=(${input_bam//,/ })
+output_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/footprint
+mkdir -p $output_dir
+
+## if bam file not given, suppose cluster name was given
+## and will use default bam file for the corresponding cluster
+bams=(${inputs//,/ })
 
 bam1=${bams[0]}
 bam2=${bams[1]}
 
-output_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/footprint
-mkdir -p $output_dir
 
 
 if [[ ! -d "$HINT_PATH" ]]; then

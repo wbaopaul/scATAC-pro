@@ -395,37 +395,46 @@ if(file.exists(seurat_file)){
 
 ### GO Analysis
 ```{r, warning=F, message=F}
-
-
-#go_file = paste0(down.dir, '/enrichedGO_differential_peak_cluster_', group1, 
-#                  '_VS_cluster_', group2, '.txt.xlsx')
 go_file = paste0(down.dir, '/enrichedGO_differential_peak_cluster_', group1, 
-                  '_VS_cluster_', group2, '.txt.csv')
+                  '_VS_cluster_', group2, '.txt.xlsx')
+#go_file = paste0(down.dir, '/enrichedGO_differential_peak_cluster_', group1, 
+#                  '_VS_cluster_', group2, '.txt.csv')
 if(file.exists(go_file)){
    #library(xlsx)
-    #go_res = read.xlsx(go_file, sheetName = paste0('cluster', group1))
-    go_res = fread(go_file)
-    go_res = data.table(go_res)
-    go_res[, 'score' := -log10(p.adjust)]
-    go_res = go_res[order(-score), ]
-    go_res = go_res[1:20, ]
-    go_res = go_res[order(score), ]
-    
-    go_res$Description = factor(go_res$Description, levels = go_res$Description)
-    
-    p_go <- ggplot(go_res, aes(y = score, x = Description, fill = Count)) +
-      geom_bar(width = 0.7, stat = 'identity') +
-      ggtitle(paste0("Enriched terms: cluster", group1)) + theme_classic() + 
-      theme(legend.position = 'bottom', legend.direction = "horizontal") + 
-      coord_flip()  +  scale_fill_continuous(name = "#genes", type = "viridis") +
-      xlab('') + ylab('-log10(p.adjust)')
-     
-    
-  if(plotEPS){
-    pfname = paste0(params$output_dir, '/summary/Figures/enriched_GO.eps')
-    ggsave(p_go, file = pfname, device = 'eps', width = 10, height = 6)
-  }
-  p_go 
+    go_res1 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group1))
+    go_res2 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group2))
+    go_res = go_res1
+    group.sele = group1
+    if(nrow(go_res) == 0) {
+        go_res = go_res2
+        group.sele = group2
+    }
+    if(nrow(go_res) == 0) {
+        print('No enriched terms in any of the two groups')
+    }else{
+        #go_res = fread(go_file)
+        go_res = data.table(go_res)
+        go_res[, 'score' := -log10(p.adjust)]
+        go_res = go_res[order(-score), ]
+        go_res = go_res[1:20, ]
+        go_res = go_res[order(score), ]
+        
+        go_res$Description = factor(go_res$Description, levels = go_res$Description)
+        
+        p_go <- ggplot(go_res, aes(y = score, x = Description, fill = Count)) +
+          geom_bar(width = 0.7, stat = 'identity') +
+          ggtitle(paste0("Enriched terms: cluster_", group2)) + theme_classic() + 
+          theme(legend.position = 'bottom', legend.direction = "horizontal") + 
+          coord_flip()  +  scale_fill_continuous(name = "#genes", type = "viridis") +
+          xlab('') + ylab('-log10(p.adjust)')
+         
+        
+      if(plotEPS){
+        pfname = paste0(params$output_dir, '/summary/Figures/enriched_GO.eps')
+        ggsave(p_go, file = pfname, device = 'eps', width = 10, height = 6)
+      }
+    p_go 
+   }
 }
 
 ```
@@ -530,8 +539,10 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   ann_col = data.frame('cluster' = metaData$active_clusters)
   rownames(ann_col) = metaData$rn
   
-  up_cut = quantile(sele.zscores, 0.95)
-  low_cut = quantile(sele.zscores, 0.05)
+  up_cut = quantile(sele.zscores, 0.95, na.rm = T)
+  low_cut = quantile(sele.zscores, 0.05, na.rm = T)
+  sele.zscores[is.na(sele.zscores)] = 0
+  low_cut = min(0, low_cut)
   sele.zscores[sele.zscores > up_cut] = up_cut
   sele.zscores[sele.zscores < low_cut] = low_cut
   
@@ -625,7 +636,7 @@ p
 ```
 
 
-### Predicted Interactions at CD14 locus
+### Predicted Interactions at a locus of interest
 ```{r, out.width='\\textwidth'}
 cicero_conn.file = paste0(down.dir, '/cicero_interactions.txt')
 

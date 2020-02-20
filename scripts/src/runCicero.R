@@ -16,8 +16,10 @@ genome_size_file = args[4]
 seurat.obj = readRDS(seuratObj_file)
 
 tss_ann <- fread(tss_file, header = F)
-names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
-tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
+#names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
+#tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
+names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
+
 
 seurat.obj$active_clusters = as.character(seurat.obj$active_clusters)
 

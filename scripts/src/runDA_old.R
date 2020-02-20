@@ -47,29 +47,53 @@ sele.features = rownames(mean_frac_cls)[rowSums(mean_frac_cls > 0.15) > 1]
 #vFeatures = VariableFeatures(seurat.obj)
 rnames = rownames(mtx)
 mtx = mtx[rnames %in% sele.features, ]
-group1 = unlist(strsplit(group1, ';'))
-group2 = unlist(strsplit(group2, ';'))
 
-cells1 = names(which(seurat.obj$active_clusters %in% group1))
-if(group2 == 'rest'){
-    cells2 = names(which(!seurat.obj$active_clusters %in% group1))
-    markers = FindMarkers(mtx, 
-                          cells.1 = cells1, cells.2 = cells2, test.use = test_use, 
-                          logfc.threshold = 0.0, max.cells.per.ident = 500,
-                          only.pos = F, latent.vars = confVar)
-    markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
-    markers$fdr = p.adjust(markers$p_val, method = 'fdr')
+
+if(group1 == 'all') {
+   cls = sort(unique(seurat.obj$active_clusters))
+   markers = NULL
+   for(cluster0 in cls){
+        cells1 = names(which(seurat.obj$active_clusters == cluster0))
+        if(group2 == 'rest') {
+          cells2 = names(which(seurat.obj$active_clusters != cluster0))
+        }else{
+          cells2 = names(which(seurat.obj$active_clusters == group2))
+        }
+        if(length(cells1) <= 10 || length(cells2) <= 10) next
+        mm = FindMarkers(mtx, 
+                         cells.1 = cells1, cells.2 = cells2,
+                         test.use = test_use, logfc.threshold = 0.0, 
+                         max.cells.per.ident = 500, 
+                         only.pos = T, latent.vars = confVar)
+
+        mm$cluster = cluster0
+        mm$fdr = p.adjust(mm$p_val, method = 'fdr')
+        mm$peak = rownames(mm)
+        markers = rbind(markers, mm)
+
+   }
 }else{
-    cells2 = names(which(seurat.obj$active_clusters %in% group2))
-    markers = FindMarkers(mtx,  
-                          cells.1 = cells1, cells.2 = cells2, test.use = test_use,
-                          max.cells.per.ident = 500, logfc.threshold = 0.0, 
-                          only.pos = F, latent.vars = confVar)
-    markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
-    markers$fdr = p.adjust(markers$p_val, method = 'fdr')
+  cells1 = names(which(seurat.obj$active_clusters == group1))
+    if(group2 == 'rest'){
+        cells2 = names(which(seurat.obj$active_clusters != group1))
+        markers = FindMarkers(mtx, 
+                              cells.1 = cells1, cells.2 = cells2, test.use = test_use, 
+                              logfc.threshold = 0.0, max.cells.per.ident = 500,
+                              only.pos = F, latent.vars = confVar)
+        markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
+        markers$fdr = p.adjust(markers$p_val, method = 'fdr')
+    }else{
+        cells2 = names(which(seurat.obj$active_clusters == group2))
+        markers = FindMarkers(mtx,  
+                              cells.1 = cells1, cells.2 = cells2, test.use = test_use,
+                              max.cells.per.ident = 500, logfc.threshold = 0.0, 
+                              only.pos = F, latent.vars = confVar)
+        markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
+        markers$fdr = p.adjust(markers$p_val, method = 'fdr')
+    }
+  
+  markers$peak = rownames(markers)
 }
-
-markers$peak = rownames(markers)
 
 
 markers = data.table(markers)
