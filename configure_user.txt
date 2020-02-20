@@ -154,7 +154,7 @@ RUN_Cicero = TRUE
 ## plot interactions within Cicero_Plot_Region on the summary report  
 Cicero_Plot_Region = chr5:140610000-140640000 
 
-
-plotEPS = TRUE  ## print figures in eps format
+## save figures under output/summary/figures
+plotEPS = TRUE  ## print figures in eps format when generating summary report
 
 

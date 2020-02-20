@@ -583,7 +583,7 @@ Column
 ### Footprinting Analysis: Comparing two clusters
 
 ```{r, out.width='\\textwidth'}
-comp_cls = paste0('cluster_', cluster1_fp, '_cluster_', cluster2_fp)
+comp_cls = paste0('cluster_', group1_fp, '_cluster_', group2_fp)
 footprint_stats.file = paste0(down.dir, '/data_by_cluster/footprint/', comp_cls, '/differential_statistics.txt')
 if(file.exists(footprint_stats.file)){
   library(ggrepel)
@@ -598,8 +598,8 @@ if(file.exists(footprint_stats.file)){
   footprint_stats[, c('motif1', 'motif2') := NULL]
   
   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05, 'differentiated', 'no difference')]
-  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity > 0, paste0('cluster', cluster2_fp, '_high'), isSig)]
-   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity < 0, paste0('cluster', cluster1_fp, '_high'), isSig)]
+  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity > 0, paste0('cluster', group2_fp, '_high'), isSig)]
+   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity < 0, paste0('cluster', group1_fp, '_high'), isSig)]
    
   footprint_stats$motif_show = ""
   footprint_stats$motif = toupper(footprint_stats$motif)
@@ -644,19 +644,19 @@ if(file.exists(cicero_conn.file)){
  conns = fread(cicero_conn.file)
  conns = data.frame(conns)
  temp <- tempfile()
-if(grepl(GENOME_NAME, pattern == 'mm10', ignore.case = T)) {
+if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {
     download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/mus_musculus/Mus_musculus.GRCm38.95.gtf.gz', temp)
  }
 
-if(grepl(GENOME_NAME, pattern == 'mm9', ignore.case = T)) {
+if(grepl(GENOME_NAME, pattern = 'mm9', ignore.case = T)) {
     download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz', temp)
  }
 
-if(grepl(GENOME_NAME, pattern == 'hg38', ignore.case = T)) {
+if(grepl(GENOME_NAME, pattern = 'hg38', ignore.case = T)) {
     download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz', temp)
 }
 
-if(grepl(GENOME_NAME, pattern == 'hg19', ignore.case = T)) {
+if(grepl(GENOME_NAME, pattern = 'hg19', ignore.case = T)) {
     download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz', temp)
 }
 

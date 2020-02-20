@@ -954,6 +954,73 @@ prepInput4Cello <- function(mtx, seurat.obj, norm_mtx = NULL,
 }
 
 
+normalize_gene_activities.corrected <- function (activity_matrices, cell_num_genes) 
+{
+  if (!is.list(activity_matrices)) {
+    scores <- activity_matrices
+    normalization_df <- data.frame(cell = colnames(activity_matrices), 
+                                   cell_group = 1)
+  }else {
+    scores <- do.call(cbind, activity_matrices)
+    normalization_df <- do.call(rbind, lapply(seq_along(activity_matrices), 
+                                              function(x) {
+                                                data.frame(cell = colnames(activity_matrices[[x]]), 
+                                                           cell_group = rep(x, ncol(activity_matrices[[x]])))
+                                              }))
+  }
+  scores <- scores[Matrix::rowSums(scores) != 0, Matrix::colSums(scores) != 
+                     0]
+  
+  ## correct by adding following lines
+  cell_num_genes = cell_num_genes[normalization_df$cell %in% colnames(scores)]
+  normalization_df = subset(normalization_df, cell %in% colnames(scores))
+  ##
+  
+  normalization_df$cell_group <- factor(normalization_df$cell_group)
+  normalization_df$total_activity <- Matrix::colSums(scores)
+  normalization_df$total_sites <- cell_num_genes[as.character(normalization_df$cell)]
+  if (!is.list(activity_matrices)) {
+    activity_model <- stats::lm(log(total_activity) ~ log(total_sites), 
+                                data = normalization_df)
+  } else {
+    activity_model <- stats::lm(log(total_activity) ~ log(total_sites) * 
+                                  cell_group, data = normalization_df)
+  }
+  normalization_df$fitted_curve <- exp(as.vector(predict(activity_model, 
+                                                         type = "response")))
+  size_factors <- log(normalization_df$fitted_curve)/mean(log(normalization_df$fitted_curve))
+  size_factors <- Matrix::Diagonal(x = 1/size_factors)
+  row.names(size_factors) <- normalization_df$cell
+  colnames(size_factors) <- row.names(size_factors)
+  
+  scores <- Matrix::t(size_factors %*% Matrix::t(scores))
+  scores@x <- pmin(1e+09, exp(scores@x) - 1)
+  sum_activity_scores <- Matrix::colSums(scores)
+  scale_factors <- Matrix::Diagonal(x = 1/sum_activity_scores)
+  row.names(scale_factors) <- normalization_df$cell
+  colnames(scale_factors) <- row.names(scale_factors)
+  scores <- Matrix::t(scale_factors %*% Matrix::t(scores))
+  
+  if (!is.list(activity_matrices)) {
+    rn = row.names(activity_matrices)
+    cn = colnames(activity_matrices)
+    rn = rn[rn %in% row.names(scores)]
+    cn = cn[cn %in% colnames(scores)]
+    
+    ret <- scores[rn, cn]
+  }
+  else {
+    ret <- lapply(activity_matrices, function(x) {
+      rn = row.names(x)
+      cn = colnames(x)
+      rn = rn[rn %in% row.names(x)]
+      cn = cn[cn %in% colnames(x)]
+      scores[rn, cn]
+    })
+  }
+  return(ret)
+}
+
 # do cicero given a Seurat object, output gene activity score
 doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
                             gene_ann, npc = 30, coaccess_thr = 0.25){
@@ -1014,7 +1081,7 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
   names(num_genes) <- row.names(pData(input_cds))
   
   # normalize
-  cicero_gene_activities <- normalize_gene_activities(unnorm_ga, num_genes)
+  cicero_gene_activities <- normalize_gene_activities.corrected(unnorm_ga, num_genes)
   
   # if you had two datasets to normalize, you would pass both:
   # num_genes should then include all cells from both sets
