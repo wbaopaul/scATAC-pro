@@ -47,8 +47,16 @@ fi
 ## footprinting analysis
 DO_FOOTPRINT=${DO_FOOTPRINT^^}
 if [ "$DO_FOOTPRINT" = "TRUE" ]; then
-    bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${cluster1_fp}.bam
-    bam2=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${cluster2_fp}.bam
+    groups1=(${group1_fp/;/ })
+    groups2=(${group2_fp/;/ })
+
+    if [ "$group1_fp" = 'all' ]; then
+        echo "get footprint tf for each of all clusters, this would take a very long time..."
+        
+    fi
+
+    bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${group1_fp}.bam
+    bam2=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${group2_fp}.bam
     ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam2} $2 $3 
 fi
 

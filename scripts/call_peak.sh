@@ -34,25 +34,6 @@ if [ "${PEAK_CALLER}" = 'MACS2' ];then
 fi
 
 
-if [ "${PEAK_CALLER}" = 'MUSIC' ];then
-    ## not used
-	echo "--Using MUSIC..."
-	work_dir=${peaks_dir}/MUSIC
-	mkdir -p $work_dir/chip/sorted
-	mkdir -p $work_dir/chip/dedup
-	${SAMTOOLS_PATH}/samtools view $input_bam | ${MUSIC_PATH}/MUSIC -preprocess SAM stdin ${work_dir}/chip
-
-	${MUSIC_PATH}/MUSIC -sort_reads ${work_dir}/chip ${work_dir}/chip/sorted
-	${MUSIC_PATH}/MUSIC -remove_duplicates ${work_dir}/chip/sorted 2 ${work_dir}/chip/dedup
-	${MUSIC_PATH}/MUSIC -get_multiscale_broad_ERs -chip ${work_dir}/chip/dedup \
-        -mapp /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/Mappability_MAP/map50_hg38 \
-        -l_mapp 50 -begin_l 1000 -end_l 16000 -step 1.5
- 
-
-	## remove peaks overlapped with blacklist
-fi
-
-
 
 if [ "${PEAK_CALLER}" = 'GEM' ];then
 	echo "--Using GEM..."
@@ -66,11 +47,12 @@ if [ "${PEAK_CALLER}" = 'GEM' ];then
 
 	## remove peaks overlapped with blacklist
 	${BEDTOOLS_PATH}/bedtools intersect -a ${work_dir}/${out_prefix}_peaks.bed -b $BLACKLIST -v \
-	    > ${peaks_dir}/${out_prefix}_features_BlacklistRemoved.bed
+	    > ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed
 fi
 
 if [ "${PEAK_CALLER}" = 'COMBINED' ];then
     curr_dir=`dirname $0`
+	work_dir=${peaks_dir}/COMBINED
     ${curr_dir}/iter_peak.sh $1 $2 $3
 fi
 
@@ -83,5 +65,8 @@ if [ "${PEAK_CALLER}" = 'BIN' ];then
 	${BEDTOOLS_PATH}/bedtools intersect -a ${bin_file} -b $BLACKLIST -v \
 	    > ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed
 fi
-   
+  
+## remove peaks that its chromosome is not list in the chrom_size file
+${R_PATH}/Rscript --no-vanilla ${curr_dir}/src/rmRedundantPeaks.R ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed $CHROM_SIZE_FILE
+ 
 echo "Call peaks done !"

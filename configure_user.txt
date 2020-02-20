@@ -47,23 +47,27 @@ MAPQ = 30  ## filter bam by MAPQ for downstream analysis
 CELL_MAP_QC = TRUE  ## output mapping stats for cell barcodes
 
 
-######################################
+#################################################################################
 ## peak calling
-######################################
+#################################################################################
 
 PEAK_CALLER = MACS2  ## one of MACS2, BIN, and COMBINED
 
-## provided extra options for macs2 (NO NEED TO SPECIFY -t, -n, -f here)
+## provided extra options for macs2 (NO NEED TO SPECIFY -t, -n, -f here), like
 MACS2_OPTS = -q 0.01 -g hs 
+
+## or something like this to ignore building shifting model
+#MACS2_OPTS = -q 0.01 -g hs --nomodel --extsize 200 --shift -100
+
 
 BIN_RESL = 5000    ## bin resolution in bp
 CHROM_SIZE_FILE = annotation/chrom_hg38.sizes
 
 
-#######################################
+#############################################
 ## annotation files(blacklist, promoters, 
 ## enhancers, TSS, etc)
-#######################################
+#############################################
 BLACKLIST = annotation/hg38_blacklist.bed
 PROMOTERS = annotation/hg38_promoter.bed
 ENHANCERS = annotation/hg38_enhancer.bed
@@ -71,9 +75,9 @@ TSS = annotation/hg38_tss.bed
 
 
 
-########################################
+########################################################
 ## cell calling
-########################################
+########################################################
 CELL_CALLER = FILTER  ## EmptyDrop/cellranger/FILTER
 
 EmptyDrop_FDR = 0.001
@@ -101,20 +105,20 @@ prepCello = TRUE  ## generate object for VisCello (for visualization)
 
 
 
-#######################################
+#######################################################################################
 ## differential accessible analysis
-#######################################
-# compare two cluster, for example (as default): every single cluster vs the other
+## compare two groups
+## if group1 is specified as 'all', will conduct all one-vs-rest comparison
+#######################################################################################
 RUN_DA = TRUE  ## run differential analysis or not
-group1 = 0;1   ## one or multiple cluster name, separated by ; 
-group2 = 2     ## cluster name or 'rest'
+group1 = 0;1   ## either one or multiple names, separated by ';' or 'all'
+group2 = 2     ## cluster name as above or 'rest'
 test_use = wilcox  ## one of negbinom, LR, wilcox, t, DESeq2
 
 
-#######################################
-## GO analysis (need to do differential 
-## analysis first)
-#######################################
+#######################################################################################
+## GO analysis (need to do differential analysis first)
+#######################################################################################
 RUN_GO = TRUE ## run GO analysis after DA
 GO_TYPE = BP  ## BP/CC/kegg
 
@@ -137,9 +141,11 @@ SPLIT_BAM2CLUSTER = TRUE
 #######################################
 DO_FOOTPRINT = FALSE
 
-## comparing two groups, each group may include multiple clusters:
-group1_fp = 0;1   ## one or multiple clusters, separated by ; 
-group2_fp = 2     ## cluster 2
+## comparing two groups
+group1_fp = 0;1   ## either one or multiple names, separated by ';' or 'all'
+group2_fp = 2     ## cluster name as above or 'rest'
+
+
 
 ############################################################################
 ## cicero cis-interaction ##

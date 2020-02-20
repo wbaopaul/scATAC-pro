@@ -47,7 +47,7 @@ Updates
 ------------
 - current version: 1.1.0
 - Feb, 2020
-    * new module *visualize*, allowing interactively visualize and analysis the data
+    * new module *visualize*, allowing interactively explore and analyze the data
     * install rgt-hint (for footprint analysis) through miniconda3
     * add module *process_with_bam*, allowing process from aggragated bam file
     * integrate from peaks files, assume each sample was processed through scATAC-pro;
@@ -56,18 +56,18 @@ Updates
     * add new parameters in configure file: Top_Variable_Features, REDUCTION, nREDUCTION
     * enable all clustering methods mentioned in the manuscript, along with kmeans on PCs
     * file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
-    * qc_per_barcode requires too input files, separated by comma, see example and detailed usage
+    * qc_per_barcode requires two input files, separated by comma, see example and detailed usage
 - Jan11, 2020 
-    * add a new module mergePeaks to merge different peak files called from different samples or conditions
-    * add a new module to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
+    * add a new module *mergePeaks* to merge different peak files called from different samples or conditions
+    * add a new module *reConstMtx* to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
 - Dec22, 2019 
     * corrected an error arised from using older version of chromVAR
 - Dec11, 2019 
     * corrected a bug for demultiplexing multiple index files
 - Dec7, 2019 
-    * added a module convert10xbam to convert 10x position sorted bam file to scATAC-pro style
+    * added a module *convert10xbam* to convert 10x position sorted bam file to scATAC-pro style
 - Dec3, 2019 
-    * updated module get_bam4Cells, with required inputs as a bam file and a txt file of barcodes, separated by comma
+    * updated module *get_bam4Cells*, with required inputs as a bam file and a txt file of barcodes, separated by comma
 
 
 
@@ -114,9 +114,9 @@ Quick start
                  -c configure_user.txt 
 
     $ scATAC-pro -s downstream 
-                 -i output/filtered_matrix/YOUR_CELL_CALLER/matrix.mtx 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
-    ## YOUR_CELL_CALLER is specified in your configure_user.txt file
+    ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
 
 -   For data processing, if fastq files have been demultipled as the required format: the barcode was recorded in the name of each read like @barcode:ORIGIN\_READ\_NAME , you can skip the demultipling step by running
 
@@ -181,37 +181,37 @@ Run scATAC-pro step by step
                  -c configure_user.txt
 
     $ scATAC-pro -s call_cell
-                 -i output/raw_matrix/YOUR_PEAK_CALLER/matrix.mtx
+                 -i output/raw_matrix/PEAK_CALLER/matrix.mtx
                  -c configure_user.txt
                  
     $ scATAC-pro -s get_bam4Cells
                  -i output/mapping_result/pbmc10k.positionsort.bam,
-                    output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/barcodes.txt
+                    output/filtered_matrix/PEAK_CALLER/CELL_CALLER/barcodes.txt
                  -c configure_user.txt
 
     $ scATAC-pro -s clustering
-                 -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/matrix.mtx 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
 
     $ scATAC-pro -s motif_analysis
-                 -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/matrix.mtx 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
                  
     $ scATAC-pro -s split_bam
-                 -i output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/cell_cluster_table.txt
+                 -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/cell_cluster_table.txt
                  -c configure_user.txt
 
     $ scATAC-pro -s footprint
-                 -i output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/data_by_cluster/cluter_0.bam,
-                    output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/data_by_cluster/cluter_1.bam
+                 -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/data_by_cluster/cluter_0.bam,
+                    output/downstream_analysis/PEAK_CALLER/CELL_CALLER/data_by_cluster/cluter_1.bam
                  -c configure_user.txt
                  
     $ scATAC-pro -s runDA
-                 -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/seurat_obj.rds 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/seurat_obj.rds 
                  -c configure_user.txt
                  
     $ scATAC-pro -s runGO
-                 -i output/filtered_matrix/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/differential_peak_cluster_table.txt 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/differential_peak_cluster_table.txt 
                  -c configure_user.txt
       
                  
@@ -232,7 +232,7 @@ Run scATAC-pro step by step
 - After clustering, user can interactively visualize and analyze the data with module *visualize* 
 
 ```
-scATAC-pro -s visualize -i output/downstream_analysis/YOUR_PEAK_CALLER/YOUR_CELL_CALLER/VisCello_obj -c configure_user.txt
+scATAC-pro -s visualize -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/VisCello_obj -c configure_user.txt
 
 ```
 - The more details about the visualization can be found at [VisCello](https://github.com/qinzhu/VisCello/tree/VisCello-atac)

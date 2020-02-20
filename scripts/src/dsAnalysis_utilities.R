@@ -964,8 +964,11 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
   # change rownames using _ to delimited
   rnames = rownames(mtx)
   new.rnames = sapply(rnames, function(x) unlist(strsplit(x, ','))[1])
+  
   new.rnames = sapply(new.rnames, function(x) gsub('-', '_', x))
   rownames(mtx) <- new.rnames
+  
+  
   
   dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
   rm(mtx)
