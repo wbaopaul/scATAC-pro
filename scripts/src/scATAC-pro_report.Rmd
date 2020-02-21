@@ -673,7 +673,7 @@ gene_anno <- rtracklayer::readGFF(temp)
  gene_anno = gene_anno[complete.cases(gene_anno), ]
 
  chr0 = unlist(strsplit(Cicero_Plot_Region, ':'))[1] ## chr5:140610000-140640000
- region0 = unlist(strsplit(Cicero_Display_Region, ':'))[2]
+ region0 = unlist(strsplit(Cicero_Plot_Region, ':'))[2]
  start0 = as.integer(unlist(strsplit(region0, '-'))[1])
  end0 = as.integer(unlist(strsplit(region0, '-'))[2])
  

@@ -12,7 +12,8 @@ SOFT="scATAC-pro"
 VERSION="1.1.0"
 
 function usage {
-    echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]"
+    echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-o] [-h] [-v] [-b]"
+    echo -e "Use option -b|--verbose to print running message on screen"
     echo -e "Use option -h|--help for more information"
 }
 
@@ -117,12 +118,17 @@ function help {
     echo "   [-o|--output_dir : folder to save results; sub-folder will be created automatically for each step"
     echo "   [-h|--help]: help"
     echo "   [-v|--version]: version"
+    echo "   [-b|--verbose]: print the running message on screen"
     exit;
 }
 
 function version {
     echo -e "$SOFT version $VERSION"
     exit
+}
+vb=0
+function verbose {
+ vb=1
 }
 
 
@@ -171,11 +177,12 @@ for arg in "$@"; do
       "--output_dir")   set -- "$@" "-o" ;;
       "--help")   set -- "$@" "-h" ;;
       "--version")   set -- "$@" "-v" ;;
+      "--verbose")   set -- "$@" "-b" ;;
       *)        set -- "$@" "$arg"
   esac
 done
 
-while getopts ":s:i:c:o:vh" OPT
+while getopts ":s:i:c:o:vbh" OPT
 do
     case $OPT in
 	s) STEP=$OPTARG;;
@@ -183,6 +190,7 @@ do
 	c) CONFIG=$OPTARG;;
 	o) OUTPUT_DIR=$OPTARG ;;
 	v) version ;;
+	b) verbose ;;
 	h) help ;;
 	\?)
 	     echo "Invalid option: -$OPTARG" >&2
@@ -253,7 +261,9 @@ mkdir -p $logDir
 
 #make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT OUTPUT_DIR=$OUTPUT_DIR $STEP 2>&1
 config_sys=${ABS_SOFT_PATH}/configure_system.txt
-make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT CONFIG_FILE=$CONFIG CONFIG_SYS=$config_sys $STEP > ${logDir}/$STEP.log 2>&1
 
-
-
+if [ "$vb" = '0' ]; then
+    make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT CONFIG_FILE=$CONFIG CONFIG_SYS=$config_sys $STEP > ${logDir}/$STEP.log 2>&1
+else
+    make --file ${SCRIPTS_PATH}/Makefile INPUT_FILE=$INPUT CONFIG_FILE=$CONFIG CONFIG_SYS=$config_sys $STEP 2>&1 | tee ${logDir}/$STEP.log
+fi
