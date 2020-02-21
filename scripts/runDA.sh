@@ -10,7 +10,7 @@ read_conf "$2"
 read_conf "$3"
 
 output_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}
-seuratObj_file=${OUTPUT_DIR}/seurat_obj.rds
+seuratObj_file=${output_dir}/seurat_obj.rds
 curr_dir=`dirname $0`
 
 groups=(${groups//,/ })

@@ -127,6 +127,7 @@ Quick start
                  -c configure_user.txt 
 
 -   The **output** will be saved under ./output as default
+-   --verbose (or -b) will print the running message on screen, otherwise the message will be save under output/logs/MODULE.txt
 
 
 Run scATAC-pro step by step

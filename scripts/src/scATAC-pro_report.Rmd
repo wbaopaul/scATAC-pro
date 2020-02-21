@@ -416,6 +416,7 @@ if(file.exists(go_file)){
         go_res = data.table(go_res)
         go_res[, 'score' := -log10(p.adjust)]
         go_res = go_res[order(-score), ]
+        ngo = min(20, nrow(go_res))
         go_res = go_res[1:20, ]
         go_res = go_res[order(score), ]
         
@@ -423,7 +424,7 @@ if(file.exists(go_file)){
         
         p_go <- ggplot(go_res, aes(y = score, x = Description, fill = Count)) +
           geom_bar(width = 0.7, stat = 'identity') +
-          ggtitle(paste0("Enriched terms: cluster_", group2)) + theme_classic() + 
+          ggtitle(paste0("Enriched terms: cluster_", group.sele)) + theme_classic() + 
           theme(legend.position = 'bottom', legend.direction = "horizontal") + 
           coord_flip()  +  scale_fill_continuous(name = "#genes", type = "viridis") +
           xlab('') + ylab('-log10(p.adjust)')
