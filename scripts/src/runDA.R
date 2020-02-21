@@ -37,7 +37,7 @@ mean_frac_cls = sapply(cls, function(x){
     Matrix::rowMeans(dat0 > 0)
 })
 
-sele.features = rownames(mean_frac_cls)[rowSums(mean_frac_cls > 0.15) > 1]
+sele.features = rownames(mean_frac_cls)[rowSums(mean_frac_cls > 0.1) > 1]
 
 
 ## select variable features

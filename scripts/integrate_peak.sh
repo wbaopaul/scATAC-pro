@@ -22,6 +22,10 @@ done
 peak_dir=${OUTPUT_DIR}/peaks
 mkdir -p $peak_dir
 
+## put output into integrated_dir
+integrated_dir=${OUTPUT_DIR}/integrated
+mkdir -p ${integrated_dir}
+
 echo "merge peaks ..."
 feature_file=${peak_dir}/merged_peaks.bed
 ${R_PATH}/R --vanilla --args ${peak0},200 $feature_file < ${curr_dir}/src/mergePeaks.R
@@ -56,5 +60,5 @@ echo "Integrate by Seurat v3 ..."
 echo -e "These are new mtx files: $mtx_files"
 mtx_files=${mtx_files/TMP,/}
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_seu.R $mtx_files $CLUSTERING_METHOD $K_CLUSTERS $OUTPUT_DIR $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_seu.R $mtx_files $CLUSTERING_METHOD $K_CLUSTERS $integrated_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features
 

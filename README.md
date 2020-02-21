@@ -190,7 +190,7 @@ Run scATAC-pro step by step
                     output/filtered_matrix/PEAK_CALLER/CELL_CALLER/barcodes.txt
                  -c configure_user.txt
     
-    ## after the running above module, you can run module report (list below)
+    ## after running the above module, you can run module report (list below)
     ## to generate first page of the summary report
 
     $ scATAC-pro -s clustering
