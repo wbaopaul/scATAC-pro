@@ -233,7 +233,13 @@ Run scATAC-pro step by step
     $ scATAC-pro -s integrate
                  -i peak_file1,peak_file2,(peak_file3...)   ## 
                  -c configure_user.txt
-                
+    
+    ## if you have the reconstructed matrix for each sample (means using the merged peaks)
+    ## you can run the *integrate_seu* whtich is second part of module *integrate*            
+
+    $ scATAC-pro -s integrate_seu
+                 -i mtx_file1,mtx_file2,(mtx_file3...)   ## 
+                 -c configure_user.txt
 
 - After clustering, user can interactively visualize and analyze the data with module *visualize* 
 
@@ -320,9 +326,6 @@ Detailed Usage
           footprint: doing footprinting analysis
                                input: bam files of two clusters, separated by comma like, bam1,bam2
                                output: footprint summary statistics (saved under output/downstream/CELL_CALLE                                                            R/footprinting/)
-          integrate: doing integration analysis for two ore more samples
-                               input: bam files, separated by comma like, bam1,bam2
-                               output: save all intemediate results under output/integrated/)
           downstream: do all downstream analysis, including clustering, motif_analysis, 
                                 split_bam (optional) and footprinting analysis (optional)
                                 input: filtered matrix file path
@@ -342,6 +345,12 @@ Detailed Usage
                          input: differnt files separated by comma, like:
                                 peakFilePath,fragmentFilePath,barcodesPath
                          output: a reconstructed peak-cell matrix saved under the same path as barcodes.txt file
+          integrate: doing integration analysis for two ore more samples
+                           input: peak/feature files, separated by comma like, peak_file1,peak_file2
+                           output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot)
+          integrate_seu: doing integration analysis for two ore more samples given the reconstructed peak-cell mtx
+                           input: mtx1,mtx2, separated by comma like, mtx_file1,mtx_file2
+                           output: integrated seurat obj and umap plot)
           visualize: interactively visualize the data through web browser
                          input: VisCello_obj directory (created by clustering module)
                          output: web browser pop up for interactively visualization"

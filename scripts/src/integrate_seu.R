@@ -40,10 +40,10 @@ for(i in 1:length(mtx_files)){
                                     top_variable_features = top_variable_features, 
                                        reg.var = 'nCount_ATAC')
     
-    seurat.obj$sample = basename(dir0)
-    seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, check_duplicates = F)
-    seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, verbose = F)
-    saveRDS(seurat.obj, file = paste0(dir0, '/seurat_obj.rds'))
+    seurat.obj$sample = paste0('sample', i)
+    #seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, check_duplicates = F)
+    #seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, verbose = F)
+    #saveRDS(seurat.obj, file = paste0(dir0, '/seurat_obj.rds'))
    
    seu.all[[file0]] = seurat.obj
    rm(seurat.obj, mtx)
