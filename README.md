@@ -48,6 +48,7 @@ Updates
 - current version: 1.1.0
 - Feb, 2020
     * new module *visualize*, allowing interactively explore and analyze the data
+    * module *runDA* change to use group name as input (like "0:1,2" or "one,rest") 
     * install rgt-hint (for footprint analysis) through miniconda3
     * add module *process_with_bam*, allowing process from aggragated bam file
     * integrate from peaks files, assume each sample was processed through scATAC-pro;
@@ -189,6 +190,9 @@ Run scATAC-pro step by step
                  -i output/mapping_result/pbmc10k.positionsort.bam,
                     output/filtered_matrix/PEAK_CALLER/CELL_CALLER/barcodes.txt
                  -c configure_user.txt
+    
+    ## after the running above module, you can run module report (list below)
+    ## to generate first page of the summary report
 
     $ scATAC-pro -s clustering
                  -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
@@ -300,8 +304,9 @@ Detailed Usage
                                input: filtered peak by cell matrix file path
                                output: TF by cell matrix indicating TF accessibility (chromVAR object)
           runDA: doing differential accessibility analysis
-                           input: two groups like 0:1,2 here group1 (consist of cluster 0 and 1),
-                                  and group2 will be cluster2
+                           input: either two groups named like '0:1,2' here group1 (consist of cluster 0 and 1),
+                                  and group2 will be cluster2 or specified as
+                                  'one,rest'
                            output: differential peaks in txt format saved at the same directory as seurat_obj.rds
           runGO: doing GO analysis
                            input: result of runDA module (.txt file)

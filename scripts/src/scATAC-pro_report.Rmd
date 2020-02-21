@@ -395,10 +395,8 @@ if(file.exists(seurat_file)){
 
 ### GO Analysis
 ```{r, warning=F, message=F}
-go_file = paste0(down.dir, '/enrichedGO_differential_peak_cluster_', group1, 
+go_file = paste0(down.dir, '/enrichedGO_differential_accessible_features_cluster_', group1, 
                   '_VS_cluster_', group2, '.txt.xlsx')
-#go_file = paste0(down.dir, '/enrichedGO_differential_peak_cluster_', group1, 
-#                  '_VS_cluster_', group2, '.txt.csv')
 if(file.exists(go_file)){
    #library(xlsx)
     go_res1 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group1))

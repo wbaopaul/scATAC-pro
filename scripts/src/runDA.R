@@ -53,7 +53,7 @@ group2 = unlist(strsplit(group2, ':'))
 
 cn = colnames(seurat.obj)
 
-if(group1[1] == 'all') {
+if(group1[1] == 'one') {
    cls = sort(unique(seurat.obj$active_clusters))
    markers = NULL
    for(cluster0 in cls){
@@ -113,6 +113,6 @@ setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2
 
 #markers = markers[abs(avg_logFC) > 0, ]
 markers = markers[fdr <= 0.05, ]
-write.table(markers, file = paste0(output_dir, '/differential_peak_cluster_', group1, '_VS_cluster_', group2, '.txt'), sep = '\t',
+write.table(markers, file = paste0(output_dir, '/differential_accessible_features_cluster_', group1, '_VS_cluster_', group2, '.txt'), sep = '\t',
             quote = F, row.names = F)
 

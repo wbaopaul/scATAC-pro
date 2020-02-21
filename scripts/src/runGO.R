@@ -64,7 +64,7 @@ library(writexl)
 write_xlsx(goByCl, path = go_out_file)
 
 ## save intermediate GO result in rds
-saveRDS(interm_goByCl, file = paste0(output_dir, '/enrichedGO_', de_basename, '.rds'))
+#saveRDS(interm_goByCl, file = paste0(output_dir, '/enrichedGO_', de_basename, '.rds'))
 
 
 

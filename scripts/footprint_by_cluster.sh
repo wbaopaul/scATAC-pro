@@ -13,14 +13,10 @@ read_conf "$3"
 output_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/footprint
 mkdir -p $output_dir
 
-## if bam file not given, suppose cluster name was given
-## and will use default bam file for the corresponding cluster
 bams=(${inputs//,/ })
 
 bam1=${bams[0]}
 bam2=${bams[1]}
-
-
 
 if [[ ! -d "$HINT_PATH" ]]; then
     which rgt-hint > /dev/null
@@ -33,53 +29,60 @@ if [[ ! -d "$HINT_PATH" ]]; then
 fi
 
 
-## select regions (peaks) by DA ##
-cluster1=${bam1/.bam/}
-cluster1=$(basename $cluster1)
-cluster2=${bam2/.bam/}
-cluster2=$(basename $cluster2)
+echo "construct regions by DA ..."
+prefix1=${bam1/.bam/}
+prefix1=$(basename $prefix1)
+prefix2=${bam2/.bam/}
+prefix2=$(basename $prefix2)
 seurat_obj=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/seurat_obj.rds
 
-cl1=${cluster1/cluster_/}
-cl2=${cluster2/cluster_/}
+cl1=${prefix1/cluster_/}   ## absolute cluster name
+cl2=${prefix2/cluster_/}
+
+if [[ $prefix1 == *"cluster_"* ]] && [[ $prefix2 == *"cluster_"* ]]; then
+    input_peak=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_cluster_${cl1}_VS_cluster_${cl2}.txt
+    cl1_tmp=$cl1
+    cl2_tmp=$cl2
+else
+    input_peak=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_cluster_one_VS_cluster_rest.txt
+    cl1_tmp=one
+    cl2_tmp=rest
+fi
 
 
-input_peak=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_peak_cluster_${cl1}_VS_cluster_${cl2}.txt
 if [ ! -e "$input_peak" ]; then
     echo "do DA..."
     mkdir -p TMP0
-    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seurat_obj TMP0 $cl1 $cl2 wilcox 
+    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seurat_obj TMP0 $cl1_tmp $cl2_tmp wilcox 
     echo "DA done succefully!"
-#    echo 'library(data.table); dd = fread("TMP0/differential_peak_cluster_table.txt");
-#                dd[, "chr" := unlist(strsplit(peak, "-"))[1], by = peak];
-#                dd[, "start" := as.integer(unlist(strsplit(peak, "-"))[2]), by = peak];
-#                dd[, "end" := as.integer(unlist(strsplit(peak, "-"))[3]), by = peak];
-#                dd = subset(dd, select = c("chr", "start", "end"));
-#                setkey(dd, chr, start)
-#                write.table(dd, file = "TMP0/select_peaks.bed", row.names = F, col.names = F,
-#                            quote = F, sep = "\t") 
-#    ' > TMP0/tmp.R
-#    ${R_PATH}/R --vanilla < TMP0/tmp.R
-    input_peak=TMP0/differential_peak_cluster_${cl1}_VS_cluster_${cl2}.txt
+    input_peak=TMP0/differential_accessible_features_cluster_${cl1_tmp}_VS_cluster_${cl2_tmp}.txt
 fi
 
 
 unset PYTHONPATH
 
+if [[ $prefix1 != *"cluster"* ]]; then
+    prefix1=rest
+fi
+
+if [[ $prefix2 != *"cluster"* ]]; then
+    prefix2=rest
+fi
+
 echo "predict footprint..."
 ${HINT_PATH}/rgt-hint footprinting --atac-seq --paired-end --organism=${GENOME_NAME} --output-location=$output_dir  \
-        --output-prefix=${cluster1} $bam1 $input_peak &
+        --output-prefix=${prefix1} $bam1 $input_peak &
 
 ${HINT_PATH}/rgt-hint footprinting --atac-seq --paired-end --organism=${GENOME_NAME} --output-location=$output_dir  \
-        --output-prefix=${cluster2} $bam2 $input_peak &
+        --output-prefix=${prefix2} $bam2 $input_peak &
 
 wait
 
 echo "overlap with motif annotation ... "
-${HINT_PATH}/rgt-motifanalysis matching --organism=${GENOME_NAME} --input-files ${output_dir}/${cluster1}.bed ${output_dir}/${cluster2}.bed --output-location $output_dir
+${HINT_PATH}/rgt-motifanalysis matching --organism=${GENOME_NAME} --input-files ${output_dir}/${prefix1}.bed ${output_dir}/${prefix2}.bed --output-location $output_dir
 
 echo "Differential binding analysis ..."
-${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc 4 --mpbs-files=${output_dir}/${cluster1}_mpbs.bed,${output_dir}/${cluster2}_mpbs.bed --reads-files=$bam1,$bam2 --conditions=$cluster1,$cluster2 --output-location=${output_dir}/${cluster1}_${cluster2}
+${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc 4 --mpbs-files=${output_dir}/${prefix1}_mpbs.bed,${output_dir}/${prefix2}_mpbs.bed --reads-files=$bam1,$bam2 --conditions=$prefix1,$prefix2 --output-location=${output_dir}/${prefix1}_${prefix2}
 
 if [ -d "$TMP0" ]; then
     rm -r TMP0
