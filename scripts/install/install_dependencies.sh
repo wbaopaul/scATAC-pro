@@ -232,9 +232,9 @@ if [ $? != '0' ]; then
     exit 
 fi
 
-vercomp $macs2ver "2.1.1"
+vercomp $macs2ver "2.2.5"
 if [[ $? == 2 ]]; then
-    echo -e "$RED""macs2 v2.1.1 or higher is needed [$macs2pver detected].""$NORMAL"
+    echo -e "$RED""macs2 v2.2.5 or higher is needed [$macs2pver detected].""$NORMAL"
     exit 1;
 else
     echo -e "$BLUE""macs2 appears to be installed successfully""$NORMAL"
@@ -513,7 +513,9 @@ if [ $? != "0" ]; then
                 fi
                 bash tmp.sh -b -f -p $PREFIX_BIN/conda3
                 conda_path=$PREFIX_BIN/conda3/bin
-                #export PATH=$conda_path:$PATH
+                export PATH=$conda_path:$PATH
+                conda init bash
+                source ~/.bashrc
         else
             conda_path=$(dirname `which conda`)
             pver=`conda --version 2>&1 | cut -d" " -f2`
@@ -527,40 +529,42 @@ if [ $? != "0" ]; then
                     $get tmp.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
                 fi
                 bash tmp.sh -b -f -p $PREFIX_BIN/conda3
-                source ~/.bashrc
                 conda_path=$PREFIX_BIN/conda3/bin
-                #export PATH=$conda_path:$PATH
-                fi
+                export PATH=$conda_path:$PATH
+                 
+                conda init bash
+                source ~/.bashrc
             fi
-            unset PYTHONPATH
-            unset PYTHONHOME
-            ${conda_path}/conda --help > /dev/null 2>&1
-            if [ $? != "0" ]; then
-                "Cannot install Miniconda3, please install it manually!"
-            else
-                
-                ${conda_path}/conda create -y --name py2 python=2.7
-                ${conda_path}/conda activate py2
-                pip install --upgrade pip
-                pip install pytz pyparsing subprocess32
-                pip install python-dateutil==2.5.0
-                pip install --upgrade cython scipy numpy
-                pip install --upgrade RGT 
+       fi
+        unset PYTHONPATH
+        unset PYTHONHOME
+        ${conda_path}/conda --help > /dev/null 2>&1
+        if [ $? != "0" ]; then
+            "Cannot install Miniconda3, please install it manually!"
+        else
             
-                HINT_PATH=$(dirname `which rgt-hint`)
-                if [ $? != '0' ]; then
-                    echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually! ].""$NORMAL"
-                    exit 
-                fi
-                #echo "install dependent data for rgt, this will take a while"
-                #cd ~/rgtdata
-                #python setupGenomicData.py --mm9
-                #python setupGenomicData.py --mm10
-                #python setupGenomicData.py --hg19
-                #python setupGenomicData.py --hg38
-                #conda deactivate 
-                #conda deactivate
-        fi
+            conda create -y --name py2 python=2.7
+            conda activate py2
+            pip install --upgrade pip
+            pip install pytz pyparsing subprocess32
+            pip install python-dateutil==2.5.0
+            pip install --upgrade cython scipy numpy
+            pip install --upgrade RGT 
+        
+            HINT_PATH=$(dirname `which rgt-hint`)
+            if [ $? != '0' ]; then
+                echo -e  "$RED"" I cannot install RGT (for footprint analysis), please install it manually! ].""$NORMAL"
+                exit 
+            fi
+            #echo "install dependent data for rgt, this will take a while"
+            #cd ~/rgtdata
+            #python setupGenomicData.py --mm9
+            #python setupGenomicData.py --mm10
+            #python setupGenomicData.py --hg19
+            #python setupGenomicData.py --hg38
+            #conda deactivate 
+            #conda deactivate
+      fi
     fi
 else
         HINT_PATH=$(dirname `which rgt-hint`)

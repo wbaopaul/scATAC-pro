@@ -23,15 +23,16 @@ peak_dir=${OUTPUT_DIR}/peaks
 mkdir -p $peak_dir
 
 echo "merge peaks ..."
-${R_PATH}/R --vanilla --args ${peak0},200 $peak_dir < ${curr_dir}/src/mergePeaks.R
+feature_file=${peak_dir}/merged_peaks.bed
+${R_PATH}/R --vanilla --args ${peak0},200 $feature_file < ${curr_dir}/src/mergePeaks.R
 
 ## remove peaks overlapped with blacklist
-feature_file=${peak_dir}/merged_peaks.bed
 
 #${BEDTOOLS_PATH}/bedtools intersect -a ${peak_dir}/merged_peaks.bed -b $BLACKLIST -v \
 #    > ${feature_file}
 
-echo "Constructing raw peak-by-cell matrix for each sample ..."
+echo "ReConstructing peak-by-cell matrix for each sample ..."
+echo "Using the previously called cells and merged peaks ..."
 ## supporse each sample was constructed by scATAC-pre
 ## so the fragment files are saved correspondly
 
@@ -45,7 +46,6 @@ do
     sample0=$(basename $pk0)
     sample0=`echo $sample0 | awk -F. '{print $1}'`
     sample0=${sample0/_features_BlacklistRemoved/}
-    mkdir -p $raw_mtx_dir
     pk0_dir=$(dirname $pk0)
     frag0_dir=`cd "$pk0_dir"; cd "../../summary"; pwd`       
     mat0_dir=`cd "$pk0_dir"; cd "../../filtered_matrix"; pwd`       

@@ -247,9 +247,9 @@ echo "Run scATAC-pro "${VERSION}
 declare -x OUTPUT_DIR
 declare -x logDir
 
-if [ "$STEP" = "integrate" ]; then
-    OUTPUT_DIR=${OUTPUT_DIR}/integrated
-fi
+#if [ "$STEP" = "integrate" ]; then
+#    OUTPUT_DIR=${OUTPUT_DIR}/integrated
+#fi
 
 mkdir -p $OUTPUT_DIR
 logDir=${OUTPUT_DIR}/logs

@@ -89,19 +89,18 @@ Dependencies
 **Will be automatically installed if NOT detected.**
 
 -   BWA (&gt;=0.7.17)
--   MACS2 (&gt;=2.1.1)
+-   MACS2 (&gt;=2.2.5)
 -   samtools (&gt;=1.9)
 -   bedtools (&gt;=2.27.1)
 -   deepTools (&gt;=3.2.1)
 -   trim\_galore (&gt;=0.6.3)
--   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel
+-   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, VisCello.atac
 
-### Tools for additional modules or options
+### Tools for additional modules
 
 -   RGT (for footprint analysis, will ask whether you want to install it since the installation is done through conda, which takes a while and you may not want to conduct footprint analysis)
 -   Trimmomatic
--   bowtie/bowtie2 (user install them if don't want to use bwa)
--   R packages (DESeq2, cisTopic, RcisTarget, AUCell, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Hsapiens.UCSC.hg19, BSgenome.Mmusculus.UCSC.mm10, BSgenome.Mmusculus.UCSC.mm9, clusterProfiler, VisCello)
+-   bowtie/bowtie2 (not required by will be installed automatically if not detected)
 
 Quick start
 -----------

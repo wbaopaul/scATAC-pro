@@ -139,8 +139,10 @@ SPLIT_BAM2CLUSTER = TRUE
 
 ##################################################################
 ## TF footprinting analysis ##
-## support comparison between two clusters
-## and all one-vs-rest comparison
+## support following three types of comparions, like
+## group1_fp = 0, group2_fp = 1      --- cluster0 vs cluster1
+## group1_fp = one, group2_fp = rest --- all one vs rest
+## group1_fp = 0, group2_fp = rest   --- cluster0 vs rest
 ##################################################################
 DO_FOOTPRINT = FALSE
 

@@ -14,7 +14,7 @@ for(pk in pks){
     }
 }
 
-bioc.pks = c('RColorBrewer','pheatmap','motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'DESeq2', 'edgeR', 'matrixStats', 'cicero', 'farver', 'BSgenome.Hsapiens.UCSC.hg38', 'clusterProfiler')
+bioc.pks = c('RColorBrewer','pheatmap','motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'DESeq2', 'edgeR', 'matrixStats', 'cicero', 'farver', 'BSgenome.Hsapiens.UCSC.hg38', 'BSgenome.Mmusculus.UCSC.mm10',  'clusterProfiler')
 
 for(pk in bioc.pks){
     if(!require(pk, character.only = T)) {  
