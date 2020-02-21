@@ -502,6 +502,9 @@ if [ $? != "0" ]; then
     echo -e -n "Do you want to install RGT for footprinting analysis (it will take a while to install it) ? (y/n) [n] : " "$NORMAL"
     read ans
     if [ XX${ans} = XXy ]; then
+    
+        unset PYTHONPATH
+        unset PYTHONHOME
         echo -e "$RED""OK, trying to install it through conda...""$NORMAL"
         which conda > /dev/null 2>&1
         if [ $? != "0" ]; then

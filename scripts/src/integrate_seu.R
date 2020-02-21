@@ -23,9 +23,9 @@ top_variable_features = as.numeric(args[10])
 mtx_files = unlist(strsplit(mtx_files, ','))
 
 tss_ann <- fread(tss_path, header = F)
-names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
-tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
-
+#names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
+#tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
+names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
 
 ## do seurat individually
 seu.all = list()
