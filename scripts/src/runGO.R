@@ -24,7 +24,7 @@ if(!require('clusterProfiler')){
 library(clusterProfiler)
 ## genes with tss within DA for each cluster
 
-markers = markers[grepl(peak, pattern = 'Tss')]
+#markers = markers[grepl(peak, pattern = 'Tss')]
 markers[, 'genes' := paste(unlist(strsplit(peak, ','))[-1], collapse = ','), by = peak]
 
 ## do go cluster by cluster, genes in other clusters as background
@@ -35,7 +35,7 @@ for(cl0 in cls){
     markers0 = markers[cluster == cl0]$genes
     genes0 = lapply(markers0, function(x) unlist(strsplit(x, ',')))
     genes0 = unique(do.call('c', genes0))
-    genes0 = genes0[grepl(genes0, pattern = 'Tss')]
+  #  genes0 = genes0[grepl(genes0, pattern = 'Tss')]
     genes0 = lapply(genes0, function(x) gsub('-Tss', '', x))
     genesInDA[[paste0('cluster', cl0)]] = unique(do.call('c', genes0))
 }

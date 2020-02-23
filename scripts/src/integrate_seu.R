@@ -19,6 +19,9 @@ norm_by = args[7]
 REDUCTION = args[8]
 nREDUCTION = as.integer(args[9])
 top_variable_features = as.numeric(args[10])
+integrate_by = args[11]
+
+message(paste('Integrate by', integrate_by))
 
 mtx_files = unlist(strsplit(mtx_files, ','))
 
@@ -27,17 +30,22 @@ tss_ann <- fread(tss_path, header = F)
 #tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
 names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
 
+
 ## do seurat individually
-seu.all = list()
+seu.all = mtx.all = list()
 len = length(mtx_files)
 for(i in 1:length(mtx_files)){
     file0 = mtx_files[i]
-    dir0 = dirname(file0)
     mtx = read_mtx_scATACpro(file0)
+    rs = Matrix::rowMeans(mtx > 0)
+    mtx = mtx[rs > 0.01, ]
     mtx = assignGene2Peak(mtx, tss_ann)
-    colnames(mtx) = paste0('rep', i, '_', colnames(mtx))
+    colnames(mtx) = paste0('sample', i, '_', colnames(mtx))
+    if(integrate_by != 'seurat') mtx.all[[i]] = mtx
+    nveg0 = ifelse(top_variable_features > 1, top_variable_features, floor(top_variable_features)*nrow(mtx))
+    nveg = ifelse(nveg0 < nrow(mtx)/2, nveg0, floor(nrow(mtx)/2))
     seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
-                                    top_variable_features = top_variable_features, 
+                                    top_variable_features = nveg, 
                                        reg.var = 'nCount_ATAC')
     
     seurat.obj$sample = paste0('sample', i)
@@ -45,20 +53,39 @@ for(i in 1:length(mtx_files)){
     #seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, verbose = F)
     #saveRDS(seurat.obj, file = paste0(dir0, '/seurat_obj.rds'))
    
-   seu.all[[file0]] = seurat.obj
+   seu.all[[i]] = seurat.obj
    rm(seurat.obj, mtx)
 }
 
+if(integrate_by == 'seurat'){
+    seurat.obj <- FindIntegrationAnchors(object.list = seu.all)
+    rm(seu.all)
+    seurat.obj <- IntegrateData(anchorset = seurat.obj, dims = 1:nREDUCTION)
+    DefaultAssay(seurat.obj) <- "integrated"
+    seurat.obj <- ScaleData(seurat.obj, verbose = FALSE,
+                         features = VariableFeatures(seurat.obj))
+    seurat.obj <- RunPCA(seurat.obj, npcs = nREDUCTION, verbose = FALSE)
+}else{
+    ## use pool and regress method
+    nf = sapply(mtx.all, nrow)
+    nc = sapply(mtx.all, ncol)
+    if(length(unique(nf)) == 1) {
+      umtx = do.cbind(mtx.all)  
+    }else{
+      umtx <- cBind_union_features(mtx.all)
+    }
+    rm(mtx.all)
+    nveg0 = ifelse(top_variable_features > 1, top_variable_features, floor(top_variable_features)*nrow(umtx))
+    nveg = ifelse(nveg0 < nrow(umtx)/2, nveg0, floor(nrow(umtx)/2))
+    seurat.obj = doBasicSeurat_new(umtx, npc = nREDUCTION, norm_by = norm_by, 
+                                    top_variable_features = nveg, 
+                                       reg.var = 'nCount_ATAC')
+    seurat.obj$sample = paste0('sample', rep(c(1:length(nc)), nc))
+    seurat.obj <- regress_on_pca(seurat.obj, 'sample')
+}
 
-seurat.obj <- FindIntegrationAnchors(object.list = seu.all, anchor.features = 3000)
-rm(seu.all)
-seurat.obj <- IntegrateData(anchorset = seurat.obj, dims = 1:nREDUCTION)
-DefaultAssay(seurat.obj) <- "integrated"
-seurat.obj <- ScaleData(seurat.obj, verbose = FALSE,
-                     features = VariableFeatures(seurat.obj), assay = "integrated")
-seurat.obj <- RunPCA(seurat.obj, npcs = nREDUCTION, verbose = FALSE)
 seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", dims = 1:nREDUCTION)
-DimPlot(seurat.obj, reduction = "umap", group.by = "sample")
+#DimPlot(seurat.obj, reduction = "umap", group.by = "sample")
 
 
 ## clustering
@@ -73,7 +100,6 @@ if(cluster_method == 'seurat'){
                                 min_resl = 0.01)
   }
   seurat.obj = FindClusters(seurat.obj, resolution = resl)
-  seurat.obj$seurat_clusters = seurat.obj@active.ident
   seurat.obj$active_clusters = seurat.obj$seurat_clusters
 }
 

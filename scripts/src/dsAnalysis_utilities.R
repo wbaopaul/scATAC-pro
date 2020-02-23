@@ -63,11 +63,31 @@ read_mtx_scATACpro <- function(mtx_path){
   return(mtx)
 }
 
+## cbind saprse mtx with the union of the rownames
+cBind_union_features <- function(mtx_list){
+    ff = rownames(mat_list[[1]])
+    for(i in 2:length(mat_list)){
+      ff = unique(union(ff, rownames(mat_list[[i]])))
+    }
+   ## make a mtx with full features
+    mat_union = list()
+    for(i in 1:length(mat_list)){
+      mtx0 = mat_list[[i]]
+      ff0 = setdiff(ff, rownames(mtx0))
+      if(length(ff0) > 0 ) {
+        tmp = as(matrix(0, length(ff0), ncol(mtx0)), "sparseMatrix")
+        rownames(tmp) = ff0
+      }
+      tmp_mat = rbind(mtx0, tmp)
+      mat_union[[i]] = tmp_mat[order(rownames(tmp_mat)), ]
+    }
+    return(do.call('cbind', mat_union))
+}
 
 filterMat <- function(atac.mtx, minFrac_in_cell = 0.01, min_depth = 200, max_depth = 100000){
   depth.cell = Matrix::colSums(atac.mtx)
   atac.mtx = atac.mtx[, depth.cell > min_depth & depth.cell < max_depth]
-  frac.in.cell = Matrix::rowSums(atac.mtx > 0)
+  frac.in.cell = Matrix::rowMeans(atac.mtx > 0)
   atac.mtx = atac.mtx[frac.in.cell > minFrac_in_cell, ]
   return(atac.mtx)
 }

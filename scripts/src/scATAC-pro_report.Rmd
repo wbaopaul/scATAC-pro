@@ -680,7 +680,7 @@ gene_anno <- rtracklayer::readGFF(temp)
    pdf(paste0(params$output_dir,'/summary/Figures/interactions_example_region.pdf'), width = 8, height = 5, fonts = 'sans')
     plot_connections(conns, chr0, start0, end0,
                  gene_model = gene_anno, 
-                 coaccess_cutoff = .4, 
+                 coaccess_cutoff = .3, 
                  connection_width = 1, 
                  collapseTranscripts = "longest",
                  viewpoint_alpha = 0)
@@ -689,7 +689,7 @@ gene_anno <- rtracklayer::readGFF(temp)
  }
     plot_connections(conns, chr0, start0, end0,
                  gene_model = gene_anno, 
-                 coaccess_cutoff = .4, 
+                 coaccess_cutoff = .3, 
                  connection_width = 1, 
                  collapseTranscripts = "longest",
                  viewpoint_alpha = 0)

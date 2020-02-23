@@ -25,7 +25,7 @@ work_dir=`pwd`
 
 
 ${R_PATH}/Rscript --vanilla ${curr_dir}/src/render2report.R \
-    ${abs_report_dir}/scATAC-pro_report_${CELL_CALLER}.html  $abs_out_dir ${work_dir}/${2}
+    ${abs_report_dir}/scATAC-pro_report_${OUTPUT_PREFIX}.html  $abs_out_dir ${work_dir}/${2}
 rm ${abs_out_dir}/vrs.txt
 rm ${abs_out_dir}/vls.txt         
 echo "Report generation Done!"

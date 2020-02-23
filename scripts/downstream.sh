@@ -45,33 +45,7 @@ if [ "$RUN_Cicero" = "TRUE" ]; then
 fi
 
 ## footprinting analysis
-bam_file=${OUTPUT_DIR}/mapping_result/cell_barcodes.positionsort.MAPQ${MAPQ}.bam
-cls=($(cut -f2 $input_cluster_table | sed '1d'| sort -u))
-DO_FOOTPRINT=${DO_FOOTPRINT^^}
-if [ "$DO_FOOTPRINT" = "TRUE" ]; then
-    groups1=(${group1_fp/:/ })
-    groups2=(${group2_fp/:/ })
-
-    if [ "$group1_fp" == 'one' ]; then
-        echo "do all one-vs-rest comparison, this would take a very long time..."
-        for cl0 in "${cls[@]}"
-        do
-            bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${cl0}.bam
-            ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam_file} $2 $3 
-        done
-    elif [ "$group2_fp" == 'rest' ]; then
-        for cl0 in "${groups1[@]}"
-        do
-            bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${cl0}.bam
-            ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam_file} $2 $3 
-        done
-    else
-        bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${group1_fp}.bam
-        bam2=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${group2_fp}.bam
-        ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam2} $2 $3 
-    fi
-fi
-
+${curr_dir}/footprint.sh ${group1_fp},${group2_fp} $2 $3
 
 ${curr_dir}/report.sh ${OUTPUT_DIR}/summary $2 $3
 

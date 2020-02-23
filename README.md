@@ -205,9 +205,8 @@ Run scATAC-pro step by step
                  -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/cell_cluster_table.txt
                  -c configure_user.txt
 
-    $ scATAC-pro -s footprint
-                 -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/data_by_cluster/cluter_0.bam,
-                    output/downstream_analysis/PEAK_CALLER/CELL_CALLER/data_by_cluster/cluter_1.bam
+    $ scATAC-pro -s footprint ## supporting comparison two clusters, and one-vs-rest
+                 -i 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
                  -c configure_user.txt
                  
     $ scATAC-pro -s runDA
@@ -323,9 +322,10 @@ Detailed Usage
           split_bam: split bam file into different clusters
                                input: barcodes with cluster label (.txt file, outputed from clustering)
                                output: .bam (saved under downstream/CELL_CALLER/data_by_cluster), .bw, .bedgraph (save under output/signal/) file for each cluster
-          footprint: doing footprinting analysis
-                               input: bam files of two clusters, separated by comma like, bam1,bam2
-                               output: footprint summary statistics (saved under output/downstream/CELL_CALLE                                                            R/footprinting/)
+          footprint: doing footprinting analysis, supports comparison between two clusters and one-vs-rest
+                               input: 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
+                               output: footprint summary statistics 
+                                       (saved under output/downstream/PEAK_CALLER/CELL_CALLER/data_by_cluster/)
           downstream: do all downstream analysis, including clustering, motif_analysis, 
                                 split_bam (optional) and footprinting analysis (optional)
                                 input: filtered matrix file path

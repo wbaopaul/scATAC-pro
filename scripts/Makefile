@@ -250,7 +250,7 @@ footprint: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Footprint analysis ..." 
-	@$(SCRIPTS)/footprint_by_cluster.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@$(SCRIPTS)/footprint.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################

@@ -27,5 +27,5 @@ mkdir -p ${outMat_dir}
 echo "re-constructing peak-by-cell matrix for each sample ..."
 
 
-${R_PATH}/R --vanilla --args $frag_file $peak_file ${bc_file} ${outMat_dir} < ${curr_dir}/src/reconstMtx.R 
+${R_PATH}/R --vanilla --args $frag_file $peak_file ${bc_file} ${outMat_dir} < ${curr_dir}/src/reConstMtx.R 
 
