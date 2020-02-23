@@ -64,7 +64,7 @@ read_mtx_scATACpro <- function(mtx_path){
 }
 
 ## cbind saprse mtx with the union of the rownames
-cBind_union_features <- function(mtx_list){
+cBind_union_features <- function(mat_list){
     ff = rownames(mat_list[[1]])
     for(i in 2:length(mat_list)){
       ff = unique(union(ff, rownames(mat_list[[i]])))
