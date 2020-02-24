@@ -27,3 +27,8 @@ if(!require(chromVARmotifs)) {
     message(paste('Install chromVARmotifs...'))
     devtools::install_github("GreenleafLab/chromVARmotifs", upgrade = 'never', force = T)
 }
+
+if(!require(harmony)) {  
+    message(paste('Install harmony...'))
+    devtools::install_github("immunogenomics/harmony", upgrade = 'never', force = T)
+}

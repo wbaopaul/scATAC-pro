@@ -10,16 +10,15 @@ library(ggplot2)
 library(parallel)
 args = commandArgs(T)
 mtx_files = args[1]
-cluster_method = args[2]
-k = (args[3])
-output_dir = args[4]
-genome_name = args[5]
-tss_path = args[6]
-norm_by = args[7]
-REDUCTION = args[8]
-nREDUCTION = as.integer(args[9])
-top_variable_features = as.numeric(args[10])
-integrate_by = args[11]
+k = (args[2])
+output_dir = args[3]
+genome_name = args[4]
+tss_path = args[5]
+norm_by = args[6]
+REDUCTION = args[7]
+nREDUCTION = as.integer(args[8])
+top_variable_features = as.numeric(args[9])
+integrate_by = args[10]
 
 message(paste('Integrate by', integrate_by))
 
@@ -83,15 +82,23 @@ if(integrate_by == 'seurat'){
     seurat.obj$sample = paste0('sample', rep(c(1:length(nc)), nc))
     seurat.obj <- regress_on_pca(seurat.obj, 'sample')
 }
-
 seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", dims = 1:nREDUCTION)
+
+
+if(integrate_by == 'harmony'){
+    library(harmony)
+    seurat.obj <- RunHarmony(seurat.obj, c("sample"), assay.use = 'ATAC')
+
+    seurat.obj <- seurat.obj %>% 
+        RunUMAP(reduction = "harmony", dims = 1:nREDUCTION) 
+}
 #DimPlot(seurat.obj, reduction = "umap", group.by = "sample")
 
 
-## clustering
-if(cluster_method == 'seurat'){
+## clustering by louvain algorithm
   ## seurat implemented louvain algorithm
-  seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:nREDUCTION, k.param = 20)
+  redm = ifelse(integrate_by == 'harmony', 'harmony', 'pca')
+  seurat.obj = FindNeighbors(seurat.obj, reduction = redm, dims = 1:nREDUCTION, k.param = 20)
   if (toupper(k) == 'NULL' || k == '0'){
     resl = 0.2
   }else{
@@ -101,53 +108,15 @@ if(cluster_method == 'seurat'){
   }
   seurat.obj = FindClusters(seurat.obj, resolution = resl)
   seurat.obj$active_clusters = seurat.obj$seurat_clusters
-}
-
-if(cluster_method == 'cisTopic'){
-  nc = detectCores()
-  cis.obj = run_cisTopic(mtx, nCores = max(1, nc - 1))
-  sele.cisTopic <- selectModel(cis.obj, 
-                               keepBinaryMatrix = F, keepModels = F)
-  cell_topic <- t(modelMatSelection(sele.cisTopic, 'cell', 'Probability'))
-  seurat.obj$cisTopic_clusters = generalCluster(cell_topic, method = 'hclust', k = k)
-  seurat.obj$active_clusters = seurat.obj$cisTopic_clusters
-}
-
-if(cluster_method == 'LSI'){
-  seurat.obj$LSA_clusters = run_LSI(mtx, k = k)
-  seurat.obj$active_clusters = seurat.obj$LSI_clusters
-}
 
 
-if(cluster_method == 'scABC'){
-  seurat.obj$scABC_clusters = run_scABC(mtx, k = k)
-  seurat.obj$active_clusters = seurat.obj$scABC_clusters
-}
-
-if(cluster_method == 'chromVar'){
-  genomeName = 'BSgenome.Hsapiens.UCSC.hg38'
-  if(grepl(genome_name, pattern = '38'))genomeName = 'BSgenome.Hsapiens.UCSC.hg38'
-  if(grepl(genome_name, pattern = '19'))genomeName = 'BSgenome.Hsapiens.UCSC.hg19'
-  if(grepl(genome_name, pattern = 'mm9'))genomeName = 'BSgenome.Mmusculus.UCSC.mm9'
-  if(grepl(genome_name, pattern = 'mm10'))genomeName = 'BSgenome.Mmusculus.UCSC.mm10'
-  nc = detectCores()
-  obj = run_chromVAR(mtx, genomeName, max(1, nc - 1))
-  saveRDS(obj, file = paste0(output_dir, '/chromVar_obj.rds'))
-  pca_coords = doDimReduction4mat(obj@assays$data$z)[[1]]
-  
-  seurat.obj$chromVar_clusters = cutree(hclust(dist(pca_coords)), k = k)
-  seurat.obj$active_clusters = as.factor(seurat.obj$chromVar_clusters)
-  
-  
-}
-
-saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj.rds'))
+saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_', integrate_by, '.rds'))
 
 #output bacrcode cluster information
 bc_cls = data.table('Barcode' = rownames(seurat.obj@meta.data), 'Cluster' = seurat.obj@meta.data$active_clusters)
 setkey(bc_cls, Cluster)
 
-write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table.txt'), sep = '\t',
+write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table_', integrate_by, '.txt'), sep = '\t',
             quote = F, row.names = F)
 
 cg <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', label = T) + 
@@ -157,6 +126,6 @@ if(length(unique(seurat.obj$active_clusters)) < 10) cg = cg + scale_color_brewer
 cg1 <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'sample') + 
   theme(legend.text = element_text(size = 17)) + scale_color_brewer(palette = "Set1")
 
-pfname = paste0(output_dir, '/umap_clusters.eps')
+pfname = paste0(output_dir, '/umap_clusters_', integrate_by, '.eps')
    ggsave(CombinePlots(plots = list(cg1, cg)), file = pfname, device = 'eps', width = 14, height = 6)
 

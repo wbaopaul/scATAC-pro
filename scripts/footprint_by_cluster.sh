@@ -52,10 +52,8 @@ fi
 
 if [ ! -e "$input_peak" ]; then
     echo "do DA..."
-    mkdir -p TMP0
-    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seurat_obj TMP0 $cl1_tmp $cl2_tmp wilcox 
+    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seurat_obj ${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER} $cl1_tmp $cl2_tmp wilcox 
     echo "DA done succefully!"
-    input_peak=TMP0/differential_accessible_features_cluster_${cl1_tmp}_VS_cluster_${cl2_tmp}.txt
 fi
 
 

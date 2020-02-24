@@ -165,7 +165,7 @@ Cicero_Plot_Region = chr5:140610000-140640000
 ## integrate two or more samples
 ## by seurat cca integration or by pool
 ############################################################################
-Integrate_By = seurat  ## seurat or pool
+Integrate_By = seurat  ## seurat or pool or harmony
 
 
 
