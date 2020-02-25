@@ -34,7 +34,7 @@ ${SAMTOOLS_PATH}/samtools idxstats -@ $ncore ${input_pre}.MAPQ${MAPQ}.bam > ${ou
 
 
 tmp_sam_file=${output_dir}/tmp.sam
-${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 ${input_pre}.bam > $tmp_sam_file
+${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f 0x2 ${input_pre}.bam > $tmp_sam_file
 
 if [ $MAPPING_METHOD == 'bwa' ]; then
    total_uniq_mapped=$( wc -l ${tmp_sam_file} | cut -d ' ' -f1 )  ## number of unique mapped reads

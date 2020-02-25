@@ -47,7 +47,9 @@ Updates
 ------------
 - current version: 1.1.0
 - Feb, 2020
+    * *integrate* module enables 3 options: seurat, harmony and pool
     * new module *visualize*, allowing interactively explore and analyze the data
+    * *footprint* module support one-vs-rest comparison and provide result in heatmap
     * module *runDA* change to use group name as input (like "0:1,2" or "one,rest") 
     * install rgt-hint (for footprint analysis) through miniconda3
     * add module *process_with_bam*, allowing process from aggragated bam file
@@ -324,8 +326,8 @@ Detailed Usage
                                output: .bam (saved under downstream/CELL_CALLER/data_by_cluster), .bw, .bedgraph (save under output/signal/) file for each cluster
           footprint: doing footprinting analysis, supports comparison between two clusters and one-vs-rest
                                input: 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
-                               output: footprint summary statistics 
-                                       (saved under output/downstream/PEAK_CALLER/CELL_CALLER/data_by_cluster/)
+                               output: footprint summary statistics in tables and heatmap
+                                       (saved under output/downstream/PEAK_CALLER/CELL_CALLER/footprint/)
           downstream: do all downstream analysis, including clustering, motif_analysis, 
                                 split_bam (optional) and footprinting analysis (optional)
                                 input: filtered matrix file path

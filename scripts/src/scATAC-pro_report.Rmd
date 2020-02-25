@@ -583,54 +583,58 @@ Column
 
 ```{r, out.width='\\textwidth'}
 comp_cls = paste0('cluster_', group1_fp, '_cluster_', group2_fp)
-footprint_stats.file = paste0(down.dir, '/data_by_cluster/footprint/', comp_cls, '/differential_statistics.txt')
+
+if(group1_fp == 'one'){
+  comp_cls =  paste0(group1_fp, '_VS_', group2_fp)
+}else if(group2_fp == 'rest'){
+  comp_cls = paste0('cluster_', group1_fp, '_VS_', group2_fp)
+}else{
+  comp_cls = paste0('cluster_', group1_fp, '_VS_cluster_', group2_fp)
+}
+
+
+footprint_stats.file = paste0(down.dir, '/differential_TF_footprint_', comp_cls, '.txt')
 if(file.exists(footprint_stats.file)){
-  library(ggrepel)
-  library(gridExtra)
-#  library(grid)
-  footprint_stats = fread(footprint_stats.file)
-
-  footprint_stats[, 'motif1' := unlist(strsplit(Motif, '.', fixed = T))[3], by = Motif]
-  footprint_stats[, 'motif2' := unlist(strsplit(Motif, '.', fixed = T))[4], by = Motif]
-  footprint_stats[, 'motif2' := ifelse(is.na(motif2), "", motif2)]
-  footprint_stats[, 'motif' := paste0(motif1, motif2)]
-  footprint_stats[, c('motif1', 'motif2') := NULL]
   
-  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05, 'differentiated', 'no difference')]
-  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity > 0, paste0('cluster', group2_fp, '_high'), isSig)]
-   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity < 0, paste0('cluster', group1_fp, '_high'), isSig)]
-   
-  footprint_stats$motif_show = ""
-  footprint_stats$motif = toupper(footprint_stats$motif)
-  footprint_stats[P_values <= 0.05]$motif_show = footprint_stats[P_values <= 0.05]$motif
-  
-  
-  
- p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, 
-                                         colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + 
-   ylab('TF Activity Difference') + 
-   theme(legend.text = element_text(size=18, family = "Helvetica"), 
-         axis.title = element_text(size = 18, family = "Helvetica"), 
-         axis.text.x = element_blank(), legend.title = element_blank(),
-         legend.direction = 'horizontal', 
-         plot.title = element_text(size = 15, family = "Helvetica",
-         face = 'bold'), panel.background = element_rect(fill = "white"))  + geom_text_repel(force = 10) + 
-   theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') +
-   scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40')) 
- 
- 
-
-if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/footprint_tf_activity.eps')
-  
-  ggsave(p, filename = pfname, device = 'eps', height = 6,
-         width = 6)
-  
+  footprint_out = fread(footprint_stats.file)
+  if(length(unique(footprint_out$motif)) > 100){
+  footprint_out[, 'N' := .N, by = higher_in_cluster]
+  cls = unique(footprint_out[N > 10]$higher_in_cluster)
+  if(length(cls) >= 1){
+    res0 = NULL
+    for(cl0 in cls){
+      tmp = footprint_out[higher_in_cluster == cl0]
+      tmp = tmp[order(P_values)][1:10, ]
+      res0 = rbind(res0, tmp)
+    }
+    footprint_out = rbind(footprint_out[N < 10], res0)
+  }
 }
- 
-p
+
+  mm = reshape2::acast(motif ~ higher_in_cluster, data = footprint_out, 
+                       value.var = "P_values")
+  mm = -log10(mm)
+  mm[is.na(mm)] = 0
+  cn = colnames(mm)
+  cn.new = sapply(cn, function(x) gsub('_higher', '', x))
+  colnames(mm) = cn.new
+  mm[mm > 3] = 3
+  p1 <- pheatmap::pheatmap(mm, cluster_cols = F, fontsize = 13, fontsize_row = 9,
+                           color = viridis::viridis(100))
+  
+  pfname1 =paste0(down_dir, '/summary/Figures/heatmap_differential_TF_footprint_', 
+                  cl1, '_VS_', cl2, '.eps')
+  
+  if(plotEPS){
+    ggsave(p1, filename = pfname1, device = 'eps', height = 6,
+           width = 6)
+  }
+  
+  p1
 
 }
+
+
 
 ```
 

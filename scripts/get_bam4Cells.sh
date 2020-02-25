@@ -43,7 +43,7 @@ if [[ "$CELL_MAP_QC"="TRUE" ]]; then
     unset PYTHONPATH
     ncore=$(nproc --all)
     ncore=$((${ncore}/2))
-    for file0 in $(find $map_dir -name "cell_barcodes.bam")
+    for file0 in $(find $map_dir -name "cell_barcodes.MAPQ30.bam")
     do
         echo "generate bw file..."
         pre=$(basename $file0)

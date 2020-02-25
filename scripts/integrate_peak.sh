@@ -19,12 +19,13 @@ do
     peak0=${peak0},${peaks[$i]}
 done
 
-peak_dir=${OUTPUT_DIR}/peaks
-mkdir -p $peak_dir
 
 ## put output into integrated_dir
 integrated_dir=${OUTPUT_DIR}/integrated
 mkdir -p ${integrated_dir}
+
+peak_dir=${integrated_dir}/peaks
+mkdir -p $peak_dir
 
 echo "merge peaks ..."
 feature_file=${peak_dir}/merged_peaks.bed

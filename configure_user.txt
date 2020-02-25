@@ -96,7 +96,7 @@ FILTER_BC_CUTOFF = --min_uniq_frags 5000 --max_uniq_frags 50000 --frac_peak 0.5 
 ## Note if normalization method is tf-idf, then the matrix was presumely set as binary
 ##############################################################################
 norm_by = tf-idf ## or log (just log transformation) or NA
-Top_Variable_Features = 0.1 ## number/fraction of variable features used for seurat
+Top_Variable_Features = 10000 ## number/fraction of variable features used for seurat
 REDUCTION = pca  ## pca/lda, note that UMAP and TSNE will be automatically calculated correspondly
 nREDUCTION = 30 ## the reduced dimension
 CLUSTERING_METHOD = seurat  ## seurat/cisTopic/kmeans/LSI/SCRAT

@@ -10,7 +10,8 @@ source ${curr_dir}/read_conf.sh
 read_conf "$2"
 read_conf "$3"
 
-input_cluster_table=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/cell_cluster_table.txt
+down_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}
+input_cluster_table=${down_dir}/cell_cluster_table.txt
 
 bam_file=${OUTPUT_DIR}/mapping_result/cell_barcodes.MAPQ${MAPQ}.bam
 
@@ -26,21 +27,27 @@ if [ "$grs1_fp" == 'one' ]; then
     echo "do all one-vs-rest comparison, this would take a very long time..."
     for cl0 in "${cls[@]}"
     do
-        echo "working on $cl0 ..."
-        bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${cl0}.bam
+        echo "working on cluster $cl0 ..."
+        bam1=${down_dir}/data_by_cluster/cluster_${cl0}.bam
         ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam_file} $2 $3
     done
 elif [ "$grs2_fp" == 'rest' ]; then
     for cl0 in "${grs1[@]}"
     do
         echo "working on $cl0 ..."
-        bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${cl0}.bam
+        bam1=${down_dir}/data_by_cluster/cluster_${cl0}.bam
         ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam_file} $2 $3
     done
 else
-    bam1=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${grs1_fp}.bam
-    bam2=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/cluster_${grs2_fp}.bam
+    bam1=${down_dir}/data_by_cluster/cluster_${grs1_fp}.bam
+    bam2=${down_dir}/data_by_cluster/cluster_${grs2_fp}.bam
     ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam2} $2 $3
 fi
 
 echo "Footprint analysis done!"
+echo "Now summary footprint analysis result in table and heatmap"
+
+fp_res_dir=${down_dir}/footprint
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/summarize_fp.R $grs1_fp $grs2_fp $pvalue_fp $fp_res_dir $down_dir
+
+

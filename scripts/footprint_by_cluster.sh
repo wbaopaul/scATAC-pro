@@ -10,7 +10,7 @@ source ${curr_dir}/read_conf.sh
 read_conf "$2"
 read_conf "$3"
 
-output_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/data_by_cluster/footprint
+output_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/footprint
 mkdir -p $output_dir
 
 bams=(${inputs//,/ })

@@ -6,8 +6,8 @@ output:
     social: menu
     theme: united
 params:
-  output_dir: ~/yuw1/run_scATAC-pro/PBMC10k/output
-  configure_user: ~/yuw1/run_scATAC-pro/PBMC10k/configure_user.txt
+  output_dir: /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/output
+  configure_user: /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/configure_user.txt
   
 ---
 
@@ -45,7 +45,7 @@ library(magrittr)
 library(kableExtra)
 library(RColorBrewer)
 library(ggplot2)
-#library(plotly)
+library(cicero)
 library(viridis)
 
 ```
@@ -53,7 +53,7 @@ library(viridis)
 <span style="font-size:20px;"> Global QC </span>
 ==========================================
 
-Column {data-width=400}
+Column
 -----------------------------------------------------------------------
 
 ### Global mapping statistics
@@ -62,17 +62,17 @@ Column {data-width=400}
 
 read_conf <- function(){
   
-  system(paste('grep =', params$configure_user, "|grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' > vrs.txt "))
+  system(paste0('grep = ', params$configure_user, " | grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' > ", params$output_dir, "/vrs.txt"))
   
-  system(paste('grep =', params$configure_user, "|grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' > vls.txt "))
+  system(paste0('grep = ', params$configure_user, " | grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' > ", params$output_dir, "/vls.txt"))
   
-  vrs = readLines('vrs.txt')
-  vls = readLines('vls.txt')
+  vrs = readLines(paste0(params$output_dir, '/vrs.txt'))
+  vls = readLines(paste0(params$output_dir, '/vls.txt'))
   for(i in 1:length(vrs)){
     assign(vrs[i], vls[i], envir = .GlobalEnv)
   }
-  system('rm vrs.txt')
-  system('rm vls.txt')
+#  system(paste0('rm', params$output_dir, '/vrs.txt'))
+#  system(paste0('rm', params$output_dir, '/vls.txt'))
 }
 
 read_conf()
@@ -80,23 +80,42 @@ plotEPS = as.logical(plotEPS)
 
 mapping_qc_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.MappingStats')
 
+fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt')
+frags = fread(fragments_file)
+names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
+
 
 mapping_qc = fread(mapping_qc_file, header = F)
+
+lib_complx = nrow(frags)/sum(frags$ndup)
+lib_complx = paste0(100 * round(lib_complx, 3), '%')
+
 mapping_qc$frac = round(mapping_qc$V2/mapping_qc$V2[1], 3)
 mapping_qc$frac = paste0(100*mapping_qc$frac, '%')
 
+mapping_qc = rbind(mapping_qc, data.frame(V1 ='Library Complexity (nonredudant fraction)', V2 = '', frac = lib_complx))
+
 kable(mapping_qc, col.names = NULL, format = 'html', caption = paste('Sample:', OUTPUT_PREFIX)) %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
+
 ```
 
 
-Column {data-width=400}
---------------------------------------------------------
-### Cell barcodes mapping statistics
+Column
+-----------------------------------------------------------------------
+
+
+### Cell barcodes Summary 
 
 ```{r}
+cell_mapping_qc_file = paste0(params$output_dir, '/summary/cell_barcodes.MappingStats')
+
+cell_mapping_qc = fread(cell_mapping_qc_file, header = F)
+
+
+
 bc_stat_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.qc_per_barcode.txt')
-selected_bcs = paste0(params$output_dir, '/filtered_matrix/', CELL_CALLER, '/barcodes.txt')
+selected_bcs = paste0(params$output_dir, '/filtered_matrix/', PEAK_CALLER, '/', CELL_CALLER, '/barcodes.txt')
 
 bc_stat = fread(bc_stat_file)
 
@@ -105,38 +124,121 @@ barcodes = fread(selected_bcs, header = F)$V1
 qc_sele = bc_stat[bc %in% barcodes, ]
 qc_nonsele = bc_stat[!bc %in% barcodes, ]
 
-fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt')
-frags = fread(fragments_file)
-names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
 
-frags = frags[bc %in% barcodes]
+#frags = frags[bc %in% barcodes]
 
 ncells = length(barcodes)
-frac.in.cell = paste0(round(sum(frags$ndup)/mapping_qc$V2[1], 3) * 100, '%')
-med.frag.per.cell = round(median(qc_sele$total_frags))
-frac.uniq = paste0(round(nrow(frags)/sum(frags$ndup), 3) * 100, '%')
+mapq30.frac.in.cell = paste0(round(sum(frags[bc %in% barcodes]$ndup)/sum(frags$ndup), 3) * 100, '%')
 
-cell.table = data.frame(c(CELL_CALLER, paste0(ncells), frac.in.cell, paste0(med.frag.per.cell), frac.uniq)) 
-rownames(cell.table) = c('Cell called by', 'Estimated # of cells', 'Fraction of MAPQ30 in cells', 
-                        'Median fragments per cell', 'Library Complexity (non redudant fraction)')  
+frac.in.cell = paste0(round(cell_mapping_qc$V2[2]/as.integer(as.character(mapping_qc$V2[2])), 3) * 100, '%')
+
+med.frag.per.cell = round(median(qc_sele$total_frags))
+frac.uniq = paste0(round(nrow(frags[bc %in% barcodes])/sum(frags[bc %in% barcodes]$ndup), 3) * 100, '%')
+
+cell.table = data.frame(c(CELL_CALLER,  paste0(ncells),  paste0(med.frag.per.cell), frac.in.cell, mapq30.frac.in.cell)) 
+
+rownames(cell.table) = c('Cell called by', 'Estimated # of cells',  'Median fragments per cell', 'Fraction of Mapped reads in cells', 'Fraction of MAPQ30 in cells')  
 kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
 
 ```
 
+Column
+-----------------------------------------------------------------------
+
+### Cell barcodes Mapping statistics
+
+```{r}
+if(CELL_MAP_QC){
+    lib_complx = frac.uniq
+
+    cell_mapping_qc$frac = round(cell_mapping_qc$V2/cell_mapping_qc$V2[1], 3)
+    cell_mapping_qc$frac = paste0(100*cell_mapping_qc$frac, '%')
+
+    cell_mapping_qc = rbind(cell_mapping_qc, data.frame(V1 ='Library Complexity (nonredudant fraction)', V2 = '', frac = lib_complx))
+
+    kable(cell_mapping_qc, col.names = NULL, format = 'html') %>%
+      kable_styling("striped", full_width = F, position = 'left', font_size = 15)
+}
+```
 
 
 
-
-<span style="font-size:20px;">Cell barcodes QC  </span> {data-orientation=rows}
+<span style="font-size:20px;"> Cell Barcode QC  </span> {data-orientation=rows}
 ==========================================
 
 Row 
 --------------------------------------------------------------------
+
+
+### Total fragments VS fraction in peaks
+
+```{r}
+
+bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
+
+library(ggplot2)
+library(grid)
+nsub_frags = min(15000, nrow(bc_stat))
+g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), nsub_frags), ], 
+            aes(x = total_frags, y = frac_peak, col = group)) + 
+  geom_point(size = 0.5) + scale_x_continuous(trans='log10') + theme_bw() +
+      theme(legend.position = 'none', 
+            legend.title=element_blank(),
+            axis.text = element_text(size = 15, family = "Helvetica"),
+            axis.title = element_text(size = 18, family = "Helvetica")) +
+  xlab('Total #Unique Fragments') + ylab('Fraction in Peak')
+
+#bb = ggplot_build(g)
+#cols = unique(bb[[1]][[1]]$colour)
+
+text1 <- grobTree(textGrob("Cell", x=0.8,  y=0.93, hjust=0,
+  gp=gpar(col='#F8766D', fontsize=15, fontface = 'bold', fontfamily = "Helvetica")))
+text2 <- grobTree(textGrob("Non-cell", x=0.8,  y=0.83, hjust=0,
+  gp=gpar(col='#00BFC4', fontsize=15, fontface = 'bold', fontfamily = "Helvetica")))
+
+g <- g + annotation_custom(text1) + annotation_custom(text2)
+g
+
+if(plotEPS){
+  system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
+  pfname = paste0(params$output_dir, '/summary/Figures/fracInPeak_vs_totalFragments.eps')
+  ggsave(g, file = pfname, device = 'eps', width = 6, height = 6)
+}
+
+```
+
+
+
+### Distribution of Insert Size 
+
+```{r}
+frags[, 'isize' := end - start]
+frags = frags[sample(1:nrow(frags), 1000000), ]
+
+p1 <- ggplot(data = frags[isize < 800], aes(x = isize)) +
+  geom_density(fill = 'lightblue') + xlab('Insert Size') + ylab('Density') + theme_bw() +  theme(legend.title=element_blank(), 
+                    legend.background = NULL, 
+                    axis.text = element_text(size = 15, family = "Helvetica"), 
+                    axis.title = element_text(size = 18, family = "Helvetica")) 
+
+p1
+
+if(plotEPS){
+  pfname = paste0(params$output_dir, '/summary/Figures/dist_insert_size.eps')
+  ggsave(p1, file = pfname, device = 'eps', width = 6, height = 6)
+}
+
+
+
+```
+
+
 ### TSS enrichment score profile
 ```{r}
-tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
+#tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
+tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.aggregated.mtx.gz')
 
 set.cols = brewer.pal(n=5, name = 'Dark2')
 tss.mat = fread(tss_escore_file)
@@ -148,14 +250,16 @@ tss.escore = ma(tss.escore)
 tss.escore = tss.escore[14:213]
 df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
 
-p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1]) +
-  xlab('Distance to TSS') + ylab('TSS enrichment score(bp)') + theme(legend.title=element_blank(), axis.text = element_text(size = 15), axis.title = element_text(size = 15)) + theme_bw()
+p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1])  + theme_bw() +
+  xlab('Distance to TSS (bp)') + ylab('TSS enrichment score') + theme(legend.title=element_blank(),
+      axis.text = element_text(size = 15, family = "Helvetica"), 
+      axis.title = element_text(size = 18, family = "Helvetica")) 
 
 p0
 
 
 if(plotEPS){
-  system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
+
   pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
   ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
 }
@@ -164,59 +268,12 @@ if(plotEPS){
 ```
 
 
-### Overlapping with sequence annotated regions
-```{r}
-
-qc_sele_df = data.table(frac = c(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$frac_promoter, qc_sele$frac_enh, qc_sele$frac_mito), 'type' = rep(c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'), each = nrow(qc_sele)))
-
-qc_sele_df$type = factor(qc_sele_df$type, levels = c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'))
-
-p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fraction') +
-  geom_boxplot(outlier.size = 0.01, show.legend = FALSE) +  theme(legend.position = 'none', axis.text = element_text(size = 17), axis.title.x = element_blank(), axis.title.y = element_text(size = 17)) + xlab('') + theme_bw() 
-p0
-
-if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/overlap_annotation.eps')
-  ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
-}
-
-
-```
-
-
-
-
-### Overall statistics
-
-```{r}
-
-frac_peak = sum(qc_sele$total_frags * qc_sele$frac_peak)/sum(qc_sele$total_frags)
-frac_mito = sum(qc_sele$total_frags * qc_sele$frac_mito)/sum(qc_sele$total_frags)
-frac_promoter = sum(qc_sele$total_frags * qc_sele$frac_promoter)/sum(qc_sele$total_frags)
-frac_enh = sum(qc_sele$total_frags * qc_sele$frac_enhancer)/sum(qc_sele$total_frags)
-frac_tss = sum(qc_sele$total_frags * qc_sele$frac_tss)/sum(qc_sele$total_frags)
-
-fracs = data.frame(c(frac_peak, frac_mito, frac_promoter, frac_enh, frac_tss))
-row.names(fracs) = c('Fraction in peaks', 'Fraction in mitocondrial chromosome',
-                    'Fraction in promoters', 'Fraction in Enhancers(ENCODE)', 
-                    'Fraction in TSS')
-colnames(fracs) = 'pr'
-fracs$pr = round(fracs$pr, 3)
-fracs$pr = paste0(100*fracs$pr, '%')
-
-kable(fracs, row.names = T, col.names = NULL) %>%
-  kable_styling(full_width = F, position = 'left', font_size = 15)
-
-
-
-```
 
 
 Row 
 -------------------------------------------------------------------
 
-
-### Distribution of fragments
+### Density plot of total number of unique fragments
 
 ```{r}
 
@@ -224,9 +281,21 @@ bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
 
 p <- ggplot(data = bc_stat, aes(x = total_frags, fill = group)) + 
   geom_density() + scale_x_continuous(trans = 'log10') + theme_bw() +
-  theme(legend.position=c(.1, .9)) +  theme(legend.title=element_blank(),
-                                            axis.title = element_text(size = 15),
-                                            axis.text = element_text(size = 15)) + xlab('Total #unique fragments') + ylab('Density')
+  theme(legend.position='none', legend.title=element_blank(),
+        axis.title = element_text(size = 18, family = "Helvetica"),
+        axis.text = element_text(size = 15, family = "Helvetica")) + 
+  xlab('Total #Unique Fragments') + ylab('Density') 
+
+#bb = ggplot_build(p)
+#cols = unique(bb$data[[1]][['fill']])
+
+text1 <- grobTree(textGrob("Cell", x=0.8,  y=0.93, hjust=0,
+  gp=gpar(col='#F8766D', fontsize=15, fontface = 'bold', fontfamily = "Helvetica")))
+text2 <- grobTree(textGrob("Non-cell", x=0.8,  y=0.83, hjust=0,
+  gp=gpar(col='#00BFC4', fontsize=15, fontface = 'bold', fontfamily = "Helvetica")))
+
+p <- p + annotation_custom(text1) + annotation_custom(text2)
+
 p
 #ggplotly(p)
 
@@ -241,50 +310,54 @@ if(plotEPS){
 
 
 
-
-### Total fragments VS fraction in peaks
-
+### Overlapping with sequence annotated regions
 ```{r}
 
-library(ggplot2)
-library(plotly)
-g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), 15000)], aes(x = total_frags, y = frac_peak, col = group)) + geom_point(size = 0.5) + scale_x_continuous(trans='log10') + theme_bw() +
-      theme(legend.position=c(.9, .9)) +  theme(legend.title=element_blank(),
-                                                legend.text = element_text(size=15),
-                                                legend.background = NULL,
-                                                axis.text = element_text(size = 15),
-                                                axis.title = element_text(size = 15)) + xlab('Total #unique fragments') + ylab('Fraction in Peak')
+qc_sele_df = data.table(frac = c(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$frac_promoter, qc_sele$frac_enh, qc_sele$frac_mito), 'type' = rep(c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'), each = nrow(qc_sele)))
 
-#ggplotly(g)
-g
+qc_sele_df$type = factor(qc_sele_df$type, levels = c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'))
 
-if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/fracInPeak_vs_totalFragments.eps')
-  ggsave(g, file = pfname, device = 'eps', width = 6, height = 6)
-}
-
-```
-
-
-### Distribution of Insert Size 
-
-```{r}
-frags[, 'isize' := end - start]
-frags = frags[sample(1:nrow(frags), 1000000), ]
-
-p1 <- ggplot(data = frags[isize < 800], aes(x = isize)) +
-  geom_density(fill = 'lightblue') + xlab('Insert size') + ylab('Density') +  theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15)) + theme_bw()
-
-p1
+p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fraction') + theme_bw() +
+  geom_boxplot(outlier.size = 0.01, show.legend = FALSE) +  
+  theme(legend.position = 'none', 
+        axis.text = element_text(size = 18, family = "Helvetica"), 
+        axis.title.x = element_blank(), 
+        axis.title.y = element_text(size = 18, family = "Helvetica")) + xlab('') 
+p0
 
 if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/dist_insert_size.eps')
-  ggsave(p1, file = pfname, device = 'eps', width = 6, height = 6)
+  pfname = paste0(params$output_dir, '/summary/Figures/overlap_annotation.eps')
+  ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
 }
 
 
-rm(frags)
 ```
+
+### Overall statistics
+
+```{r}
+
+frac_peak = sum(qc_sele$total_frags * qc_sele$frac_peak)/sum(qc_sele$total_frags)
+frac_mito = sum(qc_sele$total_frags * qc_sele$frac_mito)/sum(qc_sele$total_frags)
+frac_promoter = sum(qc_sele$total_frags * qc_sele$frac_promoter)/sum(qc_sele$total_frags)
+frac_enh = sum(qc_sele$total_frags * qc_sele$frac_enhancer)/sum(qc_sele$total_frags)
+frac_tss = sum(qc_sele$total_frags * qc_sele$frac_tss)/sum(qc_sele$total_frags)
+
+fracs = data.frame(c(frac_peak,  frac_promoter, frac_enh, frac_tss))
+row.names(fracs) = c('Fraction in peaks', 
+                    'Fraction in promoters', 'Fraction in Enhancers(ENCODE)', 
+                    'Fraction in TSS')
+colnames(fracs) = 'pr'
+fracs$pr = round(fracs$pr, 3)
+fracs$pr = paste0(100*fracs$pr, '%')
+
+kable(fracs, row.names = T, col.names = NULL) %>%
+  kable_styling(full_width = F, position = 'left', font_size = 15)
+
+
+
+```
+
 
 
 <span style="font-size:20px;"> Downstream Analysis </span>
@@ -296,14 +369,15 @@ Column
 
 ### Clustering 
 ```{r}
+rm(frags)
 library(Seurat)
 
-down.dir = paste0(params$output_dir, '/downstream_analysis/', CELL_CALLER)
+down.dir = paste0(params$output_dir, '/downstream_analysis/', PEAK_CALLER, '/', CELL_CALLER)
 seurat_file = paste0(down.dir, '/seurat_obj.rds')
 if(file.exists(seurat_file)){
     ss = readRDS(seurat_file)
 
-    cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters', label = T) + scale_color_brewer(palette = "Paired") + theme(legend.text = element_text(size = 17))
+    cg <- DimPlot(ss, reduction = 'umap', group.by = 'active_clusters', label = T) + scale_color_brewer(palette = "Paired") + theme(legend.text = element_text(size = 18, family = "Helvetica"))
     
     
     
@@ -319,16 +393,47 @@ if(file.exists(seurat_file)){
 ```
 
 
-### Total reads per cell
-```{r}
-if(file.exists(seurat_file)){
-    ss$log10_nCount = log10(ss$nCount_ATAC)
-    #fg <- FeaturePlot(ss, features = 'log10_nCount', reduction = 'umap') + ggtitle('') +
-    #   scale_fill_viridis()
-
-    dat = data.table('logN' = ss$log10_nCount, 'UMAP_1' = ss@reductions$umap@cell.embeddings[, 1], 'UMAP_2' = ss@reductions$umap@cell.embeddings[, 2])
-ggplot(data = dat, aes(x = UMAP_1, y = UMAP_2, colour = logN)) + geom_point(size = 1.1) + theme_bw() +
-  scale_colour_viridis() + theme(legend.title=element_blank(), axis.title = element_text(size = 15), axis.text = element_text(size = 15), legend.text = element_text(size = 17))
+### GO Analysis
+```{r, warning=F, message=F}
+go_file = paste0(down.dir, '/enrichedGO_differential_accessible_features_cluster_', group1, 
+                  '_VS_cluster_', group2, '.txt.xlsx')
+if(file.exists(go_file)){
+   #library(xlsx)
+    go_res1 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group1))
+    go_res2 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group2))
+    go_res = go_res1
+    group.sele = group1
+    if(nrow(go_res) == 0) {
+        go_res = go_res2
+        group.sele = group2
+    }
+    if(nrow(go_res) == 0) {
+        print('No enriched terms in any of the two groups')
+    }else{
+        #go_res = fread(go_file)
+        go_res = data.table(go_res)
+        go_res[, 'score' := -log10(p.adjust)]
+        go_res = go_res[order(-score), ]
+        ngo = min(20, nrow(go_res))
+        go_res = go_res[1:20, ]
+        go_res = go_res[order(score), ]
+        
+        go_res$Description = factor(go_res$Description, levels = go_res$Description)
+        
+        p_go <- ggplot(go_res, aes(y = score, x = Description, fill = Count)) +
+          geom_bar(width = 0.7, stat = 'identity') +
+          ggtitle(paste0("Enriched terms: cluster_", group.sele)) + theme_classic() + 
+          theme(legend.position = 'bottom', legend.direction = "horizontal") + 
+          coord_flip()  +  scale_fill_continuous(name = "#genes", type = "viridis") +
+          xlab('') + ylab('-log10(p.adjust)')
+         
+        
+      if(plotEPS){
+        pfname = paste0(params$output_dir, '/summary/Figures/enriched_GO.eps')
+        ggsave(p_go, file = pfname, device = 'eps', width = 10, height = 6)
+      }
+    p_go 
+   }
 }
 
 ```
@@ -360,8 +465,15 @@ do_DA <- function(mtx_score, clusters, test = 'wilcox',
     mu1 = sapply(1:length(features), function(x) mean(mtx1[x, ]))
     mu2 = sapply(1:length(features), function(x) mean(mtx2[x, ]))
     
-   
-    pvs = sapply(1:length(features), function(x) wilcox.test(mtx1[x, ], mtx2[x, ], alternative = 'greater')$p.value )
+    pvs = rep(0.5, length(features))
+    
+    for(x in 1:length(features)){
+      a1 = mtx1[x, ]
+      a2 = mtx2[x, ]
+      if(length(which(!is.na(a1))) < 2 || length(which(!is.na(a2))) < 2) next
+      pvs[x] = wilcox.test(a1, a2, alternative = 'greater')$p.value
+    }
+    
     pvs.adj = p.adjust(pvs, method = 'fdr')
     res0 = data.table('feature' = features, 'cluster' = cluster0,
                       'mean1' = mu1, 'mean2' = mu2,
@@ -390,16 +502,20 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   #variability = variability[order(-variability), ]
   
   ## calculate DA
-  da.res = do_DA(chromVar.obj@assays$data$deviations, 
+  #dev = chromVar.obj@assays$data$deviations
+  dev = deviations(chromVar.obj)
+  da.res = do_DA(dev, 
                  clusters = data.table('barcode' = rownames(metaData),
                                        'cluster' = metaData$active_clusters),
                  topn = 10)
+  rm(dev)
   write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
   
   
   ## plot enriched TFs in heatmap
   sele.tfs = da.res$feature
-  zscores = chromVar.obj@assays$data$z
+  #zscores = chromVar.obj@assays$data$z
+  zscores = deviationScores(chromVar.obj)
   sele.zscores = zscores[sele.tfs, ]
   
   
@@ -422,8 +538,10 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   ann_col = data.frame('cluster' = metaData$active_clusters)
   rownames(ann_col) = metaData$rn
   
-  up_cut = quantile(sele.zscores, 0.95)
-  low_cut = quantile(sele.zscores, 0.05)
+  up_cut = quantile(sele.zscores, 0.95, na.rm = T)
+  low_cut = quantile(sele.zscores, 0.05, na.rm = T)
+  sele.zscores[is.na(sele.zscores)] = 0
+  low_cut = min(0, low_cut)
   sele.zscores[sele.zscores > up_cut] = up_cut
   sele.zscores[sele.zscores < low_cut] = low_cut
   
@@ -464,8 +582,8 @@ Column
 ### Footprinting Analysis: Comparing two clusters
 
 ```{r, out.width='\\textwidth'}
-comp_cls = paste0('cluster_', cluster1_fp, '_cluster_', cluster2_fp)
-footprint_stats.file = paste0(down.dir, '/data_by_cluster/footprint/', comp_cls, '/differential_statistics.txt')
+comp_cls = paste0('cluster_', group1_fp, '_cluster_', group2_fp)
+footprint_stats.file = paste0(down.dir, '/footprint/', comp_cls, '/differential_statistics.txt')
 if(file.exists(footprint_stats.file)){
   library(ggrepel)
   library(gridExtra)
@@ -479,9 +597,11 @@ if(file.exists(footprint_stats.file)){
   footprint_stats[, c('motif1', 'motif2') := NULL]
   
   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05, 'differentiated', 'no difference')]
-  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity > 0, paste0('cluster', cluster2_fp, '_high'), isSig)]
-   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity < 0, paste0('cluster', cluster1_fp, '_high'), isSig)]
+  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity > 0, paste0('cluster', group2_fp, '_high'), isSig)]
+   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity < 0, paste0('cluster', group1_fp, '_high'), isSig)]
+   
   footprint_stats$motif_show = ""
+  footprint_stats$motif = toupper(footprint_stats$motif)
   footprint_stats[P_values <= 0.05]$motif_show = footprint_stats[P_values <= 0.05]$motif
   
   
@@ -489,11 +609,12 @@ if(file.exists(footprint_stats.file)){
  p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, 
                                          colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + 
    ylab('TF Activity Difference') + 
-   theme(legend.text = element_text(size=15), 
-         axis.title = element_text(size = 15), 
+   theme(legend.text = element_text(size=18, family = "Helvetica"), 
+         axis.title = element_text(size = 18, family = "Helvetica"), 
          axis.text.x = element_blank(), legend.title = element_blank(),
-         legend.direction = 'horizontal', plot.title = element_text(size = 15,
-         face = 'bold'), panel.background = element_rect(fill = "white")) + + geom_text_repel(force = 10) + 
+         legend.direction = 'horizontal', 
+         plot.title = element_text(size = 15, family = "Helvetica",
+         face = 'bold'), panel.background = element_rect(fill = "white"))  + geom_text_repel(force = 10) + 
    theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') +
    scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40')) 
  
@@ -506,6 +627,7 @@ if(plotEPS){
          width = 6)
   
 }
+ 
 p
 
 }
@@ -513,43 +635,64 @@ p
 ```
 
 
-### An example 
+### Predicted Interactions at a locus of interest
 ```{r, out.width='\\textwidth'}
-if(file.exists(footprint_stats.file)){
- 
-  fdir = dirname(footprint_stats.file)
- #select a TF to show
- 
- tf.file.name = footprint_stats[which.min(P_values)]$Motif
-# sele.motif = footprint_stats[which.min(P_values)]$motif
- sele.motif = 'CEBPA'
- tf.file.name = paste0(fdir, '/Lineplots/', tf.file.name, '.txt')
- 
- dd = fread(tf.file.name)
- dd[, 'id' := -99:100]
- dd1 = rbind(subset(dd, select = c('id', paste0('cluster_', cluster1_fp))))
- dd2 = rbind(subset(dd, select = c('id', paste0('cluster_', cluster2_fp))))
- names(dd1)[2] = names(dd2)[2] = 'score'
- dd = rbind(dd2, dd1)
- dd$cluster = rep(c(paste0('cluster_', cluster2_fp), paste0('cluster_', cluster1_fp)), each = nrow(dd1))
- 
- 
- p2 <- ggplot(data = dd, aes(x = id, y = score, colour = cluster)) + geom_line(aes(linetype = cluster), size = 1.1) + ggtitle(sele.motif) + xlab('Distance to Motif') + 
-    theme(legend.title=element_blank(), legend.text = element_text(size=15), legend.background = NULL, axis.text = element_text(size = 15), axis.title = element_text(size = 15), legend.position = c(0.8, 0.8), plot.title = element_text(size = 15, face = 'bold')) + theme(plot.margin=unit(c(0.2,0,0.2,0),"cm")) +
-   scale_color_manual(values = c('#F8766D', '#619CFF')) + theme_bw()
- 
- 
+cicero_conn.file = paste0(down.dir, '/cicero_interactions.txt')
 
- if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/example_footprint_tf_activity.eps')
-  #postscript(file = pfname, width = 9, height = 12)
-  
-  ggsave(p2, filename = pfname, device = 'eps', height = 6,
-         width = 6)
-  #dev.off()
+if(file.exists(cicero_conn.file)){
+ conns = fread(cicero_conn.file)
+ conns = data.frame(conns)
+ temp <- tempfile()
+if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {
+    download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/mus_musculus/Mus_musculus.GRCm38.95.gtf.gz', temp)
+ }
+
+if(grepl(GENOME_NAME, pattern = 'mm9', ignore.case = T)) {
+    download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz', temp)
+ }
+
+if(grepl(GENOME_NAME, pattern = 'hg38', ignore.case = T)) {
+    download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz', temp)
 }
 
-  p2
+if(grepl(GENOME_NAME, pattern = 'hg19', ignore.case = T)) {
+    download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz', temp)
+}
+
+gene_anno <- rtracklayer::readGFF(temp)
+ unlink(temp)
+ 
+ # rename some columns to match requirements
+ gene_anno$chromosome <- paste0("chr", gene_anno$seqid)
+ gene_anno$gene <- gene_anno$gene_id
+ gene_anno$transcript <- gene_anno$transcript_id
+ gene_anno$symbol <- gene_anno$gene_name
+ gene_anno = subset(gene_anno, select = c(chromosome, start, end, strand, 
+                                          transcript, gene, symbol))
+ gene_anno = gene_anno[complete.cases(gene_anno), ]
+
+ chr0 = unlist(strsplit(Cicero_Plot_Region, ':'))[1] ## chr5:140610000-140640000
+ region0 = unlist(strsplit(Cicero_Plot_Region, ':'))[2]
+ start0 = as.integer(unlist(strsplit(region0, '-'))[1])
+ end0 = as.integer(unlist(strsplit(region0, '-'))[2])
+ 
+ if(plotEPS){
+   pdf(paste0(params$output_dir,'/summary/Figures/interactions_example_region.pdf'), width = 8, height = 5, fonts = 'sans')
+    plot_connections(conns, chr0, start0, end0,
+                 gene_model = gene_anno, 
+                 coaccess_cutoff = .3, 
+                 connection_width = 1, 
+                 collapseTranscripts = "longest",
+                 viewpoint_alpha = 0)
+   dev.off()
+  
+ }
+    plot_connections(conns, chr0, start0, end0,
+                 gene_model = gene_anno, 
+                 coaccess_cutoff = .3, 
+                 connection_width = 1, 
+                 collapseTranscripts = "longest",
+                 viewpoint_alpha = 0)
 }
 
 ```
