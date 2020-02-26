@@ -494,12 +494,12 @@ run_LSI <- function(mtx, ncell.peak = 150,  max_pc = 10, k = 5){
   return(cl.labels)
 }
 
-run_cisTopic <- function(mtx, nCores = 4, frac_in_cell = 0.05){
+run_cisTopic <- function(mtx, nCores = 4, 
+                         topic = c(10, 20, 30, 50, 80, 100),
+                         frac_in_cell = 0.05){
   # prepare the right format of rownames
   if(!require(cisTopic)){
-   # if(!require(RcisTarge)) devtools::install_github("aertslab/RcisTarget")
-   # if(!require(AUCell)) devtools::install_github("aertslab/AUCell") 
-    devtools::install_github("aertslab/cisTopic")
+     devtools::install_github("aertslab/cisTopic")
   }
   library(cisTopic)
   rnames = data.table('region' = rownames(mtx))
@@ -513,8 +513,7 @@ run_cisTopic <- function(mtx, nCores = 4, frac_in_cell = 0.05){
   mtx = mtx[rr >= frac_in_cell, ]
      
   cisTopicObject <- createcisTopicObject(mtx, project.name='scATAC')
-  cisTopicObject <- runModels(cisTopicObject, topic = c(10, 20, 30,
-                                                        50, 80, 100), seed = 987, nCores = nCores, 
+  cisTopicObject <- runModels(cisTopicObject, topic = topic, seed = 987, nCores = nCores, 
                               burnin = 120, iterations = 150, addModels = T)
   #cisTopicObject <- selectModel(cisTopicObject, keepBinarymatrix = F, keepModels = F)
   #cellassign <- t(modelMatSelection(cisTopicObject, 'cell', 'Probability'))

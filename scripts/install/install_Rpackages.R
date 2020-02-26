@@ -32,3 +32,7 @@ if(!require(harmony)) {
     message(paste('Install harmony...'))
     devtools::install_github("immunogenomics/harmony", upgrade = 'never', force = T)
 }
+
+if(!require(VisCello.atac)) {
+    devtools::install_github("qinzhu/VisCello", ref="VisCello-atac") # install
+}

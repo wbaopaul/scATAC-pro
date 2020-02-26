@@ -352,16 +352,6 @@ if [ $wasInstalled == 0 ]; then
         pip install --upgrade --user deeptools
     fi
  
-    #pip install --upgrade -t $PREFIX_BIN deeptools
-
-    ## from souce code
-    #get deeptools.tar.gz https://github.com/deeptools/deepTools/archive/3.3.1.tar.gz
-    #tar -xzvf deeptools.tar.gz
-    #cd deepTools-3.3.1
-    #python setup.py install --prefix $PREFIX_BIN
-    #export PATH=$PREFIX_BIN:$PATH
-    #cd ..
-
     check=`deeptools --version `;
     if [ $? = "0" ]; then
         echo -e "$BLUE""deeptools apyypears to be installed successfully""$NORMAL"

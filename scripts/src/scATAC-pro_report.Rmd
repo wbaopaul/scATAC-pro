@@ -601,18 +601,9 @@ Column
 ### Footprinting Analysis: differentially bound TFs
 
 ```{r, out.width='\\textwidth'}
-comp_cls = paste0('cluster_', group1_fp, '_cluster_', group2_fp)
 
-if(group1_fp == 'one'){
-  comp_cls =  paste0(group1_fp, '_VS_', group2_fp)
-}else if(group2_fp == 'rest'){
-  comp_cls = paste0('cluster_', group1_fp, '_VS_', group2_fp)
-}else{
-  comp_cls = paste0('cluster_', group1_fp, '_VS_cluster_', group2_fp)
-}
-
-
-footprint_stats.file = paste0(down.dir, '/differential_TF_footprint_', comp_cls, '.txt')
+footprint_stats.file = paste0(down.dir, '/differential_TF_footprint_', 
+                              group1_fp, '_vs_', group2_fp, '.txt')
 if(file.exists(footprint_stats.file)){
   
   footprint_out = fread(footprint_stats.file)
@@ -642,7 +633,7 @@ if(file.exists(footprint_stats.file)){
                            color = viridis::viridis(100))
   
   pfname1 =paste0(params$output_dir, '/summary/Figures/heatmap_differential_TF_footprint_', 
-                  comp_cls, '.eps')
+                  group1_fp, '_vs_', group2_fp, '.eps')
   
   if(plotEPS){
     ggsave(p1, filename = pfname1, device = 'eps', height = 6,

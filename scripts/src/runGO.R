@@ -29,7 +29,7 @@ markers[, 'genes' := paste(unlist(strsplit(peak, ','))[-1], collapse = ','), by 
 
 ## do go cluster by cluster, genes in other clusters as background
 genesInDA = list()
-cls = unique(markers$cluster)
+cls = sort(unique(markers$cluster))
 
 for(cl0 in cls){
     markers0 = markers[cluster == cl0]$genes
@@ -50,12 +50,22 @@ for(cl0 in cls){
     #if(length(cls) == 1) bg_genes = NULL
     markers0 = markers[cluster == cl0]$genes
     genes0 = lapply(markers0, function(x) unlist(strsplit(x, ',')))
-    tmp = do_GO(genesInDA[[paste0('cluster', cl0)]],
-                                        bg_genes = bg_genes,
-                                        type = GO_TYPE, qCutoff = 0.1, organism = organism)
-    interm_goByCl[[paste0('cluster', cl0)]] = tmp
-    goByCl[[paste0('cluster', cl0)]] = tmp@result[tmp@result$qvalue <= 0.1, ] 
-
+    if(length(genesInDA[[paste0('cluster', cl0)]]) <= 10) {
+      tmp = data.table(matrix(1:8, 1, 8))
+      names(tmp) = c('ID', 'Description', 'GeneRation', 'BgRatio', 'pvalue',
+                     'p.adjust', 'qvalue', 'geneID')
+      tmp = tmp[pvalue < 1]
+      goByCl[[paste0('cluster', cl0)]] = tmp
+      
+    }else{
+      tmp = do_GO(genesInDA[[paste0('cluster', cl0)]],
+                  bg_genes = bg_genes,
+                  type = GO_TYPE, qCutoff = 0.1, organism = organism)
+      
+      
+        interm_goByCl[[paste0('cluster', cl0)]] = tmp
+        goByCl[[paste0('cluster', cl0)]] = tmp@result[tmp@result$qvalue <= 0.1, ] 
+      }
 }
 if(!require('writexl')){
     install.packages('writexl', dependencies = TRUE, repos = "http://cran.us.r-project.org")

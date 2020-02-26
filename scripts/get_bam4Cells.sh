@@ -30,7 +30,8 @@ ${SAMTOOLS_PATH}/samtools view -@ 4 -bS ${map_dir}/non_cell_barcodes.sam > ${map
 echo "The bam file was split between cell and non-cell!"
 wait
 
-rm ${map_dir}/*cell_barcodes.sam
+rm ${map_dir}/cell_barcodes.sam
+rm ${map_dir}/non_cell_barcodes.sam
 
 ## QC using cell barcodes bam
 CELL_MAP_QC=${CELL_MAP_QC^^}
