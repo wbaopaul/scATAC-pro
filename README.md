@@ -142,29 +142,29 @@ Run scATAC-pro step by step
 <!-- -->
 
 
-    $ cat atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq
+    $ cat atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq.gz
 
-    $ cat atac_pbmc_10k_v1_S1_L001_R3_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R3_001.fastq.gz > pe2_fastq
+    $ cat atac_pbmc_10k_v1_S1_L001_R3_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R3_001.fastq.gz > pe2_fastq.gz
 
-    $ cat atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq
+    $ cat atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq.gz
 
 -   *Run the pipeline sequentially*
 
 <!-- -->
 
     $ scATAC-pro -s demplx_fastq 
-                 -i pe1_fastq,pe2_fastq,index_fastq 
+                 -i pe1_fastq.gz,pe2_fastq.gz,index_fastq.gz 
                  -c configure_user.txt 
 
     $ scATAC-pro -s trimming 
-                 -i output/demplxed_fastq/demplxed_pe1_fastq,
-                    output/demplxed_fastq/demplxed_pe2_fastq
+                 -i output/demplxed_fastq/demplxed_pe1_fastq.gz,
+                    output/demplxed_fastq/demplxed_pe2_fastq.gz
                  -c configure_user.txt 
 
 
     $ scATAC-pro -s mapping 
-                  -i output/trimmed_fastq/trimmed_pe1_fastq,
-                     output/trimmed_fastq/trimmed_pe2_fastq 
+                  -i output/trimmed_fastq/trimmed_pe1_fastq.gz,
+                     output/trimmed_fastq/trimmed_pe2_fastq.gz 
                   -c configure_user.txt 
 
     $ scATAC-pro -s call_peak 
