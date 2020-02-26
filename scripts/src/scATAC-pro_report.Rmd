@@ -237,8 +237,8 @@ if(plotEPS){
 
 ### TSS enrichment score profile
 ```{r}
-#tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
-tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.aggregated.mtx.gz')
+tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.MAPQ30.aggregated.mtx.gz')
+if(!file.exists(tss_escore_file)) tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
 
 set.cols = brewer.pal(n=5, name = 'Dark2')
 tss.mat = fread(tss_escore_file)
@@ -395,27 +395,41 @@ if(file.exists(seurat_file)){
 
 ### GO Analysis
 ```{r, warning=F, message=F}
-go_file = paste0(down.dir, '/enrichedGO_differential_accessible_features_cluster_', group1, 
-                  '_VS_cluster_', group2, '.txt.xlsx')
+go_file = paste0(down.dir, '/enrichedGO_differential_accessible_features_', group1, 
+                  '_VS_', group2, '.xlsx')
 if(file.exists(go_file)){
    #library(xlsx)
-    go_res1 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group1))
-    go_res2 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group2))
-    go_res = go_res1
-    group.sele = group1
-    if(nrow(go_res) == 0) {
-        go_res = go_res2
-        group.sele = group2
+    cls = as.character(unique(ss$active_clusters))
+    if(grepl(group1, pattern = 'one')){
+      tmp = list()
+      for(i in 1:length(cls)) tmp[[i]] = xlsx::read.xlsx(go_file, i)
+      ll = sapply(tmp, nrow)
+      go_res = tmp[[which.max(ll)]]
+      group.sele = cls[which.max(ll)]
+    }else{
+       go_res1 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group1))
+       go_res2 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group2))
+       go_res = go_res1
+       group.sele = group1
+       if(nrow(go_res1) < nrow(go_res2)){
+         go_res = go_res2
+         group.sele = group2
+       }
     }
+    
+    
     if(nrow(go_res) == 0) {
-        print('No enriched terms in any of the two groups')
+        if(grepl(group1, pattern = 'one')) {
+            print(paste0('No enriched terms in comparison of ', group1, '_vs_', group2))}else{
+            print(paste0('No enriched terms in comparison of cluster_', group1, '_vs_', group2))
+          }
     }else{
         #go_res = fread(go_file)
         go_res = data.table(go_res)
         go_res[, 'score' := -log10(p.adjust)]
         go_res = go_res[order(-score), ]
         ngo = min(20, nrow(go_res))
-        go_res = go_res[1:20, ]
+        go_res = go_res[1:ngo, ]
         go_res = go_res[order(score), ]
         
         go_res$Description = factor(go_res$Description, levels = go_res$Description)
@@ -452,7 +466,7 @@ register(SerialParam())
 
 # Do DA/DE with one cluster vs the rest clusters
 # clusters are the data frame with <barcode> <cluster>
-do_DA <- function(mtx_score, clusters, test = 'wilcox', 
+do_DA_motif <- function(mtx_score, clusters, test = 'wilcox', 
                   only.pos = T, fdr = 0.05, topn = 10){
   clusters$cluster = as.character(clusters$cluster)
   cls = unique(clusters$cluster)
@@ -497,20 +511,17 @@ if(file.exists(seurat_file)){
 
 if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   chromVar.obj = readRDS(paste0(down.dir, '/chromVar_obj.rds'))
-  #variability <- computeVariability(chromVar.obj)
-  #variability = data.table(variability, stringsAsFactors = F)
-  #variability = variability[order(-variability), ]
-  
-  ## calculate DA
-  #dev = chromVar.obj@assays$data$deviations
-  dev = deviations(chromVar.obj)
-  da.res = do_DA(dev, 
+  if(!file.exists(paste0(down.dir, '/differential_TF_motif_enriched_in_clusters.txt'))){
+         dev = deviations(chromVar.obj)
+      da.res = do_DA_motif(dev, 
                  clusters = data.table('barcode' = rownames(metaData),
                                        'cluster' = metaData$active_clusters),
                  topn = 10)
-  rm(dev)
-  write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
-  
+      rm(dev)
+      write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
+  }else{
+    da.res = fread( paste0(down.dir, '/differential_TF_motif_enriched_in_clusters.txt'))
+  }
   
   ## plot enriched TFs in heatmap
   sele.tfs = da.res$feature
@@ -520,10 +531,18 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   
   
   # change tf name to be more readable
-  rnames = rownames(sele.zscores)
-  nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
-  nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
-  rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
+  if(grepl(GENOME_NAME, pattern = 'hg', ignore.case = T)){
+    rnames = rownames(sele.zscores)
+    nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+    nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
+    rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
+  }else{
+    rnames = rownames(sele.zscores)
+    nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+    rownames(sele.zscores) = nnames
+    sele.zscores = sele.zscores[!grepl(nnames, pattern = '^LINE'), ]
+  }
+  
   
   metaData$active_clusters = as.character(metaData$active_clusters)
   metaData = data.table(metaData, keep.rownames = T)
@@ -568,7 +587,7 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   ggsave(ph, filename = pfname, device = 'eps', height = 12,
          width = 9)
   #dev.off()
-}
+  }
 
 }
 
@@ -579,7 +598,7 @@ Column
 ----------------------------------------------------
 
 
-### Footprinting Analysis: Comparing two clusters
+### Footprinting Analysis: differentially bound TFs
 
 ```{r, out.width='\\textwidth'}
 comp_cls = paste0('cluster_', group1_fp, '_cluster_', group2_fp)
@@ -622,8 +641,8 @@ if(file.exists(footprint_stats.file)){
   p1 <- pheatmap::pheatmap(mm, cluster_cols = F, fontsize = 13, fontsize_row = 9,
                            color = viridis::viridis(100))
   
-  pfname1 =paste0(down_dir, '/summary/Figures/heatmap_differential_TF_footprint_', 
-                  cl1, '_VS_', cl2, '.eps')
+  pfname1 =paste0(params$output_dir, '/summary/Figures/heatmap_differential_TF_footprint_', 
+                  comp_cls, '.eps')
   
   if(plotEPS){
     ggsave(p1, filename = pfname1, device = 'eps', height = 6,

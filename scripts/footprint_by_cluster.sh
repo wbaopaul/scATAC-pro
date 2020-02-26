@@ -40,11 +40,11 @@ cl1=${prefix1/cluster_/}   ## absolute cluster name
 cl2=${prefix2/cluster_/}
 
 if [[ $prefix1 == *"cluster_"* ]] && [[ $prefix2 == *"cluster_"* ]]; then
-    input_peak=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_cluster_${cl1}_VS_cluster_${cl2}.txt
+    input_peak=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_${cl1}_VS_${cl2}.txt
     cl1_tmp=$cl1
     cl2_tmp=$cl2
 else
-    input_peak=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_cluster_one_VS_cluster_rest.txt
+    input_peak=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_one_VS_rest.txt
     cl1_tmp=one
     cl2_tmp=rest
 fi
