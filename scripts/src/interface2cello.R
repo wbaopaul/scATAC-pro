@@ -11,6 +11,7 @@ library(parallel)
 args = commandArgs(T)
 
 seuratPath = args[1]
+assay4cello = args[2]
 output_dir = dirname(seuratPath)
 
 seurat.atac = readRDS(seuratPath)
@@ -23,7 +24,7 @@ inputs = prepInput4Cello(seurat.atac@assays$ATAC@counts[rr %in% sele.features, ]
                          seurat.obj = seurat.atac,
                          norm_mtx = seurat.atac@assays$ATAC@data[rr %in% sele.features, ],
                          cello.name = 'scATAC_withGene2Peak',
-                         assay = 'ATAC', extraDims = c(100, 80, 50, 30, 20),
+                         assay = assay4cello, extraDims = c(100, 80, 50, 30, 20),
                          vars.to.regOnPca = 'nCount_ATAC',
                          vFeatures = NULL)
 

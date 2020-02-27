@@ -399,7 +399,7 @@ go_file = paste0(down.dir, '/enrichedGO_differential_accessible_features_', grou
                   '_VS_', group2, '.xlsx')
 if(file.exists(go_file)){
    #library(xlsx)
-    cls = as.character(unique(ss$active_clusters))
+    cls = 1:length(unique(ss$active_clusters))
     if(grepl(group1, pattern = 'one')){
       tmp = list()
       for(i in 1:length(cls)) tmp[[i]] = xlsx::read.xlsx(go_file, i)

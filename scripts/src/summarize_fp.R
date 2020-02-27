@@ -58,7 +58,8 @@ if(group1_fp != 'one'){
     
     
    
-    pfname = paste0(output_dir, '/footprint_tf_activity.eps')
+    pfname = paste0(output_dir, '/footprint_tf_activity_',
+                    group1_fp, '_vs_', group2_fp, '.eps')
       
     ggsave(p, filename = pfname, device = 'eps', height = 6,
              width = 6)
@@ -78,7 +79,8 @@ if(group1_fp != 'one'){
   footprint_out = NULL
   for(dir0 in files){
     file0 = paste0(fp_res_dir, '/', dir0, '/differential_statistics.txt')
-    cl0 = gsub('_rest', '', dir0)
+    cl0 = gsub('_vs_rest', '', dir0)
+    if(!file.exists(file0)) next
     footprint_stats = fread(file0)
     footprint_stats <- process_fp_stat(footprint_stats, pvalue_fp, cl0, 'rest')
     footprint_out0 = subset(footprint_stats, 
@@ -118,13 +120,13 @@ p1 <- pheatmap::pheatmap(mm, cluster_cols = F, fontsize = 13, fontsize_row = 9,
                    color = viridis::viridis(100))
 
 pfname1 =paste0(output_dir, '/heatmap_differential_TF_footprint_', 
-               group1_fp, '_VS_', group2_fp, '.eps')
+               group1_fp, '_vs_', group2_fp, '.eps')
 
 ggsave(p1, filename = pfname1, device = 'eps', height = 10,
        width = 6)
 
 write.table(footprint_out, 
             file = paste0(output_dir, '/differential_TF_footprint_', 
-                          group1_fp, '_VS_', group2_fp, '.txt'),
+                          group1_fp, '_vs_', group2_fp, '.txt'),
             quote = F, row.names = F, col.names = T, sep = '\t')
   

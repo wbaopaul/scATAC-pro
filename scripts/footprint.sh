@@ -29,14 +29,22 @@ if [ "$grs1_fp" == 'one' ]; then
     do
         echo "working on cluster $cl0 ..."
         bam1=${down_dir}/data_by_cluster/cluster_${cl0}.bam
-        ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam_file} $2 $3
+        mkdir -p ${down_dir}/footprint
+        bamrest=${down_dir}/footprint/${cl0}_rest.bam
+        ${SAMTOOLS_PATH}/samtools merge -@ 4 -f  $bamrest `find ${down_dir}/data_by_cluster/ -name "cluster*.bam" | grep -v cluster_${cl0}.bam`
+        ${SAMTOOLS_PATH}/samtools index -@ 4 $bamrest
+        ${curr_dir}/footprint_by_cluster.sh ${bam1},${bamrest} $2 $3
     done
 elif [ "$grs2_fp" == 'rest' ]; then
     for cl0 in "${grs1[@]}"
     do
-        echo "working on $cl0 ..."
+        echo "working on cluster $cl0 ..."
         bam1=${down_dir}/data_by_cluster/cluster_${cl0}.bam
-        ${curr_dir}/footprint_by_cluster.sh ${bam1},${bam_file} $2 $3
+        mkdir -p ${down_dir}/footprint
+        bamrest=${down_dir}/footprint/${cl0}_rest.bam
+        ${SAMTOOLS_PATH}/samtools merge -@ 4 -f  $bamrest `find ${down_dir}/data_by_cluster/ -name "cluster*.bam" | grep -v cluster_${cl0}.bam`
+        ${SAMTOOLS_PATH}/samtools index -@ 4 $bamrest
+        ${curr_dir}/footprint_by_cluster.sh ${bam1},${bamrest} $2 $3
     done
 else
     bam1=${down_dir}/data_by_cluster/cluster_${grs1_fp}.bam

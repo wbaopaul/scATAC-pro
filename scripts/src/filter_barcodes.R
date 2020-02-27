@@ -26,23 +26,23 @@ parser <- add_option(parser, c("-U", "--max_uniq_frags"), type="integer", defaul
                 metavar="number")
 
 
-parser <- add_option(parser, c("-k", "--frac_peak"), type="double", default=0.05,
+parser <- add_option(parser, c("-k", "--min_frac_peak"), type="double", default=0.05,
                 help="minimal fraction of total pairs in peaks per barcode [default %default]",
                 metavar="number")
 
-parser <- add_option(parser, c("-t", "--frac_tss"), type="double", default=0,
+parser <- add_option(parser, c("-t", "--min_frac_tss"), type="double", default=0,
                 help="minimal fraction of total pairs overlapping with tss per barcode [default %default]",
                 metavar="number")
 
-parser <- add_option(parser, c("-e", "--frac_enhancer"), type="double", default=0,
+parser <- add_option(parser, c("-e", "--min_frac_enhancer"), type="double", default=0,
                 help="minimal fraction of total pairs in enhancer regions per barcode [default %default]",
                 metavar="number")
 
-parser <- add_option(parser, c("-p", "--frac_promoter"), type="double", default=0,
+parser <- add_option(parser, c("-p", "--min_frac_promoter"), type="double", default=0,
                 help="minimal fraction of total pairs in tss per barcode [default %default]",
                 metavar="number")
-parser <- add_option(parser, c("-m", "--frac_mito"), type="double", default=0.2,
-                     help="minimal fraction of total pairs in Mitocondrial per barcode [default %default]",
+parser <- add_option(parser, c("-m", "--max_frac_mito"), type="double", default=0.2,
+                     help="maximal fraction of total pairs in Mitocondrial per barcode [default %default]",
                      metavar="number")
 
 opt = parse_args(parser)
@@ -54,18 +54,18 @@ qc_bc_stat = fread(opt$bc_stat_file)
 
 cut.min.frag = opt$min_uniq_frags
 cut.max.frag = opt$max_uniq_frags
-cut.mito = opt$frac_mito
-cut.peak = opt$frac_peak
-cut.tss = opt$frac_tss
-cut.promoter = opt$frac_promoter
-cut.enh = opt$frac_enhancer
+cut.mito = opt$max_frac_mito
+cut.peak = opt$min_frac_peak
+cut.tss = opt$min_frac_tss
+cut.promoter = opt$min_frac_promoter
+cut.enh = opt$min_frac_enhancer
 
 qc_sele = qc_bc_stat[total_frags >= cut.min.frag & total_frags <= cut.max.frag &
-                       frac_mito <= cut.mito &
-                       frac_peak >= cut.peak &
-                       frac_tss >= cut.tss &
-                       frac_promoter >= cut.promoter &
-                       frac_enhancer >= cut.enh]
+                       max_frac_mito <= cut.mito &
+                       min_frac_peak >= cut.peak &
+                       min_frac_tss >= cut.tss &
+                       min_frac_promoter >= cut.promoter &
+                       min_frac_enhancer >= cut.enh]
 
 mtx = readMM(mtx_file)
 input_mtx_dir = dirname(mtx_file)
