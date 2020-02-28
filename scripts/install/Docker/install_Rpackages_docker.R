@@ -1,3 +1,4 @@
+  
 ## install R packages for scATAC-pro
 
 if(!require(BiocManager)){
@@ -31,4 +32,13 @@ if(!require(chromVARmotifs)) {
 if(!require(cisTopic)) {  
     message(paste('Install cisTopic...'))
     devtools::install_github("aertslab/cisTopic", upgrade = 'never', force = T)
+}
+
+if(!require(harmony)) {
+    message(paste('Install harmony...'))
+    devtools::install_github("immunogenomics/harmony", upgrade = 'never', force = T)
+}
+
+if(!require(VisCello-atac)) {
+    devtools::install_github("qinzhu/VisCello", ref="VisCello-atac") # install
 }

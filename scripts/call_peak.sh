@@ -67,6 +67,6 @@ if [ "${PEAK_CALLER}" = 'BIN' ];then
 fi
   
 ## remove peaks that its chromosome is not list in the chrom_size file
-${R_PATH}/Rscript --no-vanilla ${curr_dir}/src/rmRedundantPeaks.R ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed $CHROM_SIZE_FILE
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/rmRedundantPeaks.R ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed $CHROM_SIZE_FILE
  
 echo "Call peaks done !"
