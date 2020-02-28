@@ -89,6 +89,11 @@ if(cluster_method == 'LSI'){
   seurat.obj$active_clusters = seurat.obj$LSI_clusters
 }
 
+if(cluster_method == 'SCRAT'){
+  seurat.obj$SCRAT_clusters = run_scrat(mtx, k = k)
+  seurat.obj$active_clusters = seurat.obj$SCRAT_clusters
+}
+
 if(cluster_method == 'kmeans'){
   seurat.obj$kmeans_clusters = generalCluster(seurat.obj@reductions$pca@cell.embeddings, k = k)
   seurat.obj$active_clusters = seurat.obj$kmeans_clusters

@@ -494,6 +494,22 @@ run_LSI <- function(mtx, ncell.peak = 150,  max_pc = 10, k = 5){
   return(cl.labels)
 }
 
+run_scrat <- function(mtx, reduction = 'pca', max_pc = 20, method = 'mclust', k = 10){
+  # stadardized features per cell
+  mtx = scale(mtx, center = T, scale = T)
+  if(reduction == 'pca'){
+    reduced.mtx = doDimReduction4mat(mtx, max_pc = max_pc)[[1]]
+    reduced.mtx = reduced.mtx[, -1]
+  }
+  if(reduction == 'tsne'){
+    reduced.mtx = doDimReduction4mat(mtx, max_pc = max_pc, doTSNE = T)[[2]]
+  }
+  
+  cl.label = generalCluster(reduced.mtx, k = k, method = method)
+  return(cl.label)
+}
+
+
 run_cisTopic <- function(mtx, nCores = 4, 
                          topic = c(10, 20, 30, 50, 80, 100),
                          frac_in_cell = 0.05){
