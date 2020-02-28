@@ -370,19 +370,9 @@ Run through docker or singularity
 ----------------------------------
 In case you have problem in installing dependencies, you can run it without installing dependencies in **one of** following options:
 
-1. Run the pre-built dockerized version [here](https://hub.docker.com/r/wbaopaul/scatac-pro) (which is not automatically updated)
+1. Run the pre-built dockerized version [here](https://hub.docker.com/r/wbaopaul/scatac-pro)
 
-2. Build your own docker image using the Dockfile in this repository (under scripts/install/Docker/, which is automatically updated) by running:
-
-```
-$ cd scripts/install/Docker
-$ docker build -t YOU_PREFERED_NAME .
-$ docker run -v YOUR_WORK_DIR:/software -it YOUR_PREFERED_NAME 
-$ scATAC-pro --help
-
-
-```
-3. Run it through singularity (which is more fridenly with HPC and linux server) by running:
+2. Run it through singularity (which is more fridenly with HPC and linux server) by running:
 
 ```
 $ singularity pull -F docker://wbaopaul/scatac-pro 
@@ -393,7 +383,7 @@ $ scATAC-pro --help
 
 ```
 
-4. To use it on HPC cluster:
+3. To use it on HPC cluster:
 
 ```
 # write a script mapping.sh for mapping as an example:
