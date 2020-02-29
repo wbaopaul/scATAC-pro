@@ -9,12 +9,12 @@ A comprehensive workbench for single cell ATAC-seq data processing, analysis and
       * [Updates](#updates)
       * [Installation](#installation)
       * [Dependencies](#dependencies)
-         * [Programming language users should install](#tools-users-should-install)
-         * [Software packages required](#tools-required)
-      * [Quick start guide](#quick-start)
-      * [Run scATAC-pro step by step](#run-scatac-pro-step-by-step)
+         * [Programming language users should install](#programming-language-users-should-install)
+         * [Software packages required](#software-pacakges-required)
+      * [Quick start guide](#quick-start-guide)
+      * [Run scATAC-pro step by step](#run-scATAC-pro-step-by-step)
       * [Detailed Usage](#detailed-usage)
-      * [Run scATAC-pro through docker or singularity](#run-through-docker-or-singularity)
+      * [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity)
       * [FAQs](#FAQs)
       * [Citation](#citation)
 
@@ -32,7 +32,7 @@ scATAC-pro consists of two units, the data processing unit and the downstream an
 Installation
 ------------
 
--   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-through-docker-or-singularity) )
+-   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
 -   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.0
 
 <!-- -->
