@@ -1,7 +1,7 @@
 scATAC-pro
 =================
 
-A comprehensive pipeline for single cell ATAC-seq data processing and analysis
+A comprehensive workbench for single cell ATAC-seq data processing, analysis and visualization
 
 
    * [scATAC-pro](#scatac-pro)
@@ -9,13 +9,12 @@ A comprehensive pipeline for single cell ATAC-seq data processing and analysis
       * [Updates](#updates)
       * [Installation](#installation)
       * [Dependencies](#dependencies)
-         * [Tools users should install](#tools-users-should-install)
-         * [Tools required](#tools-required)
-         * [Tools for additional modules or options](#tools-for-additional-modules-or-options)
-      * [Quick start](#quick-start)
+         * [Programming language users should install](#tools-users-should-install)
+         * [Software packages required](#tools-required)
+      * [Quick start guide](#quick-start)
       * [Run scATAC-pro step by step](#run-scatac-pro-step-by-step)
       * [Detailed Usage](#detailed-usage)
-      * [Run through docker or singularity](#run-through-docker-or-singularity)
+      * [Run scATAC-pro through docker or singularity](#run-through-docker-or-singularity)
       * [FAQs](#FAQs)
       * [Citation](#citation)
 
@@ -23,7 +22,7 @@ A comprehensive pipeline for single cell ATAC-seq data processing and analysis
 Workflow
 --------
 
-scATAC-pro incorporates two main steps, preprocessing and downstream analysis. The preprocessing step takes raw fastq files as input and outputs peak-by-cell count matrix. It consists of demultiplexing, adaptor trimming, mapping, peak calling, cell calling, signal generating and quality controlling modules. The downstream analysis is comprised of dimension reduction, cell clustering, differential accessibility analysis, TF motif enrichment analysis and footprinting analysis. We provide flexible options for most of the modules.
+scATAC-pro consists of two units, the data processing unit and the downstream analysis unit. The data processing unit takes raw fastq files as input and outputs peak-by-cell count matrix, QC report and genome track files. It consists of the following modules: demultiplexing, adaptor trimming, read mapping, peak calling, cell calling, genome track file generation and quality control assessment. The downstream analysis unit consists of the following modules: dimension reduction, cell clustering, differential accessibility analysis, gene ontology analysis, TF motif enrichment analysis, TF footprinting analysis, linking regulatory DNA sequences with gene promoters, and integration of multiple datasets. We provide flexible options for most of analysis modules.
 
 
 <p align="center">
@@ -33,8 +32,8 @@ scATAC-pro incorporates two main steps, preprocessing and downstream analysis. T
 Installation
 ------------
 
--   Note: you don't have to install it, you can use the docker or sigularity version if you prefer (see [Run through docker or singularity](#run-through-docker-or-singularity) ), note that the docker version was still under version 1.0.0 and will be updated to v1.1.0 soon
--   Run the following command under your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.0
+-   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-through-docker-or-singularity) )
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.0
 
 <!-- -->
 
@@ -45,32 +44,30 @@ Installation
      
 Updates
 ------------
-- current version: 1.1.0
+- Current version: 1.1.0
 - Feb, 2020
     * *integrate* module enables 3 options: seurat, harmony and pool
     * new module *visualize*, allowing interactively explore and analyze the data
-    * *footprint* module support one-vs-rest comparison and provide result in heatmap
-    * module *runDA* change to use group name as input (like "0:1,2" or "one,rest") 
-    * install rgt-hint (for footprint analysis) through miniconda3
-    * add module *process_with_bam*, allowing process from aggragated bam file
-    * integrate from peaks files, assume each sample was processed through scATAC-pro;
-        output matrix with the same merged peaks/features and the previously called cells, along
-        with a integrated seurat object
-    * add new parameters in configure file: Top_Variable_Features, REDUCTION, nREDUCTION
-    * enable all clustering methods mentioned in the manuscript, along with kmeans on PCs
+    * *footprint* module supports one-vs-rest comparison and provides result in heatmap
+    * module *runDA* changed to use group name as the input (e.g. "0:1,2" or "one,rest") 
+    * installed rgt-hint (for footprinting analysis) using miniconda3
+    * added module *process_with_bam*, allowing processing from aggregated bam file
+    * enabled data integration from peaks files, assuming all data sets are processed using scATAC-pro. Output matrix with the same merged peaks/features and the previously called cells, along with an integrated seurat object
+    * added new parameters in the configuration file: Top_Variable_Features, REDUCTION, nREDUCTION
+    * enabled all clustering methods mentioned in the manuscript, along with kmeans clustering on principal components
     * file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
     * qc_per_barcode requires two input files, separated by comma, see example and detailed usage
 - Jan11, 2020 
-    * add a new module *mergePeaks* to merge different peak files called from different samples or conditions
-    * add a new module *reConstMtx* to reconstruct peak-cell matrix given a peak file, a fragment file and a barcodes.txt file
+    * added a new module *mergePeaks* to merge different peak files called from different data sets
+    * added a new module *reConstMtx* to reconstruct peak-by-cell matrix given a peak file, a fragment file and a barcodes.txt file
 - Dec22, 2019 
-    * corrected an error arised from using older version of chromVAR
+    * corrected an error due to using older version of chromVAR
 - Dec11, 2019 
     * corrected a bug for demultiplexing multiple index files
 - Dec7, 2019 
-    * added a module *convert10xbam* to convert 10x position sorted bam file to scATAC-pro style
+    * added a module *convert10xbam* to convert 10x position sorted bam file to scATAC-pro file format
 - Dec3, 2019 
-    * updated module *get_bam4Cells*, with required inputs as a bam file and a txt file of barcodes, separated by comma
+    * updated module *get_bam4Cells*, with the inputs as a bam file and a txt file of barcodes, separated by comma
 
 
 
@@ -81,33 +78,29 @@ Updates
 Dependencies
 ------------
 
-### Tools users should install
+### Programming language users should install
 
 -   R (&gt;=3.6.0)
 -   Python (&gt;=3.6.0)
 
-### Tools required
+### Software packages required
 
-**Will be automatically installed if NOT detected.**
+**The following packages Will be automatically installed if NOT detected by the installation script.**
 
--   BWA (&gt;=0.7.17)
+-   BWA (&gt;=0.7.17), bowtie, bowtie2
 -   MACS2 (&gt;=2.2.5)
 -   samtools (&gt;=1.9)
 -   bedtools (&gt;=2.27.1)
 -   deepTools (&gt;=3.2.1)
--   trim\_galore (&gt;=0.6.3)
+-   trim\_galore (&gt;=0.6.3), Trimmomatic (&gt;=0.6.3)
+-   Regulratory Genomics Toolbox (RGT, for footprinting analysis, will ask whether you want to install it since the installation is done through conda, which takes a while and you may not want to conduct footprinting analysis)
+-   g++ compiler, bzip2, ncurses-devel
 -   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, VisCello.atac
 
-### Tools for additional modules
-
--   RGT (for footprint analysis, will ask whether you want to install it since the installation is done through conda, which takes a while and you may not want to conduct footprint analysis)
--   Trimmomatic
--   bowtie/bowtie2 (not required by will be installed automatically if not detected)
-
-Quick start
+Quick start guide
 -----------
 
--   **IMPORTANT**: the paramters and options should be specified in a configure file in text format: Copy and edit the configure\_user.txt file in this repository and then in your terminal run:
+-   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format: Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:
 
 <!-- -->
 
@@ -120,7 +113,7 @@ Quick start
                  -c configure_user.txt
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
 
--   For data processing, if fastq files have been demultipled as the required format: the barcode was recorded in the name of each read like @barcode:ORIGIN\_READ\_NAME , you can skip the demultipling step by running
+-   For data processing, if fastq files have been demultipled as the required format with the barcode recorded in the name of each read as @barcode:ORIGIN\_READ\_NAME , you can skip the demultiplexing step by running the following command:
 
 <!-- -->
 
@@ -129,15 +122,15 @@ Quick start
                  -c configure_user.txt 
 
 -   The **output** will be saved under ./output as default
--   --verbose (or -b) will print the running message on screen, otherwise the message will be save under output/logs/MODULE.txt
+-   --verbose (or -b) will print the running message on screen, otherwise the message will only be saved under output/logs/MODULE.txt
 
 
-Run scATAC-pro step by step
+Step by step guide to running scATAC-pro
 ---------------------------
 
--   **IMPORTANT**: you can run the pipeline sequentially. The input of the later step was saved in output of previous step. The following commands using fastq files downloaded from [PBMC10k 10X Genomics](https://support.10xgenomics.com/single-cell-atac/datasets/1.1.0/atac_v1_pbmc_10k?) as an example:
+-   **IMPORTANT**: you can run scATAC-pro sequentially. The input of a later analysis module is the output of the previous analysis modules. The following tutorial uses fastq files downloaded from [PBMC10k 10X Genomics](https://support.10xgenomics.com/single-cell-atac/datasets/1.1.0/atac_v1_pbmc_10k?) 
 
--   *Combine data from different lanes*
+-   *Combine data from different sequencing lanes*
 
 <!-- -->
 
@@ -148,7 +141,7 @@ Run scATAC-pro step by step
 
     $ cat atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq.gz
 
--   *Run the pipeline sequentially*
+-   *Run scATAC-pro sequentially*
 
 <!-- -->
 
@@ -229,17 +222,17 @@ Run scATAC-pro step by step
                  -i peak_file1,peak_file2,(peak_file3...),200
                  -c configure_user.txt
 
-    ## perform integrated analysis, assume each sample was processed by scATAC-pro
-    ## which means each fragments.txt and barcodes.txt files can be found correspondly            
+    ## perform integrated analysis, assuming all data sets are processed by scATAC-pro
+    ## which means each fragments.txt and barcodes.txt files can be found correspondingly            
     $ scATAC-pro -s integrate
                  -i peak_file1,peak_file2,(peak_file3...)   ## 
                  -c configure_user.txt
     
-    ## if you have the reconstructed matrix for each sample (means using the merged peaks)
-    ## you can run the *integrate_seu* whtich is second part of module *integrate*            
+    ## if you have the reconstructed matrix for data set (meaning using the merged peaks)
+    ## you can run the *integrate_seu* whtich is second part of the module *integrate*            
 
     $ scATAC-pro -s integrate_seu
-                 -i mtx_file1,mtx_file2,(mtx_file3...)   ## 
+                 -i mtx_file1,mtx_file2,(mtx_file3...)   
                  -c configure_user.txt
 
 - After clustering, user can interactively visualize and analyze the data with module *visualize* 
@@ -248,7 +241,7 @@ Run scATAC-pro step by step
 scATAC-pro -s visualize -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/VisCello_obj -c configure_user.txt
 
 ```
-- The more details about the visualization can be found at [VisCello](https://github.com/qinzhu/VisCello/tree/VisCello-atac)
+- More details about the visualization module can be found at [VisCello](https://github.com/qinzhu/VisCello/tree/VisCello-atac)
 
 Detailed Usage
 --------------
@@ -261,122 +254,123 @@ Detailed Usage
     ---------------
     OPTIONS
 
-       [-s|--step ANALYSIS_STEP] : run an analytic step (or combinatorial steps) of the scATAC-pro workflow, supportting steps:
+       [-s|--step ANALYSIS_STEP] : run an analysis module (or some combination of several modules) of the scATAC-pro workflow, supported modules include:
           demplx_fastq: perform demultiplexing
                                input: fastq files for both reads and index, separated by comma like:
                                       PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...;
-                                      differnet index will be embedded in the read name as: 
+                                      different index will be embedded in the read name as: 
                                       @index1_index2_index3:original_read_name
                                output: demultiplexed fastq1 and fastq2 files 
           mapping: perform reads alignment
                              input: fastq files, separated by comma for each paired end
                              output: position sorted bam file, mapping qc stat and fragment.bed
-          call_peak: call peaks for aggregated data
+          call_peak: call peaks using aggregated data
                                input: BAM file path
                                output: peaks in bed file format
           get_mtx: build raw peak by barcode matrix
                              input: features/peak file path
                              output: sparse matrix in Matrix Market format
-          aggr_signal: generate aggregated signal, which can be upload to and view
+          aggr_signal: generate aggregated signal, which can be upload to and viewed
                                  in genome browser
                                  input: require BAM file path
                                  output: bw and bedgraph file
-          qc_per_barcode: quality control per barcode
+          qc_per_barcode: generate quality control metrics for each barcode
                                     input: fragment.txt file and peak/feature file, separated by comma
-                                    output: qc_per_barcode.summary
-          process: processing data - including dex_fastq, mapping, call_peak, get_mtx,
-                                aggr_signal, qc_per_barcode abd call_cell
-                                input: fastq files for both reads and index, separated by comma like:
-                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
-                                output: cell peak matrix and all intermediate results 
-          process_no_dex: processing data without demultiplexing
-                                input: demultiplexed fastq files for both reads and index, separated by comma like:
-                                       fastq1,fastq2; 
-                                output: cell peak matrix and all intermediate results 
-          process_with_bam: processing from bam file
-                                input: bam file for aggregated data 
-                                output: cell peak matrix and all intermediate results 
-          call_cell: cell calling
-                               input: raw peak barcode sparse matrix file path
-                               output: filtered peak by cell matrix
+                                     output: qc_per_barcode.summary
+          call_cell: perform cell calling
+                               input: raw peak-by-barcode matrix file path
+                               output: filtered peak-by-cell matrix
           get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
                                input: bam file for all barcodes and a barcodes.txt file, separated by comma
                                output: bam file and mapping stats (optional) for cell barcodes                          
+          process: processing data - including dex_fastq, mapping, call_peak, get_mtx,
+                                aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
+                                input: fastq files for both reads and index, separated by comma like:
+                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
+                                output: peak-by-cell matrix and all intermediate results 
+          process_no_dex: processing data without demultiplexing
+                                input: demultiplexed fastq files for both reads and index, separated by comma like:
+                                       fastq1,fastq2; 
+                                output: peak-by-cell matrix and all intermediate results 
+          process_with_bam: processing from bam file
+                                input: bam file for aggregated data 
+                                output: peak-by-cell matrix and all intermediate results 
           clustering: cell clustering
-                               input: filtered peak by cell matrix file path
+                               input: filtered peak-by-cell matrix file path
                                output: seurat objects with clustering label in the metadata (.rds file) and 
                                        barcodes with cluster labels (bed file)
-          motif_analysis: doing motif analysis
-                               input: filtered peak by cell matrix file path
-                               output: TF by cell matrix indicating TF accessibility (chromVAR object)
-          runDA: doing differential accessibility analysis
-                           input: either two groups named like '0:1,2' here group1 (consist of cluster 0 and 1),
-                                  and group2 will be cluster2 or specified as
+          motif_analysis: perform TF motif analysis
+                               input: filtered peak-by-cell matrix file path
+                               output: TF-by-cell matrix indicating TF enrichment (chromVAR object)
+          runDA: preform differential accessibility analysis
+                           input: either two groups named as '0:1,2' in which group1 consists of cluster 0 and 1,
+                                  and group2 consists of cluster2 or specified as
                                   'one,rest'
-                           output: differential peaks in txt format saved at the same directory as seurat_obj.rds
-          runGO: doing GO analysis
+                           output: differential accessibility peaks in txt format saved in the same directory as seurat_obj.rds
+          runGO: preform GO term enrichment analysis
                            input: result of runDA module (.txt file)
-                           output: enriched GO terms in .xlsx saved at the same directory as the input file
-          runCicero: run cicero for calculating gene activity score and predicting interactions
+                           output: enriched GO terms in .xlsx saved in the same directory as the input file
+          runCicero: run cicero for calculating gene activity score and predicting chromatin interactions
                            input: seurat_obj.rds path from clustering analysis
                            output: gene activity in .rds format and predicted interactions in .txt format
 
           split_bam: split bam file into different clusters
-                               input: barcodes with cluster label (.txt file, outputed from clustering)
-                               output: .bam (saved under downstream/CELL_CALLER/data_by_cluster), .bw, .bedgraph (save under output/signal/) file for each cluster
-          footprint: doing footprinting analysis, supports comparison between two clusters and one-vs-rest
+                               input: barcodes with cluster label (.txt file, outputted from clustering)
+                               output: .bam (saved in downstream/CELL_CALLER/data_by_cluster), .bw, .bedgraph (saved in output/signal/) file for each cluster
+          footprint: perform TF footprinting analysis, supports comparison between two clusters and one cluster vs the rest of cell clusters (one-vs-rest)
                                input: 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
-                               output: footprint summary statistics in tables and heatmap
-                                       (saved under output/downstream/PEAK_CALLER/CELL_CALLER/footprint/)
-          downstream: do all downstream analysis, including clustering, motif_analysis, 
+                               output: footprinting summary statistics in tables and heatmap
+                                       (saved in output/downstream/PEAK_CALLER/CELL_CALLER/footprint/)
+          downstream: perform all downstream analyses, including clustering, motif_analysis, 
                                 split_bam (optional) and footprinting analysis (optional)
                                 input: filtered matrix file path
-                                output: all outputs from each step
+                                output: all outputs from each module
           report: generate report in html file
                             input: directory to output report
                             output: summary report in html format
-          convert10xbam: convert bam in 10x style to bam in scATAC-pro style 
-                         input: bam file (position sorted) in 10x style
-                         output: position sorted bam file in scATAC-pro style, mapping qc stat and fragment.bed
-          mergePeaks: merge different peaks (called from differnt samples or conditions) if the distance is
+          convert10xbam: convert bam file in 10x genomics format to bam file in scATAC-pro format 
+                         input: bam file (position sorted) in 10x format
+                         output: position sorted bam file in scATAC-pro format, mapping qc stat and fragment.bed
+          mergePeaks: merge peaks (called from different data sets) if the distance is
                             less than a given #basepairs (200 if not specified) 
-                         input: peak files and a distance paramter separated by comma, like:
+                         input: peak files and a distance parameter separated by comma: 
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed
-          reconstMtx: reconstruct peak-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
-                         input: differnt files separated by comma, like:
+          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
+                         input: differnt files separated by comma:
                                 peakFilePath,fragmentFilePath,barcodesPath
-                         output: a reconstructed peak-cell matrix saved under the same path as barcodes.txt file
-          integrate: doing integration analysis for two ore more samples
-                           input: peak/feature files, separated by comma like, peak_file1,peak_file2
+                         output: a reconstructed peak-by-cell matrix saved in the same path as barcodes.txt file
+          integrate: perform integration of two ore more data sets
+                           input: peak/feature files, separated by comma: peak_file1,peak_file2
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot)
-          integrate_seu: doing integration analysis for two ore more samples given the reconstructed peak-cell mtx
+          integrate_seu: perform integration of two ore more data sets given the reconstructed peak-by-cell matrix
                            input: mtx1,mtx2, separated by comma like, mtx_file1,mtx_file2
                            output: integrated seurat obj and umap plot)
-          visualize: interactively visualize the data through web browser
+          visualize: interactively visualize the data through VisCello
                          input: VisCello_obj directory (created by clustering module)
-                         output: web browser pop up for interactively visualization"
+                         output: launch VisCello through web browser for interactively visualization"
 
-       -i|--input INPUT : input data, different types of input data are required for different steps;
-       -c|--conf CONFIG : configuration file for parameters (if exists) for each step
-       [-o|--output_dir : folder to save results, default output/ under the curret directory; sub-folder will be created automatically for each step
-       [-h|--help]: help
-       [-v|--version]: version
+       -i|--input INPUT : input data, different types of input data are required for different analysis;
+       -c|--conf CONFIG : configuration file for parameters (if exists) for each analysis module
+       [-o|--output_dir : folder to save results, default output/ under the current directory; sub-folder will be created automatically for each analysis
+       [-h|--help]: print help infromation
+       [-v|--version]: display current version numbe of scATAC-pro
+       [-b|--verbose]: print running message on screen
 
 
 
 
-Run through docker or singularity
+Run scATAC-pro through docker or singularity
 ----------------------------------
-In case you have problem in installing dependencies, you can run it without installing dependencies in **one of** following options:
+In case you have problem in installing dependencies, you can run scATAC-pro without installing dependencies in **one of** the following ways:
 
 1. Run the pre-built dockerized version [here](https://hub.docker.com/r/wbaopaul/scatac-pro)
 
-2. Run it through singularity (which is more fridenly with HPC and linux server) by running:
+2. Run it through singularity (which is more friendly with high performance cluster or HPC, and linux server) by running the following command:
 
 ```
 $ singularity pull -F docker://wbaopaul/scatac-pro 
-## will output scatac-pro_latest.sif
+## will generate scatac-pro_latest.sif in current directory
 
 $ singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif
 $ scATAC-pro --help
@@ -389,24 +383,25 @@ $ scATAC-pro --help
 # write a script mapping.sh for mapping as an example:
 #!/bin/bash
 module load singularity
-singularity pull -F docker://wbaopaul/scatac-pro
-## will output scatac-pro_latest.sif
-singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s mapping
-                            -i fastq_file1,fastq_file2,fastq_file3 -c configure_user.txt
+
+singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run this once
+
+singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif 
+
+scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 # and then qsub mapping.sh
 
 
 ```
 
-- **NOTE**: YOUR_WORK_DIR is your working directory, where the outputs will be saved and all data under YOUR_WORK_DIR will
-be available to scATAC-pro
+- **NOTE**: YOUR_WORK_DIR is your working directory, where the outputs will be saved and all data under YOUR_WORK_DIR will be available to scATAC-pro
 
 - **NOTE**: all inputs including data paths specified in configure_user.txt should be available under YOUR_WORK_DIR
 
 FAQs
 --------------
 - [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to merge differnt peaks called from different sampels or conditions?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 
 
