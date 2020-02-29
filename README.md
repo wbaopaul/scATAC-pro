@@ -85,7 +85,7 @@ Dependencies
 
 ### Software packages required
 
-**The following packages Will be automatically installed if NOT detected by the installation script.**
+**The following packages will be automatically installed if NOT detected by the installation script.**
 
 -   BWA (&gt;=0.7.17), bowtie, bowtie2
 -   MACS2 (&gt;=2.2.5)
@@ -113,7 +113,7 @@ Quick start guide
                  -c configure_user.txt
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
 
--   For data processing, if fastq files have been demultipled as the required format with the barcode recorded in the name of each read as @barcode:ORIGIN\_READ\_NAME , you can skip the demultiplexing step by running the following command:
+-   For data processing, if fastq files have been demultiplexed as the required format with the barcode recorded in the name of each read as @barcode:ORIGIN\_READ\_NAME , you can skip the demultiplexing step by running the following command:
 
 <!-- -->
 
@@ -384,7 +384,8 @@ $ scATAC-pro --help
 #!/bin/bash
 module load singularity
 
-singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run this once
+singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run line this once
+## will generate scatac-pro_latest.sif in the current directory
 
 singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif 
 
