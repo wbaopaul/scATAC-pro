@@ -5,11 +5,9 @@
 
 ## Start editing ##
 
-
 ######################################################################
 ## global setting ##
 ######################################################################
-
 OUTPUT_PREFIX = pbmc10k     ## prefix for ouput file name
 isSingleEnd = FALSE         ## scTHS-seq uses single end sequencing
 
@@ -19,6 +17,9 @@ PROMOTERS = annotation/hg38_promoter.bed
 ENHANCERS = annotation/hg38_enhancer.bed
 TSS = annotation/hg38_tss.bed
 CHROM_SIZE_FILE = annotation/chrom_hg38.sizes
+
+GENOME_NAME = hg38   ## used for TF motif enrichemnt and footprinting analysis
+plotEPS = TRUE  ## print figures in eps format when generating summary report
 
 
 #####################################
@@ -122,11 +123,6 @@ RUN_GO = TRUE ## run GO analysis after DA
 GO_TYPE = BP  ## BP/CC/kegg
 
 
-#######################################
-## motif analysis ##
-#######################################
-GENOME_NAME = hg38
-
 
 #######################################
 ## split bam by cluster 
@@ -167,8 +163,5 @@ Integrate_By = seurat  ## seurat or pool or harmony
 prepCello4Integration = TRUE ## prepare cello for integrated object
 
 
-############################################################################
-## save figures under output/summary/figures
-plotEPS = TRUE  ## print figures in eps format when generating summary report
 
 

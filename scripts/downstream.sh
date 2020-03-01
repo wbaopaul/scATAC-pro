@@ -14,12 +14,11 @@ read_conf $3
 frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt
 
 ## clustering
-${curr_dir}/clustering.sh $input_mtx $2 $3 &
+${curr_dir}/clustering.sh $input_mtx $2 $3 
 
 ## motif analysis
-${curr_dir}/motif_analysis.sh $input_mtx $2 $3 &
+${curr_dir}/motif_analysis.sh $input_mtx $2 $3 
 
-wait
 seurat_obj=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/seurat_obj.rds
 ## do DA
 if [ "$RUN_DA" = "TRUE" ]; then
