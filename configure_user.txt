@@ -6,12 +6,20 @@
 ## Start editing ##
 
 
-#####################################
-## output prefix ##
-#####################################
+######################################################################
+## global setting ##
+######################################################################
 
 OUTPUT_PREFIX = pbmc10k     ## prefix for ouput file name
 isSingleEnd = FALSE         ## scTHS-seq uses single end sequencing
+
+## annotation files (blacklist, promoters, enhancers, TSS, etc)
+BLACKLIST = annotation/hg38_blacklist.bed
+PROMOTERS = annotation/hg38_promoter.bed
+ENHANCERS = annotation/hg38_enhancer.bed
+TSS = annotation/hg38_tss.bed
+CHROM_SIZE_FILE = annotation/chrom_hg38.sizes
+
 
 #####################################
 ## Adapter trimming ##
@@ -61,17 +69,7 @@ MACS2_OPTS = -q 0.01 -g hs
 
 
 BIN_RESL = 5000    ## bin resolution in bp
-CHROM_SIZE_FILE = annotation/chrom_hg38.sizes
 
-
-#############################################
-## annotation files(blacklist, promoters, 
-## enhancers, TSS, etc)
-#############################################
-BLACKLIST = annotation/hg38_blacklist.bed
-PROMOTERS = annotation/hg38_promoter.bed
-ENHANCERS = annotation/hg38_enhancer.bed
-TSS = annotation/hg38_tss.bed
 
 
 

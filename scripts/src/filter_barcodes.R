@@ -61,11 +61,11 @@ cut.promoter = opt$min_frac_promoter
 cut.enh = opt$min_frac_enhancer
 
 qc_sele = qc_bc_stat[total_frags >= cut.min.frag & total_frags <= cut.max.frag &
-                       max_frac_mito <= cut.mito &
-                       min_frac_peak >= cut.peak &
-                       min_frac_tss >= cut.tss &
-                       min_frac_promoter >= cut.promoter &
-                       min_frac_enhancer >= cut.enh]
+                       frac_mito <= cut.mito &
+                       frac_peak >= cut.peak &
+                       frac_tss >= cut.tss &
+                       frac_promoter >= cut.promoter &
+                       frac_enhancer >= cut.enh]
 
 mtx = readMM(mtx_file)
 input_mtx_dir = dirname(mtx_file)
