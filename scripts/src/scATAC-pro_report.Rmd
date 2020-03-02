@@ -411,7 +411,7 @@ if(file.exists(go_file)){
        go_res2 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group2))
        go_res = go_res1
        group.sele = group1
-       if(nrow(go_res1) < nrow(go_res2)){
+       if(nrow(go_res1) < nrow(go_res2) & group2 != 'rest'){
          go_res = go_res2
          group.sele = group2
        }

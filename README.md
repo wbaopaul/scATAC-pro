@@ -259,35 +259,41 @@ Detailed Usage
                                input: fastq files for both reads and index, separated by comma like:
                                       PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...
                                output: Demultiplexed fastq1 and fastq2 files with index information embedded
-                                       in the read name as:  @index3_index2_index1:original_read_name 
+                                       in the read name as:  @index3_index2_index1:original_read_name, saved in
+                                       output/demplxed_fastq/ 
           trimming: trim read adapter
                                input: demultiplexed fastq1 and fastq2 files
-                               output: trimmed demultiplexed fastq1 and fastq2 files
+                               output: trimmed demultiplexed fastq1 and fastq2 files, saved in output/trimmed_fastq/
           mapping: perform reads alignment
                              input: fastq files, separated by comma for each paired end
-                             output: position sorted bam file, mapping qc stat and fragment.bed
+                             output: position sorted bam file saved in output/mapping_result, mapping qc stat and 
+                                     fragment.txt files saved in output/summary
           call_peak: call peaks using aggregated data
-                               input: BAM file path
-                               output: peaks in bed file format
-          get_mtx: build raw peak by barcode matrix
-                             input: features/peak file path
-                             output: sparse matrix in Matrix Market format
-          aggr_signal: generate aggregated signal, which can be upload to and viewed
+                               input: BAM file, outputted from the mapping module
+                               output: peaks in plain text format, saved as output/peaks/PEAK_CALLER/
+                                       OUTPUT_PREFIX_features_Blacklist_Removed.bed
+          get_mtx: build raw peak-by-cell matrix
+                             input: features/peak file, outputted from the call_cell module
+                             output: sparse peak-by-cell count matrix in Matrix Market format, barcodes and feature files
+                                     in plain text format, saved in output/raw_matrix/PEAK_CALLER/
+          aggr_signal: generate aggregated signal, which can be uploaded to and viewed
                                  in genome browser
-                                 input: require BAM file path
-                                 output: bw and bedgraph file
+                                 input: BAM file, outputted from the mapping module
+                                 output: Aggregated data in .bw and .bedgraph file, saved in output/signal/
           qc_per_barcode: generate quality control metrics for each barcode
-                                    input: fragment.txt file and peak/feature file, separated by comma
-                                     output: qc_per_barcode.summary
+                                    input: fragment.txt file (outputted from module mapping) and peak/feature file, 
+                                           (outputted from module call_peak), separated by comma
+                                     output: qc_per_barcode.summary in plain text format, saved in output/summary/
           call_cell: perform cell calling
-                               input: raw peak-by-barcode matrix file path
-                               output: filtered peak-by-cell matrix
-          get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
+                               input: raw peak-by-barcode matrix file, outputted from the get_mtx module
+                               output: filtered peak-by-cell matrix in Market Matrix format, barcodes and features,
+                                       saved in output/filtered_matrix/PEAK_CALLER/CELL_CALLER/
+          get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats correspondingly
                                input: A bam file for aggregated data outputted from mapping module and a barcodes.txt file
                                       outputted from module call_cell, separated by comma
                                output: A bam file saved in output/mapping_results and mapping stats (optional) saved
                                          in output/summary for cell barcodes                          
-          process: processing data - including dex_fastq, mapping, call_peak, get_mtx,
+          process: processing data - including demplx_fastq, mapping, call_peak, get_mtx,
                                 aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
                                 input: fastq files for both reads and index, separated by comma like:
                                        fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
@@ -297,68 +303,78 @@ Detailed Usage
                                        fastq1,fastq2; 
                                 output: peak-by-cell matrix and all intermediate results 
           process_with_bam: processing from bam file
-                                input: bam file for aggregated data 
-                                output: peak-by-cell matrix and all intermediate results 
+                                input: bam file for aggregated data, outputted from the mapping module 
+                                output: filtered peak-by-cell matrix and all intermediate results 
           clustering: cell clustering
-                               input: filtered peak-by-cell matrix file path
+                               input: filtered peak-by-cell matrix file, outputted from the call_cell module
                                output: seurat objects with clustering label in the metadata (.rds file) and 
-                                       barcodes with cluster labels (bed file)
+                                       barcodes with cluster labels (cell_cluster_table.txt file), and umap plot colorred
+                                       clustering label, saved in output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
           motif_analysis: perform TF motif analysis
-                               input: filtered peak-by-cell matrix file path
-                               output: TF-by-cell matrix indicating TF enrichment (chromVAR object)
+                               input: filtered peak-by-cell matrix file, outputted from the call_cell module
+                               output: TF-by-cell enrichment matrix in chromVAR object, a table and heatmap indicating 
+                                       TF enrichment for each cell cluster, saved in output/downstream_analysiss/
+                                        PEAK_CALLER/CELL_CALLER/
           runDA: preform differential accessibility analysis
                            input: either two groups named as '0:1,2' in which group1 consists of cluster 0 and 1,
-                                  and group2 consists of cluster2 or specified as
-                                  'one,rest'
-                           output: differential accessibility peaks in txt format saved in the same directory as seurat_obj.rds
+                                  and group2 consists of cluster2 or specified as '0,rest', or 'one,rest'
+                           output: differential accessibility peaks in txt format saved in the same in 
+                                   output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
           runGO: preform GO term enrichment analysis
-                           input: result of runDA module (.txt file)
-                           output: enriched GO terms in .xlsx saved in the same directory as the input file
-          runCicero: run cicero for calculating gene activity score and predicting chromatin interactions
-                           input: seurat_obj.rds path from clustering analysis
-                           output: gene activity in .rds format and predicted interactions in .txt format
-
+                           input: differential accessible features file, outputted from runDA module (.txt file)
+                           output: enriched GO terms in .xlsx format saved in the same directory as the input file
+          runCicero: run cicero for calculating gene activity score and predicting cis chromatin interactions
+                           input: seurat_obj.rds file outputted from the clustering module
+                           output: cicero gene activity in .rds format and predicted interactions in .txt format, saved
+                                   in output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
           split_bam: split bam file into different clusters
-                               input: barcodes with cluster label (.txt file, outputted from clustering)
-                               output: .bam (saved in downstream/CELL_CALLER/data_by_cluster), .bw, .bedgraph (saved in output/signal/) file for each cluster
-          footprint: perform TF footprinting analysis, supports comparison between two clusters and one cluster vs the rest of cell clusters (one-vs-rest)
+                               input: barcodes with cluster label (cell_cluster_table.txt file, outputted from 
+                                      clustering module
+                               output: .bam file (saved in output/downstream/PEAK_CALLER/CELL_CALLER/data_by_cluster), 
+                                       .bw, .bedgraph (saved in output/signal/) file for each cluster
+          footprint: perform TF footprinting analysis, supports comparison between two clusters and one cluster vs
+                     the rest of cell clusters (one-vs-rest)
                                input: 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
-                               output: footprinting summary statistics in tables and heatmap
-                                       (saved in output/downstream/PEAK_CALLER/CELL_CALLER/footprint/)
+                               output: footprinting summary statistics in tables and heatmap,
+                                       saved in output/downstream/PEAK_CALLER/CELL_CALLER/
           downstream: perform all downstream analyses, including clustering, motif_analysis, 
                                 split_bam (optional) and footprinting analysis (optional)
-                                input: filtered matrix file path
+                                input: filtered peak-by-cell matrix file, outputted from call_cell module
                                 output: all outputs from each module
-          report: generate report in html file
-                            input: directory to output report
-                            output: summary report in html format
+          report: generate summary report in html file
+                            input: directory to QC files, output/summary as default
+                            output: summary report in html format, saved in output/summary and .eps figures for each panel
+                                    saved in output/summary/Figures
           convert10xbam: convert bam file in 10x genomics format to bam file in scATAC-pro format 
                          input: bam file (position sorted) in 10x format
-                         output: position sorted bam file in scATAC-pro format, mapping qc stat and fragment.bed
+                         output: position sorted bam file in scATAC-pro format saved in output/mapping_result,
+                                 mapping qc stat and fragment.txt files saved in output/summary/
           mergePeaks: merge peaks (called from different data sets) if the distance is
                             less than a given #basepairs (200 if not specified) 
                          input: peak files and a distance parameter separated by comma: 
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed
           reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
-                         input: differnt files separated by comma:
+                         input: different files separated by comma:
                                 peakFilePath,fragmentFilePath,barcodesPath
-                         output: a reconstructed peak-by-cell matrix saved in the same path as barcodes.txt file
+                         output: a sub-folder reConst_matrix for the reconstructed peak-by-cell matrix, saved in
+                                 the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
                            input: peak/feature files, separated by comma: peak_file1,peak_file2
-                           output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot)
+                           output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
+                                   output/integrated/
           integrate_seu: perform integration of two ore more data sets given the reconstructed peak-by-cell matrix
                            input: mtx1,mtx2, separated by comma like, mtx_file1,mtx_file2
-                           output: integrated seurat obj and umap plot)
+                           output: integrated seurat obj and umap plot, saved in output/integrated/
           visualize: interactively visualize the data through VisCello
-                         input: VisCello_obj directory (created by clustering module)
+                         input: VisCello_obj directory, outputted from the clustering module
                          output: launch VisCello through web browser for interactively visualization"
 
-       -i|--input INPUT : input data, different types of input data are required for different analysis;
-       -c|--conf CONFIG : configuration file for parameters (if exists) for each analysis module
+       -i|--input INPUT : input data, different types of input data are required for different analysis
+       -c|--conf CONFIG : configuration file for parameters (if exist) for each analysis module
        [-o|--output_dir : folder to save results, default output/ under the current directory; sub-folder will be created automatically for each analysis
-       [-h|--help]: print help infromation
-       [-v|--version]: display current version numbe of scATAC-pro
+       [-h|--help]: print help infromation on screen
+       [-v|--version]: display current version numbe of scATAC-pro on screen
        [-b|--verbose]: print running message on screen
 
 

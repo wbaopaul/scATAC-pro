@@ -29,35 +29,35 @@ function help {
                            input: fastq files for both reads and index, separated by comma like:
                                   PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...
                            output: Demultiplexed fastq1 and fastq2 files with index information embedded 
-                                   in the read name as:  @index3_index2_index1:original_read_name "
+                                   in the read name as:  @index3_index2_index1:original_read_name, saved in output/demplxed                                   _fastq/ "
     echo "      trimming: trim read adapter
                            input: demultiplexed fastq1 and fastq2 files
-                           output: trimmed demultiplexed fastq1 and fastq2 files"
+                           output: trimmed demultiplexed fastq1 and fastq2 files, saved in output/trimmed_fastq/"
     echo "      mapping: perform reads alignment
                          input: fastq files, separated by comma for each paired end
-                         output: position sorted bam file, mapping qc stat and fragment.bed"
+                         output: position sorted bam file saved in output/mapping_result/, mapping qc stat and fragment.txt                                 saved in output/summary/"
     echo "      call_peak: call peaks using aggregated data
-                           input: BAM file path
-                           output: peaks in bed file format"
-    echo "      get_mtx: build raw peak by barcode matrix
-                         input: features/peaks file path
-                         output: sparse matrix in Matrix Market format"
-    echo "      aggr_signal: generate aggregated signal, which can be upload to and viewed
+                           input: BAM file, outputted from the mapping module
+                           output: peaks in bed file format, saved in output/peaks/PEAK_CALLER/OUTPUT_PREFIX_features_Black                                   list_Removed.bed"
+    echo "      get_mtx: build raw peak-by-cell matrix
+                         input: features/peaks file path, outputted from the call_peak module
+                         output: raw sparse peak-by-cell matrix in Matrix Market format, barcodes and feature files, saved                                  output/raw_matrix/PEAK_CALLER/"
+    echo "      aggr_signal: generate aggregated signal, which can be uploaded to and viewed
                              in genome browser
-                             input: require BAM file path
-                             output: bw and bedgraph file"
+                             input: BAM file, outputted from the mapping module
+                             output: Aggregated data in .bw and .bedgraph format, saved in output/signal/"
     echo "      qc_per_barcode: generate quality control metrics for each barcode
-                                input: fragment.txt file and feature/peak file, separated by comma
-                                output: qc_per_barcode.summary"
+                                input: fragment.txt file, outputted from the mapping module, and feature/peak file, outputt                                       ed from the call_peak module,  separated by comma
+                                output: qc_per_barcode.summary file of plain text format, saved in output/summary/"
     echo "      call_cell: perform cell calling
-                           input: raw peak-by-barcode matrix file path
-                           output: filtered peak by cell matrix"
+                           input: raw peak-by-barcode matrix file path, outputted from the get_mtx module
+                           output: filtered peak-by-cell matrix, saved in output/filtered_matrix/PEAK_CALLER/CELL_CALLER/"
     echo "      get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
-                               input: A bam file for aggregated data outputted from mapping module and a barcodes.txt file
-                                      outputted from module call_cell, separated by comma
+                               input: A bam file for aggregated data outputted from the mapping module and a barcodes.txt 
+                                     file outputted from module call_cell, separated by comma
                                output: A bam file saved in output/mapping_results and mapping stats (optional) saved 
                                          in output/summary for cell barcodes "
-    echo "      process: processing data - including dex_fastq, mapping, call_peak, get_mtx,
+    echo "      process: processing data - including demplx_fastq, mapping, call_peak, get_mtx,
                             aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
                             input: fastq files for both reads and index, separated by comma like:
                                    fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
@@ -67,65 +67,73 @@ function help {
                                    fastq1,fastq2; 
                             output: peak-by-cell and all intermediate results "
     echo "      process_with_bam: processing from bam file
-                            input: bam file for aggregated data 
-                            output: cell peak matrix and all intermediate results "
+                            input: bam file for aggregated data, outputted from the mapping module 
+                            output: peak-by-cell matrix and all intermediate results "
     echo "      clustering: cell clustering
-                           input: filtered peak by cell matrix file path
+                           input: filtered peak-by-cell matrix file
                            output: seurat objects with clustering label in the metadata (.rds file) and 
-                                   barcodes with cluster labels (bed file)"
+                                   file of barcodes with cluster labels (cell_cluster_table.txt file), saved in output/down                                   stream_analysis/PEAK_CALLER/CELL_CALLER/"
     echo "      motif_analysis: preform motif analysis
-                           input: filtered peak-by-cell matrix file path
-                           output: TF by cell matrix indicating TF enrichment (chromVAR object)"
+                           input: filtered peak-by-cell matrix file, outputted from call_cell module
+                           output: TF-by-cell enrichment chromVAR object, a table and a heatmap indicating TF enrichment 
+                                   for each cell clusters"
     echo "      runDA: perform differential accessibility analysis
                            input: either two groups as '0:1,2' in which group1 consist of cluster0 and cluster1 
                                   and group2 consists of cluster2 or specified as 'one,rest'
-                           output: differential accessibility peaks in txt format saved in the same directory as seurat_obj.rds"
+                           output: differential accessibility feutures in plain text format saved in 
+                                   output/dstream_analysis/PEAK_CALLER/CELL_CALLER/"
     echo "      runGO: perform GO term enrichment analysis
-                           input: result of runDA module (.txt file)
-                           output: enriched GO terms in .xlsx saved in the same directory as the input file"
-    echo "      runCicero: run cicero for calculating gene activity score and predicting chromatin interactions
-                           input: seurat_obj.rds path from clustering analysis
-                           output: gene activity in .rds format and predicted interactions in .txt format"
+                           input: differential accessible features file, outputted from runDA module
+                           output: enriched GO terms in .xlsx file saved in the same directory as the input file"
+    echo "      runCicero: run cicero for calculating gene activity score and predicting cis chromatin interactions
+                           input: seurat_obj.rds file, outputted from the clustering module
+                           output: cicero gene activity in .rds format and predicted interactions in .txt format, saved in
+                                   output/dstream_analysis/PEAK_CALLER/CELL_CALLER/"
     echo "      split_bam: split bam file into different clusters
-                           input: barcodes with cluster label (.txt file, outputed from clustering)
-                           output: .bam (saved in downstream/CELL_CALLER/data_by_cluster), .bw, .bedgr                                                            aph (saved in output/signal/) file for each cluster"
-    echo "      footprint: perform footprinting analysis, supports comparison between two clusters and one cluster vs the rest of clusters (one-vs-rest)
-                               input: 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
-                               output: footprint summary statistics in table and heatmap 
-                                       (saved in output/downstream/PEAK_CALLER/CELL_CALLER/footprint/)"
+                           input: barcodes with cluster label (cell_cluster_table.txt file, outputed from clustering)
+                           output: bam file (saved in output/downstream/CELL_CALLER/data_by_cluster), .bw, .bedgr                                                            aph (saved in output/signal/) file for each cluster"
+    echo "      footprint: perform footprinting analysis, supports comparison between two clusters and one cluster vs 
+                           the rest of clusters (one-vs-rest)
+                           input: 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
+                           output: footprint summary statistics in table and heatmap 
+                                       (saved in output/downstream/PEAK_CALLER/CELL_CALLER/)"
     echo "      downstream: perform all downstream analyses, including clustering, motif_analysis, 
                             split_bam (optional) and footprinting analysis (optional)
-                            input: filtered matrix file path
+                            input: filtered peak-by-cell matrix file, outputted from the call_cell module
                             output: all outputs from each module"
-    echo "      report: generate report in html file
-                        input: directory to output report
-                        output: summary report in html format"
+    echo "      report: generate summary report in html file
+                        input: directory to outputted QC files, output/summary as default
+                        output: summary report in html format, saved in output/summary, and .eps figures in ouput/summary/
+                                Figures/"
     echo "      convert10xbam: convert bam file in 10x genomics format to bam file in scATAC-pro format 
                          input: bam file (position sorted) in 10x genomics format
-                         output: position sorted bam file in scATAC-pro format, mapping qc stat and fragment.bed"
-    echo "      mergePeaks: merge peaks (called from differnt data sets) if the distance is
-                            less than a given #basepairs (200 if not specified) 
+                         output: position sorted bam file in scATAC-pro format in output/mapping_result, mapping qc stat
+                                 and fragment.txt file in output/summary/"
+    echo "      mergePeaks: merge peaks (called from different data sets) if the distance is
+                            less than a given # of basepairs (200 if not specified) 
                          input: peak files and a distance parameter separated by comma:
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed"
-    echo "      reConstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
-                         input: differnt files separated by comma:
+    echo "      reConstMtx: reconstruct peak-by-cell matrix a given peak file, fragments.txt file, and barcodes.txt file 
+                         input: different files separated by comma:
                                 peakFilePath,fragmentFilePath,barcodesPath
-                         output: a reconstructed peak-cell matrix saved in the same path as barcodes.txt file"
+                         output: a sub-folder reConstructed_matrix of reconstructed peak-cell matrix saved in the same
+                                 directory as the input barcodes.txt file"
     echo "      integrate: perform integration of two ore more data sets
                            input: peak/feature files, separated by comma: peak_file1,peak_file2
-                           output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot)"
+                           output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in 
+                                   output/integrated/"
     echo "      integrate_seu: perform integration of two ore more data sets given the reconstructed peak-by-cell matrix
                            input: mtx1,mtx2, separated by comma like, mtx_file1,mtx_file2
-                           output: integrated seurat obj and umap plot)"
+                           output: integrated seurat obj and umap plot, saved in output/integrated"
     echo "      visualize: interactively visualize the data using VisCello
-                         input: VisCello_obj directory (created by clustering module)
+                         input: VisCello_obj directory, outputted from the clustering module
                          output: launch VisCello through web browser window for interactively visualization"
     echo "   -i|--input INPUT : input data, different types of input data are required for different analysis;"
-    echo "   -c|--conf CONFIG : configuration file for parameters (if exists) for each analysis module"
+    echo "   -c|--conf CONFIG : configuration file for parameters (if exist) for each analysis module"
     echo "   [-o|--output_dir : folder to save results, default 'output/' under current directory. sub-folder will be created automatically for each module"
-    echo "   [-h|--help]: print help information"
-    echo "   [-v|--version]: display current version number of scATAC-pro"
+    echo "   [-h|--help]: print help information on screen"
+    echo "   [-v|--version]: display current version number of scATAC-pro on screen"
     echo "   [-b|--verbose]: print the running message on screen"
     exit;
 }
