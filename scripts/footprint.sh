@@ -34,6 +34,8 @@ if [ "$grs1_fp" == 'one' ]; then
         ${SAMTOOLS_PATH}/samtools merge -@ 4 -f  $bamrest `find ${down_dir}/data_by_cluster/ -name "cluster*.bam" | grep -v cluster_${cl0}.bam`
         ${SAMTOOLS_PATH}/samtools index -@ 4 $bamrest
         ${curr_dir}/footprint_by_cluster.sh ${bam1},${bamrest} $2 $3
+        rm $bamrest
+        rm ${bamrest}.bai
     done
 elif [ "$grs2_fp" == 'rest' ]; then
     for cl0 in "${grs1[@]}"
@@ -45,6 +47,8 @@ elif [ "$grs2_fp" == 'rest' ]; then
         ${SAMTOOLS_PATH}/samtools merge -@ 4 -f  $bamrest `find ${down_dir}/data_by_cluster/ -name "cluster*.bam" | grep -v cluster_${cl0}.bam`
         ${SAMTOOLS_PATH}/samtools index -@ 4 $bamrest
         ${curr_dir}/footprint_by_cluster.sh ${bam1},${bamrest} $2 $3
+        rm $bamrest
+        rm ${bamrest}.bai
     done
 else
     bam1=${down_dir}/data_by_cluster/cluster_${grs1_fp}.bam

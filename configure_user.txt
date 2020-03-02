@@ -143,7 +143,7 @@ DO_FOOTPRINT = FALSE
 ## comparing two groups, set similarly as in doing DA
 group1_fp = 0   ## either one cluster name or 'one'
 group2_fp = 1   ## cluster name as above or 'rest'
-
+pvalue_fp = 0.05
 
 
 ############################################################################

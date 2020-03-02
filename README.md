@@ -257,10 +257,12 @@ Detailed Usage
        [-s|--step ANALYSIS_STEP] : run an analysis module (or some combination of several modules) of the scATAC-pro workflow, supported modules include:
           demplx_fastq: perform demultiplexing
                                input: fastq files for both reads and index, separated by comma like:
-                                      PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...;
-                                      different index will be embedded in the read name as: 
-                                      @index1_index2_index3:original_read_name
-                               output: demultiplexed fastq1 and fastq2 files 
+                                      PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...
+                               output: Demultiplexed fastq1 and fastq2 files with index information embedded
+                                       in the read name as:  @index3_index2_index1:original_read_name 
+          trimming: trim read adapter
+                               input: demultiplexed fastq1 and fastq2 files
+                               output: trimmed demultiplexed fastq1 and fastq2 files
           mapping: perform reads alignment
                              input: fastq files, separated by comma for each paired end
                              output: position sorted bam file, mapping qc stat and fragment.bed
@@ -281,8 +283,10 @@ Detailed Usage
                                input: raw peak-by-barcode matrix file path
                                output: filtered peak-by-cell matrix
           get_bam4Cells: extract bam file for cell barcodes and calculate mapping stats
-                               input: bam file for all barcodes and a barcodes.txt file, separated by comma
-                               output: bam file and mapping stats (optional) for cell barcodes                          
+                               input: A bam file for aggregated data outputted from mapping module and a barcodes.txt file
+                                      outputted from module call_cell, separated by comma
+                               output: A bam file saved in output/mapping_results and mapping stats (optional) saved
+                                         in output/summary for cell barcodes                          
           process: processing data - including dex_fastq, mapping, call_peak, get_mtx,
                                 aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
                                 input: fastq files for both reads and index, separated by comma like:
@@ -364,7 +368,7 @@ Run scATAC-pro through docker or singularity
 ----------------------------------
 In case you have problem in installing dependencies, you can run scATAC-pro without installing dependencies in **one of** the following ways:
 
-1. Run the pre-built dockerized version [here](https://hub.docker.com/r/wbaopaul/scatac-pro)
+1. Run the pre-built dockerized version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro)
 
 2. Run it through singularity (which is more friendly with high performance cluster or HPC, and linux server) by running the following command:
 
