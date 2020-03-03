@@ -95,7 +95,7 @@ Dependencies
 -   trim\_galore (&gt;=0.6.3), Trimmomatic (&gt;=0.6.3)
 -   Regulratory Genomics Toolbox (RGT, for footprinting analysis, will ask whether you want to install it since the installation is done through conda, which takes a while and you may not want to conduct footprinting analysis)
 -   g++ compiler, bzip2, ncurses-devel
--   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, VisCello.atac
+-   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, xlsx, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, VisCello.atac
 
 Quick start guide
 -----------
@@ -241,6 +241,16 @@ Step by step guide to running scATAC-pro
 scATAC-pro -s visualize -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/VisCello_obj -c configure_user.txt
 
 ```
+- Note that the visualization can also be done through R/Rstudio:
+
+```
+devtools::install_github("qinzhu/VisCello", ref="VisCello-atac") ## install the package 
+
+library(VisCello.atac)
+
+cello('output/downstream_analysis/PEAK_CALLER/CELL_CALLER/VisCello_obj') ## launch VisCello in your web browser with prepared data
+```
+
 - More details about the visualization module can be found at [VisCello](https://github.com/qinzhu/VisCello/tree/VisCello-atac)
 
 Detailed Usage
@@ -395,6 +405,9 @@ $ singularity pull -F docker://wbaopaul/scatac-pro
 $ singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif
 $ scATAC-pro --help
 
+## or using exec instead of run
+$ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s XXX -i XXX -c XXX
+
 ```
 
 3. To use it on HPC cluster:
@@ -412,12 +425,18 @@ singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif
 scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 # and then qsub mapping.sh
 
+## or using exec instead of run
+singularity exec --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
+scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 
 ```
 
 - **NOTE**: YOUR_WORK_DIR is your working directory, where the outputs will be saved and all data under YOUR_WORK_DIR will be available to scATAC-pro
 
 - **NOTE**: all inputs including data paths specified in configure_user.txt should be available under YOUR_WORK_DIR
+
+- **NOTE**: if running the *footprint* module, remember to download the reference data [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) folder and put it under YOUR_WROK_DIR
+
 
 FAQs
 --------------

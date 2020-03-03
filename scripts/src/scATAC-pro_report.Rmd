@@ -396,7 +396,7 @@ if(file.exists(seurat_file)){
 ### GO Analysis
 ```{r, warning=F, message=F}
 go_file = paste0(down.dir, '/enrichedGO_differential_accessible_features_', group1, 
-                  '_VS_', group2, '.xlsx')
+                  '_vs_', group2, '.xlsx')
 if(file.exists(go_file)){
    #library(xlsx)
     cls = 1:length(unique(ss$active_clusters))
