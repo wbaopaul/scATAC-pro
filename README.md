@@ -13,7 +13,7 @@ A comprehensive workbench for single cell ATAC-seq data processing, analysis and
          * [Software packages required](#software-pacakges-required)
       * [Quick start guide](#quick-start-guide)
       * [Step by step guide to running scATAC-pro](#step-by-step-guide-to-running-scATAC-pro)
-      * [Detailed Usage](#detailed-usage)
+      * [Detailed usage](#detailed-usage)
       * [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity)
       * [FAQs](#FAQs)
       * [Citation](#citation)
@@ -100,7 +100,7 @@ Dependencies
 Quick start guide
 -----------
 
--   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format: Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:
+-   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format. Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:
 
 <!-- -->
 
