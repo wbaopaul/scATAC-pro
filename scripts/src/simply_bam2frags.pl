@@ -55,8 +55,8 @@ while(<READ>)
      my $isSameChr = "XXXXXX";
 	   my @array = split /\t/;
 	   $chrom = $array[2];
-	   $start = $array[3];
-	   $end = $array[7];
+	   $start = $array[3] - 4;
+	   $end = $array[7] + 5;
 	   $isSameChr = $array[6];
     
     ## only keep one read per pair
