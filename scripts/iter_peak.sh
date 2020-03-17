@@ -16,7 +16,7 @@ mtx_bin_dir=${mtx_dir}/${PEAK_CALLER}
 mkdir -p $mtx_bin_dir
 bin_file=${mtx_bin_dir}/${OUTPUT_PREFIX}_bin.bed
 ${BEDTOOLS_PATH}/bedtools makewindows -g $CHROM_SIZE_FILE -w $BIN_RESL > $bin_file
-${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt $bin_file ${mtx_bin_dir} 100 50 < ${curr_dir}/src/get_mtx.R
+${R_PATH}/R --vanilla --args ${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt $bin_file ${mtx_bin_dir} 1000 50 < ${curr_dir}/src/get_mtx.R
 rm $bin_file
 
 

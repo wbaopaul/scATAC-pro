@@ -114,7 +114,7 @@ cell_mapping_qc = fread(cell_mapping_qc_file, header = F)
 
 
 
-bc_stat_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.qc_per_barcode.txt')
+bc_stat_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX, '.', PEAK_CALLER, '.qc_per_barcode.txt')
 selected_bcs = paste0(params$output_dir, '/filtered_matrix/', PEAK_CALLER, '/', CELL_CALLER, '/barcodes.txt')
 
 bc_stat = fread(bc_stat_file)
