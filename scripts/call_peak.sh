@@ -68,5 +68,7 @@ fi
   
 ## remove peaks that its chromosome is not list in the chrom_size file
 ${R_PATH}/Rscript --vanilla ${curr_dir}/src/rmRedundantPeaks.R ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed $CHROM_SIZE_FILE
- 
+
+## extend peaks which is shorter than 500bp 
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/extendPeaks.R ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed
 echo "Call peaks done !"
