@@ -12,5 +12,5 @@ dd[, 'start' := ifelse(ss < 500, midp - 250, start)]
 dd[, 'end' := ifelse(ss < 500, midp + 250, end)]
 dd[, c('ss', 'midp') := NULL]
 
-write.tatble(dd, file = peakFile, row.names = F, col.names = F, quote = F,
+write.table(dd, file = peakFile, row.names = F, col.names = F, quote = F,
              sep = '\t')
