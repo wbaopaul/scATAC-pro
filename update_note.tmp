@@ -2,3 +2,5 @@
 -- add PEAK_CALLER prefix to qc_per_barcode.txt filename
 ## Mar15, 2020
 -- fix a bug of file location of tmpJob when calling cells
+## Mar26, 2020
+-- add VFACS option for the integration module

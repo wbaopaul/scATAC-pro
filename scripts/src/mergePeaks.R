@@ -1,5 +1,6 @@
 library(bedr)
 library(data.table)
+options(scipen = 999)
 
 args = commandArgs(T)
 

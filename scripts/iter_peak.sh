@@ -58,6 +58,9 @@ wait
 ## 4. merge peaks
 ${R_PATH}/R --vanilla --args $output_dir < ${curr_dir}/src/merge_peaks.R
 
+## remove peaks not located in chromosomes of CHROM_SIZE_FILE
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/rmRedundantPeaks.R ${output_dir}/merged_peaks.bed $CHROM_SIZE_FILE
+
 ## remove peaks overlapped with blacklist
 ${BEDTOOLS_PATH}/bedtools intersect -a ${output_dir}/merged_peaks.bed -b $BLACKLIST -v \
     > ${output_dir}/${OUTPUT_PREFIX}_features_BlacklistRemoved.bed   

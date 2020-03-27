@@ -80,7 +80,37 @@ if(integrate_by == 'seurat'){
                                     top_variable_features = nveg, 
                                        reg.var = 'nCount_ATAC')
     seurat.obj$sample = paste0('sample', rep(c(1:length(nc)), nc))
-    seurat.obj <- regress_on_pca(seurat.obj, 'sample')
+}
+
+if(integrate_by == 'pool') seurat.obj <- regress_on_pca(seurat.obj, 'sample')
+
+if(integrate_by == 'VFACS'){
+    ## cluster and then reselect features
+    ## variable features across clusters
+    seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca')
+    seurat.obj <- FindClusters(seurat.obj, resl = 0.6)
+    clusters = as.character(seurat.obj$seurat_clusters)
+    mtx = seurat.obj@assays$ATAC@counts
+      mtx_by_cls <- sapply(unique(clusters), function(x) {
+        
+        cl_data <- mtx[, clusters == x]
+        
+        Matrix::rowMeans(cl_data)
+        
+      })
+      mtx_by_cls.norm <- edgR::cpm(mtx_by_cls, log = T, prior.count = 1)
+      sds = sapply(1:nrow(mtx_by_cls.norm), function(x) sd(mtx_by_cls.norm[x, ]))
+      names(sds) = rownames(mtx_by_cls.norm)
+      sele.features = names(which(sds >= sort(sds, decreasing = T)[nveg]))
+      mtx0 = mtx[sele.features, ]
+      mtx0.norm = Seurat::TF.IDF(mtx0)
+      seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
+      VariableFeatures(seurat.obj) <- sele.features
+      seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = F)
+      seurat.obj <- regress_on_pca(seurat.obj, 'nCount_ATAC')
+      seurat.obj <- FindNeighbors(seurat.atac, dims = 1:nREDUCTION, reduction = 'pca')
+      seurat.obj <- FindClusters(seurat.atac, resl = 0.6)
+      
 }
 seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", dims = 1:nREDUCTION)
 
