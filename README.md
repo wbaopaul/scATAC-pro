@@ -1,6 +1,8 @@
 scATAC-pro
 =================
 
+[![DOI](https://zenodo.org/badge/187909420.svg)](https://zenodo.org/badge/latestdoi/187909420)
+
 A comprehensive workbench for single cell ATAC-seq data processing, analysis and visualization
 
 

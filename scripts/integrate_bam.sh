@@ -67,7 +67,7 @@ do
     ${R_PATH}/R --vanilla --args $frag0_file $feature_file ${raw_mtx_dir} 5 5 < ${curr_dir}/src/get_mtx.R &
 
     echo "QC per barcode for each sample ..."
-    ${R_PATH}/R --vanilla --args $frag0_file $feature_file $PROMOTERS $TSS $ENHANCERS ${qc_dir}/${sample0}.qc_per_barcode.txt < ${curr_dir}/src/get_qc_per_barcode.R &
+    ${R_PATH}/R --vanilla --args $frag0_file $feature_file $PROMOTERS $TSS $ENHANCERS ${qc_dir}/${sample0}.MACS2.qc_per_barcode.txt < ${curr_dir}/src/get_qc_per_barcode.R &
     wait
 done
 
@@ -81,7 +81,7 @@ do
     bam0_dir=$(dirname $bam0)
     frag0_dir=`cd "$bam0_dir"; cd "../summary"; pwd`       
     echo "Call cell for each sample ..."
-    bc_stat_file=${ABS_PATH}/summary/${sample0}.qc_per_barcode.txt
+    bc_stat_file=${ABS_PATH}/summary/${sample0}.MACS2.qc_per_barcode.txt
     filtered_mtx_dir=${ABS_PATH}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/${sample0}
     raw_mtx_dir=${ABS_PATH}/raw_matrix/${sample0}
     input_mtx=${raw_mtx_dir}/matrix.mtx
