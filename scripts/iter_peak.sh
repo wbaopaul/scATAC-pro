@@ -38,10 +38,6 @@ ${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters.pl --cluster_file ${output_
     --output_dir $output_dir --samtools_path $SAMTOOLS_PATH
 
 
-organism=hs
-if [[ $GENOME_NAME =~ "mm" ]]; then
-    organism=mm
-fi
 
 ## call peaks per cluster
 unset PYTHONHOME
