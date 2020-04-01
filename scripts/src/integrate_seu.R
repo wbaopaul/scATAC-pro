@@ -39,7 +39,7 @@ for(i in 1:length(mtx_files)){
     rs = Matrix::rowMeans(mtx > 0)
     mtx = mtx[rs > 0.01, ]
     mtx = assignGene2Peak(mtx, tss_ann)
-    colnames(mtx) = paste0('sample', i, '_', colnames(mtx))
+    #colnames(mtx) = paste0('sample', i, '_', colnames(mtx))
     if(integrate_by != 'seurat') mtx.all[[i]] = mtx
     nveg0 = ifelse(top_variable_features > 1, top_variable_features, floor(top_variable_features)*nrow(mtx))
     nveg = ifelse(nveg0 < nrow(mtx)/2, nveg0, floor(nrow(mtx)/2))
@@ -48,9 +48,6 @@ for(i in 1:length(mtx_files)){
                                        reg.var = 'nCount_ATAC')
     
     seurat.obj$sample = paste0('sample', i)
-    #seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, check_duplicates = F)
-    #seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, verbose = F)
-    #saveRDS(seurat.obj, file = paste0(dir0, '/seurat_obj.rds'))
    
    seu.all[[i]] = seurat.obj
    rm(seurat.obj, mtx)
@@ -98,7 +95,7 @@ if(integrate_by == 'VFACS'){
         Matrix::rowMeans(cl_data)
         
       })
-      mtx_by_cls.norm <- edgR::cpm(mtx_by_cls, log = T, prior.count = 1)
+      mtx_by_cls.norm <- edgeR::cpm(mtx_by_cls, log = T, prior.count = 1)
       sds = sapply(1:nrow(mtx_by_cls.norm), function(x) sd(mtx_by_cls.norm[x, ]))
       names(sds) = rownames(mtx_by_cls.norm)
       sele.features = names(which(sds >= sort(sds, decreasing = T)[nveg]))
@@ -122,7 +119,6 @@ if(integrate_by == 'harmony'){
     seurat.obj <- seurat.obj %>% 
         RunUMAP(reduction = "harmony", dims = 1:nREDUCTION) 
 }
-#DimPlot(seurat.obj, reduction = "umap", group.by = "sample")
 
 
 ## clustering by louvain algorithm

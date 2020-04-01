@@ -98,7 +98,7 @@ norm_by = tf-idf ## or log (just log transformation) or NA
 Top_Variable_Features = 10000 ## number/fraction of variable features used for seurat
 REDUCTION = pca  ## pca/lda, note that UMAP and TSNE will be automatically calculated correspondly
 nREDUCTION = 30 ## the reduced dimension
-CLUSTERING_METHOD = seurat  ## seurat/cisTopic/kmeans/LSI/SCRAT
+CLUSTERING_METHOD = seurat  ## seurat/cisTopic/kmeans/LSI/SCRAT/chromVAR/scABC
 K_CLUSTERS = NULL  ## the number of cluster, will set resolution as 0.2 if it's NULL
 prepCello = TRUE  ## generate object for VisCello (for visualization)
 
