@@ -16,6 +16,8 @@ for(file0 in files){
 
 peaks = peaks[!grepl(V1, pattern = 'random', ignore.case = T)]
 peaks = peaks[!grepl(V1, pattern = 'Un', ignore.case = T)]
+peaks = peaks[!grepl(V1, pattern = 'EBV', ignore.case = T)]
+
 
 regions = paste0(peaks$V1, ':', peaks$V2, '-', peaks$V3)
 a.sort   <- bedr.sort.region(regions)
