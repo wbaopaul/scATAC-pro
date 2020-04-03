@@ -4,3 +4,7 @@
 -- fix a bug of file location of tmpJob when calling cells
 ## Mar26, 2020
 -- add VFACS option for the integration module
+## April2,2020
+-- get_mtx inputs: fragments.txt,feature.txt
+-- annotate peaks update: a peak within tss+/- 1000bp will be annotated with geneName_tss and
+   if the nearest distance to a gene is larger than 100kb, the peak will not be annotated 

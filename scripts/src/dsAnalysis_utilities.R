@@ -208,11 +208,13 @@ assignGene2Peak <- function(mtx, tss_ann){
   for(chr0 in chrs){
     peaks0 = peaks[chr == chr0]
     genes0 = tss_ann[chr == chr0]
-    peaks0[, 'id' := which.min(abs(genes0$tss - start/2 - end/2)), by = 'peak_name']
+    peaks0[, 'id' := which.min(abs(genes0$tss - start/2 - end/2)), by = peak_name]
     peaks0[, 'gene_name' := genes0[id, gene_name]]
+    peaks0[, 'dist0' := min(abs(genes0$tss - start/2 -end/2)), by = peak_name]
+    peaks0[, 'gene_name' := ifelse(dist0 > 100000, '', gene_name)]
     peaks0$tss_name = ''
     for(i in 1:nrow(peaks0)){
-      tss0 = genes0[tss <= peaks0$end[i] & tss >= peaks0$start[i]]
+      tss0 = genes0[tss <= (peaks0$end[i] + 1000) & tss >= (peaks0$start[i] - 1000)]
       if(nrow(tss0) > 0 ) {
         if(peaks0$gene_name[i] %in% tss0$gene_name) peaks0$gene_name[i] <- ''
         peaks0$tss_name[i] = paste(paste0(unique(tss0$gene_name), '-Tss'), 
@@ -223,6 +225,7 @@ assignGene2Peak <- function(mtx, tss_ann){
     peaks_ann = rbind(peaks_ann, peaks0)
   }
   peaks_ann[, 'id':= NULL]
+  peaks_ann[, 'dist0':= NULL]
   
   peaks_ann[, 'peak_new_name' := ifelse(!is.na(gene_name) & nchar(gene_name) > 1, 
                                         paste0(peak_name, ',', gene_name), peak_name)]

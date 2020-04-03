@@ -169,7 +169,7 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt 
                  
     $ scATAC-pro -s get_mtx 
-                 -i output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
+                 -i output/summary/pbmc10k.fragments.txt,output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
                  -c configure_user.txt 
 
     $ scATAC-pro -s qc_per_barcode 
@@ -283,7 +283,8 @@ Detailed Usage
                                output: peaks in plain text format, saved as output/peaks/PEAK_CALLER/
                                        OUTPUT_PREFIX_features_Blacklist_Removed.bed
           get_mtx: build raw peak-by-cell matrix
-                             input: features/peak file, outputted from the call_cell module
+                             input: fragment.txt file, outputted from the mapping module, and features/peak file, 
+                                    outputted from the call_peak module, separated by a comma
                              output: sparse peak-by-cell count matrix in Matrix Market format, barcodes and feature files
                                      in plain text format, saved in output/raw_matrix/PEAK_CALLER/
           aggr_signal: generate aggregated signal, which can be uploaded to and viewed
