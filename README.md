@@ -46,7 +46,10 @@ Installation
      
 Updates
 ------------
-- Current version: 1.1.0
+- Current version: 1.1.1
+- March, 2020
+    * qc_per_barcode requires two input files, separated by comma, see example and detailed usage
+    * annotate peak as overlapped with Tss if the corresponding distance <= 1000bp; mark peak with a gene if their distance      <= 100kb 
 - Feb, 2020
     * *integrate* module enables 3 options: seurat, harmony and pool
     * new module *visualize*, allowing interactively explore and analyze the data
@@ -59,16 +62,13 @@ Updates
     * enabled all clustering methods mentioned in the manuscript, along with kmeans clustering on principal components
     * file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
     * qc_per_barcode requires two input files, separated by comma, see example and detailed usage
-- Jan11, 2020 
+- Jan, 2020 
     * added a new module *mergePeaks* to merge different peak files called from different data sets
     * added a new module *reConstMtx* to reconstruct peak-by-cell matrix given a peak file, a fragment file and a barcodes.txt file
-- Dec22, 2019 
+- Dec, 2019 
     * corrected an error due to using older version of chromVAR
-- Dec11, 2019 
     * corrected a bug for demultiplexing multiple index files
-- Dec7, 2019 
     * added a module *convert10xbam* to convert 10x position sorted bam file to scATAC-pro file format
-- Dec3, 2019 
     * updated module *get_bam4Cells*, with the inputs as a bam file and a txt file of barcodes, separated by comma
 
 
@@ -103,6 +103,8 @@ Quick start guide
 -----------
 
 -   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format. Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:
+
+- **NOTE**: some mapping index and genome annotation files can be downloaded [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) 
 
 <!-- -->
 
