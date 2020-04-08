@@ -171,7 +171,7 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt 
                  
     $ scATAC-pro -s get_mtx 
-                 -i output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
+                 -i output/summary/pbmc10k.fragments.txt,output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
                  -c configure_user.txt 
 
     $ scATAC-pro -s qc_per_barcode 
@@ -262,7 +262,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.0.0
+    scATAC-pro 1.1.1
     ---------------
     OPTIONS
 
@@ -285,7 +285,8 @@ Detailed Usage
                                output: peaks in plain text format, saved as output/peaks/PEAK_CALLER/
                                        OUTPUT_PREFIX_features_Blacklist_Removed.bed
           get_mtx: build raw peak-by-cell matrix
-                             input: features/peak file, outputted from the call_cell module
+                             input: fragment.txt file, outputted from the mapping module, and features/peak file, 
+                                    outputted from the call_peak module, separated by a comma
                              output: sparse peak-by-cell count matrix in Matrix Market format, barcodes and feature files
                                      in plain text format, saved in output/raw_matrix/PEAK_CALLER/
           aggr_signal: generate aggregated signal, which can be uploaded to and viewed
@@ -404,10 +405,6 @@ In case you have problem in installing dependencies, you can run scATAC-pro with
 $ singularity pull -F docker://wbaopaul/scatac-pro 
 ## will generate scatac-pro_latest.sif in current directory
 
-$ singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif
-$ scATAC-pro --help
-
-## or using exec instead of run
 $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s XXX -i XXX -c XXX
 
 ```
@@ -422,15 +419,10 @@ module load singularity
 singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run line this once
 ## will generate scatac-pro_latest.sif in the current directory
 
-singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif 
-
-scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
-# and then qsub mapping.sh
-
-## or using exec instead of run
 singularity exec --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
 scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 
+# and then qsub mapping.sh
 ```
 
 - **NOTE**: YOUR_WORK_DIR is your working directory, where the outputs will be saved and all data under YOUR_WORK_DIR will be available to scATAC-pro

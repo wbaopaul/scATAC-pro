@@ -28,31 +28,30 @@ mkdir -p $output_dir
 ${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.mtx seurat 0 $output_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features
 
 
-## remove cluster with less than 10 cells
-
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/rm_minor_cluster.R ${output_dir}/cell_cluster_table.txt 10
+## remove cluster with less than 100 cells
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/rm_minor_cluster.R ${output_dir}/cell_cluster_table.txt 100
 
 ## 3.call peaks per cluster by macs2
-## split bam into cluster
-${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters.pl --cluster_file ${output_dir}/filtered_cell_cluster_table.txt --bam_file $input_bam \
+## split bam into cluster, get sam file
+${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters0.pl --cluster_file ${output_dir}/filtered_cell_cluster_table.txt --bam_file $input_bam \
     --output_dir $output_dir --samtools_path $SAMTOOLS_PATH
-
 
 
 ## call peaks per cluster
 unset PYTHONHOME
 unset PYTHONPATH
-for input_bam0 in $(find $output_dir -name *.bam); do
-    pre=$(basename $input_bam0)
-    pre=${pre/.bam/}
-    ${MACS2_PATH}/macs2 callpeak -t $input_bam0 --outdir $output_dir -n $pre -f BAM $MACS2_OPTS &
+for input_sam0 in $(find $output_dir -name *.sam); do
+    pre=$(basename $input_sam0)
+    pre=${pre/.sam/}
+    ${MACS2_PATH}/macs2 callpeak -t $input_sam0 --outdir $output_dir -n $pre -f SAM $MACS2_OPTS &
 done
 wait
 
 
 
 ## 4. merge peaks
-${R_PATH}/R --vanilla --args $output_dir < ${curr_dir}/src/merge_peaks.R
+${R_PATH}/R --vanilla --args $output_dir $CHROM_SIZE_FILE < ${curr_dir}/src/merge_peaks_cls.R
+
 
 ## remove peaks overlapped with blacklist
 ${BEDTOOLS_PATH}/bedtools intersect -a ${output_dir}/merged_peaks.bed -b $BLACKLIST -v \
@@ -60,4 +59,3 @@ ${BEDTOOLS_PATH}/bedtools intersect -a ${output_dir}/merged_peaks.bed -b $BLACKL
 
 ## remove intemediate files
 rm ${output_dir}/cluster*
-

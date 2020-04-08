@@ -9,7 +9,7 @@
 #########################                                                                   
 
 SOFT="scATAC-pro"
-VERSION="1.1.0"
+VERSION="1.1.1"
 
 function usage {
     echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-o] [-h] [-v] [-b]"
@@ -40,7 +40,8 @@ function help {
                            input: BAM file, outputted from the mapping module
                            output: peaks in bed file format, saved in output/peaks/PEAK_CALLER/OUTPUT_PREFIX_features_Black                                   list_Removed.bed"
     echo "      get_mtx: build raw peak-by-cell matrix
-                         input: features/peaks file path, outputted from the call_peak module
+                         input: fragment.txt file, outputted from the mapping module, and features/peaks file path, 
+                                outputted from the call_peak module, separated by a comma
                          output: raw sparse peak-by-cell matrix in Matrix Market format, barcodes and feature files, saved                                  output/raw_matrix/PEAK_CALLER/"
     echo "      aggr_signal: generate aggregated signal, which can be uploaded to and viewed
                              in genome browser

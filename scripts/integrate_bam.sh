@@ -35,7 +35,7 @@ wait
 
 
 echo "merge peaks ..."
-${R_PATH}/R --vanilla --args $peak_dir < ${curr_dir}/src/merge_peaks.R
+${R_PATH}/R --vanilla --args $peak_dir < ${curr_dir}/src/merge_peaks_cls.R
 
 
 ## remove peaks overlapped with blacklist
