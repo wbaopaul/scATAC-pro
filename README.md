@@ -48,8 +48,8 @@ Updates
 ------------
 - Current version: 1.1.1
 - March, 2020
-    * qc_per_barcode requires two input files, separated by comma, see example and detailed usage
-    * annotate peak as overlapped with Tss if the corresponding distance <= 1000bp; mark peak with a gene if their distance      <= 100kb 
+    * *get_mtx* requires two fragments.txt and peak file, separated by comma
+    * annotate peak as overlapped with a gene Tss if the corresponding distance <= 1000bp; mark peak with a gene if their distance <= 100kb 
 - Feb, 2020
     * *integrate* module enables 3 options: seurat, harmony and pool
     * new module *visualize*, allowing interactively explore and analyze the data
