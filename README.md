@@ -298,7 +298,7 @@ Detailed Usage
           qc_per_barcode: generate quality control metrics for each barcode
                                     input: fragment.txt file (outputted from module mapping) and peak/feature file, 
                                            (outputted from module call_peak), separated by comma
-                                     output: qc_per_barcode.summary in plain text format, saved in output/summary/
+                                     output: qc_per_barcode.txt file, saved in output/summary/
           call_cell: perform cell calling
                                input: raw peak-by-barcode matrix file, outputted from the get_mtx module
                                output: filtered peak-by-cell matrix in Market Matrix format, barcodes and features,
