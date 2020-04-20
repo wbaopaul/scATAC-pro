@@ -152,9 +152,9 @@ if [ $? != "0" ]; then
     exit 1;
 else
     pver=`R --version 2>&1 | head -1 | cut -d" " -f3`
-    vercomp $pver "3.6.0"
+    vercomp $pver "3.6.1"
     if [[ $? == 2 ]]; then
-    echo -e "$RED""R v3.6.0 or higher is needed [$pver detected].""$NORMAL"
+    echo -e "$RED""R v3.6.1 or higher is needed [$pver detected].""$NORMAL"
     exit 1;
     fi
 fi

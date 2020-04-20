@@ -48,7 +48,7 @@ Updates
 ------------
 - Current version: 1.1.1
 - March, 2020
-    * *get_mtx* requires two fragments.txt and peak file, separated by comma
+    * *get_mtx* requires two input files: a fragments.txt file and a peak file, separated by comma
     * annotate peak as overlapped with a gene Tss if the corresponding distance <= 1000bp; mark peak with a gene if their distance <= 100kb 
 - Feb, 2020
     * *integrate* module enables 3 options: seurat, harmony and pool
@@ -61,7 +61,6 @@ Updates
     * added new parameters in the configuration file: Top_Variable_Features, REDUCTION, nREDUCTION
     * enabled all clustering methods mentioned in the manuscript, along with kmeans clustering on principal components
     * file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
-    * qc_per_barcode requires two input files, separated by comma, see example and detailed usage
 - Jan, 2020 
     * added a new module *mergePeaks* to merge different peak files called from different data sets
     * added a new module *reConstMtx* to reconstruct peak-by-cell matrix given a peak file, a fragment file and a barcodes.txt file
@@ -82,7 +81,7 @@ Dependencies
 
 ### Programming language users should install
 
--   R (&gt;=3.6.0)
+-   R (&gt;=3.6.1)
 -   Python (&gt;=3.6.0)
 
 ### Software packages required
@@ -445,5 +444,4 @@ FAQs
 
 Citation
 --------------------------------------
-Yu W, Uzun Y, Zhu Q, Chen C, Tan K. *scATAC-pro: a comprehensive workbench for single-cell chromatin accessibility sequencing data.* bioRxiv.org; 2019 
-doi: https://doi.org/10.1101/824326 
+Yu W, Uzun Y, Zhu Q, Chen C, Tan K. [*scATAC-pro: a comprehensive workbench for single-cell chromatin accessibility sequencing data.*](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02008-0) Genome Biology; 2020 

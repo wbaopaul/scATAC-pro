@@ -95,6 +95,6 @@ setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2
                        'p_val_adj', 'fdr', 'cluster', 'peak', 'peak0'))
 
 markers = markers[fdr <= 0.05, ]
-write.table(markers, file = paste0(output_dir, '/differential_accessible_features_', group1, '_vs_', group2, '.txt'), sep = '\t',
+write.table(markers, file = paste0(output_dir, '/differential_accessible_features_', args[3], '_vs_', args[4], '.txt'), sep = '\t',
             quote = F, row.names = F)
 
