@@ -445,5 +445,5 @@ FAQs
 
 Citation
 --------------------------------------
-Yu W, Uzun Y, Zhu Q, Chen C, Tan K. *scATAC-pro: a comprehensive workbench for single-cell chromatin accessibility sequencing data.* bioRxiv.org; 2019 
-doi: https://doi.org/10.1101/824326 
+Yu W, Uzun Y, Zhu Q, Chen C, Tan K. [*scATAC-pro: a comprehensive workbench for single-cell chromatin accessibility sequencing data.*](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02008-0) Genome Biology; 2020
+
