@@ -1074,11 +1074,11 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
   rownames(mtx) <- new.rnames
   
   
-  
-  dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  #dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  #dt = dt[dt$count > 0, ]
+  dt = mefa4::Melt(mtx)
   rm(mtx)
-  dt = dt[dt$count > 0, ]
-  names(dt) = c('Peak', 'Cell', 'Count')
+  names(dt) = c('Peak', 'Cell', 'Count') 
   dt$Cell = as.character(dt$Cell)
   dt$Peak = as.character(dt$Peak)
   
@@ -1145,9 +1145,10 @@ doCicero_conn <- function(seurat.obj, reduction = 'tsne',
   new.rnames = sapply(new.rnames, function(x) gsub('-', '_', x))
   rownames(mtx) <- new.rnames
   
-  dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  #dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  #dt = dt[dt$count > 0, ]
+  dt = mefa4::Melt(mtx)
   rm(mtx)
-  dt = dt[dt$count > 0, ]
   names(dt) = c('Peak', 'Cell', 'Count')
   dt$Cell = as.character(dt$Cell)
   dt$Peak = as.character(dt$Peak)

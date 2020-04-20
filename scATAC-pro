@@ -49,7 +49,7 @@ function help {
                              output: Aggregated data in .bw and .bedgraph format, saved in output/signal/"
     echo "      qc_per_barcode: generate quality control metrics for each barcode
                                 input: fragment.txt file, outputted from the mapping module, and feature/peak file, outputt                                       ed from the call_peak module,  separated by comma
-                                output: qc_per_barcode.summary file of plain text format, saved in output/summary/"
+                                output: qc_per_barcode.txt file, saved in output/summary/"
     echo "      call_cell: perform cell calling
                            input: raw peak-by-barcode matrix file path, outputted from the get_mtx module
                            output: filtered peak-by-cell matrix, saved in output/filtered_matrix/PEAK_CALLER/CELL_CALLER/"
