@@ -417,7 +417,7 @@ $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro 
 #!/bin/bash
 module load singularity
 
-singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run line this once
+singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run this line once
 ## will generate scatac-pro_latest.sif in the current directory
 
 singularity exec --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 

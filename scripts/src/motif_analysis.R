@@ -35,8 +35,13 @@ if(T){
       
       seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                          selection.method = 'vst',
-                                         nfeatures = floor(nrow(mtx) * 0.3))
+                                         nfeatures = floor(nrow(mtx) * 0.4))
       vFeatures = VariableFeatures(seurat.obj)
+      ## further filter peaks
+      rs = Matrix::rowSums(mtx > 0)
+      filter.pks = names(which(rs > (0.005 * ncol(seurat.obj))))
+      vFeatures = intersect(vFeatures, filter.pks)
+
       rm(seurat.obj)
       rnames = rownames(mtx)
       mtx = mtx[rnames %in% vFeatures, ]

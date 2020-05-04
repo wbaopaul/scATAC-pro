@@ -170,6 +170,13 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
   seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                      selection.method = 'vst',
                                      nfeatures = nveg)
+  ## redo normalization using vap
+  if(norm_by == 'tf-idf'){
+    vaps = VariableFeatures(seurat.obj)
+    mtx.norm = TF.IDF(mtx[vaps, ])
+    seurat.obj[[assay]]@data[vaps, ] = mtx.norm
+  }
+
   seurat.obj <- ScaleData(object = seurat.obj,
                           features = VariableFeatures(seurat.obj),
                           vars.to.regress = NULL, do.scale = doScale,
@@ -181,8 +188,6 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
                        verbose = FALSE, seed.use = 10, npc = npc)
   if(length(reg.var) > 0 ) seurat.obj = regress_on_pca(seurat.obj, reg.var)
 
- # seurat.obj <- RunLSI(seurat.obj, n = npc,
- #                      features = VariableFeatures(object = seurat.obj))
 
   return(seurat.obj)
 }
