@@ -11,3 +11,5 @@
    if the nearest distance to a gene is larger than 100kb, the peak will not be annotated 
 ## April14, 2020
 -- update DA, fix bug of using covariate
+## May4, 2020
+-- filter peaks before clustering
