@@ -13,6 +13,7 @@ inputs=(${inputs//,/ })
 peak_file=${inputs[0]}
 frag_file=${inputs[1]}
 bc_file=${inputs[2]}
+outMat_dir=${inputs[3]}
 
 # reading configure file
 curr_dir=`dirname $0`
@@ -20,8 +21,11 @@ source ${curr_dir}/read_conf.sh
 read_conf "$2"
 read_conf "$3"
 
-outMat_dir=`dirname $bc_file`
-outMat_dir=${outMat_dir}/reConstruct_matrix
+# default output diretory
+if [[ -z "${outMat_dir}" ]]; then 
+    outMat_dir=`dirname $bc_file`
+    outMat_dir=${outMat_dir}/reConstruct_matrix
+fi
 mkdir -p ${outMat_dir}
 
 echo "re-constructing peak-by-cell matrix for each sample ..."

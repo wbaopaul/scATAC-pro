@@ -368,11 +368,13 @@ Detailed Usage
                          input: peak files and a distance parameter separated by comma: 
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed
-          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
+          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, barcodes.txt and 
+                      an optional path for reconstructed matrix 
                          input: different files separated by comma:
-                                peakFilePath,fragmentFilePath,barcodesPath
-                         output: a sub-folder reConst_matrix for the reconstructed peak-by-cell matrix, saved in
-                                 the same path as the input barcodes.txt file
+                                peakFilePath,fragmentFilePath,barcodesPath,reconstructMatrixPath
+                         output: reconstructed peak-by-cell matrix saved in reconstructMatrixPath, 
+                                 if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
+                                 under the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
                            input: peak/feature files, separated by comma: peak_file1,peak_file2
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
