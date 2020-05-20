@@ -160,12 +160,15 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
                           reg.var = NULL, norm_by = 'log', project = 'scATAC'){
 
   # top.variabl -- use top most variable features
+  rnames = rownames(mtx)
+  rownames(mtx) = sapply(rnames, function(x) gsub('__', '-', x, fixed = T))
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
                                   names.delim = '-')
  
-  if(norm_by == 'log') seurat.obj@assays$ATAC@data <- log1p(seurat.obj@assays$ATAC@data)/log(2)
-  if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data <- TF.IDF(seurat.obj@assays$ATAC@data)
-  nveg = ifelse(top_variable_features > 1, top_variable_features, floor(nrow(mtx) * top_variable_features))
+  if(norm_by == 'log') seurat.obj[[assay]]@data <- log1p(seurat.obj[[assay]]@counts)/log(2)
+  if(norm_by == 'tf-idf') seurat.obj[[assay]]@data <- TF.IDF(seurat.obj[[assay]]@counts)
+  nveg = ifelse(top_variable_features > 1, top_variable_features, 
+                floor(nrow(mtx) * top_variable_features))
 
   seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                      selection.method = 'vst',
