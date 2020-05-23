@@ -32,6 +32,8 @@ mtx = assignGene2Peak(mtx, tss_ann)
 ## remove peaks than are less freqent than 0.5% of cells
 rfreqs = Matrix::rowMeans(mtx > 0)
 mtx = mtx[rfreqs > 0.005, ]
+cfreqs = Matrix::colMeans(mtx > 0)
+mtx = mtx[, cfreqs > 0]
 
 seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
                                top_variable_features = top_variable_features, reg.var = 'nCount_ATAC')
