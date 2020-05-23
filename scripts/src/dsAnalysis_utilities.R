@@ -161,7 +161,7 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
 
   # top.variabl -- use top most variable features
   rnames = rownames(mtx)
-  rownames(mtx) = sapply(rnames, function(x) gsub('__', '-', fixed = T))
+  rownames(mtx) = sapply(rnames, function(x) gsub('__', '-', x, fixed = T))
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
                                   names.delim = '-')
  
