@@ -29,9 +29,9 @@ names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
 mtx = assignGene2Peak(mtx, tss_ann)
 
 
-## remove peaks than are less freqent than 1% of cells
+## remove peaks than are less freqent than 0.5% of cells
 rfreqs = Matrix::rowMeans(mtx > 0)
-mtx = mtx[rfreqs > 0.01, ]
+mtx = mtx[rfreqs > 0.005, ]
 
 seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
                                top_variable_features = top_variable_features, reg.var = 'nCount_ATAC')
