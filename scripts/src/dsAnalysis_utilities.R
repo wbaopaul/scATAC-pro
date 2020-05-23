@@ -160,8 +160,6 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
                           reg.var = NULL, norm_by = 'log', project = 'scATAC'){
 
   # top.variabl -- use top most variable features
-  rnames = rownames(mtx)
-  rownames(mtx) = sapply(rnames, function(x) gsub('__', '-', x, fixed = T))
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
                                   names.delim = '-')
  
@@ -183,8 +181,6 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
                        verbose = FALSE, seed.use = 10, npc = npc)
   if(length(reg.var) > 0 ) seurat.obj = regress_on_pca(seurat.obj, reg.var)
 
- # seurat.obj <- RunLSI(seurat.obj, n = npc,
- #                      features = VariableFeatures(object = seurat.obj))
 
   return(seurat.obj)
 }
