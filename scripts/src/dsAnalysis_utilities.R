@@ -161,19 +161,41 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
 
   # top.variabl -- use top most variable features
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
-                                  names.delim = '-')
+                                  names.delim = '-', min.cells = 1,
+                                  min.features = 1)
  
   if(norm_by == 'log') seurat.obj[[assay]]@data <- log1p(seurat.obj[[assay]]@counts)/log(2)
   if(norm_by == 'tf-idf') seurat.obj[[assay]]@data <- TF.IDF(seurat.obj[[assay]]@counts)
-  nveg = ifelse(top_variable_features > 1, top_variable_features, 
+  nvap = ifelse(top_variable_features > 1, top_variable_features, 
                 floor(nrow(mtx) * top_variable_features))
 
   seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                      selection.method = 'vst',
-                                     nfeatures = nveg)
-  ## redo normalization using vap
-  if(norm_by == 'tf-idf'){
+                                     nfeatures = nvap)
+  
+  ## remove variable features only accessible in less than 1% of cells
+  mtx = seurat.obj[[assay]]@counts
+  rs = Matrix::rowMeans(mtx > 0)
+  rare.features = names(which(rs < 0.01))
+  vaps = VariableFeatures(seurat.obj)
+  vaps = setdiff(vaps, rare.features)
+  niter = 0
+  while(length(vaps) < 500 & nvap > 500){
+    niter = niter + 1
+    nvap = nvap + 2000
+    seurat.obj <- FindVariableFeatures(object = seurat.obj,
+                                       selection.method = 'vst',
+                                       nfeatures = nvap)
     vaps = VariableFeatures(seurat.obj)
+    vaps = setdiff(vaps, rare.features)
+    if(niter > 5) stop('Too many variable features were filtered, 
+                       please specify a large Top_Variable_Features
+                       in the configure file!')
+  }
+  VariableFeatures(seurat.obj) <- vaps
+  
+  ## redo normalization using vap if norm by tf-idf
+  if(norm_by == 'tf-idf'){
     mtx.norm = TF.IDF(mtx[vaps, ])
     seurat.obj[[assay]]@data[vaps, ] = mtx.norm
   }
