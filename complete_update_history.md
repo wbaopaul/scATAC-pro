@@ -2,9 +2,9 @@
 
 - Current version: 1.2.1
 - May, 2020
-    * enable specific a path for reconstructed matrix (in *reConstMtx* module)
-    * add VFACS option for the integration module (in testing)
-    * filter peaks before clustering
+    * add VFACS option for the integration module
+    * enable specifying a path for reconstructed matrix (in the *reConstMtx* module)
+    * filter peaks before clustering and remove very rare peaks to be variable features
 - VERSION **1.1.1** released
 - March,April, 2020
     * *get_mtx* requires two input files: a fragments.txt file and a peak file, separated by comma

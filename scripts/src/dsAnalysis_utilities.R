@@ -185,7 +185,7 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
     nvap = nvap + 2000
     seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                        selection.method = 'vst',
-                                       nfeatures = nvap)
+                                       nfeatures = min(nvap, nrow(seurat.obj)))
     vaps = VariableFeatures(seurat.obj)
     vaps = setdiff(vaps, rare.features)
     if(niter > 5) stop('Too many variable features were filtered, 
