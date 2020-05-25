@@ -49,11 +49,11 @@ Updates
 - Current version: 1.1.2
 - May, 2020
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
-      **which reselect variable features across cell clusters after an initial clusering, followed by 
+      **which reselect variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *integrate_by = VFACS* in configure file
-    * *reConsMtx*: enable specifying a path for reconstructed matrix (optional)
     * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
        remove rare peaks (accessible in less than 1% of cells) from the variable features list
+    * *reConsMtx*: enable specifying a path for saving reconstructed matrix (optional)
 - Complete update history can be viewd [here](complete_update_history.md)
 
 Dependencies
@@ -207,6 +207,8 @@ Step by step guide to running scATAC-pro
 
     ## perform integrated analysis, assuming all data sets are processed by scATAC-pro
     ## which means each fragments.txt and barcodes.txt files can be found correspondingly            
+    ## the integration methods includes 'VFACS', 'pool', 'seurat', and 'harmony', for instance, 
+    ## you can specify the integration method with *integrate_by = VFACS* in the configure file
     $ scATAC-pro -s integrate
                  -i peak_file1,peak_file2,(peak_file3...)   ## 
                  -c configure_user.txt

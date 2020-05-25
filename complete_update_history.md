@@ -2,15 +2,15 @@
 
 - Current version: 1.2.1
 - May, 2020
-    * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module, 
-      **which reselect variable features across cell clusters after an initial clusering, followed by 
+* *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
+      **which reselect variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *integrate_by = VFACS* in configure file
-    * *reConsMtx*: enable specifying a path for reconstructed matrix (optional)
     * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
-       remove very rare peaks (accessible in less than 1% of cells) from the variable features list
+       remove rare peaks (accessible in less than 1% of cells) from the variable features list
+    * *reConsMtx*: enable specifying a path for saving reconstructed matrix (optional)
 - VERSION **1.1.1** released
 - March,April, 2020
-    * *get_mtx* requires two input files: a fragments.txt file and a peak file, separated by comma
+    * *get_mtx*: it requires two input files: a fragments.txt file and a peak file, separated by comma
     * annotate peak as overlapped with a gene Tss if the corresponding distance <= 1000bp; mark peak with a gene if their distance <= 100kb
     * update DA, fix bug of using covariate
     * using mefa4::Melt instead of melt -- better for large sparse matrix
