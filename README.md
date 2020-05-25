@@ -208,7 +208,7 @@ Step by step guide to running scATAC-pro
     ## perform integrated analysis, assuming all data sets are processed by scATAC-pro
     ## which means each fragments.txt and barcodes.txt files can be found correspondingly            
     ## the integration methods includes 'VFACS', 'pool', 'seurat', and 'harmony', for instance, 
-    ## you can specify the integration method with *Integrate_by = VFACS* in the configure file
+    ## you can specify the integration method with 'Integrate_by = VFACS' in the configure file
     $ scATAC-pro -s integrate
                  -i peak_file1,peak_file2,(peak_file3...)   ## 
                  -c configure_user.txt
@@ -245,7 +245,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.1.1
+    scATAC-pro 1.1.2
     ---------------
     OPTIONS
 
