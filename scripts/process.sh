@@ -67,8 +67,8 @@ wait
 
 ## 6.generate matrix
 echo "generating raw matrix and qc per barcode..."
-feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}_features_BlacklistRemoved.bed
 frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt
+feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}_features_BlacklistRemoved.bed
 ${curr_dir}/get_mtx.sh ${frag_file},${feature_file} $2 $3 &
 
 echo "QC per cell ..."

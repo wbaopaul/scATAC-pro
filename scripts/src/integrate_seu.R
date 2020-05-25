@@ -30,7 +30,7 @@ tss_ann <- fread(tss_path, header = F)
 names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
 
 
-## do seurat individually
+## run seurat individually
 seu.all = mtx.all = list()
 len = length(mtx_files)
 for(i in 1:length(mtx_files)){
@@ -62,7 +62,7 @@ if(integrate_by == 'seurat'){
                          features = VariableFeatures(seurat.obj))
     seurat.obj <- RunPCA(seurat.obj, npcs = nREDUCTION, verbose = FALSE)
 }else{
-    ## use pool and regress method
+    ## pool the matrxi first
     nf = sapply(mtx.all, nrow)
     nc = sapply(mtx.all, ncol)
     if(length(unique(nf)) == 1) {
@@ -105,8 +105,8 @@ if(integrate_by == 'VFACS'){
       VariableFeatures(seurat.obj) <- sele.features
       seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = F)
       seurat.obj <- regress_on_pca(seurat.obj, 'nCount_ATAC')
-      seurat.obj <- FindNeighbors(seurat.atac, dims = 1:nREDUCTION, reduction = 'pca')
-      seurat.obj <- FindClusters(seurat.atac, resl = 0.6)
+      seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca')
+      seurat.obj <- FindClusters(seurat.obj, resl = 0.6)
       
 }
 seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", dims = 1:nREDUCTION)

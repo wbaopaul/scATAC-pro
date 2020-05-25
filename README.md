@@ -46,35 +46,15 @@ Installation
      
 Updates
 ------------
-- Current version: 1.1.1
-- March, 2020
-    * *get_mtx* requires two input files: a fragments.txt file and a peak file, separated by comma
-    * annotate peak as overlapped with a gene Tss if the corresponding distance <= 1000bp; mark peak with a gene if their distance <= 100kb 
-- Feb, 2020
-    * *integrate* module enables 3 options: seurat, harmony and pool
-    * new module *visualize*, allowing interactively explore and analyze the data
-    * *footprint* module supports one-vs-rest comparison and provides result in heatmap
-    * module *runDA* changed to use group name as the input (e.g. "0:1,2" or "one,rest") 
-    * installed rgt-hint (for footprinting analysis) using miniconda3
-    * added module *process_with_bam*, allowing processing from aggregated bam file
-    * enabled data integration from peaks files, assuming all data sets are processed using scATAC-pro. Output matrix with the same merged peaks/features and the previously called cells, along with an integrated seurat object
-    * added new parameters in the configuration file: Top_Variable_Features, REDUCTION, nREDUCTION
-    * enabled all clustering methods mentioned in the manuscript, along with kmeans clustering on principal components
-    * file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
-- Jan, 2020 
-    * added a new module *mergePeaks* to merge different peak files called from different data sets
-    * added a new module *reConstMtx* to reconstruct peak-by-cell matrix given a peak file, a fragment file and a barcodes.txt file
-- Dec, 2019 
-    * corrected an error due to using older version of chromVAR
-    * corrected a bug for demultiplexing multiple index files
-    * added a module *convert10xbam* to convert 10x position sorted bam file to scATAC-pro file format
-    * updated module *get_bam4Cells*, with the inputs as a bam file and a txt file of barcodes, separated by comma
-
-
-
-
-
-
+- Current version: 1.1.2
+- May, 2020
+    * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
+      **which reselect variable features across cell clusters after an initial clustering, followed by 
+        another round of dimension reduction and clustering**, specify *Integrate_by = VFACS* in configure file
+    * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
+       remove rare peaks (accessible in less than 1% of cells) from the variable features list
+    * *reConsMtx*: enable specifying a path for saving reconstructed matrix (optional)
+- Complete update history can be viewd [here](complete_update_history.md)
 
 Dependencies
 ------------
@@ -227,6 +207,8 @@ Step by step guide to running scATAC-pro
 
     ## perform integrated analysis, assuming all data sets are processed by scATAC-pro
     ## which means each fragments.txt and barcodes.txt files can be found correspondingly            
+    ## the integration methods includes 'VFACS', 'pool', 'seurat', and 'harmony', for instance, 
+    ## you can specify the integration method with 'Integrate_by = VFACS' in the configure file
     $ scATAC-pro -s integrate
                  -i peak_file1,peak_file2,(peak_file3...)   ## 
                  -c configure_user.txt
@@ -263,7 +245,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.1.1
+    scATAC-pro 1.1.2
     ---------------
     OPTIONS
 
@@ -368,11 +350,13 @@ Detailed Usage
                          input: peak files and a distance parameter separated by comma: 
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed
-          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
+          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, barcodes.txt and 
+                      an optional path for reconstructed matrix 
                          input: different files separated by comma:
-                                peakFilePath,fragmentFilePath,barcodesPath
-                         output: a sub-folder reConst_matrix for the reconstructed peak-by-cell matrix, saved in
-                                 the same path as the input barcodes.txt file
+                                peakFilePath,fragmentFilePath,barcodesPath,reconstructMatrixPath
+                         output: reconstructed peak-by-cell matrix saved in reconstructMatrixPath, 
+                                 if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
+                                 under the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
                            input: peak/feature files, separated by comma: peak_file1,peak_file2
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
@@ -417,7 +401,7 @@ $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro 
 #!/bin/bash
 module load singularity
 
-singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run line this once
+singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run this line once
 ## will generate scatac-pro_latest.sif in the current directory
 
 singularity exec --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
