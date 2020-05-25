@@ -2,9 +2,12 @@
 
 - Current version: 1.2.1
 - May, 2020
-    * add VFACS option for the integration module
-    * enable specifying a path for reconstructed matrix (in the *reConstMtx* module)
-    * filter peaks before clustering and remove very rare peaks to be variable features
+    * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module, 
+      **which reselect variable features across cell clusters after an initial clusering, followed by 
+        another round of dimension reduction and clustering**, specify *integrate_by = VFACS* in configure file
+    * *reConsMtx*: enable specifying a path for reconstructed matrix (optional)
+    * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
+       remove very rare peaks (accessible in less than 1% of cells) from the variable features list
 - VERSION **1.1.1** released
 - March,April, 2020
     * *get_mtx* requires two input files: a fragments.txt file and a peak file, separated by comma
