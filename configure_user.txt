@@ -157,9 +157,9 @@ Cicero_Plot_Region = chr5:140610000-140640000
 ############################################################################
 ## about integrate module ##
 ## integrate two or more samples
-## by seurat cca, harmony, or pool 
+## by VFACS, seurat cca, harmony, or pool 
 ############################################################################
-Integrate_By = seurat  ## seurat or pool or harmony 
+Integrate_By = VFACS  ## VFACS, seurat, pool or harmony 
 prepCello4Integration = TRUE ## prepare cello for integrated object
 
 

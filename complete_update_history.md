@@ -4,7 +4,7 @@
 - May, 2020
 * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
-        another round of dimension reduction and clustering**, specify *integrate_by = VFACS* in configure file
+        another round of dimension reduction and clustering**, specify *Integrate_by = VFACS* in configure file
     * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
        remove rare peaks (accessible in less than 1% of cells) from the variable features list
     * *reConsMtx*: enable specifying a path for saving reconstructed matrix (optional)
