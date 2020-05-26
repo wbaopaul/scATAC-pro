@@ -1209,4 +1209,74 @@ doCicero_conn <- function(seurat.obj, reduction = 'tsne',
 }
 
 
+## change rowname of zscores (tf name) from chromvar to be readable
+readable_tf <- function(sele.zscores, GENOME_NAME){
+  if(grepl(GENOME_NAME, pattern = 'hg', ignore.case = T)){
+    rnames = rownames(sele.zscores)
+    nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+    nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
+    rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
+}else{
+    rnames = rownames(sele.zscores)
+    nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+    rownames(sele.zscores) = nnames
+    sele.zscores = sele.zscores[!grepl(nnames, pattern = '^LINE'), ]
+}
+ return(sele.zscores)
+}
+
+## plot enriched tf for chromvar
+plot_enrich_tf <- function(sele.zscores, bc_clusters,
+                           up.qt = 0.95, low.qt = 0.05,
+                           ndownsample = 1000){
+    
+    bc_clusters = data.table(bc_clusters)
+    
+    #downsample 
+    set.seed(2019)
+    bc_clusters.down = bc_clusters
+    
+    if(!is.null(ndownsample) & ndownsample < nrow(bc_clusters.down)) 
+      bc_clusters.down = bc_clusters.down[sort(sample((1:nrow(bc_clusters.down)), ndownsample)), ]
+    
+    bc_clusters = bc_clusters.down
+    rr = bc_clusters$barcode[bc_clusters$barcode %in% colnames(sele.zscores)]
+    sele.zscores = sele.zscores[, rr]
+    
+    ann_column = data.frame('cluster' = as.integer(bc_clusters$cluster), 
+                            'barcode' = bc_clusters$barcode,
+                            stringsAsFactors = F)
+    rownames(ann_column) = bc_clusters$barcode
+    
+    up_cut = quantile(sele.zscores, up.qt, na.rm = T)
+    low_cut = quantile(sele.zscores, low.qt, na.rm = T)
+    sele.zscores[is.na(sele.zscores)] = 0
+    low_cut = min(0, low_cut)
+    sele.zscores[sele.zscores > up_cut] = up_cut
+    sele.zscores[sele.zscores < low_cut] = low_cut
+    
+    nc = length(unique(bc_clusters$cluster))
+    getPalette = colorRampPalette(brewer.pal(9, "Paired"))
+    if(nc >= 3) color_cluster = getPalette(nc)
+    if(nc < 3) color_cluster = c("#A6CEE3", "#1F78B4", "#B2DF8A")[1:nc]
+    names(color_cluster) = sort(unique(bc_clusters$cluster))
+    
+    ann_column = ann_column[order(ann_column$cluster), ]
+    
+    ann_column$barcode = NULL
+   
+    ann_colors = list('cluster' = color_cluster)
+    
+    ann_column$cluster = factor(ann_column$cluster,
+                                levels = sort(unique(ann_column$cluster)))
+    
+    ph <- pheatmap::pheatmap(sele.zscores[, rownames(ann_column)], 
+                             cluster_cols = F, cluster_rows = F, 
+                             show_colnames = F, fontsize = 9,
+                             annotation_col = ann_column, 
+                             color = viridis(100),
+                             annotation_colors = ann_colors, 
+                             fontsize_row = 9)
+    return(ph)
+}
 
