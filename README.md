@@ -62,7 +62,7 @@ FAQs
 - [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to access downstream analysis results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/doc/Access_results_in_R.html)
+- [How to access downstream analysis results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/doc/AccessResultsInR.html)
 
 
 Dependencies
