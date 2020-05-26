@@ -10,6 +10,7 @@ A comprehensive workbench for single cell ATAC-seq data processing, analysis and
       * [Workflow](#workflow)
       * [Updates](#updates)
       * [Installation](#installation)
+      * [FAQs](#FAQs)
       * [Dependencies](#dependencies)
          * [Programming language users should install](#programming-language-users-should-install)
          * [Software packages required](#software-pacakges-required)
@@ -17,7 +18,6 @@ A comprehensive workbench for single cell ATAC-seq data processing, analysis and
       * [Step by step guide to running scATAC-pro](#step-by-step-guide-to-running-scATAC-pro)
       * [Detailed usage](#detailed-usage)
       * [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity)
-      * [FAQs](#FAQs)
       * [Citation](#citation)
 
 
@@ -55,6 +55,15 @@ Updates
        remove rare peaks (accessible in less than 1% of cells) from the variable features list
     * *reConsMtx*: enable specifying a path for saving reconstructed matrix (optional)
 - Complete update history can be viewd [here](complete_update_history.md)
+
+
+FAQs
+--------------
+- [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to access downstream analysis results in R?](https://github.com/wbaopaul/scATAC-pro/wiki/Access_results_in_R.html)
+
 
 Dependencies
 ------------
@@ -417,12 +426,6 @@ scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 - **NOTE**: if running the *footprint* module, remember to download the reference data [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) folder and put it under YOUR_WROK_DIR
 
 
-FAQs
---------------
-- [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to access downstream analysis results in R?](https://github.com/wbaopaul/scATAC-pro/wiki/Access_results_in_R)
 
 
 
