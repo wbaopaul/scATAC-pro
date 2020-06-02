@@ -1280,3 +1280,17 @@ plot_enrich_tf <- function(sele.zscores, bc_clusters,
     return(ph)
 }
 
+
+read_conf_file <- function(configure_user_file){
+  
+  system(paste0('grep = ', configure_user_file, " | grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' >  /tmp/vrs.txt"))
+  
+  system(paste0('grep = ', configure_user_file, " | grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' >  /tmp/vls.txt"))
+  
+  vrs = readLines('/tmp/vrs.txt')
+  vls = readLines('/tmp/vls.txt')
+  for(i in 1:length(vrs)){
+    assign(vrs[i], vls[i], envir = .GlobalEnv)
+  }
+}
+

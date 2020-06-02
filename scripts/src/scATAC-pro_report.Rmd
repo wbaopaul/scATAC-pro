@@ -190,8 +190,6 @@ g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), nsub_frags), ],
             axis.title = element_text(size = 18, family = "Helvetica")) +
   xlab('Total #Unique Fragments') + ylab('Fraction in Peak')
 
-#bb = ggplot_build(g)
-#cols = unique(bb[[1]][[1]]$colour)
 
 text1 <- grobTree(textGrob("Cell", x=0.8,  y=0.93, hjust=0,
   gp=gpar(col='#F8766D', fontsize=15, fontface = 'bold', fontfamily = "Helvetica")))
@@ -201,11 +199,7 @@ text2 <- grobTree(textGrob("Non-cell", x=0.8,  y=0.83, hjust=0,
 g <- g + annotation_custom(text1) + annotation_custom(text2)
 g
 
-if(plotEPS){
-  system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
-  pfname = paste0(params$output_dir, '/summary/Figures/fracInPeak_vs_totalFragments.eps')
-  ggsave(g, file = pfname, device = 'eps', width = 6, height = 6)
-}
+
 
 ```
 

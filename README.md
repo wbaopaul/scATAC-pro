@@ -62,6 +62,7 @@ FAQs
 - [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to access QC results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessQCInR.html)
 - [How to access downstream analysis results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
 
 
@@ -213,6 +214,12 @@ Step by step guide to running scATAC-pro
     $ scATAC-pro -s mergePeaks
                  -i peak_file1,peak_file2,(peak_file3...),200
                  -c configure_user.txt
+
+    ## reconstruct matrix using given new peak file
+    $ scATAC-pro -s reConstMtx
+                 -i peakFilePath,fragmentFilePath,barcodesPath,reconstructedMatrixPath(optional)
+                 -c configure_user.txt
+
 
     ## perform integrated analysis, assuming all data sets are processed by scATAC-pro
     ## which means each fragments.txt and barcodes.txt files can be found correspondingly            
