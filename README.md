@@ -18,6 +18,8 @@ A comprehensive workbench for single cell ATAC-seq data processing, analysis and
       * [Step by step guide to running scATAC-pro](#step-by-step-guide-to-running-scATAC-pro)
       * [Detailed usage](#detailed-usage)
       * [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity)
+      * [Access QC in R](#access-qc-in-R)
+      * [Downstream Analysis in R](#downstream-analysis-in-R)
       * [Citation](#citation)
 
 
@@ -63,7 +65,7 @@ FAQs
 - [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to access QC results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessQCInR.html)
-- [How to access downstream analysis results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
+- [How to access or redo downstream analysis results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
 
 
 Dependencies
@@ -435,6 +437,12 @@ scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 
 
 
+[Access QC in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessQCInR.html)
+---------------------------------------
+
+
+[Downstream Analysis in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
+--------------------------------------
 
 Citation
 --------------------------------------
