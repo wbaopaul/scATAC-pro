@@ -30,7 +30,7 @@ tss_ann <- fread(tss_path, header = F)
 names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
 
 
-## do seurat individually
+## run seurat individually
 seu.all = mtx.all = list()
 len = length(mtx_files)
 for(i in 1:length(mtx_files)){
@@ -39,18 +39,15 @@ for(i in 1:length(mtx_files)){
     rs = Matrix::rowMeans(mtx > 0)
     mtx = mtx[rs > 0.01, ]
     mtx = assignGene2Peak(mtx, tss_ann)
-    colnames(mtx) = paste0('sample', i, '_', colnames(mtx))
+    #colnames(mtx) = paste0('sample', i, '_', colnames(mtx))
     if(integrate_by != 'seurat') mtx.all[[i]] = mtx
     nveg0 = ifelse(top_variable_features > 1, top_variable_features, floor(top_variable_features)*nrow(mtx))
     nveg = ifelse(nveg0 < nrow(mtx)/2, nveg0, floor(nrow(mtx)/2))
-    seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
+    seurat.obj = runSeurat_Atac(mtx, npc = nREDUCTION, norm_by = norm_by, 
                                     top_variable_features = nveg, 
                                        reg.var = 'nCount_ATAC')
     
     seurat.obj$sample = paste0('sample', i)
-    #seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, check_duplicates = F)
-    #seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, verbose = F)
-    #saveRDS(seurat.obj, file = paste0(dir0, '/seurat_obj.rds'))
    
    seu.all[[i]] = seurat.obj
    rm(seurat.obj, mtx)
@@ -65,7 +62,7 @@ if(integrate_by == 'seurat'){
                          features = VariableFeatures(seurat.obj))
     seurat.obj <- RunPCA(seurat.obj, npcs = nREDUCTION, verbose = FALSE)
 }else{
-    ## use pool and regress method
+    ## pool the matrxi first
     nf = sapply(mtx.all, nrow)
     nc = sapply(mtx.all, ncol)
     if(length(unique(nf)) == 1) {
@@ -76,11 +73,41 @@ if(integrate_by == 'seurat'){
     rm(mtx.all)
     nveg0 = ifelse(top_variable_features > 1, top_variable_features, floor(top_variable_features)*nrow(umtx))
     nveg = ifelse(nveg0 < nrow(umtx)/2, nveg0, floor(nrow(umtx)/2))
-    seurat.obj = doBasicSeurat_new(umtx, npc = nREDUCTION, norm_by = norm_by, 
+    seurat.obj = runSeurat_Atac(umtx, npc = nREDUCTION, norm_by = norm_by, 
                                     top_variable_features = nveg, 
                                        reg.var = 'nCount_ATAC')
     seurat.obj$sample = paste0('sample', rep(c(1:length(nc)), nc))
-    seurat.obj <- regress_on_pca(seurat.obj, 'sample')
+}
+
+if(integrate_by == 'pool') seurat.obj <- regress_on_pca(seurat.obj, 'sample')
+
+if(integrate_by == 'VFACS'){
+    ## cluster and then reselect features
+    ## variable features across clusters
+    seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca')
+    seurat.obj <- FindClusters(seurat.obj, resl = 0.6)
+    clusters = as.character(seurat.obj$seurat_clusters)
+    mtx = seurat.obj@assays$ATAC@counts
+      mtx_by_cls <- sapply(unique(clusters), function(x) {
+        
+        cl_data <- mtx[, clusters == x]
+        
+        Matrix::rowMeans(cl_data)
+        
+      })
+      mtx_by_cls.norm <- edgeR::cpm(mtx_by_cls, log = T, prior.count = 1)
+      sds = sapply(1:nrow(mtx_by_cls.norm), function(x) sd(mtx_by_cls.norm[x, ]))
+      names(sds) = rownames(mtx_by_cls.norm)
+      sele.features = names(which(sds >= sort(sds, decreasing = T)[nveg]))
+      mtx0 = mtx[sele.features, ]
+      mtx0.norm = Seurat::TF.IDF(mtx0)
+      seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
+      VariableFeatures(seurat.obj) <- sele.features
+      seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = F)
+      seurat.obj <- regress_on_pca(seurat.obj, 'nCount_ATAC')
+      seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca')
+      seurat.obj <- FindClusters(seurat.obj, resl = 0.6)
+      
 }
 seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", dims = 1:nREDUCTION)
 
@@ -92,7 +119,6 @@ if(integrate_by == 'harmony'){
     seurat.obj <- seurat.obj %>% 
         RunUMAP(reduction = "harmony", dims = 1:nREDUCTION) 
 }
-#DimPlot(seurat.obj, reduction = "umap", group.by = "sample")
 
 
 ## clustering by louvain algorithm

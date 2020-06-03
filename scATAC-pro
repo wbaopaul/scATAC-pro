@@ -9,7 +9,7 @@
 #########################                                                                   
 
 SOFT="scATAC-pro"
-VERSION="1.1.0"
+VERSION="1.1.2"
 
 function usage {
     echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-o] [-h] [-v] [-b]"
@@ -40,7 +40,8 @@ function help {
                            input: BAM file, outputted from the mapping module
                            output: peaks in bed file format, saved in output/peaks/PEAK_CALLER/OUTPUT_PREFIX_features_Black                                   list_Removed.bed"
     echo "      get_mtx: build raw peak-by-cell matrix
-                         input: features/peaks file path, outputted from the call_peak module
+                         input: fragment.txt file, outputted from the mapping module, and features/peaks file path, 
+                                outputted from the call_peak module, separated by a comma
                          output: raw sparse peak-by-cell matrix in Matrix Market format, barcodes and feature files, saved                                  output/raw_matrix/PEAK_CALLER/"
     echo "      aggr_signal: generate aggregated signal, which can be uploaded to and viewed
                              in genome browser
@@ -48,7 +49,7 @@ function help {
                              output: Aggregated data in .bw and .bedgraph format, saved in output/signal/"
     echo "      qc_per_barcode: generate quality control metrics for each barcode
                                 input: fragment.txt file, outputted from the mapping module, and feature/peak file, outputt                                       ed from the call_peak module,  separated by comma
-                                output: qc_per_barcode.summary file of plain text format, saved in output/summary/"
+                                output: qc_per_barcode.txt file, saved in output/summary/"
     echo "      call_cell: perform cell calling
                            input: raw peak-by-barcode matrix file path, outputted from the get_mtx module
                            output: filtered peak-by-cell matrix, saved in output/filtered_matrix/PEAK_CALLER/CELL_CALLER/"
@@ -114,11 +115,13 @@ function help {
                          input: peak files and a distance parameter separated by comma:
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed"
-    echo "      reConstMtx: reconstruct peak-by-cell matrix a given peak file, fragments.txt file, and barcodes.txt file 
+    echo "      reConstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, barcodes.txt and
+                            an optional path for reconstructed matrix
                          input: different files separated by comma:
-                                peakFilePath,fragmentFilePath,barcodesPath
-                         output: a sub-folder reConstructed_matrix of reconstructed peak-cell matrix saved in the same
-                                 directory as the input barcodes.txt file"
+                                peakFilePath,fragmentFilePath,barcodesPath,reconstructMatrixPath
+                         output: reconstructed peak-by-cell matrix saved in reconstructMatrixPath,
+                                 if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
+                                 under the same path as the input barcodes.txt file" 
     echo "      integrate: perform integration of two ore more data sets
                            input: peak/feature files, separated by comma: peak_file1,peak_file2
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in 

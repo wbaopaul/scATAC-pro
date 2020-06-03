@@ -35,8 +35,13 @@ if(T){
       
       seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                          selection.method = 'vst',
-                                         nfeatures = floor(nrow(mtx) * 0.3))
+                                         nfeatures = floor(nrow(mtx) * 0.4))
       vFeatures = VariableFeatures(seurat.obj)
+      ## further filter peaks
+      rs = Matrix::rowSums(mtx > 0)
+      filter.pks = names(which(rs > (0.005 * ncol(seurat.obj))))
+      vFeatures = intersect(vFeatures, filter.pks)
+
       rm(seurat.obj)
       rnames = rownames(mtx)
       mtx = mtx[rnames %in% vFeatures, ]
@@ -114,64 +119,19 @@ if(file.exists(seurat_file)){
     zscores = deviationScores(chromVar.obj)
     sele.zscores = zscores[sele.tfs, ]
     
-    
     # change tf name to be more readable
-    if(grepl(genome_name, pattern = 'hg', ignore.case = T)){
-      rnames = rownames(sele.zscores)
-      nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
-      nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
-      rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
-    }else{
-      rnames = rownames(sele.zscores)
-      nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
-      rownames(sele.zscores) = nnames
-      sele.zscores = sele.zscores[!grepl(nnames, pattern = '^LINE'), ]
-    }
+    sele.zscores = readable_tf(sele.zscores, genome_name)    
+    
     metaData$active_clusters = as.character(metaData$active_clusters)
-    metaData = data.table(metaData, keep.rownames = T)
-    setkey(metaData, active_clusters)
-    
-    rr = metaData$rn[metaData$rn %in% colnames(sele.zscores)]
-    sele.zscores = sele.zscores[, rr]
-    
-    
-    sele.zscores = sele.zscores[!duplicated(sele.zscores), ]
-    
-    ann_col = data.frame('cluster' = metaData$active_clusters)
-    rownames(ann_col) = metaData$rn
-    
-    up_cut = quantile(sele.zscores, 0.95, na.rm = T)
-    low_cut = quantile(sele.zscores, 0.05, na.rm = T)
-    sele.zscores[is.na(sele.zscores)] = 0
-    low_cut = min(0, low_cut)
-    sele.zscores[sele.zscores > up_cut] = up_cut
-    sele.zscores[sele.zscores < low_cut] = low_cut
-    
-    cluster = brewer.pal(n=length(unique(metaData$active_clusters)), name = 'Paired')
-    names(cluster) = sort(unique(metaData$active_clusters))
-    ann_colors = list('cluster' = cluster)
-    
-    # resample to reduce memory used
-    set.seed(2019)
-    rids = sort(sample(1:ncol(sele.zscores), floor(ncol(sele.zscores)/6)))
-    ann_col0 = data.frame(ann_col[rids, ])
-    rownames(ann_col0) = colnames(sele.zscores)[rids]
-    mtx0 = sele.zscores[, rids]
-    names(ann_col0) = 'cluster'
-    ph <- pheatmap::pheatmap(mtx0, cluster_cols = F,
-                             cluster_rows = T, show_colnames = F, fontsize = 13,
-                             annotation_col = ann_col0, color = viridis(100),
-                             annotation_colors = ann_colors, fontsize_row = 9)
-    
-   
+
+    bc_clusters = data.table('barcode' = rownames(metaData),
+                             'cluster' = metaData$active_clusters)  
+ 
+    ph <- plot_enrich_tf(sele.zscores, bc_clusters) 
     pfname = paste0(params$output_dir, '/heatmap_motif_enrich.eps')
-    #postscript(file = pfname, width = 9, height = 12)
     
     ggsave(ph, filename = pfname, device = 'eps', height = 12,
            width = 9)
-    #dev.off()
-    
-    
   }
   
 }

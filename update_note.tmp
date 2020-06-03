@@ -1,4 +1,0 @@
-## Mar14, 2020
--- add PEAK_CALLER prefix to qc_per_barcode.txt filename
-## Mar15, 2020
--- fix a bug of file location of tmpJob when calling cells

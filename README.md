@@ -10,6 +10,7 @@ A comprehensive workbench for single cell ATAC-seq data processing, analysis and
       * [Workflow](#workflow)
       * [Updates](#updates)
       * [Installation](#installation)
+      * [FAQs](#FAQs)
       * [Dependencies](#dependencies)
          * [Programming language users should install](#programming-language-users-should-install)
          * [Software packages required](#software-pacakges-required)
@@ -17,7 +18,8 @@ A comprehensive workbench for single cell ATAC-seq data processing, analysis and
       * [Step by step guide to running scATAC-pro](#step-by-step-guide-to-running-scATAC-pro)
       * [Detailed usage](#detailed-usage)
       * [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity)
-      * [FAQs](#FAQs)
+      * [Access QC in R](#access-qc-in-R)
+      * [Downstream Analysis in R](#downstream-analysis-in-R)
       * [Citation](#citation)
 
 
@@ -35,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.0
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.2
 
 <!-- -->
 
@@ -46,35 +48,24 @@ Installation
      
 Updates
 ------------
-- Current version: 1.1.0
-- Feb, 2020
-    * *integrate* module enables 3 options: seurat, harmony and pool
-    * new module *visualize*, allowing interactively explore and analyze the data
-    * *footprint* module supports one-vs-rest comparison and provides result in heatmap
-    * module *runDA* changed to use group name as the input (e.g. "0:1,2" or "one,rest") 
-    * installed rgt-hint (for footprinting analysis) using miniconda3
-    * added module *process_with_bam*, allowing processing from aggregated bam file
-    * enabled data integration from peaks files, assuming all data sets are processed using scATAC-pro. Output matrix with the same merged peaks/features and the previously called cells, along with an integrated seurat object
-    * added new parameters in the configuration file: Top_Variable_Features, REDUCTION, nREDUCTION
-    * enabled all clustering methods mentioned in the manuscript, along with kmeans clustering on principal components
-    * file path changed to like downstreame_analysis/PEAK_CALLER/CELL_CALLER/..., indicating peak caller
-    * qc_per_barcode requires two input files, separated by comma, see example and detailed usage
-- Jan11, 2020 
-    * added a new module *mergePeaks* to merge different peak files called from different data sets
-    * added a new module *reConstMtx* to reconstruct peak-by-cell matrix given a peak file, a fragment file and a barcodes.txt file
-- Dec22, 2019 
-    * corrected an error due to using older version of chromVAR
-- Dec11, 2019 
-    * corrected a bug for demultiplexing multiple index files
-- Dec7, 2019 
-    * added a module *convert10xbam* to convert 10x position sorted bam file to scATAC-pro file format
-- Dec3, 2019 
-    * updated module *get_bam4Cells*, with the inputs as a bam file and a txt file of barcodes, separated by comma
+- Current version: 1.1.2
+- May, 2020
+    * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
+      **which reselect variable features across cell clusters after an initial clustering, followed by 
+        another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file
+    * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
+       remove rare peaks (accessible in less than 1% of cells) from the variable features list
+    * *reConsMtx*: enable specifying a path for saving reconstructed matrix (optional)
+- Complete update history can be viewd [here](complete_update_history.md)
 
 
-
-
-
+FAQs
+--------------
+- [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
+- [How to access QC results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessQCInR.html)
+- [How to access or redo downstream analysis results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
 
 
 Dependencies
@@ -82,7 +73,7 @@ Dependencies
 
 ### Programming language users should install
 
--   R (&gt;=3.6.0)
+-   R (&gt;=3.6.1)
 -   Python (&gt;=3.6.0)
 
 ### Software packages required
@@ -103,6 +94,8 @@ Quick start guide
 -----------
 
 -   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format. Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:
+
+- **NOTE**: some mapping index and genome annotation files can be downloaded [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) 
 
 <!-- -->
 
@@ -171,7 +164,7 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt 
                  
     $ scATAC-pro -s get_mtx 
-                 -i output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
+                 -i output/summary/pbmc10k.fragments.txt,output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
                  -c configure_user.txt 
 
     $ scATAC-pro -s qc_per_barcode 
@@ -224,8 +217,16 @@ Step by step guide to running scATAC-pro
                  -i peak_file1,peak_file2,(peak_file3...),200
                  -c configure_user.txt
 
+    ## reconstruct matrix using given new peak file
+    $ scATAC-pro -s reConstMtx
+                 -i peakFilePath,fragmentFilePath,barcodesPath,reconstructedMatrixPath(optional)
+                 -c configure_user.txt
+
+
     ## perform integrated analysis, assuming all data sets are processed by scATAC-pro
     ## which means each fragments.txt and barcodes.txt files can be found correspondingly            
+    ## the integration methods includes 'VFACS', 'pool', 'seurat', and 'harmony', for instance, 
+    ## you can specify the integration method with 'Integrate_By = VFACS' in the configure file
     $ scATAC-pro -s integrate
                  -i peak_file1,peak_file2,(peak_file3...)   ## 
                  -c configure_user.txt
@@ -262,7 +263,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.0.0
+    scATAC-pro 1.1.2
     ---------------
     OPTIONS
 
@@ -285,7 +286,8 @@ Detailed Usage
                                output: peaks in plain text format, saved as output/peaks/PEAK_CALLER/
                                        OUTPUT_PREFIX_features_Blacklist_Removed.bed
           get_mtx: build raw peak-by-cell matrix
-                             input: features/peak file, outputted from the call_cell module
+                             input: fragment.txt file, outputted from the mapping module, and features/peak file, 
+                                    outputted from the call_peak module, separated by a comma
                              output: sparse peak-by-cell count matrix in Matrix Market format, barcodes and feature files
                                      in plain text format, saved in output/raw_matrix/PEAK_CALLER/
           aggr_signal: generate aggregated signal, which can be uploaded to and viewed
@@ -295,7 +297,7 @@ Detailed Usage
           qc_per_barcode: generate quality control metrics for each barcode
                                     input: fragment.txt file (outputted from module mapping) and peak/feature file, 
                                            (outputted from module call_peak), separated by comma
-                                     output: qc_per_barcode.summary in plain text format, saved in output/summary/
+                                     output: qc_per_barcode.txt file, saved in output/summary/
           call_cell: perform cell calling
                                input: raw peak-by-barcode matrix file, outputted from the get_mtx module
                                output: filtered peak-by-cell matrix in Market Matrix format, barcodes and features,
@@ -366,11 +368,13 @@ Detailed Usage
                          input: peak files and a distance parameter separated by comma: 
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed
-          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, and barcodes.txt file 
+          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, barcodes.txt and 
+                      an optional path for reconstructed matrix 
                          input: different files separated by comma:
-                                peakFilePath,fragmentFilePath,barcodesPath
-                         output: a sub-folder reConst_matrix for the reconstructed peak-by-cell matrix, saved in
-                                 the same path as the input barcodes.txt file
+                                peakFilePath,fragmentFilePath,barcodesPath,reconstructMatrixPath
+                         output: reconstructed peak-by-cell matrix saved in reconstructMatrixPath, 
+                                 if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
+                                 under the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
                            input: peak/feature files, separated by comma: peak_file1,peak_file2
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
@@ -404,10 +408,6 @@ In case you have problem in installing dependencies, you can run scATAC-pro with
 $ singularity pull -F docker://wbaopaul/scatac-pro 
 ## will generate scatac-pro_latest.sif in current directory
 
-$ singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif
-$ scATAC-pro --help
-
-## or using exec instead of run
 $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s XXX -i XXX -c XXX
 
 ```
@@ -419,18 +419,13 @@ $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro 
 #!/bin/bash
 module load singularity
 
-singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run line this once
+singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run this line once
 ## will generate scatac-pro_latest.sif in the current directory
 
-singularity run -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif 
-
-scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
-# and then qsub mapping.sh
-
-## or using exec instead of run
 singularity exec --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
 scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 
+# and then qsub mapping.sh
 ```
 
 - **NOTE**: YOUR_WORK_DIR is your working directory, where the outputs will be saved and all data under YOUR_WORK_DIR will be available to scATAC-pro
@@ -440,15 +435,15 @@ scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 - **NOTE**: if running the *footprint* module, remember to download the reference data [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) folder and put it under YOUR_WROK_DIR
 
 
-FAQs
---------------
-- [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 
 
+[Access QC in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessQCInR.html)
+---------------------------------------
+
+
+[Downstream Analysis in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
+--------------------------------------
 
 Citation
 --------------------------------------
-Yu W, Uzun Y, Zhu Q, Chen C, Tan K. *scATAC-pro: a comprehensive workbench for single-cell chromatin accessibility sequencing data.* bioRxiv.org; 2019 
-doi: https://doi.org/10.1101/824326 
+Yu W, Uzun Y, Zhu Q, Chen C, Tan K. [*scATAC-pro: a comprehensive workbench for single-cell chromatin accessibility sequencing data.*](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02008-0) Genome Biology; 2020 

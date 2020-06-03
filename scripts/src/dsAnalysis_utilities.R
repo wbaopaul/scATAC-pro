@@ -12,7 +12,7 @@ library(readr)
 library(matrixStats)
 library(GenomicRanges)
 library(edgeR)
-library(cicero)
+library(mclust)
 
 ## do reverse complemente of a DNA sequence
 rev.comp <- function(x, rev=TRUE){
@@ -84,7 +84,8 @@ cBind_union_features <- function(mat_list){
     return(do.call('cbind', mat_union))
 }
 
-filterMat <- function(atac.mtx, minFrac_in_cell = 0.01, min_depth = 200, max_depth = 100000){
+filterMat <- function(atac.mtx, minFrac_in_cell = 0.01, min_depth = 200, 
+                      max_depth = 100000){
   depth.cell = Matrix::colSums(atac.mtx)
   atac.mtx = atac.mtx[, depth.cell > min_depth & depth.cell < max_depth]
   frac.in.cell = Matrix::rowMeans(atac.mtx > 0)
@@ -155,21 +156,51 @@ regress_on_pca <- function(seurat.obj, reg.var = 'nCount_ATAC'){
 
 
 #could be normalized by log, tf-idf or none
-doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2, 
+runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2, 
                           doScale = T, doCenter = T, assay = 'ATAC',
                           reg.var = NULL, norm_by = 'log', project = 'scATAC'){
 
   # top.variabl -- use top most variable features
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
-                                  names.delim = '-')
+                                  names.delim = '-', min.cells = 1,
+                                  min.features = 1)
  
-  if(norm_by == 'log') seurat.obj@assays$ATAC@data <- log1p(seurat.obj@assays$ATAC@data)/log(2)
-  if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data <- TF.IDF(seurat.obj@assays$ATAC@data)
-  nveg = ifelse(top_variable_features > 1, top_variable_features, floor(nrow(mtx) * top_variable_features))
+  if(norm_by == 'log') seurat.obj[[assay]]@data <- log1p(seurat.obj[[assay]]@counts)/log(2)
+  if(norm_by == 'tf-idf') seurat.obj[[assay]]@data <- TF.IDF(seurat.obj[[assay]]@counts)
+  nvap = ifelse(top_variable_features > 1, top_variable_features, 
+                floor(nrow(mtx) * top_variable_features))
 
   seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                      selection.method = 'vst',
-                                     nfeatures = nveg)
+                                     nfeatures = nvap)
+  
+  ## remove variable features only accessible in less than 1% of cells
+  mtx = seurat.obj[[assay]]@counts
+  rs = Matrix::rowMeans(mtx > 0)
+  rare.features = names(which(rs < 0.01))
+  vaps = VariableFeatures(seurat.obj)
+  vaps = setdiff(vaps, rare.features)
+  niter = 0
+  while(length(vaps) < 500 & nvap > 500){
+    niter = niter + 1
+    nvap = nvap + 2000
+    seurat.obj <- FindVariableFeatures(object = seurat.obj,
+                                       selection.method = 'vst',
+                                       nfeatures = min(nvap, nrow(seurat.obj)))
+    vaps = VariableFeatures(seurat.obj)
+    vaps = setdiff(vaps, rare.features)
+    if(niter > 5) stop('Too many variable features were filtered, 
+                       please specify a large Top_Variable_Features
+                       in the configure file!')
+  }
+  VariableFeatures(seurat.obj) <- vaps
+  
+  ## redo normalization using vap if norm by tf-idf
+  if(norm_by == 'tf-idf'){
+    mtx.norm = TF.IDF(mtx[vaps, ])
+    seurat.obj[[assay]]@data[vaps, ] = mtx.norm
+  }
+
   seurat.obj <- ScaleData(object = seurat.obj,
                           features = VariableFeatures(seurat.obj),
                           vars.to.regress = NULL, do.scale = doScale,
@@ -181,12 +212,10 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
                        verbose = FALSE, seed.use = 10, npc = npc)
   if(length(reg.var) > 0 ) seurat.obj = regress_on_pca(seurat.obj, reg.var)
 
- # seurat.obj <- RunLSI(seurat.obj, n = npc,
- #                      features = VariableFeatures(object = seurat.obj))
 
   return(seurat.obj)
 }
-doBasicSeurat_new = cmpfun(doBasicSeurat_new)
+runSeurat_Atac = cmpfun(runSeurat_Atac)
 
 # assign gene to nearest peak and mark a gene if its tss within the peak
 assignGene2Peak <- function(mtx, tss_ann){
@@ -208,11 +237,13 @@ assignGene2Peak <- function(mtx, tss_ann){
   for(chr0 in chrs){
     peaks0 = peaks[chr == chr0]
     genes0 = tss_ann[chr == chr0]
-    peaks0[, 'id' := which.min(abs(genes0$tss - start/2 - end/2)), by = 'peak_name']
+    peaks0[, 'id' := which.min(abs(genes0$tss - start/2 - end/2)), by = peak_name]
     peaks0[, 'gene_name' := genes0[id, gene_name]]
+    peaks0[, 'dist0' := min(abs(genes0$tss - start/2 -end/2)), by = peak_name]
+    peaks0[, 'gene_name' := ifelse(dist0 > 100000, '', gene_name)]
     peaks0$tss_name = ''
     for(i in 1:nrow(peaks0)){
-      tss0 = genes0[tss <= peaks0$end[i] & tss >= peaks0$start[i]]
+      tss0 = genes0[tss <= (peaks0$end[i] + 1000) & tss >= (peaks0$start[i] - 1000)]
       if(nrow(tss0) > 0 ) {
         if(peaks0$gene_name[i] %in% tss0$gene_name) peaks0$gene_name[i] <- ''
         peaks0$tss_name[i] = paste(paste0(unique(tss0$gene_name), '-Tss'), 
@@ -223,6 +254,7 @@ assignGene2Peak <- function(mtx, tss_ann){
     peaks_ann = rbind(peaks_ann, peaks0)
   }
   peaks_ann[, 'id':= NULL]
+  peaks_ann[, 'dist0':= NULL]
   
   peaks_ann[, 'peak_new_name' := ifelse(!is.na(gene_name) & nchar(gene_name) > 1, 
                                         paste0(peak_name, ',', gene_name), peak_name)]
@@ -1061,7 +1093,7 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
                             gene_ann, npc = 30, coaccess_thr = 0.25){
   ## gene_ann: the first four columns: chr, start, end, gene name
   set.seed(2019)
-  
+  library(cicero)
   mtx = GetAssayData(seurat.obj, slot = 'counts')
   # change rownames using _ to delimited
   rnames = rownames(mtx)
@@ -1071,11 +1103,11 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
   rownames(mtx) <- new.rnames
   
   
-  
-  dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  #dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  #dt = dt[dt$count > 0, ]
+  dt = mefa4::Melt(mtx)
   rm(mtx)
-  dt = dt[dt$count > 0, ]
-  names(dt) = c('Peak', 'Cell', 'Count')
+  names(dt) = c('Peak', 'Cell', 'Count') 
   dt$Cell = as.character(dt$Cell)
   dt$Peak = as.character(dt$Peak)
   
@@ -1134,7 +1166,7 @@ doCicero_conn <- function(seurat.obj, reduction = 'tsne',
                           chr_sizes, npc = 30, coaccess_thr = 0.25){
   ## gene_ann: the first four columns: chr, start, end, gene name
   set.seed(2019)
-  
+  library(cicero)
   mtx = GetAssayData(seurat.obj, slot = 'counts')
   # change rownames using _ to delimited
   rnames = rownames(mtx)
@@ -1142,9 +1174,10 @@ doCicero_conn <- function(seurat.obj, reduction = 'tsne',
   new.rnames = sapply(new.rnames, function(x) gsub('-', '_', x))
   rownames(mtx) <- new.rnames
   
-  dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  #dt = reshape2::melt(as.matrix(mtx), value.name = 'count')
+  #dt = dt[dt$count > 0, ]
+  dt = mefa4::Melt(mtx)
   rm(mtx)
-  dt = dt[dt$count > 0, ]
   names(dt) = c('Peak', 'Cell', 'Count')
   dt$Cell = as.character(dt$Cell)
   dt$Peak = as.character(dt$Peak)
@@ -1177,4 +1210,88 @@ doCicero_conn <- function(seurat.obj, reduction = 'tsne',
 }
 
 
+## change rowname of zscores (tf name) from chromvar to be readable
+readable_tf <- function(sele.zscores, GENOME_NAME){
+  if(grepl(GENOME_NAME, pattern = 'hg', ignore.case = T)){
+    rnames = rownames(sele.zscores)
+    nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+    nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
+    rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
+}else{
+    rnames = rownames(sele.zscores)
+    nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+    rownames(sele.zscores) = nnames
+    sele.zscores = sele.zscores[!grepl(nnames, pattern = '^LINE'), ]
+}
+ return(sele.zscores)
+}
+
+## plot enriched tf for chromvar
+plot_enrich_tf <- function(sele.zscores, bc_clusters,
+                           up.qt = 0.95, low.qt = 0.05,
+                           ndownsample = 1000){
+    
+    bc_clusters = data.table(bc_clusters)
+    
+    #downsample 
+    set.seed(2019)
+    bc_clusters.down = bc_clusters
+    
+    if(!is.null(ndownsample) & ndownsample < nrow(bc_clusters.down)) 
+      bc_clusters.down = bc_clusters.down[sort(sample((1:nrow(bc_clusters.down)), ndownsample)), ]
+    
+    bc_clusters = bc_clusters.down
+    rr = bc_clusters$barcode[bc_clusters$barcode %in% colnames(sele.zscores)]
+    sele.zscores = sele.zscores[, rr]
+    
+    ann_column = data.frame('cluster' = as.integer(bc_clusters$cluster), 
+                            'barcode' = bc_clusters$barcode,
+                            stringsAsFactors = F)
+    rownames(ann_column) = bc_clusters$barcode
+    
+    up_cut = quantile(sele.zscores, up.qt, na.rm = T)
+    low_cut = quantile(sele.zscores, low.qt, na.rm = T)
+    sele.zscores[is.na(sele.zscores)] = 0
+    low_cut = min(0, low_cut)
+    sele.zscores[sele.zscores > up_cut] = up_cut
+    sele.zscores[sele.zscores < low_cut] = low_cut
+    
+    nc = length(unique(bc_clusters$cluster))
+    getPalette = colorRampPalette(brewer.pal(9, "Paired"))
+    if(nc >= 3) color_cluster = getPalette(nc)
+    if(nc < 3) color_cluster = c("#A6CEE3", "#1F78B4", "#B2DF8A")[1:nc]
+    names(color_cluster) = sort(unique(bc_clusters$cluster))
+    
+    ann_column = ann_column[order(ann_column$cluster), ]
+    
+    ann_column$barcode = NULL
+   
+    ann_colors = list('cluster' = color_cluster)
+    
+    ann_column$cluster = factor(ann_column$cluster,
+                                levels = sort(unique(ann_column$cluster)))
+    
+    ph <- pheatmap::pheatmap(sele.zscores[, rownames(ann_column)], 
+                             cluster_cols = F, cluster_rows = F, 
+                             show_colnames = F, fontsize = 9,
+                             annotation_col = ann_column, 
+                             color = viridis(100),
+                             annotation_colors = ann_colors, 
+                             fontsize_row = 9)
+    return(ph)
+}
+
+
+read_conf_file <- function(configure_user_file){
+  
+  system(paste0('grep = ', configure_user_file, " | grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' >  /tmp/vrs.txt"))
+  
+  system(paste0('grep = ', configure_user_file, " | grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' >  /tmp/vls.txt"))
+  
+  vrs = readLines('/tmp/vrs.txt')
+  vls = readLines('/tmp/vls.txt')
+  for(i in 1:length(vrs)){
+    assign(vrs[i], vls[i], envir = .GlobalEnv)
+  }
+}
 
