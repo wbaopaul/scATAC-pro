@@ -12,7 +12,7 @@ library(readr)
 library(matrixStats)
 library(GenomicRanges)
 library(edgeR)
-library(cicero)
+library(mclust)
 
 ## do reverse complemente of a DNA sequence
 rev.comp <- function(x, rev=TRUE){
@@ -84,7 +84,8 @@ cBind_union_features <- function(mat_list){
     return(do.call('cbind', mat_union))
 }
 
-filterMat <- function(atac.mtx, minFrac_in_cell = 0.01, min_depth = 200, max_depth = 100000){
+filterMat <- function(atac.mtx, minFrac_in_cell = 0.01, min_depth = 200, 
+                      max_depth = 100000){
   depth.cell = Matrix::colSums(atac.mtx)
   atac.mtx = atac.mtx[, depth.cell > min_depth & depth.cell < max_depth]
   frac.in.cell = Matrix::rowMeans(atac.mtx > 0)
@@ -155,7 +156,7 @@ regress_on_pca <- function(seurat.obj, reg.var = 'nCount_ATAC'){
 
 
 #could be normalized by log, tf-idf or none
-doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2, 
+runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2, 
                           doScale = T, doCenter = T, assay = 'ATAC',
                           reg.var = NULL, norm_by = 'log', project = 'scATAC'){
 
@@ -214,7 +215,7 @@ doBasicSeurat_new <- function(mtx, npc = 50, top_variable_features = 0.2,
 
   return(seurat.obj)
 }
-doBasicSeurat_new = cmpfun(doBasicSeurat_new)
+runSeurat_Atac = cmpfun(runSeurat_Atac)
 
 # assign gene to nearest peak and mark a gene if its tss within the peak
 assignGene2Peak <- function(mtx, tss_ann){
@@ -1092,7 +1093,7 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
                             gene_ann, npc = 30, coaccess_thr = 0.25){
   ## gene_ann: the first four columns: chr, start, end, gene name
   set.seed(2019)
-  
+  library(cicero)
   mtx = GetAssayData(seurat.obj, slot = 'counts')
   # change rownames using _ to delimited
   rnames = rownames(mtx)
@@ -1165,7 +1166,7 @@ doCicero_conn <- function(seurat.obj, reduction = 'tsne',
                           chr_sizes, npc = 30, coaccess_thr = 0.25){
   ## gene_ann: the first four columns: chr, start, end, gene name
   set.seed(2019)
-  
+  library(cicero)
   mtx = GetAssayData(seurat.obj, slot = 'counts')
   # change rownames using _ to delimited
   rnames = rownames(mtx)

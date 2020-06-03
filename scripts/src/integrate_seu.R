@@ -43,7 +43,7 @@ for(i in 1:length(mtx_files)){
     if(integrate_by != 'seurat') mtx.all[[i]] = mtx
     nveg0 = ifelse(top_variable_features > 1, top_variable_features, floor(top_variable_features)*nrow(mtx))
     nveg = ifelse(nveg0 < nrow(mtx)/2, nveg0, floor(nrow(mtx)/2))
-    seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
+    seurat.obj = runSeurat_Atac(mtx, npc = nREDUCTION, norm_by = norm_by, 
                                     top_variable_features = nveg, 
                                        reg.var = 'nCount_ATAC')
     
@@ -73,7 +73,7 @@ if(integrate_by == 'seurat'){
     rm(mtx.all)
     nveg0 = ifelse(top_variable_features > 1, top_variable_features, floor(top_variable_features)*nrow(umtx))
     nveg = ifelse(nveg0 < nrow(umtx)/2, nveg0, floor(nrow(umtx)/2))
-    seurat.obj = doBasicSeurat_new(umtx, npc = nREDUCTION, norm_by = norm_by, 
+    seurat.obj = runSeurat_Atac(umtx, npc = nREDUCTION, norm_by = norm_by, 
                                     top_variable_features = nveg, 
                                        reg.var = 'nCount_ATAC')
     seurat.obj$sample = paste0('sample', rep(c(1:length(nc)), nc))

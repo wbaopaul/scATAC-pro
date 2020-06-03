@@ -35,7 +35,7 @@ mtx = mtx[rfreqs > 0.005, ]
 cfreqs = Matrix::colMeans(mtx > 0)
 mtx = mtx[, cfreqs > 0]
 
-seurat.obj = doBasicSeurat_new(mtx, npc = nREDUCTION, norm_by = norm_by, 
+seurat.obj = runSeurat_Atac(mtx, npc = nREDUCTION, norm_by = norm_by, 
                                top_variable_features = top_variable_features, reg.var = 'nCount_ATAC')
 if(REDUCTION != 'lda'){
     seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', check_duplicates = FALSE)
