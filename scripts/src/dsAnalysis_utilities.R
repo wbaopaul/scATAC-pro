@@ -340,8 +340,8 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
   
   
   seurat.obj <- FindNeighbors(seurat.obj, reduction = reduction, verbose = F, dims = 1:max.dim)
-  tmp.cluster1 <- FindClusters(seurat.obj, resolution = min_resl)@active.ident
-  tmp.cluster2 <- FindClusters(seurat.obj, resolution = max_resl)@active.ident
+  tmp.cluster1 <- FindClusters(seurat.obj, resolution = min_resl, verbose = F)@active.ident
+  tmp.cluster2 <- FindClusters(seurat.obj, resolution = max_resl, verbose = F)@active.ident
   
   
   
@@ -355,7 +355,7 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
     k1 = k1 + 1
     message('min_resl too large, trying to divided it by  2')
     min_resl = min_resl/2
-    tmp.cluster1 <- FindClusters(seurat.obj, resolution = min_resl)@active.ident
+    tmp.cluster1 <- FindClusters(seurat.obj, resolution = min_resl, verbose=F)@active.ident
     len1 = length(levels(tmp.cluster1))
     if(k1 == 10) stop('Please specify a much smaller min_res')
   }
@@ -364,7 +364,7 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
     k2 = k2 + 1
     message('max_resl too small, trying to multiply it by 2')
     max_resl = max_resl * 2
-    tmp.cluster2 <- FindClusters(seurat.obj, resolution = max_resl)@active.ident
+    tmp.cluster2 <- FindClusters(seurat.obj, resolution = max_resl, verbose = F)@active.ident
     len2 = length(levels(tmp.cluster2))
     if(k2 == 10) stop('Please specify a much bigger max_res')
   }
@@ -383,7 +383,7 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
     i = i + 1
     resl0 = min_resl/2 + max_resl/2
     
-    tmp.cluster <- FindClusters(seurat.obj, resolution = resl0)@active.ident
+    tmp.cluster <- FindClusters(seurat.obj, resolution = resl0, verbose = F)@active.ident
     
     len = length(levels(tmp.cluster)) 
     if(len == k){

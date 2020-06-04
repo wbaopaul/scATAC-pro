@@ -429,7 +429,7 @@ div.tocify {
   <a href="Downstream_in_R.html">Original Downstream Analysis</a>
 </li>
 <li>
-  <a href="Redo_Downstream_in_R.html">Redo Downstream Analysis</a>
+  <a href="Redo_Downstream_in_R.html">Customize Downstream Analysis</a>
 </li>
 <li>
   <a href="about.html">About</a>
@@ -451,20 +451,9 @@ div.tocify {
 </div>
 
 
-<style>
-pre {
-  margin-bottom: +20px;
-  margin-top: +20px;
-}
-</style>
-<style type="text/css">
-pre {
-  overflow-x: auto;
-}
-</style>
 <div id="introduction" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
-<p>scATAC-pro generates results in plain texts, tables and .rds objects. This tutorial will access original downstream analysis results module by module, which was done by running command lines. We will use scATAC-pro outputs from 10x PBMC data as in the manuscript, except for the integrate module, where data from another study was used for illustration purpose.</p>
+<p>scATAC-pro generates results in plain texts, tables and .rds objects. This tutorial will access original downstream analysis results module by module, which was done by running command lines. We will use scATAC-pro outputs from 10x PBMC data as in the manuscript, except for the integrate module, where data from another study was used for illustration purpose. Download <a href="https://chopri.box.com/s/cuf17lojtuvqcvfp3kujlranbbt8x6j9">pbmc10x_scATACpro_output</a> data to reproduce this tutorial.</p>
 <div id="set-up-parameters-scatac-pro-output-dir-and-source-raw-codes" class="section level2" number="1.1">
 <h2 number="1.1"><span class="header-section-number">1.1</span> Set up parameters, scATAC-pro output dir and source raw codes</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(data.table)</span>
@@ -477,7 +466,7 @@ pre {
 <span id="cb1-8"><a href="#cb1-8"></a></span>
 <span id="cb1-9"><a href="#cb1-9"></a>PEAK_CALLER =<span class="st"> &#39;COMBINED&#39;</span></span>
 <span id="cb1-10"><a href="#cb1-10"></a>CELL_CALLER =<span class="st"> &#39;FILTER&#39;</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>output_dir =<span class="st"> &#39;/mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/output/&#39;</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>output_dir =<span class="st"> &#39;pbmc10x_scATACpro_output/&#39;</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a>down_dir =<span class="st"> </span><span class="kw">paste0</span>(output_dir, <span class="st">&#39;downstream_analysis/&#39;</span>, PEAK_CALLER, <span class="st">&#39;/&#39;</span>, </span>
 <span id="cb1-13"><a href="#cb1-13"></a>                  CELL_CALLER, <span class="st">&#39;/&#39;</span>)</span>
 <span id="cb1-14"><a href="#cb1-14"></a>devtools<span class="op">::</span><span class="kw">source_url</span>(<span class="st">&quot;https://github.com/wbaopaul/scATAC-pro/blob/master/scripts/src/dsAnalysis_utilities.R?raw=TRUE&quot;</span>)</span></code></pre></div>
@@ -514,7 +503,7 @@ pre {
 <span id="cb3-8"><a href="#cb3-8"></a></span>
 <span id="cb3-9"><a href="#cb3-9"></a><span class="co">## plot umap</span></span>
 <span id="cb3-10"><a href="#cb3-10"></a><span class="kw">DimPlot</span>(seurat_obj, <span class="dt">reduction =</span> <span class="st">&#39;umap&#39;</span>) </span></code></pre></div>
-<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 <div id="go-analysis" class="section level2" number="2.3">
 <h2 number="2.3"><span class="header-section-number">2.3</span> GO Analysis</h2>
@@ -543,7 +532,7 @@ pre {
 <span id="cb4-22"><a href="#cb4-22"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&#39;&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&#39;-log10(p.adjust)&#39;</span>)</span>
 <span id="cb4-23"><a href="#cb4-23"></a>         </span>
 <span id="cb4-24"><a href="#cb4-24"></a>p_go</span></code></pre></div>
-<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 <div id="tf-motif-enrichment-analysis" class="section level2" number="2.4">
 <h2 number="2.4"><span class="header-section-number">2.4</span> TF motif enrichment analysis</h2>
@@ -551,50 +540,45 @@ pre {
 <ul>
 <li>A chromVAR object was saved in .rds format (by which users can access the deviation score and the z score per cell) along with a table for enriched TFs per cluster (top 10 per cluster by default)</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a></span>
-<span id="cb5-2"><a href="#cb5-2"></a>GENOME_NAME =<span class="st"> &#39;hg38&#39;</span></span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>GENOME_NAME =<span class="st"> &#39;hg38&#39;</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>metaData =<span class="st"> </span>seurat_obj<span class="op">@</span>meta.data</span>
 <span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a></span>
-<span id="cb5-5"><a href="#cb5-5"></a>metaData =<span class="st"> </span>seurat_obj<span class="op">@</span>meta.data</span>
+<span id="cb5-4"><a href="#cb5-4"></a>chromVar.obj =<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(down_dir, <span class="st">&#39;/chromVar_obj.rds&#39;</span>))</span>
+<span id="cb5-5"><a href="#cb5-5"></a>diff_tf_enrich_file =<span class="st"> </span><span class="kw">paste0</span>(down_dir, <span class="st">&#39;/differential_TF_motif_enriched_in_clusters.txt&#39;</span>)</span>
 <span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a>chromVar.obj =<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(down_dir, <span class="st">&#39;/chromVar_obj.rds&#39;</span>))</span>
-<span id="cb5-8"><a href="#cb5-8"></a>diff_tf_enrich_file =<span class="st"> </span><span class="kw">paste0</span>(down_dir, <span class="st">&#39;/differential_TF_motif_enriched_in_clusters.txt&#39;</span>)</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a>da.res =<span class="st"> </span><span class="kw">fread</span>( <span class="kw">paste0</span>(down_dir, <span class="st">&#39;/differential_TF_motif_enriched_in_clusters.txt&#39;</span>))</span>
-<span id="cb5-11"><a href="#cb5-11"></a>  </span>
-<span id="cb5-12"><a href="#cb5-12"></a><span class="co">## plot enriched TFs in heatmap</span></span>
-<span id="cb5-13"><a href="#cb5-13"></a>sele.tfs =<span class="st"> </span>da.res<span class="op">$</span>feature</span>
-<span id="cb5-14"><a href="#cb5-14"></a>zscores =<span class="st"> </span><span class="kw">deviationScores</span>(chromVar.obj)</span>
-<span id="cb5-15"><a href="#cb5-15"></a>sele.zscores =<span class="st"> </span>zscores[sele.tfs, ]</span>
+<span id="cb5-7"><a href="#cb5-7"></a>da.res =<span class="st"> </span><span class="kw">fread</span>( <span class="kw">paste0</span>(down_dir, <span class="st">&#39;/differential_TF_motif_enriched_in_clusters.txt&#39;</span>))</span>
+<span id="cb5-8"><a href="#cb5-8"></a>  </span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">## plot enriched TFs in heatmap</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>sele.tfs =<span class="st"> </span>da.res<span class="op">$</span>feature</span>
+<span id="cb5-11"><a href="#cb5-11"></a>zscores =<span class="st"> </span><span class="kw">deviationScores</span>(chromVar.obj)</span>
+<span id="cb5-12"><a href="#cb5-12"></a>sele.zscores =<span class="st"> </span>zscores[sele.tfs, ]</span>
+<span id="cb5-13"><a href="#cb5-13"></a></span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="co">## change rowname of zscores (tf name) to be readable</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a>sele.zscores &lt;-<span class="st"> </span><span class="kw">readable_tf</span>(sele.zscores, GENOME_NAME)</span>
 <span id="cb5-16"><a href="#cb5-16"></a></span>
-<span id="cb5-17"><a href="#cb5-17"></a><span class="co">## change rowname of zscores (tf name) to be readable</span></span>
-<span id="cb5-18"><a href="#cb5-18"></a>sele.zscores &lt;-<span class="st"> </span><span class="kw">readable_tf</span>(sele.zscores, GENOME_NAME)</span>
-<span id="cb5-19"><a href="#cb5-19"></a></span>
+<span id="cb5-17"><a href="#cb5-17"></a>metaData<span class="op">$</span>active_clusters =<span class="st"> </span><span class="kw">as.character</span>(metaData<span class="op">$</span>active_clusters)</span>
+<span id="cb5-18"><a href="#cb5-18"></a></span>
+<span id="cb5-19"><a href="#cb5-19"></a>sele.zscores =<span class="st"> </span>sele.zscores[<span class="op">!</span><span class="kw">duplicated</span>(sele.zscores), ]</span>
 <span id="cb5-20"><a href="#cb5-20"></a></span>
-<span id="cb5-21"><a href="#cb5-21"></a>metaData<span class="op">$</span>active_clusters =<span class="st"> </span><span class="kw">as.character</span>(metaData<span class="op">$</span>active_clusters)</span>
-<span id="cb5-22"><a href="#cb5-22"></a></span>
+<span id="cb5-21"><a href="#cb5-21"></a>bc_clusters =<span class="st"> </span><span class="kw">data.table</span>(<span class="st">&#39;barcode&#39;</span> =<span class="st"> </span><span class="kw">rownames</span>(metaData),</span>
+<span id="cb5-22"><a href="#cb5-22"></a>                         <span class="st">&#39;cluster&#39;</span> =<span class="st"> </span>metaData<span class="op">$</span>active_clusters)  </span>
 <span id="cb5-23"><a href="#cb5-23"></a></span>
-<span id="cb5-24"><a href="#cb5-24"></a>sele.zscores =<span class="st"> </span>sele.zscores[<span class="op">!</span><span class="kw">duplicated</span>(sele.zscores), ]</span>
-<span id="cb5-25"><a href="#cb5-25"></a></span>
-<span id="cb5-26"><a href="#cb5-26"></a></span>
-<span id="cb5-27"><a href="#cb5-27"></a>bc_clusters =<span class="st"> </span><span class="kw">data.table</span>(<span class="st">&#39;barcode&#39;</span> =<span class="st"> </span><span class="kw">rownames</span>(metaData),</span>
-<span id="cb5-28"><a href="#cb5-28"></a>                         <span class="st">&#39;cluster&#39;</span> =<span class="st"> </span>metaData<span class="op">$</span>active_clusters)  </span>
-<span id="cb5-29"><a href="#cb5-29"></a></span>
-<span id="cb5-30"><a href="#cb5-30"></a><span class="kw">plot_enrich_tf</span>(sele.zscores, bc_clusters)</span></code></pre></div>
-<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<span id="cb5-24"><a href="#cb5-24"></a><span class="kw">plot_enrich_tf</span>(sele.zscores, bc_clusters)</span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 <ul>
 <li>You can redo differential TF enrichment analysis, for example, you can output different number of TFs for each cluster:</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a></span>
-<span id="cb6-2"><a href="#cb6-2"></a>da.res =<span class="st"> </span><span class="kw">do_DA_motif</span>(<span class="kw">deviations</span>(chromVar.obj), bc_clusters,</span>
-<span id="cb6-3"><a href="#cb6-3"></a>                       <span class="dt">topn =</span> <span class="dv">5</span>)</span>
-<span id="cb6-4"><a href="#cb6-4"></a></span>
-<span id="cb6-5"><a href="#cb6-5"></a>sele.zscores =<span class="st"> </span>zscores[da.res<span class="op">$</span>feature, ]</span>
-<span id="cb6-6"><a href="#cb6-6"></a></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co">## change rowname of zscores (tf name) to be readable</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>sele.zscores &lt;-<span class="st"> </span><span class="kw">readable_tf</span>(sele.zscores, GENOME_NAME)</span>
-<span id="cb6-9"><a href="#cb6-9"></a></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="kw">plot_enrich_tf</span>(sele.zscores, bc_clusters)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>da.res =<span class="st"> </span><span class="kw">runDiffMotifEnrich</span>(<span class="kw">deviations</span>(chromVar.obj), bc_clusters,</span>
+<span id="cb6-2"><a href="#cb6-2"></a>                            <span class="dt">min_frac_per_cluster =</span> <span class="fl">0.1</span>,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>                            <span class="dt">mmax_cell_per_clust =</span> <span class="dv">500</span>,</span>
+<span id="cb6-4"><a href="#cb6-4"></a>                            <span class="dt">topn =</span> <span class="dv">5</span>)</span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a>sele.zscores =<span class="st"> </span>zscores[da.res<span class="op">$</span>feature, ]</span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co">## change rowname of zscores (tf name) to be readable</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a>sele.zscores &lt;-<span class="st"> </span><span class="kw">readable_tf</span>(sele.zscores, GENOME_NAME)</span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="kw">plot_enrich_tf</span>(sele.zscores, bc_clusters)</span></code></pre></div>
 </div>
 <div id="tf-footprinting-analysis" class="section level2" number="2.5">
 <h2 number="2.5"><span class="header-section-number">2.5</span> TF footprinting analysis</h2>
@@ -634,7 +618,6 @@ pre {
 <span id="cb7-33"><a href="#cb7-33"></a> </span>
 <span id="cb7-34"><a href="#cb7-34"></a></span>
 <span id="cb7-35"><a href="#cb7-35"></a>}</span></code></pre></div>
-<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 <div id="access-cicero-cis-interactions" class="section level2" number="2.6">
 <h2 number="2.6"><span class="header-section-number">2.6</span> Access cicero Cis interactions</h2>
@@ -688,7 +671,7 @@ pre {
 <span id="cb8-47"><a href="#cb8-47"></a>                   <span class="dt">viewpoint_alpha =</span> <span class="dv">0</span>)</span>
 <span id="cb8-48"><a href="#cb8-48"></a>   </span>
 <span id="cb8-49"><a href="#cb8-49"></a>}</span></code></pre></div>
-<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 <div id="integration" class="section level2" number="2.7">
 <h2 number="2.7"><span class="header-section-number">2.7</span> Integration</h2>
@@ -696,14 +679,12 @@ pre {
 <li>For this session, an integrated object from the other study was used for illustration purpose</li>
 <li>Suppose we have an integrated .rds object outputted from <em>integrate</em> module with parameter Integrate_By set as ‘VFACS’ (other options are ‘seurat’, ‘pool’, or ‘harmony’)</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a></span>
-<span id="cb9-2"><a href="#cb9-2"></a>integrated_obj &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(output_dir, <span class="st">&#39;integrated/seurat_obj_VFACS.rds&#39;</span>))</span>
-<span id="cb9-3"><a href="#cb9-3"></a></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">DimPlot</span>(integrated_obj, <span class="dt">group.by =</span> <span class="st">&#39;sample&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>integrated_obj &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(output_dir, <span class="st">&#39;integrated/seurat_obj_VFACS.rds&#39;</span>))</span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">DimPlot</span>(integrated_obj, <span class="dt">group.by =</span> <span class="st">&#39;sample&#39;</span>)</span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">DimPlot</span>(integrated_obj, <span class="dt">group.by =</span> <span class="st">&#39;active_clusters&#39;</span>)</span></code></pre></div>
 <p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">DimPlot</span>(integrated_obj, <span class="dt">group.by =</span> <span class="st">&#39;active_clusters&#39;</span>)</span></code></pre></div>
-<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-11-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 </div>
 

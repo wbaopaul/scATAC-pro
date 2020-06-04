@@ -429,7 +429,7 @@ div.tocify {
   <a href="Downstream_in_R.html">Original Downstream Analysis</a>
 </li>
 <li>
-  <a href="Redo_Downstream_in_R.html">Redo Downstream Analysis</a>
+  <a href="Redo_Downstream_in_R.html">Customize Downstream Analysis</a>
 </li>
 <li>
   <a href="about.html">About</a>
@@ -453,7 +453,7 @@ div.tocify {
 
 <div id="introduction" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
-<p>scATAC-pro generates results in plain texts, tables and .rds objects. This tutorial shows how some modules can be re-run using different options or parameters. We will use 10x PBMC 10x data as in the manuscript, except for the integrate module, where data from another study was used for illustration purpose.</p>
+<p>scATAC-pro generates results in plain texts, tables and .rds objects. This tutorial shows how some modules can be re-run using different options or parameters. We will use 10x PBMC 10x data as in the manuscript, except for the integrate module, where data from another study was used for illustration purpose. Download <a href="https://chopri.box.com/s/cuf17lojtuvqcvfp3kujlranbbt8x6j9">pbmc10x_scATACpro_output</a> data to reproduce this tutorial.</p>
 <div id="set-up-parameters-scatac-pro-output-dir-and-source-raw-codes" class="section level2" number="1.1">
 <h2 number="1.1"><span class="header-section-number">1.1</span> Set up parameters, scATAC-pro output dir and source raw codes</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(data.table)</span>
@@ -463,7 +463,7 @@ div.tocify {
 <span id="cb1-5"><a href="#cb1-5"></a></span>
 <span id="cb1-6"><a href="#cb1-6"></a>PEAK_CALLER =<span class="st"> &#39;COMBINED&#39;</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a>CELL_CALLER =<span class="st"> &#39;FILTER&#39;</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a>output_dir =<span class="st"> &#39;/mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/output/&#39;</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>output_dir =<span class="st"> &#39;pbmc10x_scATACpro_output/&#39;</span></span>
 <span id="cb1-9"><a href="#cb1-9"></a>down_dir =<span class="st"> </span><span class="kw">paste0</span>(output_dir, <span class="st">&#39;downstream_analysis/&#39;</span>, PEAK_CALLER, <span class="st">&#39;/&#39;</span>, </span>
 <span id="cb1-10"><a href="#cb1-10"></a>                  CELL_CALLER, <span class="st">&#39;/&#39;</span>)</span>
 <span id="cb1-11"><a href="#cb1-11"></a>devtools<span class="op">::</span><span class="kw">source_url</span>(<span class="st">&quot;https://github.com/wbaopaul/scATAC-pro/blob/master/scripts/src/dsAnalysis_utilities.R?raw=TRUE&quot;</span>)</span></code></pre></div>
@@ -505,7 +505,7 @@ div.tocify {
 <span id="cb3-9"><a href="#cb3-9"></a><span class="co">## Running Louvain algorithm...</span></span>
 <span id="cb3-10"><a href="#cb3-10"></a><span class="co">## Maximum modularity in 10 random starts: 0.9719</span></span>
 <span id="cb3-11"><a href="#cb3-11"></a><span class="co">## Number of communities: 8</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a><span class="co">## Elapsed time: 1 seconds</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co">## Elapsed time: 0 seconds</span></span>
 <span id="cb3-13"><a href="#cb3-13"></a><span class="co">## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
 <span id="cb3-14"><a href="#cb3-14"></a><span class="co">## </span></span>
 <span id="cb3-15"><a href="#cb3-15"></a><span class="co">## Number of nodes: 6783</span></span>
@@ -514,7 +514,7 @@ div.tocify {
 <span id="cb3-18"><a href="#cb3-18"></a><span class="co">## Running Louvain algorithm...</span></span>
 <span id="cb3-19"><a href="#cb3-19"></a><span class="co">## Maximum modularity in 10 random starts: 0.8580</span></span>
 <span id="cb3-20"><a href="#cb3-20"></a><span class="co">## Number of communities: 18</span></span>
-<span id="cb3-21"><a href="#cb3-21"></a><span class="co">## Elapsed time: 1 seconds</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="co">## Elapsed time: 0 seconds</span></span>
 <span id="cb3-22"><a href="#cb3-22"></a>seurat_obj &lt;-<span class="st"> </span><span class="kw">FindClusters</span>(seurat_obj, <span class="dt">resolution =</span> resl)</span>
 <span id="cb3-23"><a href="#cb3-23"></a><span class="co">## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
 <span id="cb3-24"><a href="#cb3-24"></a><span class="co">## </span></span>
@@ -524,7 +524,7 @@ div.tocify {
 <span id="cb3-28"><a href="#cb3-28"></a><span class="co">## Running Louvain algorithm...</span></span>
 <span id="cb3-29"><a href="#cb3-29"></a><span class="co">## Maximum modularity in 10 random starts: 0.9719</span></span>
 <span id="cb3-30"><a href="#cb3-30"></a><span class="co">## Number of communities: 8</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a><span class="co">## Elapsed time: 1 seconds</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="co">## Elapsed time: 0 seconds</span></span>
 <span id="cb3-32"><a href="#cb3-32"></a>seurat_obj<span class="op">$</span>active_clusters =<span class="st"> </span>seurat_obj<span class="op">$</span>seurat_clusters</span>
 <span id="cb3-33"><a href="#cb3-33"></a><span class="kw">DimPlot</span>(seurat_obj)</span></code></pre></div>
 <p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
@@ -532,22 +532,24 @@ div.tocify {
 <div id="reclustering-using-different-methods" class="section level3" number="2.1.2">
 <h3 number="2.1.2"><span class="header-section-number">2.1.2</span> Reclustering using different methods</h3>
 <p>You can recluster the data by different methods, such as kmeans ( <em>generalCluster</em> function), cisTopic (<em>run_cisTopic</em>), scABC (<em>run_scABC</em>), SCRAT (<em>run_scrat</em>) and chromVAR (<em>run_chromVAR</em>).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">## further filter matrix</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>mtx &lt;-<span class="st"> </span><span class="kw">filterMat</span>(mtx, <span class="dt">minFrac_in_cell =</span> <span class="fl">0.01</span>, <span class="dt">min_depth =</span> <span class="dv">1000</span>, <span class="dt">max_depth =</span> <span class="dv">50000</span>)</span>
-<span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co">## create a new seurat obj for visualize and other analysis</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">runSeurat_Atac</span>(mtx, <span class="dt">npc =</span> <span class="dv">20</span>, <span class="dt">norm_by =</span> <span class="st">&#39;tf-idf&#39;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6"></a>                   <span class="dt">top_variable_features =</span> <span class="dv">5000</span>, <span class="dt">reg.var =</span> <span class="st">&#39;nCount_ATAC&#39;</span>)</span>
-<span id="cb4-7"><a href="#cb4-7"></a></span>
-<span id="cb4-8"><a href="#cb4-8"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">RunUMAP</span>(seurat_obj.new, <span class="dt">dims =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>)</span></code></pre></div>
-<div id="scrat" class="section level4" number="2.1.2.1">
-<h4 number="2.1.2.1"><span class="header-section-number">2.1.2.1</span> SCRAT</h4>
+<div id="further-filter-matrix" class="section level4" number="2.1.2.1">
+<h4 number="2.1.2.1"><span class="header-section-number">2.1.2.1</span> Further filter matrix</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mtx &lt;-<span class="st"> </span><span class="kw">filterMat</span>(mtx, <span class="dt">minFrac_in_cell =</span> <span class="fl">0.01</span>, <span class="dt">min_depth =</span> <span class="dv">1000</span>, <span class="dt">max_depth =</span> <span class="dv">50000</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">## create a new seurat obj for visualize and other analysis</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">runSeurat_Atac</span>(mtx, <span class="dt">npc =</span> <span class="dv">20</span>, <span class="dt">norm_by =</span> <span class="st">&#39;tf-idf&#39;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5"></a>                   <span class="dt">top_variable_features =</span> <span class="dv">5000</span>, <span class="dt">reg.var =</span> <span class="st">&#39;nCount_ATAC&#39;</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">RunUMAP</span>(seurat_obj.new, <span class="dt">dims =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>)</span></code></pre></div>
+</div>
+<div id="scrat" class="section level4" number="2.1.2.2">
+<h4 number="2.1.2.2"><span class="header-section-number">2.1.2.2</span> SCRAT</h4>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>cl.labels &lt;-<span class="st"> </span><span class="kw">run_scrat</span>(mtx, <span class="dt">reduction =</span> <span class="st">&#39;pca&#39;</span>, <span class="dt">max_pc =</span> <span class="dv">20</span>, <span class="dt">k =</span> <span class="dv">8</span>)</span>
 <span id="cb5-2"><a href="#cb5-2"></a>seurat_obj.new<span class="op">$</span>active_clusters =<span class="st"> </span>cl.labels</span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="kw">DimPlot</span>(seurat_obj.new, <span class="dt">group.by =</span> <span class="st">&#39;active_clusters&#39;</span>)</span></code></pre></div>
 </div>
-<div id="cistopic" class="section level4" number="2.1.2.2">
-<h4 number="2.1.2.2"><span class="header-section-number">2.1.2.2</span> cisTopic</h4>
+<div id="cistopic" class="section level4" number="2.1.2.3">
+<h4 number="2.1.2.3"><span class="header-section-number">2.1.2.3</span> cisTopic</h4>
 <p>This method will take a while.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>cisTopic.obj &lt;-<span class="st"> </span><span class="kw">run_cisTopic</span>(mtx, <span class="dt">nCores =</span> <span class="dv">5</span>, <span class="dt">topic =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">100</span>),</span>
 <span id="cb6-2"><a href="#cb6-2"></a>                          <span class="dt">frac_in_cell =</span> <span class="fl">0.05</span>)</span>
@@ -570,13 +572,13 @@ div.tocify {
 <span id="cb6-19"><a href="#cb6-19"></a>seurat_obj.new<span class="op">$</span>active_clusters =<span class="st"> </span>seurat_obj.new<span class="op">$</span>seurat_cluster</span>
 <span id="cb6-20"><a href="#cb6-20"></a><span class="kw">DimPlot</span>(seurat_obj.new)</span></code></pre></div>
 </div>
-<div id="kmeans-on-pcs" class="section level4" number="2.1.2.3">
-<h4 number="2.1.2.3"><span class="header-section-number">2.1.2.3</span> kmeans (on PCs)</h4>
+<div id="kmeans-on-pcs" class="section level4" number="2.1.2.4">
+<h4 number="2.1.2.4"><span class="header-section-number">2.1.2.4</span> kmeans (on PCs)</h4>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>cl.labels &lt;-<span class="st"> </span><span class="kw">generalCluster</span>(seurat_obj.new<span class="op">@</span>reductions<span class="op">$</span>pca<span class="op">@</span>cell.embeddings,</span>
 <span id="cb7-2"><a href="#cb7-2"></a>                            <span class="dt">method =</span> <span class="st">&#39;kmeans&#39;</span>, <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
 </div>
-<div id="chromvar" class="section level4" number="2.1.2.4">
-<h4 number="2.1.2.4"><span class="header-section-number">2.1.2.4</span> chromVAR</h4>
+<div id="chromvar" class="section level4" number="2.1.2.5">
+<h4 number="2.1.2.5"><span class="header-section-number">2.1.2.5</span> chromVAR</h4>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">## if you have already run motif analysis, chromvar obj was saved and</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>chromVar.obj &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(down_dir, <span class="st">&#39;/chromVar_obj.rds&#39;</span>))</span>
 <span id="cb8-3"><a href="#cb8-3"></a></span>
@@ -584,19 +586,19 @@ div.tocify {
 <span id="cb8-5"><a href="#cb8-5"></a><span class="co">#chromVar.obj &lt;- run_chromVAR(mtx, genomeName = &#39;BSgenome.Hsapiens.UCSC.hg38&#39;, ncore = 4)</span></span>
 <span id="cb8-6"><a href="#cb8-6"></a></span>
 <span id="cb8-7"><a href="#cb8-7"></a>zscore =<span class="st"> </span>chromVar.obj<span class="op">@</span>assays<span class="op">@</span>data<span class="op">$</span>z</span>
-<span id="cb8-8"><a href="#cb8-8"></a>zscore =<span class="st"> </span>dev.score[, <span class="kw">colnames</span>(dev.score) <span class="op">%in%</span><span class="st"> </span><span class="kw">colnames</span>(mtx)]</span>
+<span id="cb8-8"><a href="#cb8-8"></a>zscore =<span class="st"> </span>zscore[, <span class="kw">colnames</span>(zscore) <span class="op">%in%</span><span class="st"> </span><span class="kw">colnames</span>(mtx)]</span>
 <span id="cb8-9"><a href="#cb8-9"></a></span>
 <span id="cb8-10"><a href="#cb8-10"></a>pca_coords =<span class="st"> </span><span class="kw">doDimReduction4mat</span>(zscore, <span class="dt">max_pc =</span> <span class="dv">20</span>)[[<span class="dv">1</span>]]</span>
 <span id="cb8-11"><a href="#cb8-11"></a>  </span>
 <span id="cb8-12"><a href="#cb8-12"></a>cl.labels =<span class="st"> </span><span class="kw">cutree</span>(<span class="kw">hclust</span>(<span class="kw">dist</span>(pca_coords)), <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
 </div>
-<div id="scabc" class="section level4" number="2.1.2.5">
-<h4 number="2.1.2.5"><span class="header-section-number">2.1.2.5</span> scABC</h4>
+<div id="scabc" class="section level4" number="2.1.2.6">
+<h4 number="2.1.2.6"><span class="header-section-number">2.1.2.6</span> scABC</h4>
 <p>This method is also pretty slow.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>cl.labels &lt;-<span class="st"> </span><span class="kw">run_scABC</span>(mtx, <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
 </div>
-<div id="lsi" class="section level4" number="2.1.2.6">
-<h4 number="2.1.2.6"><span class="header-section-number">2.1.2.6</span> LSI</h4>
+<div id="lsi" class="section level4" number="2.1.2.7">
+<h4 number="2.1.2.7"><span class="header-section-number">2.1.2.7</span> LSI</h4>
 <p>This is the original LSI method (the first PC was discarded), and you can specify different number of PCs and filter peaks</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>cl.labels &lt;-<span class="st"> </span><span class="kw">run_LSI</span>(mtx, <span class="dt">ncell.peak =</span> <span class="dv">150</span>, <span class="dt">max_pc =</span> <span class="dv">10</span>, <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>seurat_obj.new<span class="op">$</span>active_clusters =<span class="st"> </span>cl.labels</span>
@@ -608,6 +610,31 @@ div.tocify {
 </div>
 <div id="motif-analysis" class="section level2" number="2.2">
 <h2 number="2.2"><span class="header-section-number">2.2</span> Motif Analysis</h2>
+<p>Compare TF enrichment among clusters. You can rerun chromVar or using original chromVar object (saved in .rds) and using updated clustering results.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">## if you have already run motif analysis, chromvar obj was saved and</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>chromVar.obj &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(down_dir, <span class="st">&#39;/chromVar_obj.rds&#39;</span>))</span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co">## otherwise to re-run chromvar</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="co">#chromVar.obj &lt;- run_chromVAR(mtx, genomeName = &#39;BSgenome.Hsapiens.UCSC.hg38&#39;, ncore = 4)</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a></span>
+<span id="cb12-7"><a href="#cb12-7"></a>zscore =<span class="st"> </span>chromVar.obj<span class="op">@</span>assays<span class="op">@</span>data<span class="op">$</span>z</span>
+<span id="cb12-8"><a href="#cb12-8"></a>dscore =<span class="st"> </span>chromVar.obj<span class="op">@</span>assays<span class="op">@</span>data<span class="op">$</span>deviations</span>
+<span id="cb12-9"><a href="#cb12-9"></a>dscore =<span class="st"> </span>dscore[, <span class="kw">colnames</span>(dscore) <span class="op">%in%</span><span class="st"> </span><span class="kw">colnames</span>(mtx)]</span>
+<span id="cb12-10"><a href="#cb12-10"></a>zscore =<span class="st"> </span>zscore[, <span class="kw">colnames</span>(zscore) <span class="op">%in%</span><span class="st"> </span><span class="kw">colnames</span>(mtx)]</span>
+<span id="cb12-11"><a href="#cb12-11"></a></span>
+<span id="cb12-12"><a href="#cb12-12"></a>bc_clusters =<span class="st"> </span><span class="kw">data.table</span>(<span class="st">&#39;barcode&#39;</span> =<span class="st"> </span><span class="kw">colnames</span>(mtx),</span>
+<span id="cb12-13"><a href="#cb12-13"></a>                         <span class="st">&#39;cluster&#39;</span> =<span class="st"> </span>seurat_obj.new<span class="op">$</span>active_clusters)</span>
+<span id="cb12-14"><a href="#cb12-14"></a>tf.diff &lt;-<span class="st"> </span><span class="kw">runDiffMotifEnrich</span>(dscore, bc_clusters, <span class="dt">topn =</span> <span class="dv">10</span>,</span>
+<span id="cb12-15"><a href="#cb12-15"></a>                              <span class="dt">min_frac_per_cluster =</span> <span class="fl">0.1</span>, <span class="dt">fdr =</span> <span class="fl">0.01</span>,</span>
+<span id="cb12-16"><a href="#cb12-16"></a>                              <span class="dt">max_cell_per_clust =</span> <span class="dv">300</span>)</span>
+<span id="cb12-17"><a href="#cb12-17"></a>sele.zscores =<span class="st"> </span>zscores[tf.diff<span class="op">$</span>feature, ]</span>
+<span id="cb12-18"><a href="#cb12-18"></a></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="co">## change rowname of zscores (tf name) to be readable</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a>sele.zscores &lt;-<span class="st"> </span><span class="kw">readable_tf</span>(sele.zscores, <span class="st">&#39;hg38&#39;</span>)</span>
+<span id="cb12-21"><a href="#cb12-21"></a>sele.zscores =<span class="st"> </span>sele.zscores[<span class="op">!</span><span class="kw">duplicated</span>(sele.zscores), ]</span>
+<span id="cb12-22"><a href="#cb12-22"></a></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="kw">plot_enrich_tf</span>(sele.zscores, bc_clusters)</span></code></pre></div>
+<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-12-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 </div>
 

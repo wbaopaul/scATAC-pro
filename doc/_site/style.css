@@ -14,7 +14,9 @@ pre {
   overflow-y: auto;
   max-width: 1200px;
   max-height: 1200px;
-  padding: 30pt;
+  padding: 10pt;
+  border-left: 6px solid #1ABC9C;
+  background-color: white;
 }
 
 
