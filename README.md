@@ -64,8 +64,8 @@ FAQs
 - [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to access QC results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessQCInR.html)
-- [How to access or redo downstream analysis in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
+- [How to access QC results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/QC_in_R.html)
+- [How to access or redo downstream analysis in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/Downstream_in_R.html)
 
 
 Dependencies
@@ -95,7 +95,9 @@ Quick start guide
 
 -   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format. Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:
 
-- **NOTE**: some mapping index and genome annotation files can be downloaded [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) 
+- **NOTE**: some mapping index and genome annotation files can be downloaded [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
+
+- To access QC metrics and perform downstream analysis in R, see [scATAC-pro tutorial in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/index.html) 
 
 <!-- -->
 
@@ -441,7 +443,7 @@ scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 ---------------------------------------
 
 
-[Downstream Analysis in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
+[Downstream Analysis in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/Downstream_in_R.html)
 --------------------------------------
 
 Citation
