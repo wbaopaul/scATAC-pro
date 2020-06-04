@@ -48,7 +48,7 @@ Installation
      
 Updates
 ------------
-- Now provide [scATAC-pro tutorial in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/index.html) for access QC metrics and perform downstream analysis
+- Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.1.2
 - May, 2020
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
@@ -65,8 +65,8 @@ FAQs
 - [How to proceed using 10x cellranger-atac output?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
-- [How to access QC results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/QC_in_R.html)
-- [How to access or redo downstream analysis in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/Downstream_in_R.html)
+- [How to access QC results in R?](https://scatacpro-in-r.netlify.app/qc_in_r)
+- [How to access or redo downstream analysis in R?](https://scatacpro-in-r.netlify.app/downstream_in_r)
 
 
 Dependencies
@@ -440,11 +440,11 @@ scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 
 
 
-[Access QC in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/QC_in_R.html)
+[Access QC in R](https://scatacpro-in-r.netlify.app/qc_in_r)
 ---------------------------------------
 
 
-[Downstream Analysis in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/Downstream_in_R.html)
+[Downstream Analysis in R](https://scatacpro-in-r.netlify.app/downstream_in_r)
 --------------------------------------
 
 Citation
