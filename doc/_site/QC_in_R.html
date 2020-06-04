@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Access scATAC-pro QC results in R</title>
+
+<script src="site_libs/header-attrs-2.1/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/darkly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; } /* Alert */
+code span.an { color: #008000; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #0000ff; } /* ControlFlow */
+code span.ch { color: #008080; } /* Char */
+code span.cn { } /* Constant */
+code span.co { color: #008000; } /* Comment */
+code span.cv { color: #008000; } /* CommentVar */
+code span.do { color: #008000; } /* Documentation */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.im { } /* Import */
+code span.in { color: #008000; } /* Information */
+code span.kw { color: #0000ff; } /* Keyword */
+code span.op { } /* Operator */
+code span.ot { color: #ff4000; } /* Other */
+code span.pp { color: #ff4000; } /* Preprocessor */
+code span.sc { color: #008080; } /* SpecialChar */
+code span.ss { color: #008080; } /* SpecialString */
+code span.st { color: #008080; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #008080; } /* VerbatimString */
+code span.wa { color: #008000; font-weight: bold; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scATAC-pro</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="QC_in_R.html">Processing QC</a>
+</li>
+<li>
+  <a href="Downstream_in_R.html">Original Downstream Analysis</a>
+</li>
+<li>
+  <a href="Redo_Downstream_in_R.html">Alternative Downstream Analysis</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Access scATAC-pro QC results in R</h1>
+
+</div>
+
+
+<style>
+pre {
+  margin-bottom: +20px;
+  margin-top: +20px;
+}
+</style>
+<style type="text/css">
+pre {
+  overflow-x: auto;
+}
+</style>
+<style type="text/css">
+code.r{ /* Code block */
+    font-size: 12px;
+}
+</style>
+<div id="introduction" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>scATAC-pro generates raw QC metrics in plain text format. This tutorial will tell users how to replot or extract those metrics</p>
+</div>
+<div id="access-qc-results" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> Access QC results</h1>
+<div id="set-up-parameters-and-read-qc-outputs" class="section level2" number="2.1">
+<h2 number="2.1"><span class="header-section-number">2.1</span> Set up parameters, and read qc outputs</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(data.table)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(magrittr)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(kableExtra)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(RColorBrewer)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">library</span>(cicero)</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">library</span>(viridis)</span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a>PEAK_CALLER =<span class="st"> &#39;COMBINED&#39;</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>CELL_CALLER =<span class="st"> &#39;FILTER&#39;</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>output_dir =<span class="st"> &#39;/mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/output/&#39;</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>qc_dir =<span class="st"> </span><span class="kw">paste0</span>(output_dir, <span class="st">&#39;summary/&#39;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a>configure_user_file =<span class="st"> &#39;/mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/configure_user.txt&#39;</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a>read_conf_file &lt;-<span class="st"> </span><span class="cf">function</span>(configure_user_file){</span>
+<span id="cb1-17"><a href="#cb1-17"></a>  </span>
+<span id="cb1-18"><a href="#cb1-18"></a>  <span class="kw">system</span>(<span class="kw">paste0</span>(<span class="st">&#39;grep = &#39;</span>, configure_user_file, <span class="st">&quot; | grep -v ^# | awk -F= &#39;{print $1}&#39; | awk &#39;{$1=$1;print}&#39; &gt;  /tmp/vrs.txt&quot;</span>))</span>
+<span id="cb1-19"><a href="#cb1-19"></a>  </span>
+<span id="cb1-20"><a href="#cb1-20"></a>  <span class="kw">system</span>(<span class="kw">paste0</span>(<span class="st">&#39;grep = &#39;</span>, configure_user_file, <span class="st">&quot; | grep -v ^# | awk -F= &#39;{print $2}&#39; | awk -F# &#39;{print $1}&#39; | awk &#39;{$1=$1;print}&#39; &gt;  /tmp/vls.txt&quot;</span>))</span>
+<span id="cb1-21"><a href="#cb1-21"></a>  </span>
+<span id="cb1-22"><a href="#cb1-22"></a>  vrs =<span class="st"> </span><span class="kw">readLines</span>(<span class="st">&#39;/tmp/vrs.txt&#39;</span>)</span>
+<span id="cb1-23"><a href="#cb1-23"></a>  vls =<span class="st"> </span><span class="kw">readLines</span>(<span class="st">&#39;/tmp/vls.txt&#39;</span>)</span>
+<span id="cb1-24"><a href="#cb1-24"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(vrs)){</span>
+<span id="cb1-25"><a href="#cb1-25"></a>    <span class="kw">assign</span>(vrs[i], vls[i], <span class="dt">envir =</span> .GlobalEnv)</span>
+<span id="cb1-26"><a href="#cb1-26"></a>  }</span>
+<span id="cb1-27"><a href="#cb1-27"></a>}</span>
+<span id="cb1-28"><a href="#cb1-28"></a></span>
+<span id="cb1-29"><a href="#cb1-29"></a><span class="co">## read configure_users.txt file</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a><span class="kw">read_conf_file</span>(configure_user_file)</span>
+<span id="cb1-31"><a href="#cb1-31"></a></span>
+<span id="cb1-32"><a href="#cb1-32"></a><span class="co">## read mapping stats</span></span>
+<span id="cb1-33"><a href="#cb1-33"></a>mapping_qc_file =<span class="st"> </span><span class="kw">paste0</span>(qc_dir, OUTPUT_PREFIX,  <span class="st">&#39;.MappingStats&#39;</span>)</span>
+<span id="cb1-34"><a href="#cb1-34"></a>mapping_qc =<span class="st"> </span><span class="kw">fread</span>(mapping_qc_file, <span class="dt">header =</span> F)</span>
+<span id="cb1-35"><a href="#cb1-35"></a></span>
+<span id="cb1-36"><a href="#cb1-36"></a><span class="co">## read fragments.txt file</span></span>
+<span id="cb1-37"><a href="#cb1-37"></a>fragments_file =<span class="st"> </span><span class="kw">paste0</span>(qc_dir, OUTPUT_PREFIX,  <span class="st">&#39;.fragments.txt&#39;</span>)</span>
+<span id="cb1-38"><a href="#cb1-38"></a>frags =<span class="st"> </span><span class="kw">fread</span>(fragments_file)</span>
+<span id="cb1-39"><a href="#cb1-39"></a><span class="kw">names</span>(frags) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;chr&#39;</span>, <span class="st">&#39;start&#39;</span>, <span class="st">&#39;end&#39;</span>, <span class="st">&#39;bc&#39;</span>, <span class="st">&#39;ndup&#39;</span>)</span>
+<span id="cb1-40"><a href="#cb1-40"></a></span>
+<span id="cb1-41"><a href="#cb1-41"></a><span class="co">## read mapping stats for cell barcodes</span></span>
+<span id="cb1-42"><a href="#cb1-42"></a>cell_mapping_qc_file =<span class="st"> </span><span class="kw">paste0</span>(qc_dir, <span class="st">&#39;cell_barcodes.MappingStats&#39;</span>)</span>
+<span id="cb1-43"><a href="#cb1-43"></a>cell_mapping_qc =<span class="st"> </span><span class="kw">fread</span>(cell_mapping_qc_file, <span class="dt">header =</span> F)</span>
+<span id="cb1-44"><a href="#cb1-44"></a></span>
+<span id="cb1-45"><a href="#cb1-45"></a></span>
+<span id="cb1-46"><a href="#cb1-46"></a><span class="co">## read qc per barcode file</span></span>
+<span id="cb1-47"><a href="#cb1-47"></a>bc_stat_file =<span class="st"> </span><span class="kw">paste0</span>(qc_dir, OUTPUT_PREFIX, <span class="st">&#39;.&#39;</span>, PEAK_CALLER, <span class="st">&#39;.qc_per_barcode.txt&#39;</span>)</span>
+<span id="cb1-48"><a href="#cb1-48"></a>bc_stat =<span class="st"> </span><span class="kw">fread</span>(bc_stat_file)</span>
+<span id="cb1-49"><a href="#cb1-49"></a></span>
+<span id="cb1-50"><a href="#cb1-50"></a><span class="co">## read cell barcodes</span></span>
+<span id="cb1-51"><a href="#cb1-51"></a>cell_barcodes =<span class="st"> </span><span class="kw">fread</span>(<span class="kw">paste0</span>(output_dir, <span class="st">&#39;/filtered_matrix/&#39;</span>, PEAK_CALLER, <span class="st">&#39;/&#39;</span>, CELL_CALLER, <span class="st">&#39;/barcodes.txt&#39;</span>), <span class="dt">header =</span> F)<span class="op">$</span>V1</span></code></pre></div>
+</div>
+<div id="access-mapping-qc-for-all-aggregated-data-including-non-cell-barcodes" class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Access mapping QC for all aggregated data (including non-cell barcodes)</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2"></a>lib_complx =<span class="st"> </span><span class="kw">nrow</span>(frags)<span class="op">/</span><span class="kw">sum</span>(frags<span class="op">$</span>ndup)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>lib_complx =<span class="st"> </span><span class="kw">paste0</span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">round</span>(lib_complx, <span class="dv">3</span>), <span class="st">&#39;%&#39;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a>mapping_qc<span class="op">$</span>frac =<span class="st"> </span><span class="kw">round</span>(mapping_qc<span class="op">$</span>V2<span class="op">/</span>mapping_qc<span class="op">$</span>V2[<span class="dv">1</span>], <span class="dv">3</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>mapping_qc<span class="op">$</span>frac =<span class="st"> </span><span class="kw">paste0</span>(<span class="dv">100</span><span class="op">*</span>mapping_qc<span class="op">$</span>frac, <span class="st">&#39;%&#39;</span>)</span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>mapping_qc =<span class="st"> </span><span class="kw">rbind</span>(mapping_qc, <span class="kw">data.frame</span>(<span class="dt">V1 =</span><span class="st">&#39;Library Complexity (nonredudant fraction)&#39;</span>, <span class="dt">V2 =</span> <span class="st">&#39;&#39;</span>, <span class="dt">frac =</span> lib_complx))</span>
+<span id="cb2-9"><a href="#cb2-9"></a></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="kw">kable</span>(mapping_qc, <span class="dt">col.names =</span> <span class="ot">NULL</span>, <span class="dt">format =</span> <span class="st">&#39;html&#39;</span>, <span class="dt">caption =</span> <span class="kw">paste</span>(<span class="st">&#39;Sample:&#39;</span>, OUTPUT_PREFIX)) <span class="op">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="st">  </span><span class="kw">kable_styling</span>(<span class="st">&quot;striped&quot;</span>, <span class="dt">full_width =</span> F, <span class="dt">position =</span> <span class="st">&#39;left&#39;</span>, <span class="dt">font_size =</span> <span class="dv">15</span>)</span></code></pre></div>
+<table class="table table-striped" style="font-size: 15px; width: auto !important; ">
+<caption style="font-size: initial !important;">
+Sample: pbmc10k
+</caption>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Total_Pairs
+</td>
+<td style="text-align:left;">
+234252877
+</td>
+<td style="text-align:left;">
+100%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Pairs_Mapped
+</td>
+<td style="text-align:left;">
+232469423
+</td>
+<td style="text-align:left;">
+99.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Uniq_Mapped
+</td>
+<td style="text-align:left;">
+220128641
+</td>
+<td style="text-align:left;">
+94%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Mito_Mapped
+</td>
+<td style="text-align:left;">
+498673
+</td>
+<td style="text-align:left;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Dups
+</td>
+<td style="text-align:left;">
+98905770
+</td>
+<td style="text-align:left;">
+42.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Pairs_MAPQ30
+</td>
+<td style="text-align:left;">
+215331878
+</td>
+<td style="text-align:left;">
+91.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Mito_MAPQ30
+</td>
+<td style="text-align:left;">
+397362
+</td>
+<td style="text-align:left;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Dups_MAPQ30
+</td>
+<td style="text-align:left;">
+94300385
+</td>
+<td style="text-align:left;">
+40.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Library Complexity (nonredudant fraction)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+59.8%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="access-qc-for-cell-barcodes" class="section level2" number="2.3">
+<h2 number="2.3"><span class="header-section-number">2.3</span> Access QC for cell barcodes</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>qc_sele =<span class="st"> </span>bc_stat[bc <span class="op">%in%</span><span class="st"> </span>cell_barcodes, ]</span>
+<span id="cb3-2"><a href="#cb3-2"></a>qc_nonsele =<span class="st"> </span>bc_stat[<span class="op">!</span>bc <span class="op">%in%</span><span class="st"> </span>cell_barcodes, ]</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>ncells =<span class="st"> </span><span class="kw">length</span>(cell_barcodes)</span>
+<span id="cb3-5"><a href="#cb3-5"></a>mapq30.frac.in.cell =<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">round</span>(<span class="kw">sum</span>(frags[bc <span class="op">%in%</span><span class="st"> </span>cell_barcodes]<span class="op">$</span>ndup)<span class="op">/</span><span class="kw">sum</span>(frags<span class="op">$</span>ndup), <span class="dv">3</span>) <span class="op">*</span><span class="st"> </span><span class="dv">100</span>, <span class="st">&#39;%&#39;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>frac.in.cell =<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">round</span>(cell_mapping_qc<span class="op">$</span>V2[<span class="dv">2</span>]<span class="op">/</span><span class="kw">as.integer</span>(<span class="kw">as.character</span>(mapping_qc<span class="op">$</span>V2[<span class="dv">2</span>])), <span class="dv">3</span>) <span class="op">*</span><span class="st"> </span><span class="dv">100</span>, <span class="st">&#39;%&#39;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a>med.frag.per.cell =<span class="st"> </span><span class="kw">round</span>(<span class="kw">median</span>(qc_sele<span class="op">$</span>total_frags))</span>
+<span id="cb3-10"><a href="#cb3-10"></a>frac.uniq =<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">round</span>(<span class="kw">nrow</span>(frags[bc <span class="op">%in%</span><span class="st"> </span>cell_barcodes])<span class="op">/</span><span class="kw">sum</span>(frags[bc <span class="op">%in%</span><span class="st"> </span>cell_barcodes]<span class="op">$</span>ndup), <span class="dv">3</span>) <span class="op">*</span><span class="st"> </span><span class="dv">100</span>, <span class="st">&#39;%&#39;</span>)</span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a>cell.table =<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">c</span>(CELL_CALLER,  <span class="kw">paste0</span>(ncells),  <span class="kw">paste0</span>(med.frag.per.cell), frac.in.cell, mapq30.frac.in.cell)) </span>
+<span id="cb3-13"><a href="#cb3-13"></a></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="kw">rownames</span>(cell.table) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Cell called by&#39;</span>, <span class="st">&#39;Estimated # of cells&#39;</span>,  <span class="st">&#39;Median fragments per cell&#39;</span>, <span class="st">&#39;Fraction of Mapped reads in cells&#39;</span>, <span class="st">&#39;Fraction of MAPQ30 in cells&#39;</span>)  </span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="kw">kable</span>(cell.table, <span class="dt">row.names =</span> T, <span class="dt">col.names =</span> <span class="ot">NULL</span>, <span class="dt">format =</span> <span class="st">&#39;html&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="st">  </span><span class="kw">kable_styling</span>(<span class="st">&quot;striped&quot;</span>, <span class="dt">full_width =</span> F, <span class="dt">position =</span> <span class="st">&#39;left&#39;</span>, <span class="dt">font_size =</span> <span class="dv">15</span>)</span></code></pre></div>
+<table class="table table-striped" style="font-size: 15px; width: auto !important; ">
+<tbody>
+<tr>
+<td style="text-align:left;">
+Cell called by
+</td>
+<td style="text-align:left;">
+FILTER
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Estimated # of cells
+</td>
+<td style="text-align:left;">
+6783
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Median fragments per cell
+</td>
+<td style="text-align:left;">
+11537
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fraction of Mapped reads in cells
+</td>
+<td style="text-align:left;">
+65.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fraction of MAPQ30 in cells
+</td>
+<td style="text-align:left;">
+65.5%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="mapping-qc-for-aggregated-cell-barcodes" class="section level2" number="2.4">
+<h2 number="2.4"><span class="header-section-number">2.4</span> Mapping QC for aggregated cell barcodes</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="cf">if</span>(CELL_MAP_QC){</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    lib_complx =<span class="st"> </span>frac.uniq</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a>    cell_mapping_qc<span class="op">$</span>frac =<span class="st"> </span><span class="kw">round</span>(cell_mapping_qc<span class="op">$</span>V2<span class="op">/</span>cell_mapping_qc<span class="op">$</span>V2[<span class="dv">1</span>], <span class="dv">3</span>)</span>
+<span id="cb4-5"><a href="#cb4-5"></a>    cell_mapping_qc<span class="op">$</span>frac =<span class="st"> </span><span class="kw">paste0</span>(<span class="dv">100</span><span class="op">*</span>cell_mapping_qc<span class="op">$</span>frac, <span class="st">&#39;%&#39;</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    cell_mapping_qc =<span class="st"> </span><span class="kw">rbind</span>(cell_mapping_qc, <span class="kw">data.frame</span>(<span class="dt">V1 =</span><span class="st">&#39;Library Complexity (nonredudant fraction)&#39;</span>, <span class="dt">V2 =</span> <span class="st">&#39;&#39;</span>, <span class="dt">frac =</span> lib_complx))</span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a>    <span class="kw">kable</span>(cell_mapping_qc, <span class="dt">col.names =</span> <span class="ot">NULL</span>, <span class="dt">format =</span> <span class="st">&#39;html&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="st">      </span><span class="kw">kable_styling</span>(<span class="st">&quot;striped&quot;</span>, <span class="dt">full_width =</span> F, <span class="dt">position =</span> <span class="st">&#39;left&#39;</span>, <span class="dt">font_size =</span> <span class="dv">15</span>)</span>
+<span id="cb4-11"><a href="#cb4-11"></a>}</span></code></pre></div>
+<table class="table table-striped" style="font-size: 15px; width: auto !important; ">
+<tbody>
+<tr>
+<td style="text-align:left;">
+Total_Pairs
+</td>
+<td style="text-align:left;">
+152047101
+</td>
+<td style="text-align:left;">
+100%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Pairs_Mapped
+</td>
+<td style="text-align:left;">
+151349982
+</td>
+<td style="text-align:left;">
+99.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Uniq_Mapped
+</td>
+<td style="text-align:left;">
+145500980
+</td>
+<td style="text-align:left;">
+95.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Mito_Mapped
+</td>
+<td style="text-align:left;">
+236221
+</td>
+<td style="text-align:left;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Dups
+</td>
+<td style="text-align:left;">
+72415524
+</td>
+<td style="text-align:left;">
+47.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Pairs_MAPQ30
+</td>
+<td style="text-align:left;">
+143362255
+</td>
+<td style="text-align:left;">
+94.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Mito_MAPQ30
+</td>
+<td style="text-align:left;">
+189280
+</td>
+<td style="text-align:left;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total_Dups_MAPQ30
+</td>
+<td style="text-align:left;">
+69898188
+</td>
+<td style="text-align:left;">
+46%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Library Complexity (nonredudant fraction)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+55.2%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="access-qc-for-single-cells" class="section level2" number="2.5">
+<h2 number="2.5"><span class="header-section-number">2.5</span> Access QC for single cells</h2>
+<p>A few plots and metrics for single cells</p>
+<div id="total-fragments-vs-fraction-in-peaks" class="section level3" number="2.5.1">
+<h3 number="2.5.1"><span class="header-section-number">2.5.1</span> Total fragments VS fraction in peaks</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>bc_stat[, <span class="st">&#39;group&#39;</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">ifelse</span>(bc <span class="op">%in%</span><span class="st"> </span>cell_barcodes, <span class="st">&#39;cell&#39;</span>, <span class="st">&#39;non-cell&#39;</span>)]</span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">library</span>(grid)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>nsub_frags =<span class="st"> </span><span class="kw">min</span>(<span class="dv">15000</span>, <span class="kw">nrow</span>(bc_stat))  <span class="co">## downsample for scatter plot</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>bc_stat_down =<span class="st"> </span>bc_stat[<span class="kw">sort</span>(<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(bc_stat), nsub_frags)), ]</span>
+<span id="cb5-7"><a href="#cb5-7"></a>g &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> bc_stat_down, </span>
+<span id="cb5-8"><a href="#cb5-8"></a>            <span class="kw">aes</span>(<span class="dt">x =</span> total_frags, <span class="dt">y =</span> frac_peak, <span class="dt">col =</span> group)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_continuous</span>(<span class="dt">trans=</span><span class="st">&#39;log10&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="st">      </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&#39;none&#39;</span>, </span>
+<span id="cb5-11"><a href="#cb5-11"></a>            <span class="dt">legend.title=</span><span class="kw">element_blank</span>(),</span>
+<span id="cb5-12"><a href="#cb5-12"></a>            <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">15</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>),</span>
+<span id="cb5-13"><a href="#cb5-13"></a>            <span class="dt">axis.title =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">18</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>)) <span class="op">+</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&#39;Total #Unique Fragments&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&#39;Fraction in Peak&#39;</span>)</span>
+<span id="cb5-15"><a href="#cb5-15"></a></span>
+<span id="cb5-16"><a href="#cb5-16"></a>text1 &lt;-<span class="st"> </span><span class="kw">grobTree</span>(<span class="kw">textGrob</span>(<span class="st">&quot;Cell&quot;</span>, <span class="dt">x=</span><span class="fl">0.8</span>,  <span class="dt">y=</span><span class="fl">0.93</span>, <span class="dt">hjust=</span><span class="dv">0</span>,</span>
+<span id="cb5-17"><a href="#cb5-17"></a>  <span class="dt">gp=</span><span class="kw">gpar</span>(<span class="dt">col=</span><span class="st">&#39;#1F78B4&#39;</span>, <span class="dt">fontsize=</span><span class="dv">15</span>, <span class="dt">fontface =</span> <span class="st">&#39;bold&#39;</span>, <span class="dt">fontfamily =</span> <span class="st">&quot;Helvetica&quot;</span>)))</span>
+<span id="cb5-18"><a href="#cb5-18"></a>text2 &lt;-<span class="st"> </span><span class="kw">grobTree</span>(<span class="kw">textGrob</span>(<span class="st">&quot;Non-cell&quot;</span>, <span class="dt">x=</span><span class="fl">0.8</span>,  <span class="dt">y=</span><span class="fl">0.83</span>, <span class="dt">hjust=</span><span class="dv">0</span>,</span>
+<span id="cb5-19"><a href="#cb5-19"></a>  <span class="dt">gp=</span><span class="kw">gpar</span>(<span class="dt">col=</span><span class="st">&#39;#B2DF8A&#39;</span>, <span class="dt">fontsize=</span><span class="dv">15</span>, <span class="dt">fontface =</span> <span class="st">&#39;bold&#39;</span>, <span class="dt">fontfamily =</span> <span class="st">&quot;Helvetica&quot;</span>)))</span>
+<span id="cb5-20"><a href="#cb5-20"></a></span>
+<span id="cb5-21"><a href="#cb5-21"></a>g <span class="op">+</span><span class="st"> </span><span class="kw">annotation_custom</span>(text1) <span class="op">+</span><span class="st"> </span><span class="kw">annotation_custom</span>(text2)<span class="op">+</span></span>
+<span id="cb5-22"><a href="#cb5-22"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&#39;#1F78B4&#39;</span>, <span class="st">&#39;#B2DF8A&#39;</span>))</span></code></pre></div>
+<p><img src="QC_in_R_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="distribution-of-insert-size" class="section level3" number="2.5.2">
+<h3 number="2.5.2"><span class="header-section-number">2.5.2</span> Distribution of Insert Size</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>frags[, <span class="st">&#39;isize&#39;</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span>end <span class="op">-</span><span class="st"> </span>start]</span>
+<span id="cb6-2"><a href="#cb6-2"></a>frags =<span class="st"> </span>frags[<span class="kw">sort</span>(<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(frags), <span class="dv">1000000</span>)), ]</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">ggplot</span>(<span class="dt">data =</span> frags[isize <span class="op">&lt;</span><span class="st"> </span><span class="dv">800</span>], <span class="kw">aes</span>(<span class="dt">x =</span> isize)) <span class="op">+</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&#39;lightblue&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&#39;Insert Size&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&#39;Density&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.title=</span><span class="kw">element_blank</span>(), </span>
+<span id="cb6-6"><a href="#cb6-6"></a>                    <span class="dt">legend.background =</span> <span class="ot">NULL</span>, </span>
+<span id="cb6-7"><a href="#cb6-7"></a>                    <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">15</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>), </span>
+<span id="cb6-8"><a href="#cb6-8"></a>                    <span class="dt">axis.title =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">18</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>)) </span></code></pre></div>
+<p><img src="QC_in_R_files/figure-html/unnamed-chunk-7-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="tss-enrichment-score-profile" class="section level3" number="2.5.3">
+<h3 number="2.5.3"><span class="header-section-number">2.5.3</span> TSS enrichment score profile</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">## read tss enrichement matrix</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>tss_escore_file =<span class="st"> </span><span class="kw">paste0</span>(output_dir, <span class="st">&#39;/signal/cell_barcodes.MAPQ30.aggregated.mtx.gz&#39;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(tss_escore_file)) tss_escore_file =<span class="st"> </span><span class="kw">paste0</span>(output_dir, <span class="st">&#39;/signal/&#39;</span>, OUTPUT_PREFIX, <span class="st">&#39;.aggregated.mtx.gz&#39;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a>set.cols =<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="dt">n=</span><span class="dv">5</span>, <span class="dt">name =</span> <span class="st">&#39;Dark2&#39;</span>)</span>
+<span id="cb7-6"><a href="#cb7-6"></a>tss.mat =<span class="st"> </span><span class="kw">fread</span>(tss_escore_file)</span>
+<span id="cb7-7"><a href="#cb7-7"></a>tss.mat =<span class="st"> </span>tss.mat[, <span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>)]</span>
+<span id="cb7-8"><a href="#cb7-8"></a>tss.mat[<span class="kw">is.na</span>(tss.mat)] =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>tss.escore =<span class="st"> </span><span class="kw">colSums</span>(tss.mat)</span>
+<span id="cb7-10"><a href="#cb7-10"></a>ma &lt;-<span class="st"> </span><span class="cf">function</span>(x, <span class="dt">n =</span> <span class="dv">10</span>){stats<span class="op">::</span><span class="kw">filter</span>(x, <span class="kw">rep</span>(<span class="dv">1</span> <span class="op">/</span><span class="st"> </span>n, n), <span class="dt">sides =</span> <span class="dv">2</span>)}</span>
+<span id="cb7-11"><a href="#cb7-11"></a>tss.escore =<span class="st"> </span><span class="kw">ma</span>(tss.escore)</span>
+<span id="cb7-12"><a href="#cb7-12"></a>tss.escore =<span class="st"> </span>tss.escore[<span class="dv">14</span><span class="op">:</span><span class="dv">213</span>]</span>
+<span id="cb7-13"><a href="#cb7-13"></a>df =<span class="st"> </span><span class="kw">data.table</span>(<span class="dt">index =</span> <span class="dv">10</span><span class="op">*</span>(<span class="op">-</span><span class="dv">100</span><span class="op">:</span><span class="dv">99</span>), <span class="dt">escore =</span> tss.escore<span class="op">/</span>tss.escore[<span class="dv">1</span>])</span>
+<span id="cb7-14"><a href="#cb7-14"></a></span>
+<span id="cb7-15"><a href="#cb7-15"></a><span class="kw">ggplot</span>(<span class="dt">data =</span> df, <span class="kw">aes</span>(<span class="dt">x =</span> index, <span class="dt">y =</span> escore)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">col =</span> set.cols[<span class="dv">1</span>])  <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&#39;Distance to TSS (bp)&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&#39;TSS enrichment score&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.title=</span><span class="kw">element_blank</span>(),</span>
+<span id="cb7-17"><a href="#cb7-17"></a>      <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">15</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>), </span>
+<span id="cb7-18"><a href="#cb7-18"></a>      <span class="dt">axis.title =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">18</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>)) </span></code></pre></div>
+<p><img src="QC_in_R_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<div id="density-plot-of-total-number-of-unique-fragments" class="section level4" number="2.5.3.1">
+<h4 number="2.5.3.1"><span class="header-section-number">2.5.3.1</span> Density plot of total number of unique fragments</h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>bc_stat[, <span class="st">&#39;group&#39;</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">ifelse</span>(bc <span class="op">%in%</span><span class="st"> </span>cell_barcodes, <span class="st">&#39;cell&#39;</span>, <span class="st">&#39;non-cell&#39;</span>)]</span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a>p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> bc_stat, <span class="kw">aes</span>(<span class="dt">x =</span> total_frags, <span class="dt">fill =</span> group)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="st">  </span><span class="kw">geom_density</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_continuous</span>(<span class="dt">trans =</span> <span class="st">&#39;log10&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&#39;none&#39;</span>, <span class="dt">legend.title=</span><span class="kw">element_blank</span>(),</span>
+<span id="cb8-6"><a href="#cb8-6"></a>        <span class="dt">axis.title =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">18</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>),</span>
+<span id="cb8-7"><a href="#cb8-7"></a>        <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">15</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&#39;Total #Unique Fragments&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&#39;Density&#39;</span>) </span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>text1 &lt;-<span class="st"> </span><span class="kw">grobTree</span>(<span class="kw">textGrob</span>(<span class="st">&quot;Cell&quot;</span>, <span class="dt">x=</span><span class="fl">0.8</span>,  <span class="dt">y=</span><span class="fl">0.93</span>, <span class="dt">hjust=</span><span class="dv">0</span>,</span>
+<span id="cb8-11"><a href="#cb8-11"></a>  <span class="dt">gp=</span><span class="kw">gpar</span>(<span class="dt">col=</span><span class="st">&#39;#1F78B4&#39;</span>, <span class="dt">fontsize=</span><span class="dv">15</span>, <span class="dt">fontface =</span> <span class="st">&#39;bold&#39;</span>, <span class="dt">fontfamily =</span> <span class="st">&quot;Helvetica&quot;</span>)))</span>
+<span id="cb8-12"><a href="#cb8-12"></a>text2 &lt;-<span class="st"> </span><span class="kw">grobTree</span>(<span class="kw">textGrob</span>(<span class="st">&quot;Non-cell&quot;</span>, <span class="dt">x=</span><span class="fl">0.8</span>,  <span class="dt">y=</span><span class="fl">0.83</span>, <span class="dt">hjust=</span><span class="dv">0</span>,</span>
+<span id="cb8-13"><a href="#cb8-13"></a>  <span class="dt">gp=</span><span class="kw">gpar</span>(<span class="dt">col=</span><span class="st">&#39;#B2DF8A&#39;</span>, <span class="dt">fontsize=</span><span class="dv">15</span>, <span class="dt">fontface =</span> <span class="st">&#39;bold&#39;</span>, <span class="dt">fontfamily =</span> <span class="st">&quot;Helvetica&quot;</span>)))</span>
+<span id="cb8-14"><a href="#cb8-14"></a></span>
+<span id="cb8-15"><a href="#cb8-15"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">annotation_custom</span>(text1) <span class="op">+</span><span class="st"> </span><span class="kw">annotation_custom</span>(text2) <span class="op">+</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&#39;#1F78B4&#39;</span>, <span class="st">&#39;#B2DF8A&#39;</span>))</span></code></pre></div>
+<p><img src="QC_in_R_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="overlapping-with-sequence-annotated-regions" class="section level4" number="2.5.3.2">
+<h4 number="2.5.3.2"><span class="header-section-number">2.5.3.2</span> Overlapping with sequence annotated regions</h4>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2"></a>qc_sele_df =<span class="st"> </span><span class="kw">data.table</span>(<span class="dt">frac =</span> <span class="kw">c</span>(qc_sele<span class="op">$</span>frac_peak, qc_sele<span class="op">$</span>frac_tss, qc_sele<span class="op">$</span>frac_promoter, qc_sele<span class="op">$</span>frac_enh, qc_sele<span class="op">$</span>frac_mito), <span class="st">&#39;type&#39;</span> =<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&#39;Peaks&#39;</span>, <span class="st">&#39;Tss&#39;</span>, <span class="st">&#39;Promoter&#39;</span>, <span class="st">&#39;Enhancer&#39;</span>, <span class="st">&#39;Mito&#39;</span>), <span class="dt">each =</span> <span class="kw">nrow</span>(qc_sele)))</span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a>qc_sele_df<span class="op">$</span>type =<span class="st"> </span><span class="kw">factor</span>(qc_sele_df<span class="op">$</span>type, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&#39;Peaks&#39;</span>, <span class="st">&#39;Tss&#39;</span>, <span class="st">&#39;Promoter&#39;</span>, <span class="st">&#39;Enhancer&#39;</span>, <span class="st">&#39;Mito&#39;</span>))</span>
+<span id="cb9-5"><a href="#cb9-5"></a></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="kw">ggplot</span>(<span class="dt">data =</span> qc_sele_df, <span class="kw">aes</span>(<span class="dt">y =</span> frac, <span class="dt">x =</span> type, <span class="dt">fill =</span> type)) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&#39;Fraction&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="dt">outlier.size =</span> <span class="fl">0.01</span>, <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> <span class="kw">brewer.pal</span>(<span class="dv">5</span>, <span class="st">&#39;Paired&#39;</span>)) <span class="op">+</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&#39;none&#39;</span>, </span>
+<span id="cb9-10"><a href="#cb9-10"></a>        <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">18</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>), </span>
+<span id="cb9-11"><a href="#cb9-11"></a>        <span class="dt">axis.title.x =</span> <span class="kw">element_blank</span>(), </span>
+<span id="cb9-12"><a href="#cb9-12"></a>        <span class="dt">axis.title.y =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">18</span>, <span class="dt">family =</span> <span class="st">&quot;Helvetica&quot;</span>)) <span class="op">+</span><span class="st"> </span><span class="kw">xlab</span>(<span class="st">&#39;&#39;</span>) </span></code></pre></div>
+<p><img src="QC_in_R_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="overall-statistics" class="section level4" number="2.5.3.3">
+<h4 number="2.5.3.3"><span class="header-section-number">2.5.3.3</span> Overall statistics</h4>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a></span>
+<span id="cb10-2"><a href="#cb10-2"></a>frac_peak =<span class="st"> </span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags <span class="op">*</span><span class="st"> </span>qc_sele<span class="op">$</span>frac_peak)<span class="op">/</span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags)</span>
+<span id="cb10-3"><a href="#cb10-3"></a>frac_mito =<span class="st"> </span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags <span class="op">*</span><span class="st"> </span>qc_sele<span class="op">$</span>frac_mito)<span class="op">/</span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags)</span>
+<span id="cb10-4"><a href="#cb10-4"></a>frac_promoter =<span class="st"> </span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags <span class="op">*</span><span class="st"> </span>qc_sele<span class="op">$</span>frac_promoter)<span class="op">/</span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags)</span>
+<span id="cb10-5"><a href="#cb10-5"></a>frac_enh =<span class="st"> </span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags <span class="op">*</span><span class="st"> </span>qc_sele<span class="op">$</span>frac_enhancer)<span class="op">/</span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags)</span>
+<span id="cb10-6"><a href="#cb10-6"></a>frac_tss =<span class="st"> </span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags <span class="op">*</span><span class="st"> </span>qc_sele<span class="op">$</span>frac_tss)<span class="op">/</span><span class="kw">sum</span>(qc_sele<span class="op">$</span>total_frags)</span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a>fracs =<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">c</span>(frac_peak,  frac_promoter, frac_enh, frac_tss))</span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="kw">row.names</span>(fracs) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Fraction in peaks&#39;</span>, </span>
+<span id="cb10-10"><a href="#cb10-10"></a>                    <span class="st">&#39;Fraction in promoters&#39;</span>, <span class="st">&#39;Fraction in Enhancers(ENCODE)&#39;</span>, </span>
+<span id="cb10-11"><a href="#cb10-11"></a>                    <span class="st">&#39;Fraction in TSS&#39;</span>)</span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="kw">colnames</span>(fracs) =<span class="st"> &#39;pr&#39;</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a>fracs<span class="op">$</span>pr =<span class="st"> </span><span class="kw">round</span>(fracs<span class="op">$</span>pr, <span class="dv">3</span>)</span>
+<span id="cb10-14"><a href="#cb10-14"></a>fracs<span class="op">$</span>pr =<span class="st"> </span><span class="kw">paste0</span>(<span class="dv">100</span><span class="op">*</span>fracs<span class="op">$</span>pr, <span class="st">&#39;%&#39;</span>)</span>
+<span id="cb10-15"><a href="#cb10-15"></a></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="kw">kable</span>(fracs, <span class="dt">row.names =</span> T, <span class="dt">col.names =</span> <span class="ot">NULL</span>) <span class="op">%&gt;%</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">full_width =</span> F, <span class="dt">position =</span> <span class="st">&#39;left&#39;</span>, <span class="dt">font_size =</span> <span class="dv">15</span>)</span></code></pre></div>
+<table class="table" style="font-size: 15px; width: auto !important; ">
+<tbody>
+<tr>
+<td style="text-align:left;">
+Fraction in peaks
+</td>
+<td style="text-align:left;">
+68.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fraction in promoters
+</td>
+<td style="text-align:left;">
+45.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fraction in Enhancers(ENCODE)
+</td>
+<td style="text-align:left;">
+23.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fraction in TSS
+</td>
+<td style="text-align:left;">
+47.8%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

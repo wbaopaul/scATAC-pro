@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>scATAC-pro Downstream analysis in R</title>
+
+<script src="site_libs/header-attrs-2.1/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/darkly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; } /* Alert */
+code span.an { color: #008000; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #0000ff; } /* ControlFlow */
+code span.ch { color: #008080; } /* Char */
+code span.cn { } /* Constant */
+code span.co { color: #008000; } /* Comment */
+code span.cv { color: #008000; } /* CommentVar */
+code span.do { color: #008000; } /* Documentation */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.im { } /* Import */
+code span.in { color: #008000; } /* Information */
+code span.kw { color: #0000ff; } /* Keyword */
+code span.op { } /* Operator */
+code span.ot { color: #ff4000; } /* Other */
+code span.pp { color: #ff4000; } /* Preprocessor */
+code span.sc { color: #008080; } /* SpecialChar */
+code span.ss { color: #008080; } /* SpecialString */
+code span.st { color: #008080; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #008080; } /* VerbatimString */
+code span.wa { color: #008000; font-weight: bold; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scATAC-pro</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="QC_in_R.html">Processing QC</a>
+</li>
+<li>
+  <a href="Downstream_in_R.html">Original Downstream Analysis</a>
+</li>
+<li>
+  <a href="Redo_Downstream_in_R.html">Alternative Downstream Analysis</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">scATAC-pro Downstream analysis in R</h1>
+
+</div>
+
+
+<style>
+pre {
+  margin-bottom: +20px;
+  margin-top: +20px;
+}
+</style>
+<style type="text/css">
+pre {
+  overflow-x: auto;
+}
+</style>
+<div id="introduction" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>scATAC-pro generates results in plain texts, tables and .rds objects. This tutorial shows how some modules can be re-run using different options or parameters. We will use 10x PBMC 10x data as in the manuscript, except for the integrate module, where data from another study was used for illustration purpose.</p>
+<div id="set-up-parameters-scatac-pro-output-dir-and-source-raw-codes" class="section level2" number="1.1">
+<h2 number="1.1"><span class="header-section-number">1.1</span> Set up parameters, scATAC-pro output dir and source raw codes</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(data.table)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(magrittr)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(Seurat)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>PEAK_CALLER =<span class="st"> &#39;COMBINED&#39;</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>CELL_CALLER =<span class="st"> &#39;FILTER&#39;</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>output_dir =<span class="st"> &#39;/mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/output/&#39;</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>down_dir =<span class="st"> </span><span class="kw">paste0</span>(output_dir, <span class="st">&#39;downstream_analysis/&#39;</span>, PEAK_CALLER, <span class="st">&#39;/&#39;</span>, </span>
+<span id="cb1-10"><a href="#cb1-10"></a>                  CELL_CALLER, <span class="st">&#39;/&#39;</span>)</span>
+<span id="cb1-11"><a href="#cb1-11"></a>devtools<span class="op">::</span><span class="kw">source_url</span>(<span class="st">&quot;https://github.com/wbaopaul/scATAC-pro/blob/master/scripts/src/dsAnalysis_utilities.R?raw=TRUE&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="reanalyze-data-alternatively" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> Reanalyze data alternatively</h1>
+<div id="clustering" class="section level2" number="2.1">
+<h2 number="2.1"><span class="header-section-number">2.1</span> Clustering</h2>
+<div id="reclustering-using-seurat-implemented-louvain-algorithm-with-different-parameters" class="section level3" number="2.1.1">
+<h3 number="2.1.1"><span class="header-section-number">2.1.1</span> Reclustering using seurat implemented louvain algorithm with different parameters</h3>
+<p>You can also re-cluster the cells with different number of reduced dimension or resolutions, for example</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>seurat_obj =<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(down_dir, <span class="st">&#39;seurat_obj.rds&#39;</span>))</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a>seurat_obj &lt;-<span class="st"> </span><span class="kw">RunPCA</span>(seurat_obj, <span class="dt">npcs =</span> <span class="dv">20</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>seurat_obj &lt;-<span class="st"> </span><span class="kw">FindNeighbors</span>(seurat_obj, <span class="dt">reduction =</span> <span class="st">&#39;pca&#39;</span>, <span class="dt">dims =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a>seurat_obj &lt;-<span class="st"> </span><span class="kw">FindClusters</span>(seurat_obj, <span class="dt">resolution =</span> <span class="fl">0.4</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">## </span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co">## Number of nodes: 6783</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co">## Number of edges: 257994</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co">## </span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">## Running Louvain algorithm...</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">## Maximum modularity in 10 random starts: 0.9244</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">## Number of communities: 12</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="co">## Elapsed time: 1 seconds</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>seurat_obj<span class="op">$</span>active_clusters =<span class="st"> </span>seurat_obj<span class="op">$</span>seurat_clusters</span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="kw">DimPlot</span>(seurat_obj)</span></code></pre></div>
+<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<p>If you want to cluster the data into k clusters, 8 for instance, we provided a query function which helps you looking for the corresponding resolution parameter.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>resl &lt;-<span class="st"> </span><span class="kw">queryResolution4Seurat</span>(seurat_obj, <span class="dt">k =</span> <span class="dv">8</span>, <span class="dt">reduction =</span> <span class="st">&#39;pca&#39;</span>,</span>
+<span id="cb3-2"><a href="#cb3-2"></a>                               <span class="dt">npc =</span> <span class="dv">20</span>, <span class="dt">min_resl =</span> <span class="fl">0.1</span>, <span class="dt">max_resl =</span> <span class="dv">1</span>,</span>
+<span id="cb3-3"><a href="#cb3-3"></a>                               <span class="dt">max_iter =</span> <span class="dv">15</span>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">## </span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">## Number of nodes: 6783</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">## Number of edges: 257994</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="co">## </span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co">## Running Louvain algorithm...</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="co">## Maximum modularity in 10 random starts: 0.9719</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="co">## Number of communities: 8</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co">## Elapsed time: 1 seconds</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co">## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co">## </span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="co">## Number of nodes: 6783</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="co">## Number of edges: 257994</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="co">## </span></span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="co">## Running Louvain algorithm...</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="co">## Maximum modularity in 10 random starts: 0.8580</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="co">## Number of communities: 18</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="co">## Elapsed time: 1 seconds</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>seurat_obj &lt;-<span class="st"> </span><span class="kw">FindClusters</span>(seurat_obj, <span class="dt">resolution =</span> resl)</span>
+<span id="cb3-23"><a href="#cb3-23"></a><span class="co">## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a><span class="co">## </span></span>
+<span id="cb3-25"><a href="#cb3-25"></a><span class="co">## Number of nodes: 6783</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="co">## Number of edges: 257994</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a><span class="co">## </span></span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="co">## Running Louvain algorithm...</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a><span class="co">## Maximum modularity in 10 random starts: 0.9719</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a><span class="co">## Number of communities: 8</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="co">## Elapsed time: 1 seconds</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a>seurat_obj<span class="op">$</span>active_clusters =<span class="st"> </span>seurat_obj<span class="op">$</span>seurat_clusters</span>
+<span id="cb3-33"><a href="#cb3-33"></a><span class="kw">DimPlot</span>(seurat_obj)</span></code></pre></div>
+<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="reclustering-using-different-methods" class="section level3" number="2.1.2">
+<h3 number="2.1.2"><span class="header-section-number">2.1.2</span> Reclustering using different methods</h3>
+<p>You can recluster the data by different methods, such as kmeans ( <em>generalCluster</em> function), cisTopic (<em>run_cisTopic</em>), scABC (<em>run_scABC</em>), SCRAT (<em>run_scrat</em>) and chromVAR (<em>run_chromVAR</em>).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">## further filter matrix</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>mtx &lt;-<span class="st"> </span><span class="kw">filterMat</span>(mtx, <span class="dt">minFrac_in_cell =</span> <span class="fl">0.01</span>, <span class="dt">min_depth =</span> <span class="dv">1000</span>, <span class="dt">max_depth =</span> <span class="dv">50000</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co">## create a new seurat obj for visualize and other analysis</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">runSeurat_Atac</span>(mtx, <span class="dt">npc =</span> <span class="dv">20</span>, <span class="dt">norm_by =</span> <span class="st">&#39;tf-idf&#39;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6"></a>                   <span class="dt">top_variable_features =</span> <span class="dv">5000</span>, <span class="dt">reg.var =</span> <span class="st">&#39;nCount_ATAC&#39;</span>)</span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">RunUMAP</span>(seurat_obj.new, <span class="dt">dims =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>)</span></code></pre></div>
+<div id="scrat" class="section level4" number="2.1.2.1">
+<h4 number="2.1.2.1"><span class="header-section-number">2.1.2.1</span> SCRAT</h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>cl.labels &lt;-<span class="st"> </span><span class="kw">run_scrat</span>(mtx, <span class="dt">reduction =</span> <span class="st">&#39;pca&#39;</span>, <span class="dt">max_pc =</span> <span class="dv">20</span>, <span class="dt">k =</span> <span class="dv">8</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>seurat_obj.new<span class="op">$</span>active_clusters =<span class="st"> </span>cl.labels</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">DimPlot</span>(seurat_obj.new, <span class="dt">group.by =</span> <span class="st">&#39;active_clusters&#39;</span>)</span></code></pre></div>
+</div>
+<div id="cistopic" class="section level4" number="2.1.2.2">
+<h4 number="2.1.2.2"><span class="header-section-number">2.1.2.2</span> cisTopic</h4>
+<p>This method will take a while.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>cisTopic.obj &lt;-<span class="st"> </span><span class="kw">run_cisTopic</span>(mtx, <span class="dt">nCores =</span> <span class="dv">5</span>, <span class="dt">topic =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">100</span>),</span>
+<span id="cb6-2"><a href="#cb6-2"></a>                          <span class="dt">frac_in_cell =</span> <span class="fl">0.05</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">## select the best model and lda as a new dimension reduction the seurat obj</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>sele.model &lt;-<span class="st"> </span>cisTopic<span class="op">::</span><span class="kw">selectModel</span>(cisTopic.obj, <span class="dt">select =</span> nREDUCTION, </span>
+<span id="cb6-6"><a href="#cb6-6"></a>                               <span class="dt">keepBinaryMatrix =</span> F, <span class="dt">keepModels =</span> F)</span>
+<span id="cb6-7"><a href="#cb6-7"></a>cell_topic &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">modelMatSelection</span>(sele.model, <span class="st">&#39;cell&#39;</span>, <span class="st">&#39;Probability&#39;</span>))</span>
+<span id="cb6-8"><a href="#cb6-8"></a>cl.labels =<span class="st"> </span><span class="kw">generalCluster</span>(cell_topic, <span class="dt">method =</span> <span class="st">&#39;hclust&#39;</span>, <span class="dt">k =</span> <span class="dv">8</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a>seurat_obj.new[[<span class="st">&#39;lda&#39;</span>]] &lt;-<span class="st"> </span><span class="kw">CreateDimReducObject</span>(<span class="dt">embeddings =</span> cell_topic, </span>
+<span id="cb6-11"><a href="#cb6-11"></a>                                              <span class="dt">key =</span> <span class="st">&#39;_Topic&#39;</span>, <span class="dt">assay =</span> <span class="kw">DefaultAssay</span>(seurat_obj.new))</span>
+<span id="cb6-12"><a href="#cb6-12"></a></span>
+<span id="cb6-13"><a href="#cb6-13"></a></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="co">## You can run umap or clustering on lda by specifying reduction=&#39;lda&#39;</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">RunUMAP</span>(seurat_obj.new, <span class="dt">dims =</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(cell_topic), <span class="dt">reduction =</span> <span class="st">&#39;lda&#39;</span>)</span>
+<span id="cb6-16"><a href="#cb6-16"></a></span>
+<span id="cb6-17"><a href="#cb6-17"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">FindNeighbors</span>(seurat_obj.new, <span class="dt">reduction =</span> <span class="st">&#39;lda&#39;</span>, <span class="dt">dims =</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(cell_topic))</span>
+<span id="cb6-18"><a href="#cb6-18"></a>seurat_obj.new &lt;-<span class="st"> </span><span class="kw">FindClusters</span>(seurat_obj.new, <span class="dt">resolution =</span> <span class="fl">0.4</span>)</span>
+<span id="cb6-19"><a href="#cb6-19"></a>seurat_obj.new<span class="op">$</span>active_clusters =<span class="st"> </span>seurat_obj.new<span class="op">$</span>seurat_cluster</span>
+<span id="cb6-20"><a href="#cb6-20"></a><span class="kw">DimPlot</span>(seurat_obj.new)</span></code></pre></div>
+</div>
+<div id="kmeans-on-pcs" class="section level4" number="2.1.2.3">
+<h4 number="2.1.2.3"><span class="header-section-number">2.1.2.3</span> kmeans (on PCs)</h4>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>cl.labels &lt;-<span class="st"> </span><span class="kw">generalCluster</span>(seurat_obj.new<span class="op">@</span>reductions<span class="op">$</span>pca<span class="op">@</span>cell.embeddings,</span>
+<span id="cb7-2"><a href="#cb7-2"></a>                            <span class="dt">method =</span> <span class="st">&#39;kmeans&#39;</span>, <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
+</div>
+<div id="chromvar" class="section level4" number="2.1.2.4">
+<h4 number="2.1.2.4"><span class="header-section-number">2.1.2.4</span> chromVAR</h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">## if you have already run motif analysis, chromvar obj was saved and</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>chromVar.obj &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(down_dir, <span class="st">&#39;/chromVar_obj.rds&#39;</span>))</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">## otherwise</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#chromVar.obj &lt;- run_chromVAR(mtx, genomeName = &#39;BSgenome.Hsapiens.UCSC.hg38&#39;, ncore = 4)</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a></span>
+<span id="cb8-7"><a href="#cb8-7"></a>zscore =<span class="st"> </span>chromVar.obj<span class="op">@</span>assays<span class="op">@</span>data<span class="op">$</span>z</span>
+<span id="cb8-8"><a href="#cb8-8"></a>zscore =<span class="st"> </span>dev.score[, <span class="kw">colnames</span>(dev.score) <span class="op">%in%</span><span class="st"> </span><span class="kw">colnames</span>(mtx)]</span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>pca_coords =<span class="st"> </span><span class="kw">doDimReduction4mat</span>(zscore, <span class="dt">max_pc =</span> <span class="dv">20</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb8-11"><a href="#cb8-11"></a>  </span>
+<span id="cb8-12"><a href="#cb8-12"></a>cl.labels =<span class="st"> </span><span class="kw">cutree</span>(<span class="kw">hclust</span>(<span class="kw">dist</span>(pca_coords)), <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
+</div>
+<div id="scabc" class="section level4" number="2.1.2.5">
+<h4 number="2.1.2.5"><span class="header-section-number">2.1.2.5</span> scABC</h4>
+<p>This method is also pretty slow.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>cl.labels &lt;-<span class="st"> </span><span class="kw">run_scABC</span>(mtx, <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
+</div>
+<div id="lsi" class="section level4" number="2.1.2.6">
+<h4 number="2.1.2.6"><span class="header-section-number">2.1.2.6</span> LSI</h4>
+<p>This is the original LSI method (the first PC was discarded), and you can specify different number of PCs and filter peaks</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>cl.labels &lt;-<span class="st"> </span><span class="kw">run_LSI</span>(mtx, <span class="dt">ncell.peak =</span> <span class="dv">150</span>, <span class="dt">max_pc =</span> <span class="dv">10</span>, <span class="dt">k =</span> <span class="dv">8</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>seurat_obj.new<span class="op">$</span>active_clusters =<span class="st"> </span>cl.labels</span>
+<span id="cb11-2"><a href="#cb11-2"></a></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="kw">DimPlot</span>(seurat_obj.new, <span class="dt">group.by =</span> <span class="st">&#39;active_clusters&#39;</span>)</span></code></pre></div>
+<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-12-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+</div>
+</div>
+<div id="motif-analysis" class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Motif Analysis</h2>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

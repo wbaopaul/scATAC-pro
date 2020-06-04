@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>scATAC-pro Downstream analysis in R</title>
+
+<script src="site_libs/header-attrs-2.1/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/darkly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; } /* Alert */
+code span.an { color: #008000; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #0000ff; } /* ControlFlow */
+code span.ch { color: #008080; } /* Char */
+code span.cn { } /* Constant */
+code span.co { color: #008000; } /* Comment */
+code span.cv { color: #008000; } /* CommentVar */
+code span.do { color: #008000; } /* Documentation */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.im { } /* Import */
+code span.in { color: #008000; } /* Information */
+code span.kw { color: #0000ff; } /* Keyword */
+code span.op { } /* Operator */
+code span.ot { color: #ff4000; } /* Other */
+code span.pp { color: #ff4000; } /* Preprocessor */
+code span.sc { color: #008080; } /* SpecialChar */
+code span.ss { color: #008080; } /* SpecialString */
+code span.st { color: #008080; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #008080; } /* VerbatimString */
+code span.wa { color: #008000; font-weight: bold; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scATAC-pro</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="QC_in_R.html">Processing QC</a>
+</li>
+<li>
+  <a href="Downstream_in_R.html">Original Downstream Analysis</a>
+</li>
+<li>
+  <a href="Redo_Downstream_in_R.html">Alternative Downstream Analysis</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">scATAC-pro Downstream analysis in R</h1>
+
+</div>
+
+
+<style>
+pre {
+  margin-bottom: +20px;
+  margin-top: +20px;
+}
+</style>
+<style type="text/css">
+pre {
+  overflow-x: auto;
+}
+</style>
+<div id="introduction" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>scATAC-pro generates results in plain texts, tables and .rds objects. This tutorial will access original downstream analysis results module by module, which was done by running command lines. We will use scATAC-pro outputs from 10x PBMC data as in the manuscript, except for the integrate module, where data from another study was used for illustration purpose.</p>
+<div id="set-up-parameters-scatac-pro-output-dir-and-source-raw-codes" class="section level2" number="1.1">
+<h2 number="1.1"><span class="header-section-number">1.1</span> Set up parameters, scATAC-pro output dir and source raw codes</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(data.table)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(magrittr)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(Seurat)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(RColorBrewer)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">library</span>(viridis)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">library</span>(pheatmap)</span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>PEAK_CALLER =<span class="st"> &#39;COMBINED&#39;</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>CELL_CALLER =<span class="st"> &#39;FILTER&#39;</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>output_dir =<span class="st"> &#39;/mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/output/&#39;</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>down_dir =<span class="st"> </span><span class="kw">paste0</span>(output_dir, <span class="st">&#39;downstream_analysis/&#39;</span>, PEAK_CALLER, <span class="st">&#39;/&#39;</span>, </span>
+<span id="cb1-13"><a href="#cb1-13"></a>                  CELL_CALLER, <span class="st">&#39;/&#39;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a>devtools<span class="op">::</span><span class="kw">source_url</span>(<span class="st">&quot;https://github.com/wbaopaul/scATAC-pro/blob/master/scripts/src/dsAnalysis_utilities.R?raw=TRUE&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="access-original-results" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> Access original results</h1>
+<div id="access-filtered-peak-by-cell-count-matrix" class="section level2" number="2.1">
+<h2 number="2.1"><span class="header-section-number">2.1</span> Access filtered peak-by-cell count matrix</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a>mtx_path =<span class="st"> </span><span class="kw">paste0</span>(output_dir, <span class="st">&#39;filtered_matrix/&#39;</span>, PEAK_CALLER, <span class="st">&#39;/&#39;</span>, CELL_CALLER, <span class="st">&#39;/matrix.mtx&#39;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>mtx =<span class="st"> </span><span class="kw">read_mtx_scATACpro</span>(mtx_path)</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">rownames</span>(mtx)[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">##  [1] &quot;chr1-100028750-100029265&quot; &quot;chr1-100037792-100039050&quot; &quot;chr1-100046917-100047167&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">##  [4] &quot;chr1-100047455-100047597&quot; &quot;chr1-100064941-100065019&quot; &quot;chr1-1000654-1000992&quot;    </span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co">##  [7] &quot;chr1-100065422-100065540&quot; &quot;chr1-100132556-100133436&quot; &quot;chr1-100152259-100152542&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co">## [10] &quot;chr1-100184588-100184845&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="kw">colnames</span>(mtx)[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">##  [1] &quot;AAACGAAAGACACGGT&quot; &quot;AAACGAAAGAGGTGGG&quot; &quot;AAACGAAAGCACGTAG&quot; &quot;AAACGAAAGCGCCTAC&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">##  [5] &quot;AAACGAAAGCTTTCCC&quot; &quot;AAACGAAAGGCGTCCT&quot; &quot;AAACGAAAGGCTTTAC&quot; &quot;AAACGAAAGTGATATG&quot;</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">##  [9] &quot;AAACGAACAAACGACG&quot; &quot;AAACGAACAATTGCCA&quot;</span></span></code></pre></div>
+</div>
+<div id="clustering" class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Clustering</h2>
+<p>Clustering result was saved in .rds file as <em>seurat_obj.rds</em> and clustering label as one of the metadata</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>seurat_obj =<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(down_dir, <span class="st">&#39;seurat_obj.rds&#39;</span>))</span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">## cluster label was saved in metadata active_clusters</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="kw">table</span>(seurat_obj<span class="op">$</span>active_clusters)</span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">## </span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">##    0    1    2    3    4    5    6    7    8    9 </span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">## 2139 1877  823  622  395  362  251  146  129   39</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co">## plot umap</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="kw">DimPlot</span>(seurat_obj, <span class="dt">reduction =</span> <span class="st">&#39;umap&#39;</span>) </span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="go-analysis" class="section level2" number="2.3">
+<h2 number="2.3"><span class="header-section-number">2.3</span> GO Analysis</h2>
+<p>The GO term enrichment result was saved in a .xlsx file.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">library</span>(xlsx)</span>
+<span id="cb4-2"><a href="#cb4-2"></a>group1 =<span class="st"> &#39;one&#39;</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>group2 =<span class="st"> &#39;rest&#39;</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>go_file =<span class="st"> </span><span class="kw">paste0</span>(down_dir, <span class="st">&#39;enrichedGO_differential_accessible_features_&#39;</span>, group1, <span class="st">&#39;_vs_&#39;</span>, group2, <span class="st">&#39;.xlsx&#39;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5"></a></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co"># get enriched terms for cluster0 for example and show top 20 terms</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>go_res =<span class="st"> </span>xlsx<span class="op">::</span><span class="kw">read.xlsx</span>(go_file, <span class="dt">sheetName =</span> <span class="st">&#39;cluster0&#39;</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a>go_res =<span class="st"> </span><span class="kw">data.table</span>(go_res)</span>
+<span id="cb4-10"><a href="#cb4-10"></a>go_res[, <span class="st">&#39;score&#39;</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="op">-</span><span class="kw">log10</span>(p.adjust)]</span>
+<span id="cb4-11"><a href="#cb4-11"></a>go_res =<span class="st"> </span>go_res[<span class="kw">order</span>(<span class="op">-</span>score), ]</span>
+<span id="cb4-12"><a href="#cb4-12"></a>ngo =<span class="st"> </span><span class="kw">min</span>(<span class="dv">20</span>, <span class="kw">nrow</span>(go_res))</span>
+<span id="cb4-13"><a href="#cb4-13"></a>go_res =<span class="st"> </span>go_res[<span class="dv">1</span><span class="op">:</span>ngo, ]</span>
+<span id="cb4-14"><a href="#cb4-14"></a>go_res =<span class="st"> </span>go_res[<span class="kw">order</span>(score), ]</span>
+<span id="cb4-15"><a href="#cb4-15"></a>go_res<span class="op">$</span>Description =<span class="st"> </span><span class="kw">factor</span>(go_res<span class="op">$</span>Description, <span class="dt">levels =</span> go_res<span class="op">$</span>Description)</span>
+<span id="cb4-16"><a href="#cb4-16"></a>        </span>
+<span id="cb4-17"><a href="#cb4-17"></a>p_go &lt;-<span class="st"> </span><span class="kw">ggplot</span>(go_res, <span class="kw">aes</span>(<span class="dt">y =</span> score, <span class="dt">x =</span> Description, <span class="dt">fill =</span> Count)) <span class="op">+</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">width =</span> <span class="fl">0.7</span>, <span class="dt">stat =</span> <span class="st">&#39;identity&#39;</span>) <span class="op">+</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Enriched terms: cluster_0&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_classic</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&#39;bottom&#39;</span>, <span class="dt">legend.direction =</span> <span class="st">&quot;horizontal&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="st">  </span><span class="kw">coord_flip</span>()  <span class="op">+</span><span class="st">  </span><span class="kw">scale_fill_continuous</span>(<span class="dt">name =</span> <span class="st">&quot;#genes&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;viridis&quot;</span>) <span class="op">+</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&#39;&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&#39;-log10(p.adjust)&#39;</span>)</span>
+<span id="cb4-23"><a href="#cb4-23"></a>         </span>
+<span id="cb4-24"><a href="#cb4-24"></a>p_go</span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="tf-motif-enrichment-analysis" class="section level2" number="2.4">
+<h2 number="2.4"><span class="header-section-number">2.4</span> TF motif enrichment analysis</h2>
+<p>The analysis was done through <em>chromVAR</em> R package.</p>
+<ul>
+<li>A chromVAR object was saved in .rds format (by which users can access the deviation score and the z score per cell) along with a table for enriched TFs per cluster (top 10 per cluster by default)</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2"></a>GENOME_NAME =<span class="st"> &#39;hg38&#39;</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a></span>
+<span id="cb5-5"><a href="#cb5-5"></a>metaData =<span class="st"> </span>seurat_obj<span class="op">@</span>meta.data</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a>chromVar.obj =<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(down_dir, <span class="st">&#39;/chromVar_obj.rds&#39;</span>))</span>
+<span id="cb5-8"><a href="#cb5-8"></a>diff_tf_enrich_file =<span class="st"> </span><span class="kw">paste0</span>(down_dir, <span class="st">&#39;/differential_TF_motif_enriched_in_clusters.txt&#39;</span>)</span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a>da.res =<span class="st"> </span><span class="kw">fread</span>( <span class="kw">paste0</span>(down_dir, <span class="st">&#39;/differential_TF_motif_enriched_in_clusters.txt&#39;</span>))</span>
+<span id="cb5-11"><a href="#cb5-11"></a>  </span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">## plot enriched TFs in heatmap</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>sele.tfs =<span class="st"> </span>da.res<span class="op">$</span>feature</span>
+<span id="cb5-14"><a href="#cb5-14"></a>zscores =<span class="st"> </span><span class="kw">deviationScores</span>(chromVar.obj)</span>
+<span id="cb5-15"><a href="#cb5-15"></a>sele.zscores =<span class="st"> </span>zscores[sele.tfs, ]</span>
+<span id="cb5-16"><a href="#cb5-16"></a></span>
+<span id="cb5-17"><a href="#cb5-17"></a><span class="co">## change rowname of zscores (tf name) to be readable</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a>sele.zscores &lt;-<span class="st"> </span><span class="kw">readable_tf</span>(sele.zscores, GENOME_NAME)</span>
+<span id="cb5-19"><a href="#cb5-19"></a></span>
+<span id="cb5-20"><a href="#cb5-20"></a></span>
+<span id="cb5-21"><a href="#cb5-21"></a>metaData<span class="op">$</span>active_clusters =<span class="st"> </span><span class="kw">as.character</span>(metaData<span class="op">$</span>active_clusters)</span>
+<span id="cb5-22"><a href="#cb5-22"></a></span>
+<span id="cb5-23"><a href="#cb5-23"></a></span>
+<span id="cb5-24"><a href="#cb5-24"></a>sele.zscores =<span class="st"> </span>sele.zscores[<span class="op">!</span><span class="kw">duplicated</span>(sele.zscores), ]</span>
+<span id="cb5-25"><a href="#cb5-25"></a></span>
+<span id="cb5-26"><a href="#cb5-26"></a></span>
+<span id="cb5-27"><a href="#cb5-27"></a>bc_clusters =<span class="st"> </span><span class="kw">data.table</span>(<span class="st">&#39;barcode&#39;</span> =<span class="st"> </span><span class="kw">rownames</span>(metaData),</span>
+<span id="cb5-28"><a href="#cb5-28"></a>                         <span class="st">&#39;cluster&#39;</span> =<span class="st"> </span>metaData<span class="op">$</span>active_clusters)  </span>
+<span id="cb5-29"><a href="#cb5-29"></a></span>
+<span id="cb5-30"><a href="#cb5-30"></a><span class="kw">plot_enrich_tf</span>(sele.zscores, bc_clusters)</span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<ul>
+<li>You can redo differential TF enrichment analysis, for example, you can output different number of TFs for each cluster:</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2"></a>da.res =<span class="st"> </span><span class="kw">do_DA_motif</span>(<span class="kw">deviations</span>(chromVar.obj), bc_clusters,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>                       <span class="dt">topn =</span> <span class="dv">5</span>)</span>
+<span id="cb6-4"><a href="#cb6-4"></a></span>
+<span id="cb6-5"><a href="#cb6-5"></a>sele.zscores =<span class="st"> </span>zscores[da.res<span class="op">$</span>feature, ]</span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">## change rowname of zscores (tf name) to be readable</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>sele.zscores &lt;-<span class="st"> </span><span class="kw">readable_tf</span>(sele.zscores, GENOME_NAME)</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="kw">plot_enrich_tf</span>(sele.zscores, bc_clusters)</span></code></pre></div>
+</div>
+<div id="tf-footprinting-analysis" class="section level2" number="2.5">
+<h2 number="2.5"><span class="header-section-number">2.5</span> TF footprinting analysis</h2>
+<p>The differential bound TFs were saved in a table of plain text format</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>group1_fp =<span class="st"> &#39;0&#39;</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>group2_fp =<span class="st"> &#39;rest&#39;</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>footprint_stats.file =<span class="st"> </span><span class="kw">paste0</span>(down_dir, <span class="st">&#39;/differential_TF_footprint_&#39;</span>, </span>
+<span id="cb7-4"><a href="#cb7-4"></a>                              group1_fp, <span class="st">&#39;_vs_&#39;</span>, group2_fp, <span class="st">&#39;.txt&#39;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="cf">if</span>(<span class="kw">file.exists</span>(footprint_stats.file)){</span>
+<span id="cb7-6"><a href="#cb7-6"></a>  </span>
+<span id="cb7-7"><a href="#cb7-7"></a>  footprint_out =<span class="st"> </span><span class="kw">fread</span>(footprint_stats.file)</span>
+<span id="cb7-8"><a href="#cb7-8"></a>  <span class="cf">if</span>(<span class="kw">length</span>(<span class="kw">unique</span>(footprint_out<span class="op">$</span>motif)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">100</span>){</span>
+<span id="cb7-9"><a href="#cb7-9"></a>  footprint_out[, <span class="st">&#39;N&#39;</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span>.N, by =<span class="st"> </span>higher_in_cluster]</span>
+<span id="cb7-10"><a href="#cb7-10"></a>  cls =<span class="st"> </span><span class="kw">unique</span>(footprint_out[N <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>]<span class="op">$</span>higher_in_cluster)</span>
+<span id="cb7-11"><a href="#cb7-11"></a>  <span class="cf">if</span>(<span class="kw">length</span>(cls) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">1</span>){</span>
+<span id="cb7-12"><a href="#cb7-12"></a>    res0 =<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>    <span class="cf">for</span>(cl0 <span class="cf">in</span> cls){</span>
+<span id="cb7-14"><a href="#cb7-14"></a>      tmp =<span class="st"> </span>footprint_out[higher_in_cluster <span class="op">==</span><span class="st"> </span>cl0]</span>
+<span id="cb7-15"><a href="#cb7-15"></a>      tmp =<span class="st"> </span>tmp[<span class="kw">order</span>(P_values)][<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, ]</span>
+<span id="cb7-16"><a href="#cb7-16"></a>      res0 =<span class="st"> </span><span class="kw">rbind</span>(res0, tmp)</span>
+<span id="cb7-17"><a href="#cb7-17"></a>    }</span>
+<span id="cb7-18"><a href="#cb7-18"></a>    footprint_out =<span class="st"> </span><span class="kw">rbind</span>(footprint_out[N <span class="op">&lt;</span><span class="st"> </span><span class="dv">10</span>], res0)</span>
+<span id="cb7-19"><a href="#cb7-19"></a>  }</span>
+<span id="cb7-20"><a href="#cb7-20"></a>}</span>
+<span id="cb7-21"><a href="#cb7-21"></a></span>
+<span id="cb7-22"><a href="#cb7-22"></a>  mm =<span class="st"> </span>reshape2<span class="op">::</span><span class="kw">acast</span>(motif <span class="op">~</span><span class="st"> </span>higher_in_cluster, <span class="dt">data =</span> footprint_out, </span>
+<span id="cb7-23"><a href="#cb7-23"></a>                       <span class="dt">value.var =</span> <span class="st">&quot;P_values&quot;</span>)</span>
+<span id="cb7-24"><a href="#cb7-24"></a>  mm =<span class="st"> </span><span class="op">-</span><span class="kw">log10</span>(mm)</span>
+<span id="cb7-25"><a href="#cb7-25"></a>  mm[<span class="kw">is.na</span>(mm)] =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb7-26"><a href="#cb7-26"></a>  cn =<span class="st"> </span><span class="kw">colnames</span>(mm)</span>
+<span id="cb7-27"><a href="#cb7-27"></a>  cn.new =<span class="st"> </span><span class="kw">sapply</span>(cn, <span class="cf">function</span>(x) <span class="kw">gsub</span>(<span class="st">&#39;_higher&#39;</span>, <span class="st">&#39;&#39;</span>, x))</span>
+<span id="cb7-28"><a href="#cb7-28"></a>  <span class="kw">colnames</span>(mm) =<span class="st"> </span>cn.new</span>
+<span id="cb7-29"><a href="#cb7-29"></a>  mm[mm <span class="op">&gt;</span><span class="st"> </span><span class="dv">3</span>] =<span class="st"> </span><span class="dv">3</span></span>
+<span id="cb7-30"><a href="#cb7-30"></a>  <span class="kw">pheatmap</span>(mm, <span class="dt">cluster_cols =</span> F, <span class="dt">fontsize =</span> <span class="dv">13</span>, <span class="dt">fontsize_row =</span> <span class="dv">9</span>,</span>
+<span id="cb7-31"><a href="#cb7-31"></a>                           <span class="dt">color =</span> viridis<span class="op">::</span><span class="kw">viridis</span>(<span class="dv">100</span>))</span>
+<span id="cb7-32"><a href="#cb7-32"></a>  </span>
+<span id="cb7-33"><a href="#cb7-33"></a> </span>
+<span id="cb7-34"><a href="#cb7-34"></a></span>
+<span id="cb7-35"><a href="#cb7-35"></a>}</span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="access-cicero-cis-interactions" class="section level2" number="2.6">
+<h2 number="2.6"><span class="header-section-number">2.6</span> Access cicero Cis interactions</h2>
+<p>The cis-interactions were saved in a plain text file. Here we gonna read the interactions and plot the cis-loop within an interested region. You can change parameter <em>Cicero_Plot_Region</em> below to your interested genomic region:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">library</span>(cicero)</span>
+<span id="cb8-2"><a href="#cb8-2"></a>cicero_conn.file =<span class="st"> </span><span class="kw">paste0</span>(down_dir, <span class="st">&#39;/cicero_interactions.txt&#39;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3"></a>Cicero_Plot_Region =<span class="st"> &#39;chr5:140610000-140640000&#39;</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="cf">if</span>(<span class="kw">file.exists</span>(cicero_conn.file)){</span>
+<span id="cb8-5"><a href="#cb8-5"></a>  conns =<span class="st"> </span><span class="kw">fread</span>(cicero_conn.file)</span>
+<span id="cb8-6"><a href="#cb8-6"></a>  conns =<span class="st"> </span><span class="kw">data.frame</span>(conns)</span>
+<span id="cb8-7"><a href="#cb8-7"></a>  temp &lt;-<span class="st"> </span><span class="kw">tempfile</span>()</span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">if</span>(<span class="kw">grepl</span>(GENOME_NAME, <span class="dt">pattern =</span> <span class="st">&#39;mm10&#39;</span>, <span class="dt">ignore.case =</span> T)) {</span>
+<span id="cb8-9"><a href="#cb8-9"></a>    <span class="kw">download.file</span>(<span class="st">&#39;ftp://ftp.ensembl.org/pub/release-95/gtf/mus_musculus/Mus_musculus.GRCm38.95.gtf.gz&#39;</span>, temp)</span>
+<span id="cb8-10"><a href="#cb8-10"></a>  }</span>
+<span id="cb8-11"><a href="#cb8-11"></a>  </span>
+<span id="cb8-12"><a href="#cb8-12"></a>  <span class="cf">if</span>(<span class="kw">grepl</span>(GENOME_NAME, <span class="dt">pattern =</span> <span class="st">&#39;mm9&#39;</span>, <span class="dt">ignore.case =</span> T)) {</span>
+<span id="cb8-13"><a href="#cb8-13"></a>    <span class="kw">download.file</span>(<span class="st">&#39;ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz&#39;</span>, temp)</span>
+<span id="cb8-14"><a href="#cb8-14"></a>  }</span>
+<span id="cb8-15"><a href="#cb8-15"></a>  </span>
+<span id="cb8-16"><a href="#cb8-16"></a>  <span class="cf">if</span>(<span class="kw">grepl</span>(GENOME_NAME, <span class="dt">pattern =</span> <span class="st">&#39;hg38&#39;</span>, <span class="dt">ignore.case =</span> T)) {</span>
+<span id="cb8-17"><a href="#cb8-17"></a>    <span class="kw">download.file</span>(<span class="st">&#39;ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz&#39;</span>, temp)</span>
+<span id="cb8-18"><a href="#cb8-18"></a>  }</span>
+<span id="cb8-19"><a href="#cb8-19"></a>  </span>
+<span id="cb8-20"><a href="#cb8-20"></a>  <span class="cf">if</span>(<span class="kw">grepl</span>(GENOME_NAME, <span class="dt">pattern =</span> <span class="st">&#39;hg19&#39;</span>, <span class="dt">ignore.case =</span> T)) {</span>
+<span id="cb8-21"><a href="#cb8-21"></a>    <span class="kw">download.file</span>(<span class="st">&#39;ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz&#39;</span>, temp)</span>
+<span id="cb8-22"><a href="#cb8-22"></a>  }</span>
+<span id="cb8-23"><a href="#cb8-23"></a>  </span>
+<span id="cb8-24"><a href="#cb8-24"></a>  gene_anno &lt;-<span class="st"> </span>rtracklayer<span class="op">::</span><span class="kw">readGFF</span>(temp)</span>
+<span id="cb8-25"><a href="#cb8-25"></a>  <span class="kw">unlink</span>(temp)</span>
+<span id="cb8-26"><a href="#cb8-26"></a>  </span>
+<span id="cb8-27"><a href="#cb8-27"></a>  <span class="co"># rename some columns to match requirements</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a>  gene_anno<span class="op">$</span>chromosome &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;chr&quot;</span>, gene_anno<span class="op">$</span>seqid)</span>
+<span id="cb8-29"><a href="#cb8-29"></a>  gene_anno<span class="op">$</span>gene &lt;-<span class="st"> </span>gene_anno<span class="op">$</span>gene_id</span>
+<span id="cb8-30"><a href="#cb8-30"></a>  gene_anno<span class="op">$</span>transcript &lt;-<span class="st"> </span>gene_anno<span class="op">$</span>transcript_id</span>
+<span id="cb8-31"><a href="#cb8-31"></a>  gene_anno<span class="op">$</span>symbol &lt;-<span class="st"> </span>gene_anno<span class="op">$</span>gene_name</span>
+<span id="cb8-32"><a href="#cb8-32"></a>  gene_anno =<span class="st"> </span><span class="kw">subset</span>(gene_anno, <span class="dt">select =</span> <span class="kw">c</span>(chromosome, start, end, strand, </span>
+<span id="cb8-33"><a href="#cb8-33"></a>                                           transcript, gene, symbol))</span>
+<span id="cb8-34"><a href="#cb8-34"></a>  gene_anno =<span class="st"> </span>gene_anno[<span class="kw">complete.cases</span>(gene_anno), ]</span>
+<span id="cb8-35"><a href="#cb8-35"></a>  </span>
+<span id="cb8-36"><a href="#cb8-36"></a>  chr0 =<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">strsplit</span>(Cicero_Plot_Region, <span class="st">&#39;:&#39;</span>))[<span class="dv">1</span>] <span class="co">## chr5:140610000-140640000</span></span>
+<span id="cb8-37"><a href="#cb8-37"></a>  region0 =<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">strsplit</span>(Cicero_Plot_Region, <span class="st">&#39;:&#39;</span>))[<span class="dv">2</span>]</span>
+<span id="cb8-38"><a href="#cb8-38"></a>  start0 =<span class="st"> </span><span class="kw">as.integer</span>(<span class="kw">unlist</span>(<span class="kw">strsplit</span>(region0, <span class="st">&#39;-&#39;</span>))[<span class="dv">1</span>])</span>
+<span id="cb8-39"><a href="#cb8-39"></a>  end0 =<span class="st"> </span><span class="kw">as.integer</span>(<span class="kw">unlist</span>(<span class="kw">strsplit</span>(region0, <span class="st">&#39;-&#39;</span>))[<span class="dv">2</span>])</span>
+<span id="cb8-40"><a href="#cb8-40"></a>  </span>
+<span id="cb8-41"><a href="#cb8-41"></a>  </span>
+<span id="cb8-42"><a href="#cb8-42"></a>  cicero<span class="op">::</span><span class="kw">plot_connections</span>(conns, chr0, start0, end0,</span>
+<span id="cb8-43"><a href="#cb8-43"></a>                   <span class="dt">gene_model =</span> gene_anno, </span>
+<span id="cb8-44"><a href="#cb8-44"></a>                   <span class="dt">coaccess_cutoff =</span> <span class="fl">.3</span>, </span>
+<span id="cb8-45"><a href="#cb8-45"></a>                   <span class="dt">connection_width =</span> <span class="dv">1</span>, </span>
+<span id="cb8-46"><a href="#cb8-46"></a>                   <span class="dt">collapseTranscripts =</span> <span class="st">&quot;longest&quot;</span>,</span>
+<span id="cb8-47"><a href="#cb8-47"></a>                   <span class="dt">viewpoint_alpha =</span> <span class="dv">0</span>)</span>
+<span id="cb8-48"><a href="#cb8-48"></a>   </span>
+<span id="cb8-49"><a href="#cb8-49"></a>}</span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+<div id="integration" class="section level2" number="2.7">
+<h2 number="2.7"><span class="header-section-number">2.7</span> Integration</h2>
+<ul>
+<li>For this session, an integrated object from the other study was used for illustration purpose</li>
+<li>Suppose we have an integrated .rds object outputted from <em>integrate</em> module with parameter Integrate_By set as ‘VFACS’ (other options are ‘seurat’, ‘pool’, or ‘harmony’)</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2"></a>integrated_obj &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">paste0</span>(output_dir, <span class="st">&#39;integrated/seurat_obj_VFACS.rds&#39;</span>))</span>
+<span id="cb9-3"><a href="#cb9-3"></a></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">DimPlot</span>(integrated_obj, <span class="dt">group.by =</span> <span class="st">&#39;sample&#39;</span>)</span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">DimPlot</span>(integrated_obj, <span class="dt">group.by =</span> <span class="st">&#39;active_clusters&#39;</span>)</span></code></pre></div>
+<p><img src="Downstream_in_R_files/figure-html/unnamed-chunk-11-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
