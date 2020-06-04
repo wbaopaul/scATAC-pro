@@ -48,6 +48,7 @@ Installation
      
 Updates
 ------------
+- Now provide [scATAC-pro tutorial in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.1.2
 - May, 2020
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
