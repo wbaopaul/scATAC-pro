@@ -65,7 +65,7 @@ FAQs
 - [How to merge different peaks called from different data sets?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to reconstruct peak-by-cell matrix after updating peak file?](https://github.com/wbaopaul/scATAC-pro/wiki/FAQs)
 - [How to access QC results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessQCInR.html)
-- [How to access or redo downstream analysis results in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
+- [How to access or redo downstream analysis in R?](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessResultsInR.html)
 
 
 Dependencies
@@ -437,7 +437,7 @@ scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
 
 
 
-[Access QC in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/AccessQCInR.html)
+[Access QC in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/QC_in_R.html)
 ---------------------------------------
 
 
