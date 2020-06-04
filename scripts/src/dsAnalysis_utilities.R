@@ -1295,3 +1295,65 @@ read_conf_file <- function(configure_user_file){
   }
 }
 
+## remove features active in less than min_frac_per_cluser in first class
+## do downsample to max_cellPer_cluster
+## support wilcox and t test only
+## test-model: one-rest; control
+runDiffMotifEnrich <- function(mtx_score, clusters, test = 'wilcox',
+                        fdr = 0.01, topn = 10,
+                        min_frac_per_cluster = 0.1,
+                        max_cell_per_clust = 500,
+                        test.mode = 'one-rest', control = NULL){
+  set.seed(2020)
+  clusters$cluster = as.character(clusters$cluster)
+  cls = unique(clusters$cluster)
+  res = NULL
+  features = rownames(mtx_score)
+  for(cluster0 in cls){
+    bc0 = clusters[cluster == cluster0]$barcode
+    mtx1 = mtx_score[, colnames(mtx_score) %in% bc0]
+    if(test.mode == 'one-rest') {
+      mtx2 = mtx_score[, !colnames(mtx_score) %in% bc0]
+    }
+    if(test.mode == 'control'){
+      if(is.null(control)) stop('Should specific control cluster!')
+      bc2 = clusters[cluster %in% control]$barcode
+      mtx2 = mtx_score[, colnames(mtx_score) %in% bc2]
+      if(cluster0 %in% control) next
+    }
+    mu1 = sapply(1:length(features), function(x) mean(mtx1[x, ]))
+    mu2 = sapply(1:length(features), function(x) mean(mtx2[x, ]))
+    
+    pvs = rep(0.5, length(features))
+    
+    for(x in 1:length(features)){
+      a1 = mtx1[x, ]
+      a2 = mtx2[x, ]
+      if(mu1[x] <= 0) next
+      if(length(which(!is.na(a1))) < 2 || length(which(!is.na(a2))) < 2) next
+      if(mean(a1 > 0) < min_frac_per_cluster) next
+      if(!is.null(max_cell_per_clust)){
+        if(length(a1) > max_cell_per_clust) a1 = sample(a1, max_cell_per_clust)
+        if(length(a2) > max_cell_per_clust) a2 = sample(a2, max_cell_per_clust)
+      }
+      
+      if(test == 'wilcox') pvs[x] = wilcox.test(a1, a2, alternative = 'greater')$p.value
+      if(test == 't') pvs[x] = t.test(a1, a2, alternative = 'greater')$p.value
+      
+    }
+    pvs.adj = p.adjust(pvs, method = 'fdr')
+    res0 = data.table('feature' = features, 'cluster1' = cluster0,
+                      'mean1' = mu1, 'mean0' = mu2, 
+                      'pv' = pvs, 'pv_adjust' = pvs.adj)
+    
+    res0 = res0[mean1 > 0]
+    res0 = res0[order(pv_adjust), ]
+    res0 = res0[pv_adjust <= fdr]
+    
+    if(nrow(res0) > topn) res0 = res0[1:topn, ]
+    res = rbind(res, res0)
+  }
+  return(res)
+}
+
+

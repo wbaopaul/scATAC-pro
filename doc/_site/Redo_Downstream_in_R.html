@@ -142,6 +142,7 @@ h6 {
 }
 </style>
 
+<link rel="stylesheet" href="style.css" type="text/css" />
 
 
 
@@ -422,13 +423,13 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="QC_in_R.html">Processing QC</a>
+  <a href="QC_in_R.html">Access QC</a>
 </li>
 <li>
   <a href="Downstream_in_R.html">Original Downstream Analysis</a>
 </li>
 <li>
-  <a href="Redo_Downstream_in_R.html">Alternative Downstream Analysis</a>
+  <a href="Redo_Downstream_in_R.html">Redo Downstream Analysis</a>
 </li>
 <li>
   <a href="about.html">About</a>
@@ -450,17 +451,6 @@ div.tocify {
 </div>
 
 
-<style>
-pre {
-  margin-bottom: +20px;
-  margin-top: +20px;
-}
-</style>
-<style type="text/css">
-pre {
-  overflow-x: auto;
-}
-</style>
 <div id="introduction" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
 <p>scATAC-pro generates results in plain texts, tables and .rds objects. This tutorial shows how some modules can be re-run using different options or parameters. We will use 10x PBMC 10x data as in the manuscript, except for the integrate module, where data from another study was used for illustration purpose.</p>
@@ -499,10 +489,10 @@ pre {
 <span id="cb2-11"><a href="#cb2-11"></a><span class="co">## Running Louvain algorithm...</span></span>
 <span id="cb2-12"><a href="#cb2-12"></a><span class="co">## Maximum modularity in 10 random starts: 0.9244</span></span>
 <span id="cb2-13"><a href="#cb2-13"></a><span class="co">## Number of communities: 12</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a><span class="co">## Elapsed time: 1 seconds</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="co">## Elapsed time: 0 seconds</span></span>
 <span id="cb2-15"><a href="#cb2-15"></a>seurat_obj<span class="op">$</span>active_clusters =<span class="st"> </span>seurat_obj<span class="op">$</span>seurat_clusters</span>
 <span id="cb2-16"><a href="#cb2-16"></a><span class="kw">DimPlot</span>(seurat_obj)</span></code></pre></div>
-<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-2-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 <p>If you want to cluster the data into k clusters, 8 for instance, we provided a query function which helps you looking for the corresponding resolution parameter.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>resl &lt;-<span class="st"> </span><span class="kw">queryResolution4Seurat</span>(seurat_obj, <span class="dt">k =</span> <span class="dv">8</span>, <span class="dt">reduction =</span> <span class="st">&#39;pca&#39;</span>,</span>
 <span id="cb3-2"><a href="#cb3-2"></a>                               <span class="dt">npc =</span> <span class="dv">20</span>, <span class="dt">min_resl =</span> <span class="fl">0.1</span>, <span class="dt">max_resl =</span> <span class="dv">1</span>,</span>
@@ -537,7 +527,7 @@ pre {
 <span id="cb3-31"><a href="#cb3-31"></a><span class="co">## Elapsed time: 1 seconds</span></span>
 <span id="cb3-32"><a href="#cb3-32"></a>seurat_obj<span class="op">$</span>active_clusters =<span class="st"> </span>seurat_obj<span class="op">$</span>seurat_clusters</span>
 <span id="cb3-33"><a href="#cb3-33"></a><span class="kw">DimPlot</span>(seurat_obj)</span></code></pre></div>
-<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 <div id="reclustering-using-different-methods" class="section level3" number="2.1.2">
 <h3 number="2.1.2"><span class="header-section-number">2.1.2</span> Reclustering using different methods</h3>
@@ -612,7 +602,7 @@ pre {
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>seurat_obj.new<span class="op">$</span>active_clusters =<span class="st"> </span>cl.labels</span>
 <span id="cb11-2"><a href="#cb11-2"></a></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="kw">DimPlot</span>(seurat_obj.new, <span class="dt">group.by =</span> <span class="st">&#39;active_clusters&#39;</span>)</span></code></pre></div>
-<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-12-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
+<p><img src="Redo_Downstream_in_R_files/figure-html/unnamed-chunk-11-1.png" width="576" style="display: block; margin: auto auto auto 0;" /></p>
 </div>
 </div>
 </div>
