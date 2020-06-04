@@ -340,8 +340,8 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
   
   
   seurat.obj <- FindNeighbors(seurat.obj, reduction = reduction, verbose = F, dims = 1:max.dim)
-  tmp.cluster1 <- FindClusters(seurat.obj, resolution = min_resl)@active.ident
-  tmp.cluster2 <- FindClusters(seurat.obj, resolution = max_resl)@active.ident
+  tmp.cluster1 <- FindClusters(seurat.obj, resolution = min_resl, verbose = F)@active.ident
+  tmp.cluster2 <- FindClusters(seurat.obj, resolution = max_resl, verbose = F)@active.ident
   
   
   
@@ -355,7 +355,7 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
     k1 = k1 + 1
     message('min_resl too large, trying to divided it by  2')
     min_resl = min_resl/2
-    tmp.cluster1 <- FindClusters(seurat.obj, resolution = min_resl)@active.ident
+    tmp.cluster1 <- FindClusters(seurat.obj, resolution = min_resl, verbose=F)@active.ident
     len1 = length(levels(tmp.cluster1))
     if(k1 == 10) stop('Please specify a much smaller min_res')
   }
@@ -364,7 +364,7 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
     k2 = k2 + 1
     message('max_resl too small, trying to multiply it by 2')
     max_resl = max_resl * 2
-    tmp.cluster2 <- FindClusters(seurat.obj, resolution = max_resl)@active.ident
+    tmp.cluster2 <- FindClusters(seurat.obj, resolution = max_resl, verbose = F)@active.ident
     len2 = length(levels(tmp.cluster2))
     if(k2 == 10) stop('Please specify a much bigger max_res')
   }
@@ -383,7 +383,7 @@ queryResolution4Seurat <- function(seurat.obj, k = 10, reduction = 'umap', npc =
     i = i + 1
     resl0 = min_resl/2 + max_resl/2
     
-    tmp.cluster <- FindClusters(seurat.obj, resolution = resl0)@active.ident
+    tmp.cluster <- FindClusters(seurat.obj, resolution = resl0, verbose = F)@active.ident
     
     len = length(levels(tmp.cluster)) 
     if(len == k){
@@ -1294,4 +1294,66 @@ read_conf_file <- function(configure_user_file){
     assign(vrs[i], vls[i], envir = .GlobalEnv)
   }
 }
+
+## remove features active in less than min_frac_per_cluser in first class
+## do downsample to max_cellPer_cluster
+## support wilcox and t test only
+## test-model: one-rest; control
+runDiffMotifEnrich <- function(mtx_score, clusters, test = 'wilcox',
+                        fdr = 0.01, topn = 10,
+                        min_frac_per_cluster = 0.1,
+                        max_cell_per_clust = 500,
+                        test.mode = 'one-rest', control = NULL){
+  set.seed(2020)
+  clusters$cluster = as.character(clusters$cluster)
+  cls = unique(clusters$cluster)
+  res = NULL
+  features = rownames(mtx_score)
+  for(cluster0 in cls){
+    bc0 = clusters[cluster == cluster0]$barcode
+    mtx1 = mtx_score[, colnames(mtx_score) %in% bc0]
+    if(test.mode == 'one-rest') {
+      mtx2 = mtx_score[, !colnames(mtx_score) %in% bc0]
+    }
+    if(test.mode == 'control'){
+      if(is.null(control)) stop('Should specific control cluster!')
+      bc2 = clusters[cluster %in% control]$barcode
+      mtx2 = mtx_score[, colnames(mtx_score) %in% bc2]
+      if(cluster0 %in% control) next
+    }
+    mu1 = sapply(1:length(features), function(x) mean(mtx1[x, ]))
+    mu2 = sapply(1:length(features), function(x) mean(mtx2[x, ]))
+    
+    pvs = rep(0.5, length(features))
+    
+    for(x in 1:length(features)){
+      a1 = mtx1[x, ]
+      a2 = mtx2[x, ]
+      if(mu1[x] <= 0) next
+      if(length(which(!is.na(a1))) < 2 || length(which(!is.na(a2))) < 2) next
+      if(mean(a1 > 0) < min_frac_per_cluster) next
+      if(!is.null(max_cell_per_clust)){
+        if(length(a1) > max_cell_per_clust) a1 = sample(a1, max_cell_per_clust)
+        if(length(a2) > max_cell_per_clust) a2 = sample(a2, max_cell_per_clust)
+      }
+      
+      if(test == 'wilcox') pvs[x] = wilcox.test(a1, a2, alternative = 'greater')$p.value
+      if(test == 't') pvs[x] = t.test(a1, a2, alternative = 'greater')$p.value
+      
+    }
+    pvs.adj = p.adjust(pvs, method = 'fdr')
+    res0 = data.table('feature' = features, 'cluster1' = cluster0,
+                      'mean1' = mu1, 'mean0' = mu2, 
+                      'pv' = pvs, 'pv_adjust' = pvs.adj)
+    
+    res0 = res0[mean1 > 0]
+    res0 = res0[order(pv_adjust), ]
+    res0 = res0[pv_adjust <= fdr]
+    
+    if(nrow(res0) > topn) res0 = res0[1:topn, ]
+    res = rbind(res, res0)
+  }
+  return(res)
+}
+
 
