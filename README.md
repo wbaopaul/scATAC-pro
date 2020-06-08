@@ -98,7 +98,7 @@ Quick start guide
 
 - **NOTE**: some mapping index and genome annotation files can be downloaded [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
 
-- To access QC metrics and perform downstream analysis in R, see [scATAC-pro tutorial in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/index.html) 
+- To access QC metrics and perform downstream analysis in R, see [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) 
 
 <!-- -->
 
