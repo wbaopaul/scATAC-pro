@@ -29,7 +29,7 @@ markers[, 'genes' := paste(unlist(strsplit(peak, ','))[-1], collapse = ','), by 
 
 ## do go cluster by cluster
 ## genes associated with all peaks are set as background
-tmp <- readRDS(output_dir, '/seurat_obj.rds')
+tmp <- readRDS(paste0(output_dir, '/seurat_obj.rds'))
 ## set background genes
 bg_genes <- lapply(rownames(tmp), function(x) unlist(strsplit(x, ','))[-1])
 rm(tmp)
@@ -63,6 +63,7 @@ for(cl0 in cls){
       names(tmp) = c('ID', 'Description', 'GeneRation', 'BgRatio', 'pvalue',
                      'p.adjust', 'qvalue', 'geneID')
       tmp = tmp[pvalue < 1]
+      cl0 = gsub(':', '_', cl0, fixed = T)
       goByCl[[paste0('cluster', cl0)]] = tmp
       
     }else{
@@ -71,6 +72,7 @@ for(cl0 in cls){
                   type = GO_TYPE, qCutoff = 0.1, organism = organism)
       
       
+        cl0 = gsub(':', '_', cl0, fixed = T)
         interm_goByCl[[paste0('cluster', cl0)]] = tmp
         goByCl[[paste0('cluster', cl0)]] = tmp@result[tmp@result$qvalue <= 0.1, ] 
       }
@@ -81,8 +83,6 @@ if(!require('writexl')){
 library(writexl)
 write_xlsx(goByCl, path = go_out_file)
 
-## save intermediate GO result in rds
-#saveRDS(interm_goByCl, file = paste0(output_dir, '/enrichedGO_', de_basename, '.rds'))
 
 
 
