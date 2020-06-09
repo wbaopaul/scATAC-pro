@@ -1,8 +1,10 @@
 ## Complete Update History
 
-- Current version: 1.2.1
-- May, 2020
-* *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
+- Current version: 1.2.0
+    * working on wrapping downstream analysis into R package
+    * working on tss enrichment score per cell
+- May, 2020 --VERSION **1.1.2** released
+    * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *Integrate_by = VFACS* in configure file
     * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
