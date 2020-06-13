@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.2.0
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.3
 
 <!-- -->
 
@@ -49,7 +49,7 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.2.0
+- Current version: 1.1.3
 - May, 2020
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
@@ -266,7 +266,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.2.0
+    scATAC-pro 1.1.3
     ---------------
     OPTIONS
 

@@ -65,10 +65,11 @@ read_mtx_scATACpro <- function(mtx_path){
 
 ## cbind saprse mtx with the union of the rownames
 cBind_union_features <- function(mat_list){
-    ff = rownames(mat_list[[1]])
+    ff0 = ff = rownames(mat_list[[1]])
     for(i in 2:length(mat_list)){
       ff = unique(union(ff, rownames(mat_list[[i]])))
     }
+    if(all(ff0 == ff)) return(do.call('cbind', mat_list))
    ## make a mtx with full features
     mat_union = list()
     for(i in 1:length(mat_list)){
@@ -77,9 +78,9 @@ cBind_union_features <- function(mat_list){
       if(length(ff0) > 0 ) {
         tmp = as(matrix(0, length(ff0), ncol(mtx0)), "sparseMatrix")
         rownames(tmp) = ff0
+        mtx0 = rbind(mtx0, tmp)
       }
-      tmp_mat = rbind(mtx0, tmp)
-      mat_union[[i]] = tmp_mat[order(rownames(tmp_mat)), ]
+      mat_union[[i]] = mtx0[order(rownames(mtx0)), ]
     }
     return(do.call('cbind', mat_union))
 }
@@ -1356,4 +1357,113 @@ runDiffMotifEnrich <- function(mtx_score, clusters, test = 'wilcox',
   return(res)
 }
 
-
+## mtx_objs: a list of matrix 
+run_integration <- function(mtx_list, integrate_by = 'VFACS',
+                            top_variable_features = 5000, 
+                            norm_by = 'tf-idf', nREDUCTION = 30,
+                            minFrac_in_cell = 0.01, min_depth = 1000,
+                            max_depth = 50000, reg.var = 'nCount_ATAC',
+                            anchor.features = 2000,
+                            resolution = 0.6){
+  nsample = length(mtx_list)
+  sampleNames = names(mtx_list)
+  if(is.null(sampleNames)) sampleNames = paste0('sample', 1:nsample)
+  names(mtx_list) = sampleNames
+  seu.all <- list()
+  for(sample0 in sampleNames){
+    # filter each mtx
+    mtx_list[[sample0]] <- filterMat(mtx_list[[sample0]], minFrac_in_cell = minFrac_in_cell,
+                               min_depth = min_depth, max_depth = max_depth)
+    if(integrate_by %in% c('seurat')){
+      # create a seurat obj for each sample
+      seurat.obj = runSeurat_Atac(mtx_list[[sample0]], npc = nREDUCTION, norm_by = norm_by, 
+                                  top_variable_features = top_variable_features, 
+                                  reg.var = reg.var)
+      
+      seurat.obj$sample = sample0
+      
+      seu.all[[sample0]] = seurat.obj
+    }
+  }
+ 
+  ## pool/integrate data into a seurat object
+  if(integrate_by == 'seurat'){
+   
+    seurat.obj <- FindIntegrationAnchors(object.list = seu.all, 
+                                         anchor.features = anchor.features)
+    rm(seu.all)
+    seurat.obj <- IntegrateData(anchorset = seurat.obj, dims = 1:nREDUCTION)
+    DefaultAssay(seurat.obj) <- "integrated"
+    seurat.obj <- ScaleData(seurat.obj, verbose = FALSE,
+                            features = VariableFeatures(seurat.obj))
+    seurat.obj <- RunPCA(seurat.obj, npcs = nREDUCTION, verbose = FALSE)
+  }else{
+    # pool the matrxi first with union features
+    nf = sapply(mtx_list, nrow)
+    nc = sapply(mtx_list, ncol)
+    
+    umtx <- cBind_union_features(mtx_list)
+    
+    rm(mtx_list)
+    seurat.obj = runSeurat_Atac(umtx, npc = nREDUCTION, norm_by = norm_by, 
+                                top_variable_features = top_variable_features, 
+                                reg.var = reg.var)
+    seurat.obj$sample = rep(sampleNames, nc)
+    
+  }
+  
+  if(integrate_by == 'pool') seurat.obj <- regress_on_pca(seurat.obj, 'sample')
+  
+  if(integrate_by == 'VFACS'){
+    ## cluster and then reselect features
+    ## variable features across clusters
+    seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca')
+    seurat.obj <- FindClusters(seurat.obj, resl = resolution)
+    clusters = as.character(seurat.obj$seurat_clusters)
+    mtx = seurat.obj@assays$ATAC@counts
+    mtx_by_cls <- sapply(unique(clusters), function(x) {
+      
+      cl_data <- mtx[, clusters == x]
+      
+      Matrix::rowMeans(cl_data > 0)
+      
+    })
+    mtx_by_cls.norm <- edgeR::cpm(mtx_by_cls, log = T, prior.count = 1)
+    sds = sapply(1:nrow(mtx_by_cls.norm), function(x) sd(mtx_by_cls.norm[x, ]))
+    names(sds) = rownames(mtx_by_cls.norm)
+    sele.features = names(which(sds >= sort(sds, decreasing = T)[top_variable_features]))
+    mtx0 = mtx[sele.features, ]
+    mtx0.norm = Seurat::TF.IDF(mtx0)
+    seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
+    VariableFeatures(seurat.obj) <- sele.features
+    seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = F)
+    seurat.obj <- regress_on_pca(seurat.obj, reg.var = reg.var)
+    seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca')
+    seurat.obj <- FindClusters(seurat.obj, resl = resolution)
+    
+  }
+  
+  seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", dims = 1:nREDUCTION)
+  
+  
+  if(integrate_by == 'harmony'){
+    
+    seurat.obj <- harmony::RunHarmony(seurat.obj, c("sample"), assay.use = 'ATAC')
+    
+    seurat.obj <- seurat.obj %>% 
+      RunUMAP(reduction = "harmony", dims = 1:nREDUCTION) 
+  }
+  
+  ## clustering on the integrated data
+  ## seurat implemented louvain algorithm
+  redm = ifelse(integrate_by == 'harmony', 'harmony', 'pca')
+  seurat.obj = FindNeighbors(seurat.obj, reduction = redm, 
+                             dims = 1:nREDUCTION)
+  
+  seurat.obj = FindClusters(seurat.obj, resolution = resolution)
+  seurat.obj$active_clusters = seurat.obj$seurat_clusters
+  
+  
+  return(seurat.obj)
+}
+   
