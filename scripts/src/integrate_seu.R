@@ -37,7 +37,7 @@ for(i in 1:len){
     mtx = assignGene2Peak(mtx, tss_ann)
     mtx_list[[i]] = mtx
 }
-seurat.obj <- run_integration(mtx_list, integrate_by = integreate_by,
+seurat.obj <- run_integration(mtx_list, integrate_by = integrate_by,
                             top_variable_features = top_variable_features, 
                             norm_by = norm_by, nREDUCTION = nREDUCTION,
                             minFrac_in_cell = 0.01, min_depth = 1000,
