@@ -50,13 +50,12 @@ Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.1.3
-- May, 2020
+- Recent updates
+    * *runGO*: update background genes to be all genes associated with any peak
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file
-    * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
        remove rare peaks (accessible in less than 1% of cells) from the variable features list
-    * *reConsMtx*: enable specifying a path for saving reconstructed matrix (optional)
 - Complete update history can be viewd [here](complete_update_history.md)
 
 

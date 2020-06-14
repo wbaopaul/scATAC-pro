@@ -1,8 +1,7 @@
 ## Complete Update History
 
-- Current version: 1.2.0
-    * working on wrapping downstream analysis into R package
-    * working on tss enrichment score per cell
+- Current version: 1.1.3
+    * *runGO*: update background genes to be all genes associated with any peak
 - May, 2020 --VERSION **1.1.2** released
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
