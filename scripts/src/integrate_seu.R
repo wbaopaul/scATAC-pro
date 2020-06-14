@@ -42,7 +42,6 @@ seurat.obj <- run_integration(mtx_list, integrate_by = integrate_by,
                             norm_by = norm_by, nREDUCTION = nREDUCTION,
                             minFrac_in_cell = 0.01, min_depth = 1000,
                             max_depth = 50000, reg.var = 'nCount_ATAC',
-                            anchor.features = NULL,
                             resolution = 0.6)
 
 
