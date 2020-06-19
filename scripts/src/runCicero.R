@@ -21,7 +21,7 @@ tss_ann <- fread(tss_file, header = F)
 names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
 
 
-seurat.obj$active_clusters = as.character(seurat.obj$active_clusters)
+#seurat.obj$active_clusters = as.character(seurat.obj$active_clusters)
 
 res = doCicero_gascore(seurat.obj, reduction = 'umap', genome_size_file, tss_ann, npc = 30)
 

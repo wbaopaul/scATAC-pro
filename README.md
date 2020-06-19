@@ -201,6 +201,10 @@ Step by step guide to running scATAC-pro
                  -i 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
                  -c configure_user.txt
                  
+    $ scATAC-pro -s runCicero
+                 -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/seurat_obj.rds
+                 -c configure_user.txt
+
     $ scATAC-pro -s runDA
                  -i 0:1:3,2  ## group1 consist of cluster 0,1,and 3; group2 cluster2 
                  -c configure_user.txt
