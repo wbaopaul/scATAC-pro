@@ -30,20 +30,20 @@ if(test_use %in% c('DESeq2', 'LR', 'negbinom')){
 }
 
 cls = sort(unique(seurat.obj$active_clusters))
-group1 = unlist(strsplit(group1, ':'))
-group2 = unlist(strsplit(group2, ':'))
+groups1 = unlist(strsplit(group1, ':'))
+groups2 = unlist(strsplit(group2, ':'))
 cn = colnames(seurat.obj)
 
-if(group1[1] == 'one') {
+if(groups1[1] == 'one') {
    markers = NULL
    for(cluster0 in cls){
         cells1 = cn[which(seurat.obj$active_clusters == cluster0)]
-        if(group2[1] == 'rest') {
+        if(groups2[1] == 'rest') {
           cells2 = cn[which(seurat.obj$active_clusters != cluster0)]
           id2 = NULL
         }else{
-          cells2 = cn[which(seurat.obj$active_clusters %in% group2)]
-          id2 = group2
+          cells2 = cn[which(seurat.obj$active_clusters %in% groups2)]
+          id2 = groups2
         }
         if(length(cells1) <= 10 || length(cells2) <= 10) next
         mm = FindMarkers(seurat.obj, slot = slot, 
@@ -59,22 +59,22 @@ if(group1[1] == 'one') {
 
    }
 }else{
-  cells1 = cn[which(seurat.obj$active_clusters %in% group1)]
+  cells1 = cn[which(seurat.obj$active_clusters %in% groups1)]
   if(length(cells1) <= 10) stop('Not enough cells in group1')
-    if(group2[1] == 'rest'){
-        cells2 = cn[which(!seurat.obj$active_clusters %in% group1)]
-        id2 = setdiff(cls, group1)
+    if(groups2[1] == 'rest'){
+        cells2 = cn[which(!seurat.obj$active_clusters %in% groups1)]
+        id2 = setdiff(cls, groups1)
         markers = FindMarkers(seurat.obj, slot = slot,
-                              ident.1 = group1, ident.2 = id2, test.use = test_use, 
+                              ident.1 = groups1, ident.2 = id2, test.use = test_use, 
                               logfc.threshold = 0.0, max.cells.per.ident = 500,
                               only.pos = F, latent.vars = confVar)
         markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
         markers$fdr = p.adjust(markers$p_val, method = 'fdr')
     }else{
-        cells2 = cn[which(seurat.obj$active_clusters %in% group2)]
+        cells2 = cn[which(seurat.obj$active_clusters %in% groups2)]
         if(length(cells2) <= 10) stop('Not enough cells in group2')
         markers = FindMarkers(seurat.obj, slot = slot, 
-                              ident.1 = group1, ident.2 = group2, test.use = test_use,
+                              ident.1 = groups1, ident.2 = groups2, test.use = test_use,
                               max.cells.per.ident = 500, logfc.threshold = 0.0, 
                               only.pos = F, latent.vars = confVar)
         markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)

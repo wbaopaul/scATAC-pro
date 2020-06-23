@@ -14,37 +14,6 @@ library(GenomicRanges)
 library(edgeR)
 library(mclust)
 
-## do reverse complemente of a DNA sequence
-rev.comp <- function(x, rev=TRUE){
-  x<-toupper(x)
-  y<-rep("N",nchar(x))
-  xx<-unlist(strsplit(x,NULL))
-  for (bbb in 1:nchar(x))
-  {
-    if(xx[bbb]=="A") y[bbb]<-"T"    
-    if(xx[bbb]=="C") y[bbb]<-"G"    
-    if(xx[bbb]=="G") y[bbb]<-"C"    
-    if(xx[bbb]=="T") y[bbb]<-"A"
-  }
-  if(rev==FALSE) 
-  {
-    for(ccc in (1:nchar(x)))
-    {
-      if(ccc==1) yy<-y[ccc] else yy<-paste(yy,y[ccc],sep="")
-    }
-  }
-  if(rev==T)
-  {
-    zz<-rep(NA,nchar(x))
-    for(ccc in (1:nchar(x)))
-    {
-      zz[ccc]<-y[nchar(x)+1-ccc]
-      if(ccc==1) yy<-zz[ccc] else yy<-paste(yy,zz[ccc],sep="")
-    }
-  }
-  return(yy)  
-}
-
 
 read_mtx_scATACpro <- function(mtx_path){
   #mtx_path <- paste0(dirt, "matrix.mtx")
@@ -65,10 +34,11 @@ read_mtx_scATACpro <- function(mtx_path){
 
 ## cbind saprse mtx with the union of the rownames
 cBind_union_features <- function(mat_list){
-    ff = rownames(mat_list[[1]])
+    ff0 = ff = rownames(mat_list[[1]])
     for(i in 2:length(mat_list)){
       ff = unique(union(ff, rownames(mat_list[[i]])))
     }
+    if(all(ff0 == ff)) return(do.call('cbind', mat_list))
    ## make a mtx with full features
     mat_union = list()
     for(i in 1:length(mat_list)){
@@ -77,9 +47,9 @@ cBind_union_features <- function(mat_list){
       if(length(ff0) > 0 ) {
         tmp = as(matrix(0, length(ff0), ncol(mtx0)), "sparseMatrix")
         rownames(tmp) = ff0
+        mtx0 = rbind(mtx0, tmp)
       }
-      tmp_mat = rbind(mtx0, tmp)
-      mat_union[[i]] = tmp_mat[order(rownames(tmp_mat)), ]
+      mat_union[[i]] = mtx0[order(rownames(mtx0)), ]
     }
     return(do.call('cbind', mat_union))
 }
@@ -108,36 +78,6 @@ atac_tfidf = function(atac_matrix, site_frequency_threshold=0.03) {
 }
 
 
-# do normalization, pca using Seurat
-doBasicSeurat <- function(mtx, npc = 100, top.variable = 0.2, norm_by = 'log', 
-                          doScale = T, doCenter = T, assay = 'ATAC', 
-                          reg.var = 'nCount_ATAC'){
-  
-  # top.variabl -- use top most variable features
-  if(doLog) mtx = round(log1p(mtx)/log(2))
-  seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = assay,
-                                  names.delim = '-')
-  
-  if(norm_by == 'log') seurat.obj@assays$ATAC@data <- log1p(seurat.obj@assays$ATAC@data)/log2
-  if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data <- TF.IDF(seurat.obj@assays$ATAC@data)
-  #seurat.obj <- NormalizeData(seurat.obj, normalization.method = 'LogNormalize',
-  #                            scale.factor = 1e4)
-  
-  seurat.obj <- FindVariableFeatures(object = seurat.obj, 
-                                     selection.method = 'vst', 
-                                     nfeatures = floor(nrow(mtx) * top.variable))
-  seurat.obj <- ScaleData(object = seurat.obj, 
-                          features = VariableFeatures(seurat.obj), 
-                          vars.to.regress = reg.var, do.scale = doScale, do.center = doCenter)
-  
-  
-  seurat.obj <- RunPCA(object = seurat.obj, 
-                       features = VariableFeatures(object = seurat.obj),
-                       verbose = FALSE, seed.use = 10, npc = npc)
-  
-  return(seurat.obj)
-}
-doBasicSeurat = cmpfun(doBasicSeurat)
 
 regress_on_pca <- function(seurat.obj, reg.var = 'nCount_ATAC'){
 
@@ -568,169 +508,6 @@ run_cisTopic <- function(mtx, nCores = 4,
   return(cisTopicObject)
 }
 
-call_CNV <- function(fragments, genome, blacklist){
-  "%ni%" <- Negate("%in%")
-  
-  countInsertions <- function(query, fragments, by = "barcode"){
-    #Count By Fragments Insertions
-    inserts <- c(
-      GRanges(seqnames = seqnames(fragments), ranges = IRanges(start(fragments), start(fragments)), barcode = mcols(fragments)[,by]),
-      GRanges(seqnames = seqnames(fragments), ranges = IRanges(end(fragments), end(fragments)), barcode = mcols(fragments)[,by])
-    )
-    
-    overlapDF <- DataFrame(findOverlaps(query, inserts, ignore.strand = TRUE, maxgap=-1L, minoverlap=0L, type = "any"))
-    overlapDF$name <- mcols(inserts)[overlapDF[, 2], by]
-    overlapTDF <- transform(overlapDF, id = match(name, unique(name)))
-    #Calculate Overlap Stats
-    inPeaks <- table(overlapDF$name)
-    total <- table(mcols(inserts)[, by])
-    total <- total[names(inPeaks)]
-    frip <- inPeaks / total
-    #Summarize
-    sparseM <- Matrix::sparseMatrix(
-      i = overlapTDF[, 1], 
-      j = overlapTDF[, 4],
-      x = rep(1, nrow(overlapTDF)), 
-      dims = c(length(query), length(unique(overlapDF$name))))
-    colnames(sparseM) <- unique(overlapDF$name)
-    total <- total[colnames(sparseM)]
-    frip <- frip[colnames(sparseM)]
-    out <- list(counts = sparseM, frip = frip, total = total)
-    return(out)
-  }
-  
-  makeWindows <- function(genome, blacklist, windowSize = 10e6, slidingSize = 2e6){
-    chromSizes <- GRanges(names(seqlengths(genome)), IRanges(1, seqlengths(genome)))
-    chromSizes <- GenomeInfoDb::keepStandardChromosomes(chromSizes, pruning.mode = "coarse")
-    windows <- slidingWindows(x = chromSizes, width = windowSize, step = slidingSize) %>% unlist %>% .[which(width(.)==windowSize),]
-    mcols(windows)$wSeq <- as.character(seqnames(windows))
-    mcols(windows)$wStart <- start(windows)
-    mcols(windows)$wEnd <- end(windows)
-    message("Subtracting Blacklist...")
-    windowsBL <- lapply(seq_along(windows), function(x){
-      if(x %% 100 == 0){
-        message(sprintf("%s of %s", x, length(windows)))
-      }
-      gr <- GenomicRanges::setdiff(windows[x,], blacklist)
-      mcols(gr) <- mcols(windows[x,])
-      return(gr)
-    })
-    names(windowsBL) <- paste0("w",seq_along(windowsBL))
-    windowsBL <- unlist(GenomicRangesList(windowsBL), use.names = TRUE)
-    mcols(windowsBL)$name <- names(windowsBL)
-    message("Adding Nucleotide Information...")
-    windowSplit <- split(windowsBL, as.character(seqnames(windowsBL)))
-    windowNuc <- lapply(seq_along(windowSplit), function(x){
-      message(sprintf("%s of %s", x, length(windowSplit)))
-      chrSeq <- Biostrings::getSeq(genome,chromSizes[which(seqnames(chromSizes)==names(windowSplit)[x])])
-      grx <- windowSplit[[x]]
-      aFreq <- alphabetFrequency(Biostrings::Views(chrSeq[[1]], ranges(grx)))
-      mcols(grx)$GC <- rowSums(aFreq[, c("G","C")]) / rowSums(aFreq)
-      mcols(grx)$AT <- rowSums(aFreq[, c("A","T")]) / rowSums(aFreq)
-      return(grx)
-    }) %>% GenomicRangesList %>% unlist %>% sortSeqlevels %>% sort
-    windowNuc$N <- 1 - (windowNuc$GC + windowNuc$AT)
-    windowNuc
-  }
-  
-  scCNA <- function(windows, fragments, neighbors = 100, LFC = 1.5, FDR = 0.1, 
-                    force = FALSE, remove = c("chrM","chrX","chrY")){
-    
-    #Keep only regions in filtered chromosomes
-    windows   <- GenomeInfoDb::keepStandardChromosomes(windows, pruning.mode = "coarse")
-    fragments <- GenomeInfoDb::keepStandardChromosomes(fragments, pruning.mode = "coarse")
-    windows <- windows[seqnames(windows) %ni% remove]
-    fragments <- fragments[seqnames(fragments) %ni% remove]
-    
-    #Count Insertions in windows
-    message("Getting Counts...")
-    counts <- countInsertions(windows, fragments, by = by)[[1]]
-    message("Summarizing...")
-    windowSummary <- GenomicRangesList()
-    countSummary <- matrix(nrow=length(unique(windows$name)), ncol = ncol(counts))
-    for(x in seq_along(unique(mcols(windows)$name))){
-      if(x %% 100 == 0){
-        message(sprintf("%s of %s", x, length(unique(mcols(windows)$name))))
-      }
-      idx <- which(mcols(windows)$name == unique(mcols(windows)$name)[x])
-      wx <- windows[idx,]
-      wo <- GRanges(mcols(wx)$wSeq , ranges = IRanges(mcols(wx)$wStart, mcols(wx)$wEnd))[1,]
-      mcols(wo)$name <- mcols(wx)$name[1]
-      mcols(wo)$effectiveLength <- sum(width(wx))
-      mcols(wo)$percentEffectiveLength <- 100*sum(width(wx))/width(wo)
-      mcols(wo)$GC <- sum(mcols(wx)$GC * width(wx))/width(wo)
-      mcols(wo)$AT <- sum(mcols(wx)$AT * width(wx))/width(wo)
-      mcols(wo)$N <- sum(mcols(wx)$N * width(wx))/width(wo)
-      countSummary[x,] <- Matrix::colSums(counts[idx,,drop=FALSE])
-      windowSummary[[x]] <- wo
-    }
-    windowSummary <- unlist(windowSummary)
-    
-    #Keep only regions with less than 0.1% N
-    keep <- which(windowSummary$N < 0.001) 
-    windowSummary <- windowSummary[keep,]
-    countSummary <- countSummary[keep,]
-    
-    #Now determine the nearest neighbors by GC content
-    message("Computing Background...")
-    bdgMean <- matrix(nrow=nrow(countSummary), ncol=ncol(countSummary))
-    bdgSd <- matrix(nrow=nrow(countSummary), ncol=ncol(countSummary))
-    log2FC <- matrix(nrow=nrow(countSummary), ncol=ncol(countSummary))
-    z <- matrix(nrow=nrow(countSummary), ncol=ncol(countSummary))
-    pval <- matrix(nrow=nrow(countSummary), ncol=ncol(countSummary))
-    
-    for(x in seq_len(nrow(countSummary))){
-      if(x %% 100 == 0){
-        message(sprintf("%s of %s", x, nrow(countSummary)))
-      }
-      #Get Nearest Indices
-      idxNN <- head(order(abs(windowSummary$GC[x] - windowSummary$GC)), neighbors + 1)
-      idxNN <- idxNN[idxNN %ni% x]
-      #Background
-      if(any(colMeans(countSummary[idxNN, ])==0)){
-        if(force){
-          message("Warning! Background Mean = 0 Try a higher neighbor count or remove cells with 0 in colMins")
-        }else{
-          stop("Background Mean = 0!")
-        }
-      }
-      bdgMean[x, ] <- colMeans(countSummary[idxNN, ])
-      bdgSd[x, ] <- matrixStats::colSds(countSummary[idxNN, ])
-      log2FC[x, ] <- log2((countSummary[x, ]+1e-5) / (bdgMean[x, ]+1e-5))
-      z[x, ] <- (countSummary[x,] - bdgMean[x, ]) / bdgSd[x, ]
-      pval[x, ] <- 2*pnorm(-abs(z[x, ]))
-    }
-    padj <- apply(pval, 2, function(x) p.adjust(x, method = "fdr"))
-    CNA <- matrix(0, nrow=nrow(countSummary), ncol=ncol(countSummary))
-    CNA[which(log2FC >= LFC & padj <= FDR)] <- 1
-    
-    se <- SummarizedExperiment(
-      assays = SimpleList(
-        CNA = CNA,
-        counts = countSummary,
-        log2FC = log2FC,
-        padj = padj,
-        pval = pval,
-        z = z,
-        bdgMean = bdgMean,
-        bdgSd = bdgSd
-      ),
-      rowRanges = windowSummary
-    )
-    colnames(se) <- colnames(counts)
-    
-    return(se)
-  }
-  
-  windows <- makeWindows(genome = genomeName, 
-                         blacklist = blacklist)
-  cnaObj <- scCNA(windows,
-                  frags.gr, neighbors = 100,
-                  LFC = 1.5, FDR = 0.1, force = FALSE, 
-                  remove = c("chrM"))
-  retrun(cnaObj)
-}
-
 
 # Do DA/DE with one cluster vs the rest clusters
 # clusters are the data frame with <barcode> <cluster>
@@ -818,68 +595,6 @@ do_GO <- function(fg_genes, bg_genes, type = "BP", qCutoff = 0.05,
 }
 
 
-
-#integrate two seurat object (with the same rownames)
-integrateTwoSeurat <- function(seurat1, seurat2, npc = 50, reg.var = NULL,
-                               reduction = 'pca'){
-  seurat2$obj = 'obj2'
-  seurat1$obj = 'obj1'
-  comb.list = list('Obj1' = seurat1, 'Obj2' = seurat2)
-  comb.anchors <- FindIntegrationAnchors(comb.list, scale = F, dims = 1:npc,
-                                         anchor.features = 
-                                        union(VariableFeatures(seurat1), 
-                                              VariableFeatures(seurat2) ))
-  comb.integrated <- IntegrateData(anchorset = comb.anchors, dims = 1:npc)
-  
-  # run standard workflow for integrated object
-  DefaultAssay(object = comb.integrated) <- "integrated"
-  comb.integrated <- ScaleData(object = comb.integrated, verbose = FALSE,
-                               vars.to.regress = reg.var)
-  if(reduction == 'pca'){
-    comb.integrated <- RunPCA(object = comb.integrated, npcs = npc, verbose = FALSE)
-  }
-  if(reduction == 'lsi'){
-    comb.integrated <- RunLSI(object = comb.integrated, n = npc, verbose = FALSE)
-  }
-  
-  #comb.integrated <- RunTSNE(object = comb.integrated, reduction = reduction, 
-  #                           dims = 1:npc)
-  comb.integrated <- RunUMAP(object = comb.integrated, reduction = reduction, 
-                             dims = 1:npc, verbose = F)
-  return(comb.integrated)
-}
-
-#integrate seurat objects (with the same rownames)
-integrateSeurats_atac <- function(seurat_list, npc = 50, reg.var = NULL,
-                               reduction = 'pca'){
-  #seurat2$sample = seurat2@project.name
-  #seurat1$sample = seurat1@project.name
- 
-  ufeatures = lapply(seurat_list, function(x) VariableFeatures(x))
-  ufeatures = unique(do.call('c', ufeatures))
-  comb.anchors <- FindIntegrationAnchors(seurat_list, scale = F, dims = 1:npc,
-                                         anchor.features = 6000)
-  
-  comb.integrated <- IntegrateData(anchorset = comb.anchors, dims = 1:npc)
-  
-  # run standard workflow for integrated object
-  DefaultAssay(object = comb.integrated) <- "integrated"
-  comb.integrated <- ScaleData(object = comb.integrated, verbose = FALSE,
-                               vars.to.regress = NULL)
-  if(reduction == 'pca'){
-    comb.integrated <- RunPCA(object = comb.integrated, npcs = npc, verbose = FALSE)
-    if(!is.null(reg.var)) comb.integrated <- regress_on_pca(comb.integrated, reg.var = reg.var)
-  }
-  if(reduction == 'lsi'){
-    comb.integrated <- RunLSI(object = comb.integrated, n = npc, verbose = FALSE)
-  }
-  
-  #comb.integrated <- RunTSNE(object = comb.integrated, reduction = reduction, 
-  #                           dims = 1:npc)
-  comb.integrated <- RunUMAP(object = comb.integrated, reduction = reduction, 
-                             dims = 1:npc, verbose = F)
-  return(comb.integrated)
-}
 
 # mtx: gene by cell matrix, or peak/bin by cell matrix
 # seurat.obj: optional, if not provided, will construct one (which will clustering on pca1:50),
@@ -1356,4 +1071,116 @@ runDiffMotifEnrich <- function(mtx_score, clusters, test = 'wilcox',
   return(res)
 }
 
-
+## mtx_objs: a list of matrix 
+run_integration <- function(mtx_list, integrate_by = 'VFACS',
+                            top_variable_features = 5000, 
+                            norm_by = 'tf-idf', nREDUCTION = 30,
+                            minFrac_in_cell = 0.01, min_depth = 1000,
+                            max_depth = 50000, reg.var = 'nCount_ATAC',
+                            anchor.features = 2000,
+                            resolution = 0.6, verbose = F){
+  nsample = length(mtx_list)
+  sampleNames = names(mtx_list)
+  if(is.null(sampleNames)) sampleNames = paste0('sample', 1:nsample)
+  names(mtx_list) = sampleNames
+  seu.all <- list()
+  for(sample0 in sampleNames){
+    # filter each mtx
+    mtx_list[[sample0]] <- filterMat(mtx_list[[sample0]], minFrac_in_cell = minFrac_in_cell,
+                               min_depth = min_depth, max_depth = max_depth)
+    if(integrate_by %in% c('seurat')){
+      # create a seurat obj for each sample
+      seurat.obj = runSeurat_Atac(mtx_list[[sample0]], npc = nREDUCTION, norm_by = norm_by, 
+                                  top_variable_features = top_variable_features, 
+                                  reg.var = reg.var)
+      
+      seurat.obj$sample = sample0
+      
+      seu.all[[sample0]] = seurat.obj
+    }
+  }
+ 
+  ## pool/integrate data into a seurat object
+  if(integrate_by == 'seurat'){
+   
+    seurat.obj <- FindIntegrationAnchors(object.list = seu.all, 
+                                         anchor.features = anchor.features)
+    rm(seu.all)
+    seurat.obj <- IntegrateData(anchorset = seurat.obj, dims = 1:nREDUCTION)
+    DefaultAssay(seurat.obj) <- "integrated"
+    seurat.obj <- ScaleData(seurat.obj, verbose = FALSE,
+                            features = VariableFeatures(seurat.obj))
+    seurat.obj <- RunPCA(seurat.obj, npcs = nREDUCTION, verbose = verbose)
+  }else{
+    # pool the matrxi first with union features
+    nf = sapply(mtx_list, nrow)
+    nc = sapply(mtx_list, ncol)
+    
+    umtx <- cBind_union_features(mtx_list)
+    
+    rm(mtx_list)
+    seurat.obj = runSeurat_Atac(umtx, npc = nREDUCTION, norm_by = norm_by, 
+                                top_variable_features = top_variable_features, 
+                                reg.var = reg.var)
+    seurat.obj$sample = rep(sampleNames, nc)
+    
+  }
+  
+  if(integrate_by == 'pool') seurat.obj <- regress_on_pca(seurat.obj, 'sample')
+  
+  if(integrate_by == 'VFACS'){
+    ## cluster and then reselect features
+    ## variable features across clusters
+    seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', 
+                                verbose = verbose)
+    seurat.obj <- FindClusters(seurat.obj, resl = resolution, verbose = verbose)
+    clusters = as.character(seurat.obj$seurat_clusters)
+    mtx = seurat.obj@assays$ATAC@counts
+    mtx_by_cls <- sapply(unique(clusters), function(x) {
+      
+      cl_data <- mtx[, clusters == x]
+      
+      Matrix::rowMeans(cl_data > 0)
+      
+    })
+    mtx_by_cls.norm <- edgeR::cpm(mtx_by_cls, log = T, prior.count = 1)
+    sds = sapply(1:nrow(mtx_by_cls.norm), function(x) sd(mtx_by_cls.norm[x, ]))
+    names(sds) = rownames(mtx_by_cls.norm)
+    sele.features = names(which(sds >= sort(sds, decreasing = T)[top_variable_features]))
+    mtx0 = mtx[sele.features, ]
+    mtx0.norm = Seurat::TF.IDF(mtx0)
+    seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
+    VariableFeatures(seurat.obj) <- sele.features
+    seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = verbose)
+    seurat.obj <- regress_on_pca(seurat.obj, reg.var = reg.var)
+    seurat.obj <- FindNeighbors(seurat.obj, verbose = verbose, 
+                                dims = 1:nREDUCTION, reduction = 'pca')
+    seurat.obj <- FindClusters(seurat.obj, verbose = verbose, resl = resolution)
+    
+  }
+  
+  seurat.obj <- RunUMAP(seurat.obj, reduction = "pca", 
+                        verbose = verbose, dims = 1:nREDUCTION)
+  
+  
+  if(integrate_by == 'harmony'){
+    
+    seurat.obj <- harmony::RunHarmony(seurat.obj, c("sample"), assay.use = 'ATAC')
+    
+    seurat.obj <- seurat.obj %>% 
+      RunUMAP(reduction = "harmony", dims = 1:nREDUCTION, verbose = verbose) 
+  }
+  
+  ## clustering on the integrated data
+  ## seurat implemented louvain algorithm
+  redm = ifelse(integrate_by == 'harmony', 'harmony', 'pca')
+  seurat.obj = FindNeighbors(seurat.obj, reduction = redm, 
+                             dims = 1:nREDUCTION, verbose = verbose)
+  
+  seurat.obj = FindClusters(seurat.obj, resolution = resolution, verbose = verbose)
+  seurat.obj$active_clusters = seurat.obj$seurat_clusters
+  
+  
+  return(seurat.obj)
+}
+   

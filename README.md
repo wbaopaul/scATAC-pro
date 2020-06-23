@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.2
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.3
 
 <!-- -->
 
@@ -49,14 +49,13 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.1.2
-- May, 2020
+- Current version: 1.1.3
+- Recent updates
+    * *runGO*: update background genes to be all genes associated with any peak
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file
-    * *clustering*: filter peaks before clustering (accessible in less than 0.5% of cells) and
        remove rare peaks (accessible in less than 1% of cells) from the variable features list
-    * *reConsMtx*: enable specifying a path for saving reconstructed matrix (optional)
 - Complete update history can be viewd [here](complete_update_history.md)
 
 
@@ -98,7 +97,7 @@ Quick start guide
 
 - **NOTE**: some mapping index and genome annotation files can be downloaded [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
 
-- To access QC metrics and perform downstream analysis in R, see [scATAC-pro tutorial in R](https://htmlpreview.github.io/?https://github.com/wbaopaul/scATAC-pro/blob/master/doc/_site/index.html) 
+- To access QC metrics and perform downstream analysis in R, see [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) 
 
 <!-- -->
 
@@ -202,6 +201,10 @@ Step by step guide to running scATAC-pro
                  -i 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
                  -c configure_user.txt
                  
+    $ scATAC-pro -s runCicero
+                 -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/seurat_obj.rds
+                 -c configure_user.txt
+
     $ scATAC-pro -s runDA
                  -i 0:1:3,2  ## group1 consist of cluster 0,1,and 3; group2 cluster2 
                  -c configure_user.txt
@@ -266,7 +269,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.1.2
+    scATAC-pro 1.1.3
     ---------------
     OPTIONS
 
