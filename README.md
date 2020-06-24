@@ -99,7 +99,6 @@ Quick start guide
 
 - To access QC metrics and perform downstream analysis in R, see [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) 
 
-<!-- -->
 
     $ scATAC-pro -s process 
                  -i pe1_fastq,pe2_fastq,index_fastq 
@@ -112,7 +111,6 @@ Quick start guide
 
 -   For data processing, if fastq files have been demultiplexed as the required format with the barcode recorded in the name of each read as @barcode:ORIGIN\_READ\_NAME , you can skip the demultiplexing step by running the following command:
 
-<!-- -->
 
     $ scATAC-pro -s process_no_dex 
                  -i pe1_fastq,pe2_fastq
@@ -120,7 +118,7 @@ Quick start guide
 
 -   The **output** will be saved under ./output as default
 -   --verbose (or -b) will print the running message on screen, otherwise the message will only be saved under output/logs/MODULE.txt
-
+-   Some large annotation files (such as aligner index file) are available to download [here](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
 
 Step by step guide to running scATAC-pro
 ---------------------------
@@ -128,8 +126,6 @@ Step by step guide to running scATAC-pro
 -   **IMPORTANT**: you can run scATAC-pro sequentially. The input of a later analysis module is the output of the previous analysis modules. The following tutorial uses fastq files downloaded from [PBMC10k 10X Genomics](https://support.10xgenomics.com/single-cell-atac/datasets/1.1.0/atac_v1_pbmc_10k?) 
 
 -   *Combine data from different sequencing lanes*
-
-<!-- -->
 
 
     $ cat atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq.gz
@@ -139,8 +135,6 @@ Step by step guide to running scATAC-pro
     $ cat atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq.gz
 
 -   *Run scATAC-pro sequentially*
-
-<!-- -->
 
     $ scATAC-pro -s demplx_fastq 
                  -i pe1_fastq.gz,pe2_fastq.gz,index_fastq.gz 
