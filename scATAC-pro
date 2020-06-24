@@ -9,7 +9,7 @@
 #########################                                                                   
 
 SOFT="scATAC-pro"
-VERSION="1.1.3"
+VERSION="1.1.4"
 
 function usage {
     echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-o] [-h] [-v] [-b]"
@@ -26,8 +26,10 @@ function help {
     echo
     echo "   [-s|--step ANALYSIS_STEP]: run an analysis module (or an arbitrary combination of several modules) of the scATAC-pro workflow, supported modules include" 
     echo "      demplx_fastq: perform demultiplexing
-                           input: fastq files for both reads and index, separated by comma like:
-                                  PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...
+                           input: fastq files for both reads and index, separated by comma or folder for 10x 
+                                  fastq files like:
+                                  PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq... or
+                                  folder_path4_10xfastq
                            output: Demultiplexed fastq1 and fastq2 files with index information embedded 
                                    in the read name as:  @index3_index2_index1:original_read_name, saved in output/demplxed                                   _fastq/ "
     echo "      trimming: trim read adapter
