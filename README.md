@@ -95,11 +95,11 @@ Quick start guide
 
 -   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format. Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:
 
-- **NOTE**: some mapping index and genome annotation files can be downloaded [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
+- **NOTE**: some large mapping index and genome annotation files can be downloaded [here](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
 
 - To access QC metrics and perform downstream analysis in R, see [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) 
 
-
+```
     $ scATAC-pro -s process 
                  -i pe1_fastq,pe2_fastq,index_fastq 
                  -c configure_user.txt 
@@ -108,6 +108,7 @@ Quick start guide
                  -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
+```
 
 -   For data processing, if fastq files have been demultiplexed as the required format with the barcode recorded in the name of each read as @barcode:ORIGIN\_READ\_NAME , you can skip the demultiplexing step by running the following command:
 
@@ -118,7 +119,7 @@ Quick start guide
 
 -   The **output** will be saved under ./output as default
 -   --verbose (or -b) will print the running message on screen, otherwise the message will only be saved under output/logs/MODULE.txt
--   Some large annotation files (such as aligner index file) are available to download [here](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
+
 
 Step by step guide to running scATAC-pro
 ---------------------------
