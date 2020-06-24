@@ -128,7 +128,6 @@ Step by step guide to running scATAC-pro
 
 -   *Combine data from different sequencing lanes*
 
-
     $ cat atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq.gz
 
     $ cat atac_pbmc_10k_v1_S1_L001_R3_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R3_001.fastq.gz > pe2_fastq.gz
@@ -137,6 +136,7 @@ Step by step guide to running scATAC-pro
 
 -   *Run scATAC-pro sequentially*
 
+```
     $ scATAC-pro -s demplx_fastq 
                  -i pe1_fastq.gz,pe2_fastq.gz,index_fastq.gz 
                  -c configure_user.txt 
@@ -238,6 +238,8 @@ Step by step guide to running scATAC-pro
     $ scATAC-pro -s integrate_seu
                  -i mtx_file1,mtx_file2,(mtx_file3...)   
                  -c configure_user.txt
+```
+
 
 - After clustering, user can interactively visualize and analyze the data with module *visualize* 
 
