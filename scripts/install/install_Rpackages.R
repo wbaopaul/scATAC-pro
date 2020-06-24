@@ -14,7 +14,8 @@ for(pk in pks){
     }
 }
 
-bioc.pks = c('RColorBrewer','pheatmap','motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'DESeq2', 'edgeR', 'matrixStats', 'cicero', 'farver', 'BSgenome.Hsapiens.UCSC.hg38', 'BSgenome.Mmusculus.UCSC.mm10',  'clusterProfiler')
+bioc.pks = c('RColorBrewer','pheatmap','motifmatchr', 'chromVAR', 'SummarizedExperiment', 'BiocParallel', 'DESeq2', 'edgeR', 'matrixStats', 'cicero', 'farver', 'BSgenome.Hsapiens.UCSC.hg38', 'BSgenome.Mmusculus.UCSC.mm10',  'clusterProfiler',
+ 'DropletUtils')
 
 for(pk in bioc.pks){
     if(!require(pk, character.only = T)) {  
@@ -35,4 +36,8 @@ if(!require(harmony)) {
 
 if(!require(VisCello.atac)) {
     devtools::install_github("qinzhu/VisCello", ref="VisCello-atac") # install
+}
+
+if(!require(countreg)) {
+    install.packages("countreg", repos="http://R-Forge.R-project.org")
 }
