@@ -38,15 +38,11 @@ if [[ "$isSingleEnd" = "TRUE" ]]; then
     if [[ $kk>2 ]];then
         for (( i==2; i<=$kk; i++ ))
         do
-            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} 
+            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_extraIndex.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}_$i ${fastqs[$i]} 
             mv ${output_dir}/demplxed_${dex_prefix1}_$i ${output_dir}/demplxed_${dex_prefix1}
         done
     fi
 else
-    if [[ $kk < 3 ]];then
-      echo -e "Erro: Provide at least three fastq files: the first two for paired-end reads the other for index (barcode) " >&2
-      exit
-    fi
     
     ## the first barcode was add to the read name after @, and : was used to concatenate to the original name
     dex_prefix1=$(basename ${fastqs[0]})
@@ -54,18 +50,21 @@ else
 
 
 
-    ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]} ${output_dir}/demplxed_${dex_prefix1}  ${fastqs[2]} &
-
-    ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[1]} ${output_dir}/demplxed_${dex_prefix2}  ${fastqs[2]} &
+    ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[0]}  \
+                          ${output_dir}/demplxed_${dex_prefix1} ${fastqs[2]} &
+                          
+    ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq.py ${fastqs[1]}  \
+                          ${output_dir}/demplxed_${dex_prefix2} ${fastqs[2]} &
     wait
-
     ## for the round of barcodes, add them to the read name after @, concatenate the original name by _
     if [[ $kk>3 ]];then
         for (( i=3; i<=$kk; i++ ))
         do
-            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix1} ${output_dir}/tmp${i}_demplxed_${dex_prefix1} ${fastqs[$i]} &
-            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_ul.py ${output_dir}/demplxed_${dex_prefix2} ${output_dir}/tmp${i}_demplxed_${dex_prefix2} ${fastqs[$i]} &
-            wait
+            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_extraIndex.py ${output_dir}/demplxed_${dex_prefix1} \
+             ${output_dir}/tmp${i}_demplxed_${dex_prefix1} ${fastqs[$i]} &
+            ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_extraIndex.py ${output_dir}/demplxed_${dex_prefix2} \
+             ${output_dir}/tmp${i}_demplxed_${dex_prefix2} ${fastqs[$i]} &
+            
             mv ${output_dir}/tmp${i}_demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}
             mv ${output_dir}/tmp${i}_demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix2}
         done
