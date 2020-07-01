@@ -110,6 +110,14 @@ Quick start guide
                  -c configure_user.txt
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
 
+-   If fastq files are generated using 10x genomics technic, you can just specify the fastq folder for each sample as
+
+```
+    $ scATAC-pro -s process 
+                 -i 10x_fastq_folder 
+                 -c configure_user.txt 
+```
+
 -   For data processing, if fastq files have been demultiplexed as the required format with the barcode recorded in the name of each read as @barcode:ORIGIN\_READ\_NAME , you can skip the demultiplexing step by running the following command:
 
 <!-- -->
@@ -275,8 +283,8 @@ Detailed Usage
 
        [-s|--step ANALYSIS_STEP] : run an analysis module (or some combination of several modules) of the scATAC-pro workflow, supported modules include:
           demplx_fastq: perform demultiplexing
-                               input: fastq files for both reads and index, separated by comma or folder path for 10x
-                                      fastq files like:
+                               input: either fastq files for both reads and index, separated by comma or folder path for 
+                                      10x fastq files like:
                                       PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...or
                                       folder_path4_10xfastqs
                                output: Demultiplexed fastq1 and fastq2 files with index information embedded
@@ -317,8 +325,10 @@ Detailed Usage
                                          in output/summary for cell barcodes                          
           process: processing data - including demplx_fastq, mapping, call_peak, get_mtx,
                                 aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
-                                input: fastq files for both reads and index, separated by comma like:
-                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
+                                input: either fastq files for both reads and index, separated by comma, or file folder
+                                       for 10x fastq files like:
+                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3..., or
+                                       folder_path4_10xfastqs
                                 output: peak-by-cell matrix and all intermediate results 
           process_no_dex: processing data without demultiplexing
                                 input: demultiplexed fastq files for both reads and index, separated by comma like:

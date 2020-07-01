@@ -83,7 +83,7 @@ EmptyDrop_FDR = 0.001
 
 # set cutoff to define cell if CELL_CALLER is specified as FILTER
 # ignored if CELL CALLER was specified other than FILTER
-FILTER_BC_CUTOFF = --min_uniq_frags 5000 --max_uniq_frags 50000 --min_frac_peak 0.5 --min_frac_tss 0.0 --min_frac_promoter 0 --min_frac_enhancer 0.0 --max_frac_mito 0.1
+FILTER_BC_CUTOFF = --min_uniq_frags 3000 --max_uniq_frags 50000 --min_frac_peak 0.5 --min_frac_tss 0.0 --min_frac_promoter 0 --min_frac_enhancer 0.0 --max_frac_mito 0.1
 
 
 

@@ -26,7 +26,7 @@ function help {
     echo
     echo "   [-s|--step ANALYSIS_STEP]: run an analysis module (or an arbitrary combination of several modules) of the scATAC-pro workflow, supported modules include" 
     echo "      demplx_fastq: perform demultiplexing
-                           input: fastq files for both reads and index, separated by comma or folder for 10x 
+                           input: Either fastq files for both reads and index, separated by comma or folder for 10x 
                                   fastq files like:
                                   PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq... or
                                   folder_path4_10xfastq
@@ -62,8 +62,10 @@ function help {
                                          in output/summary for cell barcodes "
     echo "      process: processing data - including demplx_fastq, mapping, call_peak, get_mtx,
                             aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
-                            input: fastq files for both reads and index, separated by comma like:
-                                   fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
+                            input: either fastq files for both reads and index, separated by comma or file folder for 10x
+                                   fastq files per sample like:
+                                   fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3..., or 
+                                   folder4_10x_fastq
                             output: peak-by-cell matrix and all intermediate results "
     echo "      process_no_dex: processing data without demultiplexing
                             input: demultiplexed fastq files for both reads and index, separated by comma like:
