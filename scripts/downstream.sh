@@ -25,7 +25,8 @@ if [ "$RUN_DA" = "TRUE" ]; then
     ${curr_dir}/runDA.sh $seurat_obj $2 $3 &
 fi
 
-SPLIT_BAM2CLUSTER=${SPLIT_BAM2CLUSTER^^}
+#SPLIT_BAM2CLUSTER=${SPLIT_BAM2CLUSTER^^}
+SPLIT_BAM2CLUSTER=$(echo $SPLIT_BAM2CLUSTER | tr a-z A-Z)
 ## split bam to cluster
 if [ "$SPLIT_BAM2CLUSTER" = "TRUE" ]; then
     input_cluster_table=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/cell_cluster_table.txt 

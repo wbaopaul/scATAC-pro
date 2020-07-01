@@ -15,7 +15,8 @@ ${curr_dir}/dex_fastq.sh $1 $2 $3
 
 ## 2.trimming
 fastqs=(${input_fastqs//,/ })
-isSingleEnd=${isSingleEnd^^}
+#isSingleEnd=${isSingleEnd^^}
+isSingleEnd=$(echo $isSingleEnd | tr a-z A-Z)
 if [[ "$isSingleEnd"="FALSE"  ]]; then
     dfastq1=${OUTPUT_PREFIX}.demplxed.PE1.fastq.gz
     dfastq2=${OUTPUT_PREFIX}.demplxed.PE2.fastq.gz

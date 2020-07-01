@@ -15,8 +15,8 @@ mkdir -p $output_dir
 fastqs=(${input_fastqs//,/ }) ## suppose the first fastq is the read file, the others are index fastq files
 nfile=${#fastqs[@]}
 kk=$(( $nfile ))
-isSingleEnd=${isSingleEnd^^}
-
+#isSingleEnd=${isSingleEnd^^}
+isSingleEnd=$(echo $isSingleEnd | tr a-z A-Z)
 ncore=$(nproc --all)
 ncore=$(($nproc - 1))
 

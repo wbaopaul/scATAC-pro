@@ -21,7 +21,8 @@ nfile=${#fastqs[@]}
 kk=$(( $nfile ))
 curr_dir=`dirname $0`
 
-isSingleEnd=${isSingleEnd^^}
+#isSingleEnd=${isSingleEnd^^}
+isSingleEnd=$(echo $isSingleEnd | tr a-z A-Z)
 if [[ "$isSingleEnd" = "TRUE" ]]; then
     
     if [[ $kk < 2 ]];then
