@@ -17,9 +17,6 @@ nfile=${#fastqs[@]}
 kk=$(( $nfile ))
 #isSingleEnd=${isSingleEnd^^}
 isSingleEnd=$(echo $isSingleEnd | tr a-z A-Z)
-ncore=$(nproc --all)
-ncore=$(($nproc - 1))
-
 
 if [[ "$isSingleEnd" = "TRUE" ]]; then
     prefix0=$(basename ${fastqs[0]})
@@ -40,6 +37,7 @@ if [[ "$isSingleEnd" = "TRUE" ]]; then
         java -jar ${TRIMMOMATIC_PATH}/*jar SE -phred33 ${fastqs[0]} ${output_dir}/trimmed_${prefix0} \
              ILLUMINACLIP:${ADAPTER_SEQ}:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:25
 
+        mv $trimmed_fastq1 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE1.fastq.gz
         echo "Trimming Done!" 
     elif [ "$TRIM_METHOD" = 'trim_galore' ]; then
         echo "Using trim_galore ..." 
@@ -53,6 +51,7 @@ if [[ "$isSingleEnd" = "TRUE" ]]; then
             exit
         fi
         ${TRIM_GALORE_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} --gzip 
+        mv $trimmed_fastq1 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE1.fastq.gz
         echo "Trimming Done!" 
     else
         echo "You have not specify TRIM_METHOD, so I do not trim the reads"
@@ -78,6 +77,9 @@ else
             ${output_dir}/trimmed_paired_${prefix0} ${output_dir}/trimmed_unpaired_${prefix0} \
         ${output_dir}/trimmed_paired_${prefix1} ${output_dir}/trimmed_unpaired_${prefix1} \
         ILLUMINACLIP:${ADAPTER_SEQ}:2:30:10:2:keepBothReads LEADING:3 TRAILING:3 MINLEN:25
+
+        mv $trimmed_fastq1 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE1.fastq.gz
+        mv $trimmed_fastq2 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE2.fastq.gz
         echo "Trimming Done!" 
     elif [ "$TRIM_METHOD" = 'trim_galore' ]; then
         echo "Using trim_galore ..." 
@@ -93,6 +95,8 @@ else
             exit
         fi
         ${TRIM_GALORE_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]} --paired --gzip
+        mv $trimmed_fastq1 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE1.fastq.gz
+        mv $trimmed_fastq2 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE2.fastq.gz
         echo "Trimming Done!" 
     else
         echo "You have not specify TRIM_METHOD, so I do not trim the reads"

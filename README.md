@@ -51,6 +51,7 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.1.4
 - Recent updates
+    * *demplx_fastq*: the input supports PATH of the DIRECTORY of 10x fastq files
     * *runGO*: update background genes to be all genes associated with any peak
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
@@ -136,11 +137,11 @@ Step by step guide to running scATAC-pro
 
 -   *Combine data from different sequencing lanes*
 
-    $ cat atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq.gz
+    $ cat pbmc_fastqs/atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz pbmc_fastqs/atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq.gz
 
-    $ cat atac_pbmc_10k_v1_S1_L001_R3_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R3_001.fastq.gz > pe2_fastq.gz
+    $ cat pbmc_fastqs/atac_pbmc_10k_v1_S1_L001_R3_001.fastq.gz pbmc_fastqs/atac_pbmc_10k_v1_S1_L002_R3_001.fastq.gz > pe2_fastq.gz
 
-    $ cat atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq.gz
+    $ cat pbmc_fastqs/atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz pbmc_fastqs/atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq.gz
 
 -   *Run scATAC-pro sequentially*
 
@@ -148,16 +149,20 @@ Step by step guide to running scATAC-pro
     $ scATAC-pro -s demplx_fastq 
                  -i pe1_fastq.gz,pe2_fastq.gz,index_fastq.gz 
                  -c configure_user.txt 
+    # or
+    $ scATAC-pro -s demplx_fastq 
+                 -i pbmc_fastqs/ 
+                 -c configure_user.txt 
 
     $ scATAC-pro -s trimming 
-                 -i output/demplxed_fastq/demplxed_pe1_fastq.gz,
-                    output/demplxed_fastq/demplxed_pe2_fastq.gz
+                 -i output/demplxed_fastq/pbmc10k.demplxed.PE1.fastq.gz,
+                    output/demplxed_fastq/pbmc10k.demplxed.PE2.fastq.gz
                  -c configure_user.txt 
 
 
     $ scATAC-pro -s mapping 
-                  -i output/trimmed_fastq/trimmed_pe1_fastq.gz,
-                     output/trimmed_fastq/trimmed_pe2_fastq.gz 
+                  -i output/trimmed_fastq/pbmc10k.trimmed.demplxed.PE1.fastq.gz,
+                     output/trimmed_fastq/pbmc10k.trimmed.demplxed.PE2.fastq.gz,
                   -c configure_user.txt 
 
     $ scATAC-pro -s call_peak 
