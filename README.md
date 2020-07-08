@@ -51,7 +51,7 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.1.4
 - Recent updates
-    * *demplx_fastq*: the input supports PATH of the DIRECTORY of 10x fastq files
+    * *demplx_fastq*: the input supports PATH to the DIRECTORY of 10x fastq files
     * *runGO*: update background genes to be all genes associated with any peak
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
@@ -111,11 +111,11 @@ Quick start guide
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
 ```
 
--   If fastq files are generated using 10x genomics platform, you can just specify the fastq folder path for each sample as
+-   If fastq files are generated using 10x genomics platform, you can just specify the path to fastq folder for each sample as
 
 ```
     $ scATAC-pro -s process 
-                 -i 10x_fastq_folder_path 
+                 -i PATH_TO_10x_fastqs_directory 
                  -c configure_user.txt 
 ```
 
@@ -285,10 +285,10 @@ Detailed Usage
 
        [-s|--step ANALYSIS_STEP] : run an analysis module (or some combination of several modules) of the scATAC-pro workflow, supported modules include:
           demplx_fastq: perform demultiplexing
-                               input: either fastq files for both reads and index, separated by comma or folder path for 
+                               input: either fastq files for both reads and index, separated by comma or path to folder of 
                                       10x fastq files like:
                                       PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...or
-                                      folder_path4_10xfastqs
+                                      PATH_TO_10xfastqs_folder
                                output: Demultiplexed fastq1 and fastq2 files with index information embedded
                                        in the read name as:  @index3_index2_index1:original_read_name, saved in
                                        output/demplxed_fastq/ 
@@ -327,10 +327,10 @@ Detailed Usage
                                          in output/summary for cell barcodes                          
           process: processing data - including demplx_fastq, mapping, call_peak, get_mtx,
                                 aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
-                                input: either fastq files for both reads and index, separated by comma, or file folder
-                                       for 10x fastq files like:
+                                input: either fastq files for both reads and index, separated by comma, or path to folder
+                                       of 10x fastq files like:
                                        fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3..., or
-                                       folder_path4_10xfastqs
+                                       PATH_TO_10xfastqs_folder
                                 output: peak-by-cell matrix and all intermediate results 
           process_no_dex: processing data without demultiplexing
                                 input: demultiplexed fastq files for both reads and index, separated by comma like:
