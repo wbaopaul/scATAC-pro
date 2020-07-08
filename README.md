@@ -110,11 +110,11 @@ Quick start guide
                  -c configure_user.txt
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
 
--   If fastq files are generated using 10x genomics technic, you can just specify the fastq folder for each sample as
+-   If fastq files are generated using 10x genomics platform, you can just specify the fastq folder path for each sample as
 
 ```
     $ scATAC-pro -s process 
-                 -i 10x_fastq_folder 
+                 -i 10x_fastq_folder_path 
                  -c configure_user.txt 
 ```
 

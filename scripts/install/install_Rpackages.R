@@ -3,6 +3,9 @@
 if(!require(BiocManager)){
     install.packages('BiocManager')
 }
+if(packageVersion("BiocManager")<"1.30.10")
+    install.packages('BiocManager')
+}
 
 pks = c('devtools', 'flexdashboard', 'png', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',
   'optparse', 'magrittr', 'readr', 'Seurat', 'bedr', 'gridExtra', 'ggrepel', 'kableExtra', 'viridis', 'writexl', 'xlsx', 'mefa4')

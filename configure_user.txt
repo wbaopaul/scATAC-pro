@@ -63,16 +63,15 @@ CELL_MAP_QC = TRUE  ## output mapping stats for cell barcodes
 PEAK_CALLER = MACS2  ## one of MACS2, BIN, and COMBINED
 
 ## provided extra options for macs2 (NO NEED TO SPECIFY -t, -n, -f here), like
-MACS2_OPTS = -q 0.01 -g hs 
+## (change -g mm if you are using mouse data) 
 
-## or something like this to ignore building shifting model
-#MACS2_OPTS = -q 0.01 -g hs --nomodel --extsize 200 --shift -100
+#MACS2_OPTS = -q 0.01 -g hs 
+
+## or something like this to ignore building shifting model 
+MACS2_OPTS = -q 0.01 -g hs --nomodel --extsize 200 --shift -100
 
 
 BIN_RESL = 5000    ## bin resolution in bp
-
-
-
 
 ########################################################
 ## cell calling
