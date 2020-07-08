@@ -13,7 +13,8 @@ read_conf $3
 fastqs=(${input_fastqs//,/ })
 ## 2.trimming
 echo "Trimming ..."
-isSingleEnd=${isSingleEnd^^}
+isSingleEnd=$(echo $isSingleEnd | tr a-z A-Z)
+#$isSingleEnd=${isSingleEnd^^}
 if [[ "$isSingleEnd"="FALSE"  ]]; then
     dfastq1=$(basename ${fastqs[0]})
     dfastq2=$(basename ${fastqs[1]})

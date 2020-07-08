@@ -12,7 +12,8 @@ read_conf "$3"
 
 mapRes_dir="${OUTPUT_DIR}/mapping_result"
 
-isSingleEnd=${isSingleEnd^^}
+#isSingleEnd=${isSingleEnd^^}
+isSingleEnd=$(echo $isSingleEnd | tr a-z A-Z)
 echo "Starting bowtie2 alignment ... "
 if [[ "$isSingleEnd" = "TRUE" ]]; then
     ${BOWTIE2_PATH}/bowtie2 -U ${fastqs[0]}  -x $BOWTIE2_INDEX  $BOWTIE2_OPTS -S ${mapRes_dir}/${OUTPUT_PREFIX}.sam 

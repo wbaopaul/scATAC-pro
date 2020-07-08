@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.3
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.4
 
 <!-- -->
 
@@ -49,7 +49,7 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.1.3
+- Current version: 1.1.4
 - Recent updates
     * *runGO*: update background genes to be all genes associated with any peak
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
@@ -108,6 +108,14 @@ Quick start guide
                  -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
+```
+
+-   If fastq files are generated using 10x genomics platform, you can just specify the fastq folder path for each sample as
+
+```
+    $ scATAC-pro -s process 
+                 -i 10x_fastq_folder_path 
+                 -c configure_user.txt 
 ```
 
 -   For data processing, if fastq files have been demultiplexed as the required format with the barcode recorded in the name of each read as @barcode:ORIGIN\_READ\_NAME , you can skip the demultiplexing step by running the following command:
@@ -266,14 +274,16 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.1.3
+    scATAC-pro 1.1.4
     ---------------
     OPTIONS
 
        [-s|--step ANALYSIS_STEP] : run an analysis module (or some combination of several modules) of the scATAC-pro workflow, supported modules include:
           demplx_fastq: perform demultiplexing
-                               input: fastq files for both reads and index, separated by comma like:
-                                      PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...
+                               input: either fastq files for both reads and index, separated by comma or folder path for 
+                                      10x fastq files like:
+                                      PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...or
+                                      folder_path4_10xfastqs
                                output: Demultiplexed fastq1 and fastq2 files with index information embedded
                                        in the read name as:  @index3_index2_index1:original_read_name, saved in
                                        output/demplxed_fastq/ 
@@ -312,8 +322,10 @@ Detailed Usage
                                          in output/summary for cell barcodes                          
           process: processing data - including demplx_fastq, mapping, call_peak, get_mtx,
                                 aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
-                                input: fastq files for both reads and index, separated by comma like:
-                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
+                                input: either fastq files for both reads and index, separated by comma, or file folder
+                                       for 10x fastq files like:
+                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3..., or
+                                       folder_path4_10xfastqs
                                 output: peak-by-cell matrix and all intermediate results 
           process_no_dex: processing data without demultiplexing
                                 input: demultiplexed fastq files for both reads and index, separated by comma like:
