@@ -43,8 +43,8 @@ if [[ "$isSingleEnd" = "TRUE" ]]; then
         echo "Using trim_galore ..." 
         unset PYTHONHOME
         unset PYTHONPATH
-        dfastq1_pre=`echo $prefix0 | awk -F. '{print $1}'`
-        trimmed_fastq1=${OUTPUT_DIR}/trimmed_fastq/${dfastq1_pre}_trimmed.fq.gz
+        #dfastq1_pre=`echo $prefix0 | awk -F. '{print $1}'`
+        trimmed_fastq1=${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.demplxed.PE1_val_1.fq.gz
         if [ -f "$trimmed_fastq1" ]; then
             echo -e "Trimmed fastq file $trimmed_fastq1 exist, I will skip trimming
                     reads!"
@@ -80,10 +80,10 @@ else
         echo "Using trim_galore ..." 
         unset PYTHONHOME
         unset PYTHONPATH
-        dfastq1_pre=`echo $prefix0 | awk -F. '{print $1}'`
-        dfastq2_pre=`echo $prefix1 | awk -F. '{print $1}'`
-        trimmed_fastq1=${OUTPUT_DIR}/trimmed_fastq/${dfastq1_pre}_val_1.fq.gz
-        trimmed_fastq2=${OUTPUT_DIR}/trimmed_fastq/${dfastq2_pre}_val_2.fq.gz
+        #dfastq1_pre=`echo $prefix0 | awk -F. '{print $1}'`
+        #dfastq2_pre=`echo $prefix1 | awk -F. '{print $1}'`
+        trimmed_fastq1=${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.demplxed.PE1_val_1.fq.gz
+        trimmed_fastq2=${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.demplxed.PE2_val_2.fq.gz
         ${TRIM_GALORE_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]} --paired --gzip
         mv $trimmed_fastq1 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE1.fastq.gz
         mv $trimmed_fastq2 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE2.fastq.gz
