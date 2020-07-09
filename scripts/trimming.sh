@@ -68,11 +68,6 @@ else
 
         trimmed_fastq1=${output_dir}/trimmed_paired_${prefix0}
         trimmed_fastq2=${output_dir}/trimmed_paired_${prefix1}
-        if [ -f "$trimmed_fastq1" && -f "$trimmed_fastq2" ]; then
-            echo -e "Trimmed fastq file $trimmed_fastq1 and $trimmed_fastq2 exist, I will skip trimming
-                    reads!"
-            exit
-        fi
         java -jar ${TRIMMOMATIC_PATH}/*jar PE -threads 4 ${fastqs[0]} ${fastqs[1]} \
             ${output_dir}/trimmed_paired_${prefix0} ${output_dir}/trimmed_unpaired_${prefix0} \
         ${output_dir}/trimmed_paired_${prefix1} ${output_dir}/trimmed_unpaired_${prefix1} \
@@ -89,11 +84,6 @@ else
         dfastq2_pre=`echo $prefix1 | awk -F. '{print $1}'`
         trimmed_fastq1=${OUTPUT_DIR}/trimmed_fastq/${dfastq1_pre}_val_1.fq.gz
         trimmed_fastq2=${OUTPUT_DIR}/trimmed_fastq/${dfastq2_pre}_val_2.fq.gz
-        if [ -f "$trimmed_fastq1" && -f "$trimmed_fastq2" ]; then
-            echo -e "Trimmed fastq file $trimmed_fastq1 and $trimmed_fastq2 exist, I will skip trimming
-                    reads!"
-            exit
-        fi
         ${TRIM_GALORE_PATH}/trim_galore -j 4 -o $output_dir  ${fastqs[0]} ${fastqs[1]} --paired --gzip
         mv $trimmed_fastq1 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE1.fastq.gz
         mv $trimmed_fastq2 ${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE2.fastq.gz
