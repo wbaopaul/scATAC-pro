@@ -128,7 +128,7 @@ if(file.exists(seurat_file)){
                              'cluster' = metaData$active_clusters)  
  
     ph <- plot_enrich_tf(sele.zscores, bc_clusters) 
-    pfname = paste0(params$output_dir, '/heatmap_motif_enrich.eps')
+    pfname = paste0(output_dir, '/heatmap_motif_enrich.eps')
     
     ggsave(ph, filename = pfname, device = 'eps', height = 12,
            width = 9)

@@ -136,7 +136,10 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
   ## redo normalization using vap if norm by tf-idf
   if(norm_by == 'tf-idf'){
     mtx.norm = TF.IDF(mtx[vaps, ])
-    seurat.obj[[assay]]@data[vaps, ] = mtx.norm
+    tmp <- mtx[setdiff(rownames(mtx), vaps), ]
+    data0 <- rbind(mtx.norm, tmp)
+    seurat.atac[[assay]]@data = data0[rownames(mtx), ]
+    rm(data0, tmp, mtx.norm)
   }
 
   seurat.obj <- ScaleData(object = seurat.obj,
