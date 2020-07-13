@@ -5,8 +5,6 @@ library(chromVAR)
 library(motifmatchr)
 library(SummarizedExperiment)
 library(BiocParallel)
-#library(JASPAR2016)
-#library(cisTopic)
 library(compiler)
 library(readr)
 library(matrixStats)
@@ -14,7 +12,7 @@ library(GenomicRanges)
 library(edgeR)
 library(mclust)
 library(RColorBrewer)
-
+library(viridis)
 
 read_mtx_scATACpro <- function(mtx_path){
   #mtx_path <- paste0(dirt, "matrix.mtx")
