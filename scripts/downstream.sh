@@ -45,7 +45,9 @@ if [ "$RUN_Cicero" = "TRUE" ]; then
 fi
 
 ## footprinting analysis
-${curr_dir}/footprint.sh ${group1_fp},${group2_fp} $2 $3
+if [ "$DO_FOOTPRINT" = "TRUE" ]; then
+    ${curr_dir}/footprint.sh ${group1_fp},${group2_fp} $2 $3
+fi
 
 ${curr_dir}/report.sh ${OUTPUT_DIR}/summary $2 $3
 

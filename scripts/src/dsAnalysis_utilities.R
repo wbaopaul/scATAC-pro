@@ -13,6 +13,7 @@ library(edgeR)
 library(mclust)
 library(RColorBrewer)
 library(viridis)
+library(ggplot2)
 
 read_mtx_scATACpro <- function(mtx_path){
   #mtx_path <- paste0(dirt, "matrix.mtx")
@@ -138,7 +139,7 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
     mtx.norm = TF.IDF(mtx[vaps, ])
     tmp <- mtx[setdiff(rownames(mtx), vaps), ]
     data0 <- rbind(mtx.norm, tmp)
-    seurat.atac[[assay]]@data = data0[rownames(mtx), ]
+    seurat.obj[[assay]]@data = data0[rownames(mtx), ]
     rm(data0, tmp, mtx.norm)
   }
 
