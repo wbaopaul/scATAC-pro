@@ -218,9 +218,8 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt
                  
     $ scATAC-pro -s runGO
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/differential_peak_cluster_table.txt 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/differential_accessible_features_0:1:3_vs_2.txt,  
                  -c configure_user.txt
-      
                  
     $ scATAC-pro -s report
                  -i output/summary
