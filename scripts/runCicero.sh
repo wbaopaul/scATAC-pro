@@ -16,4 +16,4 @@ curr_dir=`dirname $0`
 
 ${R_PATH}/Rscript --vanilla ${curr_dir}/src/runCicero.R $seuratObj_file $output_dir $TSS $CHROM_SIZE_FILE
 
-echo "Differential analysis done!"
+echo "runCicero done!"
