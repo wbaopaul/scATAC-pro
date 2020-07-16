@@ -44,6 +44,8 @@ if [ "$RUN_Cicero" = "TRUE" ]; then
     ${curr_dir}/runCicero.sh $seurat_obj $2 $3 &
 fi
 
+wait
+
 ## footprinting analysis
 if [ "$DO_FOOTPRINT" = "TRUE" ]; then
     ${curr_dir}/footprint.sh ${group1_fp},${group2_fp} $2 $3
