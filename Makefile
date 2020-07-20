@@ -57,16 +57,16 @@ test: config_check
 
 cp:	
 	@echo "Installing ..."
-	$(eval INSTALL_PATH := $(realpath $(INSTALL_PREFIX))/scATAC-pro_$(VNUM))
+	$(eval INSTALL_PATH := $(abspath $(INSTALL_PREFIX))/scATAC-pro_$(VNUM))
 	@if [ -d $(INSTALL_PATH) ]; then \
 		rm -rf $(INSTALL_PATH); \
 	fi
 
-ifneq ($(realpath $(MK_PATH)), $(realpath $(INSTALL_PATH)))
+ifneq ($(abspath $(MK_PATH)), $(abspath $(INSTALL_PATH)))
 	@cp -Ri $(MK_PATH) $(INSTALL_PATH)
 endif
 	@echo export PATH=$(INSTALL_PATH):"$$"PATH >> ~/.bashrc
-	@echo "scATAC-pro installed in $(shell realpath $(INSTALL_PATH)) !"
+	@echo "scATAC-pro installed in $(abspath $(INSTALL_PATH)) !"
 	@bash
 
 

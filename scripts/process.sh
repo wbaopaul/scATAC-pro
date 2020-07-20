@@ -15,36 +15,31 @@ ${curr_dir}/dex_fastq.sh $1 $2 $3
 
 ## 2.trimming
 fastqs=(${input_fastqs//,/ })
-isSingleEnd=${isSingleEnd^^}
+#isSingleEnd=${isSingleEnd^^}
+isSingleEnd=$(echo $isSingleEnd | tr a-z A-Z)
 if [[ "$isSingleEnd"="FALSE"  ]]; then
-    dfastq1=demplxed_$(basename ${fastqs[0]})
-    dfastq2=demplxed_$(basename ${fastqs[1]})
+    dfastq1=${OUTPUT_PREFIX}.demplxed.PE1.fastq.gz
+    dfastq2=${OUTPUT_PREFIX}.demplxed.PE2.fastq.gz
     fq1=${OUTPUT_DIR}/demplxed_fastq/${dfastq1}
     fq2=${OUTPUT_DIR}/demplxed_fastq/${dfastq2}
     ${curr_dir}/trimming.sh ${fq1},${fq2} $2 $3
+    trimmed_fq1=${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE1.fastq.gz
+    trimmed_fq2=${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE2.fastq.gz
     if [ "$TRIM_METHOD" = "trim_galore" ]; then
-        dfastq1_pre=`echo $dfastq1 | awk -F. '{print $1}'`
-        dfastq2_pre=`echo $dfastq2 | awk -F. '{print $1}'`
-        trimmed_fq1=${OUTPUT_DIR}/trimmed_fastq/${dfastq1_pre}_val_1.fq.gz
-        trimmed_fq2=${OUTPUT_DIR}/trimmed_fastq/${dfastq2_pre}_val_2.fq.gz
         mapping_inputs=${trimmed_fq1},${trimmed_fq2}
     elif [ "$TRIM_METHOD" = "Trimmomatic" ]; then
-        trimmed_fq1=${OUTPUT_DIR}/trimmed_fastq/trimmed_paired_${dfastq1}
-        trimmed_fq2=${OUTPUT_DIR}/trimmed_fastq/trimmed_paired_${dfastq2}
         mapping_inputs=${trimmed_fq1},${trimmed_fq2}
     else
         mapping_inputs=${fq1},${fq2}
     fi
 else
-    dfastq1=demplxed_$(basename ${fastqs[0]})
+    dfastq1=${OUTPUT_PREFIX}.demplxed.PE1.fastq.gz
     fq1=${OUTPUT_DIR}/demplxed_fastq/${dfastq1}
     ${curr_dir}/trimming.sh ${fq1} $2 $3
+    trimmed_fq1=${OUTPUT_DIR}/trimmed_fastq/${OUTPUT_PREFIX}.trimmed.demplxed.PE1.fastq.gz
     if [ "$TRIM_METHOD" = "trim_galore" ]; then
-        dfastq1_pre=`echo $dfastq1 | awk -F. '{print $1}'`
-        trimmed_fq1=${OUTPUT_DIR}/trimmed_fastq/${dfastq1_pre}_trimmed.fq.gz
         mapping_inputs=${trimmed_fq1}
     elif [ "$TRIM_METHOD" = "Trimmomatic" ]; then
-        trimmed_fq1=${OUTPUT_DIR}/trimmed_fastq/trimmed_${dfastq1}
         mapping_inputs=${trimmed_fq1}
     else
         mapping_inputs=${fq1}

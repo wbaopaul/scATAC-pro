@@ -5,15 +5,15 @@ library(chromVAR)
 library(motifmatchr)
 library(SummarizedExperiment)
 library(BiocParallel)
-#library(JASPAR2016)
-#library(cisTopic)
 library(compiler)
 library(readr)
 library(matrixStats)
 library(GenomicRanges)
 library(edgeR)
 library(mclust)
-
+library(RColorBrewer)
+library(viridis)
+library(ggplot2)
 
 read_mtx_scATACpro <- function(mtx_path){
   #mtx_path <- paste0(dirt, "matrix.mtx")
@@ -38,7 +38,7 @@ cBind_union_features <- function(mat_list){
     for(i in 2:length(mat_list)){
       ff = unique(union(ff, rownames(mat_list[[i]])))
     }
-    if(all(ff0 == ff)) return(do.call('cbind', mat_list))
+    if(length(ff) == length(ff0)) return(do.call('cbind', mat_list))
    ## make a mtx with full features
     mat_union = list()
     for(i in 1:length(mat_list)){
@@ -104,7 +104,6 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
                                   names.delim = '-', min.cells = 1,
                                   min.features = 1)
- 
   if(norm_by == 'log') seurat.obj[[assay]]@data <- log1p(seurat.obj[[assay]]@counts)/log(2)
   if(norm_by == 'tf-idf') seurat.obj[[assay]]@data <- TF.IDF(seurat.obj[[assay]]@counts)
   nvap = ifelse(top_variable_features > 1, top_variable_features, 
@@ -138,7 +137,10 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
   ## redo normalization using vap if norm by tf-idf
   if(norm_by == 'tf-idf'){
     mtx.norm = TF.IDF(mtx[vaps, ])
-    seurat.obj[[assay]]@data[vaps, ] = mtx.norm
+    tmp <- mtx[setdiff(rownames(mtx), vaps), ]
+    data0 <- rbind(mtx.norm, tmp)
+    seurat.obj[[assay]]@data = data0[rownames(mtx), ]
+    rm(data0, tmp, mtx.norm)
   }
 
   seurat.obj <- ScaleData(object = seurat.obj,

@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.3
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.4
 
 <!-- -->
 
@@ -49,8 +49,9 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.1.3
+- Current version: 1.1.4
 - Recent updates
+    * *demplx_fastq*: the input supports PATH to the DIRECTORY of 10x fastq files
     * *runGO*: update background genes to be all genes associated with any peak
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
@@ -95,12 +96,11 @@ Quick start guide
 
 -   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format. Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:
 
-- **NOTE**: some mapping index and genome annotation files can be downloaded [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
+- **NOTE**: some large mapping index and genome annotation files can be downloaded [here](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t)
 
 - To access QC metrics and perform downstream analysis in R, see [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) 
 
-<!-- -->
-
+```
     $ scATAC-pro -s process 
                  -i pe1_fastq,pe2_fastq,index_fastq 
                  -c configure_user.txt 
@@ -109,10 +109,18 @@ Quick start guide
                  -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
                  -c configure_user.txt
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
+```
+
+-   If fastq files are generated using 10x genomics platform, you can just specify the path to fastq folder for each sample as
+
+```
+    $ scATAC-pro -s process 
+                 -i PATH_TO_10x_fastqs_directory 
+                 -c configure_user.txt 
+```
 
 -   For data processing, if fastq files have been demultiplexed as the required format with the barcode recorded in the name of each read as @barcode:ORIGIN\_READ\_NAME , you can skip the demultiplexing step by running the following command:
 
-<!-- -->
 
     $ scATAC-pro -s process_no_dex 
                  -i pe1_fastq,pe2_fastq
@@ -129,32 +137,32 @@ Step by step guide to running scATAC-pro
 
 -   *Combine data from different sequencing lanes*
 
-<!-- -->
+    $ cat pbmc_fastqs/atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz pbmc_fastqs/atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq.gz
 
+    $ cat pbmc_fastqs/atac_pbmc_10k_v1_S1_L001_R3_001.fastq.gz pbmc_fastqs/atac_pbmc_10k_v1_S1_L002_R3_001.fastq.gz > pe2_fastq.gz
 
-    $ cat atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq.gz
-
-    $ cat atac_pbmc_10k_v1_S1_L001_R3_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R3_001.fastq.gz > pe2_fastq.gz
-
-    $ cat atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq.gz
+    $ cat pbmc_fastqs/atac_pbmc_10k_v1_S1_L001_R2_001.fastq.gz pbmc_fastqs/atac_pbmc_10k_v1_S1_L002_R2_001.fastq.gz > index_fastq.gz
 
 -   *Run scATAC-pro sequentially*
 
-<!-- -->
-
+```
     $ scATAC-pro -s demplx_fastq 
                  -i pe1_fastq.gz,pe2_fastq.gz,index_fastq.gz 
                  -c configure_user.txt 
+    # or
+    $ scATAC-pro -s demplx_fastq 
+                 -i pbmc_fastqs/ 
+                 -c configure_user.txt 
 
     $ scATAC-pro -s trimming 
-                 -i output/demplxed_fastq/demplxed_pe1_fastq.gz,
-                    output/demplxed_fastq/demplxed_pe2_fastq.gz
+                 -i output/demplxed_fastq/pbmc10k.demplxed.PE1.fastq.gz,
+                    output/demplxed_fastq/pbmc10k.demplxed.PE2.fastq.gz
                  -c configure_user.txt 
 
 
     $ scATAC-pro -s mapping 
-                  -i output/trimmed_fastq/trimmed_pe1_fastq.gz,
-                     output/trimmed_fastq/trimmed_pe2_fastq.gz 
+                  -i output/trimmed_fastq/pbmc10k.trimmed.demplxed.PE1.fastq.gz,
+                     output/trimmed_fastq/pbmc10k.trimmed.demplxed.PE2.fastq.gz,
                   -c configure_user.txt 
 
     $ scATAC-pro -s call_peak 
@@ -210,9 +218,8 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt
                  
     $ scATAC-pro -s runGO
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/differential_peak_cluster_table.txt 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/differential_accessible_features_0:1:3_vs_2.txt,  
                  -c configure_user.txt
-      
                  
     $ scATAC-pro -s report
                  -i output/summary
@@ -243,6 +250,8 @@ Step by step guide to running scATAC-pro
     $ scATAC-pro -s integrate_seu
                  -i mtx_file1,mtx_file2,(mtx_file3...)   
                  -c configure_user.txt
+```
+
 
 - After clustering, user can interactively visualize and analyze the data with module *visualize* 
 
@@ -269,14 +278,16 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.1.3
+    scATAC-pro 1.1.4
     ---------------
     OPTIONS
 
        [-s|--step ANALYSIS_STEP] : run an analysis module (or some combination of several modules) of the scATAC-pro workflow, supported modules include:
           demplx_fastq: perform demultiplexing
-                               input: fastq files for both reads and index, separated by comma like:
-                                      PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...
+                               input: either fastq files for both reads and index, separated by comma or path to folder of 
+                                      10x fastq files like:
+                                      PE1_fastq,PE2_fastq,index1_fastq,inde2_fastq,index3_fastq...or
+                                      PATH_TO_10xfastqs_folder
                                output: Demultiplexed fastq1 and fastq2 files with index information embedded
                                        in the read name as:  @index3_index2_index1:original_read_name, saved in
                                        output/demplxed_fastq/ 
@@ -315,8 +326,10 @@ Detailed Usage
                                          in output/summary for cell barcodes                          
           process: processing data - including demplx_fastq, mapping, call_peak, get_mtx,
                                 aggr_signal, qc_per_barcode, call_cell and get_bam4Cells
-                                input: fastq files for both reads and index, separated by comma like:
-                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3...; 
+                                input: either fastq files for both reads and index, separated by comma, or path to folder
+                                       of 10x fastq files like:
+                                       fastq1,fastq2,index_fastq1,index_fastq2, index_fastq3..., or
+                                       PATH_TO_10xfastqs_folder
                                 output: peak-by-cell matrix and all intermediate results 
           process_no_dex: processing data without demultiplexing
                                 input: demultiplexed fastq files for both reads and index, separated by comma like:

@@ -22,10 +22,11 @@ ${curr_dir}/motif_analysis.sh $input_mtx $2 $3
 seurat_obj=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/seurat_obj.rds
 ## do DA
 if [ "$RUN_DA" = "TRUE" ]; then
-    ${curr_dir}/runDA.sh $seurat_obj $2 $3 &
+    ${curr_dir}/runDA.sh ${group1},${group2} $2 $3 &
 fi
 
-SPLIT_BAM2CLUSTER=${SPLIT_BAM2CLUSTER^^}
+#SPLIT_BAM2CLUSTER=${SPLIT_BAM2CLUSTER^^}
+SPLIT_BAM2CLUSTER=$(echo $SPLIT_BAM2CLUSTER | tr a-z A-Z)
 ## split bam to cluster
 if [ "$SPLIT_BAM2CLUSTER" = "TRUE" ]; then
     input_cluster_table=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/cell_cluster_table.txt 
@@ -43,8 +44,12 @@ if [ "$RUN_Cicero" = "TRUE" ]; then
     ${curr_dir}/runCicero.sh $seurat_obj $2 $3 &
 fi
 
+wait
+
 ## footprinting analysis
-${curr_dir}/footprint.sh ${group1_fp},${group2_fp} $2 $3
+if [ "$DO_FOOTPRINT" = "TRUE" ]; then
+    ${curr_dir}/footprint.sh ${group1_fp},${group2_fp} $2 $3
+fi
 
 ${curr_dir}/report.sh ${OUTPUT_DIR}/summary $2 $3
 

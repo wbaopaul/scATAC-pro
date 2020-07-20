@@ -34,7 +34,8 @@ rm ${map_dir}/cell_barcodes.sam
 rm ${map_dir}/non_cell_barcodes.sam
 
 ## QC using cell barcodes bam
-CELL_MAP_QC=${CELL_MAP_QC^^}
+#CELL_MAP_QC=${CELL_MAP_QC^^}
+CELL_MAP_QC=$(echo $CELL_MAP_QC | tr a-z A-Z)
 if [[ "$CELL_MAP_QC"="TRUE" ]]; then
 
     echo "generate mapping stats for aggregated cell barcodes file..."
