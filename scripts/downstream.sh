@@ -37,13 +37,12 @@ wait
 
 ## go analysis
 if [ "$RUN_GO" = "TRUE" ]; then
-    ${curr_dir}/runGO.sh ${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_${group1}_vs_${group2}.txt $2 $3 &
+    ${curr_dir}/runGO.sh ${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_${group1}_vs_${group2}.txt $2 $3 & 
 fi
 
 if [ "$RUN_Cicero" = "TRUE" ]; then
     ${curr_dir}/runCicero.sh $seurat_obj $2 $3 &
 fi
-
 wait
 
 ## footprinting analysis
