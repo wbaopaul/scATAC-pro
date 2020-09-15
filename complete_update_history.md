@@ -1,7 +1,10 @@
 ## Complete Update History
-- Current version: 1.1.4
+- Current version: 1.2.0
+    * add metadata to seurat obj
+    * update downstream tutorial
+- VERSION **1.1.4** released
     * *demplx_fastq*: the input supports directory path of 10x fastq files
-- Current version: 1.1.3
+- VERSION: 1.1.3 released
     * *runGO*: update background genes to be all genes associated with any peak
 - May, 2020 --VERSION **1.1.2** released
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
