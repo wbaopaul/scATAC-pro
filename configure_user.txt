@@ -63,13 +63,12 @@ CELL_MAP_QC = TRUE  ## output mapping stats for cell barcodes
 PEAK_CALLER = MACS2  ## one of MACS2, BIN, and COMBINED
 
 ## provided extra options for macs2 (NO NEED TO SPECIFY -t, -n, -f here), like
-## (change -g mm if you are using mouse data) 
 
 #MACS2_OPTS = -q 0.01 -g hs 
+## (change to -g mm if you are using mouse data) 
 
 ## or something like this to ignore building shifting model 
 MACS2_OPTS = -q 0.01 -g hs --nomodel --extsize 200 --shift -100
-
 
 BIN_RESL = 5000    ## bin resolution in bp
 
@@ -98,7 +97,7 @@ Top_Variable_Features = 10000 ## number/fraction of variable features used for s
 REDUCTION = pca  ## pca/lda, note that UMAP and TSNE will be automatically calculated correspondly
 nREDUCTION = 30 ## the reduced dimension
 CLUSTERING_METHOD = seurat  ## seurat/cisTopic/kmeans/LSI/SCRAT/chromVAR/scABC
-K_CLUSTERS = NULL  ## the number of cluster, will set resolution as 0.2 if it's NULL
+K_CLUSTERS = NULL  ## the number of clusters, will set resolution as 0.2 if it's NULL
 prepCello = TRUE  ## generate object for VisCello (for visualization)
 
 
@@ -158,8 +157,8 @@ Cicero_Plot_Region = chr5:140610000-140640000
 ## integrate two or more samples
 ## by VFACS, seurat cca, harmony, or pool 
 ############################################################################
-Integrate_By = VFACS  ## VFACS, seurat, pool or harmony 
-prepCello4Integration = TRUE ## prepare cello for integrated object
+Integrate_By = VFACS  ## one of VFACS, seurat, pool or harmony 
+prepCello4Integration = FALSE ## prepare cello for integrated object
 
 
 

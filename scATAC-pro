@@ -247,7 +247,10 @@ for i in ${AVAILABLE_STEP_ARRAY[@]}; do
 done
 
 
-if [[ $check_s = 0 ]]; then die "Unknown STEP option (\"-s $s\"). Use $0 --help for usage information."; fi
+if [[ $check_s = 0 ]]; then 
+    echo "Unknown step name '$STEP' found. Use $0 --help for usage information." >&2
+    exit 1
+fi
 
 
 ############################
