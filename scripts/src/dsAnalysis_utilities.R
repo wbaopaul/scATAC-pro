@@ -1,8 +1,8 @@
 library(data.table)
 library(magrittr)
 library(Seurat)
-library(chromVAR)
-library(motifmatchr)
+#library(chromVAR)
+#library(motifmatchr)
 library(SummarizedExperiment)
 library(BiocParallel)
 library(compiler)
@@ -402,6 +402,8 @@ run_scABC <- function(mtx, k = 5){
 
 run_chromVAR <- function(mtx, genomeName = 'BSgenome.Hsapiens.UCSC.hg38',
                          ncore = 3){
+  library(chromVAR)
+  library(motifmatchr)
   rs = Matrix::rowSums(mtx)
   mtx = mtx[rs > 0, ]  
   register(MulticoreParam(3))
