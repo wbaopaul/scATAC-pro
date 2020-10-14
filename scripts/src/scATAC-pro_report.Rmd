@@ -99,7 +99,7 @@ kable(mapping_qc, col.names = NULL, format = 'html', caption = paste('Sample:', 
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
 write.table(mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Global_Mapping_Statistics.tsv'),
-	    col.names = F, sep = '\t', quote = F)
+	    col.names = F, row.names = F, sep = '\t', quote = F)
 ```
 
 
@@ -171,7 +171,7 @@ if(CELL_MAP_QC){
       kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
     write.table(cell_mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Cell_Mapping_QC.tsv'),
-		col.names = F, quote = F, sep = '\t')
+		col.names = F, quote = F, row.names = F, sep = '\t')
 
 }
 ```
