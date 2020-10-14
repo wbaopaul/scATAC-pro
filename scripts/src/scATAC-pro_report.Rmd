@@ -73,6 +73,7 @@ read_conf_file <- function(configure_user_file){
   }
 }
 
+dir.create(paste0(params$output_dir, '/summary/Tables'), showWarnings = F)
 
 read_conf_file(params$configure_user)
 plotEPS = as.logical(plotEPS)
@@ -97,6 +98,8 @@ mapping_qc = rbind(mapping_qc, data.frame(V1 ='Library Complexity (nonredudant f
 kable(mapping_qc, col.names = NULL, format = 'html', caption = paste('Sample:', OUTPUT_PREFIX)) %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
+write.table(mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Global_Mapping_Statistics.tsv'),
+	    col.names = F, sep = '\t', quote = F)
 ```
 
 
@@ -104,7 +107,7 @@ Column
 -----------------------------------------------------------------------
 
 
-### Cell barcodes Summary 
+### Cell Calling Summary 
 
 ```{r}
 cell_mapping_qc_file = paste0(params$output_dir, '/summary/cell_barcodes.MappingStats')
@@ -115,10 +118,13 @@ cell_mapping_qc = fread(cell_mapping_qc_file, header = F)
 
 bc_stat_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX, '.', PEAK_CALLER, '.qc_per_barcode.txt')
 selected_bcs = paste0(params$output_dir, '/filtered_matrix/', PEAK_CALLER, '/', CELL_CALLER, '/barcodes.txt')
+peak_file = paste0(params$output_dir, '/peaks/', PEAK_CALLER, '/', OUTPUT_PREFIX, '_features_BlacklistRemoved.bed')
 
 bc_stat = fread(bc_stat_file)
 
 barcodes = fread(selected_bcs, header = F)$V1
+
+peaks = fread(peak_file)
 
 qc_sele = bc_stat[bc %in% barcodes, ]
 qc_nonsele = bc_stat[!bc %in% barcodes, ]
@@ -134,12 +140,16 @@ frac.in.cell = paste0(round(cell_mapping_qc$V2[2]/as.integer(as.character(mappin
 med.frag.per.cell = round(median(qc_sele$total_frags))
 frac.uniq = paste0(round(nrow(frags[bc %in% barcodes])/sum(frags[bc %in% barcodes]$ndup), 3) * 100, '%')
 
-cell.table = data.frame(c(CELL_CALLER,  paste0(ncells),  paste0(med.frag.per.cell), frac.in.cell, mapq30.frac.in.cell)) 
+cell.table = data.frame(c(CELL_CALLER,  paste0(ncells), nrow(peaks), paste0(med.frag.per.cell), frac.in.cell, mapq30.frac.in.cell)) 
 
-rownames(cell.table) = c('Cell called by', 'Estimated # of cells',  'Median fragments per cell', 'Fraction of Mapped reads in cells', 'Fraction of MAPQ30 in cells')  
+rm(peaks)
+
+rownames(cell.table) = c('Cell called by', 'Estimated # of cells', 'Number of peaks',  'Median fragments per cell', 'Fraction of Mapped reads in cells', 'Fraction of MAPQ30 in cells')  
 kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
+write.table(cell.table, file = paste0(params$output_dir, '/summary/Tables/Cell_Calling_Summary.tsv'),
+	   col.names = F, quote = F, sep = '\t')
 
 ```
 
@@ -159,6 +169,10 @@ if(CELL_MAP_QC){
 
     kable(cell_mapping_qc, col.names = NULL, format = 'html') %>%
       kable_styling("striped", full_width = F, position = 'left', font_size = 15)
+
+    write.table(cell_mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Cell_Mapping_QC.tsv'),
+		col.names = F, quote = F, sep = '\t')
+
 }
 ```
 
@@ -348,6 +362,8 @@ kable(fracs, row.names = T, col.names = NULL) %>%
   kable_styling(full_width = F, position = 'left', font_size = 15)
 
 
+write.table(fracs, file = paste0(params$output_dir, '/summary/Tables/Cell_FunctionRegion_Statistics.tsv'),
+		col.names = F, quote = F, sep = '\t')
 
 ```
 
