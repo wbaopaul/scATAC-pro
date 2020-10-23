@@ -107,7 +107,7 @@ Column
 -----------------------------------------------------------------------
 
 
-### Cell Calling Summary 
+### Cell/Peak Calling Summary 
 
 ```{r}
 cell_mapping_qc_file = paste0(params$output_dir, '/summary/cell_barcodes.MappingStats')
@@ -139,16 +139,27 @@ frac.in.cell = paste0(round(cell_mapping_qc$V2[2]/as.integer(as.character(mappin
 
 med.frag.per.cell = round(median(qc_sele$total_frags))
 frac.uniq = paste0(round(nrow(frags[bc %in% barcodes])/sum(frags[bc %in% barcodes]$ndup), 3) * 100, '%')
+frac.in.peak = sum(bc_stat$total_frags * bc_stat$frac_peak)/sum(bc_stat$total_frags)
+frac.in.peak = paste0(round(frac.in.peak, 3)*100, '%')
 
-cell.table = data.frame(c(CELL_CALLER,  paste0(ncells), nrow(peaks), paste0(med.frag.per.cell), frac.in.cell, mapq30.frac.in.cell)) 
+cell.table = data.frame(c(PEAK_CALLER, nrow(peaks),
+                          frac.in.peak, 
+                          CELL_CALLER,  paste0(ncells),
+                          paste0(med.frag.per.cell), 
+                          frac.in.cell, mapq30.frac.in.cell)) 
 
 rm(peaks)
 
-rownames(cell.table) = c('Cell called by', 'Estimated # of cells', 'Number of peaks',  'Median fragments per cell', 'Fraction of Mapped reads in cells', 'Fraction of MAPQ30 in cells')  
+rownames(cell.table) = c('Peak called by', 'Number of peaks', 
+                         'Fraction of unique fragments in peaks',
+                         'Cell called by', 'Estimated # of cells',
+                         'Median No. unique fragments per cell', 
+                         'Fraction of Mapped reads in cells', 'Fraction of MAPQ30 in cells')  
+
 kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
-write.table(cell.table, file = paste0(params$output_dir, '/summary/Tables/Cell_Calling_Summary.tsv'),
+write.table(cell.table, file = paste0(params$output_dir, '/summary/Tables/CellAndPeak_Calling_Summary.tsv'),
 	   col.names = F, quote = F, sep = '\t')
 
 ```
