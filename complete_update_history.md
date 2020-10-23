@@ -1,7 +1,7 @@
 ## Complete Update History
 - Current version: 1.2.0
+    * save qc statistics in tables
     * add metadata to seurat obj
-    * update downstream tutorial
 - VERSION **1.1.4** released
     * *demplx_fastq*: the input supports directory path of 10x fastq files
 - VERSION: 1.1.3 released

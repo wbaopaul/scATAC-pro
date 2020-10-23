@@ -19,6 +19,7 @@ norm_by = args[7]
 REDUCTION = args[8]
 nREDUCTION = as.integer(args[9])
 top_variable_features = as.numeric(args[10])
+qc_stat_file = args[11]
 
 mtx = read_mtx_scATACpro(mtx_file)
 
@@ -37,6 +38,21 @@ mtx = mtx[, cfreqs > 0]
 
 seurat.obj = runSeurat_Atac(mtx, npc = nREDUCTION, norm_by = norm_by, 
                                top_variable_features = top_variable_features, reg.var = 'nCount_ATAC')
+
+## add qc stat to each cell
+qc_singlecell = fread(qc_stat_file)
+qc_singlecell = qc_singlecell[bc %in% colnames(seurat.obj)]
+qc_singlecell = data.frame(qc_singlecell)
+rownames(qc_singlecell) = qc_singlecell$bc
+qc_singlecell$bc = NULL
+names(qc_singlecell) =  c("total.unique.frags", "frac.mito",  "frac.peak",
+                         "frac.promoter", "frac.tss", "frac.enhancer")
+seurat.obj <- AddMetaData(seurat.obj, metadata = qc_singlecell)
+
+
+
+
+
 if(REDUCTION != 'lda'){
     seurat.obj = RunTSNE(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', check_duplicates = FALSE)
     seurat.obj = RunUMAP(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', verbose = F)
