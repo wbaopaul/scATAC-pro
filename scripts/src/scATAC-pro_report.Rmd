@@ -158,7 +158,7 @@ rm(peaks)
 rownames(cell.table) = c('Peak called by', 'Number of peaks', 
                          'Percentage of unique fragments in peaks',
                          'Cell called by', 'Estimated # of cells',
-                         'Median No.of unique fragments per cell', 
+                         'Median # of unique fragments per cell', 
                          'Percentage of Mapped reads in cells', 'Percentage of MAPQ30 reads in cells')  
 
 kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
