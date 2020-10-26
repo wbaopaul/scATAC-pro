@@ -344,16 +344,6 @@ visualize: config_check
 	@echo 
 
 #######################################
-## addQC2seurat
-#######################################
-visualize: config_check
-	@echo "--------------------------------------------" 
-	@date 
-	@echo "add cell qc metric to seurat object ..." 
-	@$(SCRIPTS)/addQC2seurat.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
-	@echo 
-
-#######################################
 ## all
 #######################################
 all: config_check

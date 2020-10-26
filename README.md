@@ -51,8 +51,11 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.2.0
 - Recent updates
+    * updated footprint dependent module *rgt-hint* to python3
+    * saved qc statistics in html report into tables, and added peak calling summary in the report
+    * added qc per cell to metadata of the seurat object as: total.unique.frags, frac.peak, frac.mito,
+      frac.tss, frac.promoter, and frac.enhancer
     * *demplx_fastq*: the input supports PATH to the DIRECTORY of 10x fastq files
-    * *runGO*: update background genes to be all genes associated with any peak
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file
@@ -87,7 +90,7 @@ Dependencies
 -   bedtools (&gt;=2.27.1)
 -   deepTools (&gt;=3.2.1)
 -   trim\_galore (&gt;=0.6.3), Trimmomatic (&gt;=0.6.3)
--   Regulratory Genomics Toolbox (RGT, for footprinting analysis, will ask whether you want to install it since the installation is done through conda, which takes a while and you may not want to conduct footprinting analysis)
+-   Regulratory Genomics Toolbox (RGT, for footprinting analysis)
 -   g++ compiler, bzip2, ncurses-devel
 -   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, xlsx, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, VisCello.atac
 
