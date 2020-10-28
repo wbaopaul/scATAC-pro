@@ -435,6 +435,7 @@ if [ $wasInstalled == 0 ]; then
             conda install cutadapt -y --channel bioconda
         else
             pip install --user --upgrade cutadapt
+            export PATH=~/.local/bin:$PATH
         fi
     fi
 
@@ -602,6 +603,7 @@ fi
 
 which trim_galore > /dev/null 2>&1
 if [ $? = "0" ]; then
+    echo "CUTADAPT_PATH = "`dirname $(which cutadapt)` >> configure_system.txt
     echo "TRIM_GALORE_PATH = "`dirname $(which trim_galore)` >> configure_system.txt
 fi
 

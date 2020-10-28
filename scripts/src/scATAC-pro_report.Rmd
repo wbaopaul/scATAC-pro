@@ -147,9 +147,13 @@ frac.uniq = paste0(round(nrow(frags[bc %in% barcodes])/sum(frags[bc %in% barcode
 frac.in.peak = sum(bc_stat$total_frags * bc_stat$frac_peak)/sum(bc_stat$total_frags)
 frac.in.peak = paste0(round(frac.in.peak, 3)*100, '%')
 
+frac.in.cell = sum(qc_sele$total_frags)/sum(bc_stat$total_frags)
+frac.in.cell = paste0(round(frac.in.cell, 3)*100, '%')
+
 cell.table = data.frame(c(PEAK_CALLER, nrow(peaks),
                           frac.in.peak, 
                           CELL_CALLER,  paste0(ncells),
+                          frac.in.cell,
                           paste0(med.frag.per.cell), 
                           frac.in.cell, mapq30.frac.in.cell)) 
 
@@ -158,8 +162,10 @@ rm(peaks)
 rownames(cell.table) = c('Peak called by', 'Number of peaks', 
                          'Percentage of unique fragments in peaks',
                          'Cell called by', 'Estimated # of cells',
+                         'Percentage of unique fragments in cells',
                          'Median # of unique fragments per cell', 
-                         'Percentage of Mapped reads in cells', 'Percentage of MAPQ30 reads in cells')  
+                         'Percentage of Mapped fragments in cells', 
+                         'Percentage of MAPQ30 fragments in cells')  
 
 kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)

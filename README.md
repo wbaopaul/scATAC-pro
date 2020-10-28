@@ -51,7 +51,7 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.2.0
 - Recent updates
-    * updated footprint dependent module *rgt-hint* to python3
+    * updated footprinting analysis dependent module *rgt-hint* to python3
     * saved qc statistics in html report into tables, and added peak calling summary in the report
     * added qc per cell to metadata of the seurat object as: total.unique.frags, frac.peak, frac.mito,
       frac.tss, frac.promoter, and frac.enhancer
