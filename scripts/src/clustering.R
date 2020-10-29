@@ -70,9 +70,14 @@ if(cluster_method == 'seurat'){
   if (toupper(k) == 'NULL' || k == '0'){
     resl = 0.2
   }else{
-   k = as.integer(k)
-    resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = nREDUCTION, k = k,
-                                min_resl = 0.01)
+    k = as.numeric(k)
+    ki = as.integer(k)
+    if(k >= 2 & k == ki) {
+        resl = queryResolution4Seurat(seurat.obj, reduction = 'pca', npc = nREDUCTION, k = ki,
+                            min_resl = 0.01)
+    }else{
+        resl = k
+    }
   }
   seurat.obj = FindClusters(seurat.obj, resolution = resl)
   seurat.obj$active_clusters = seurat.obj$seurat_clusters
