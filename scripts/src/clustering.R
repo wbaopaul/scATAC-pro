@@ -83,6 +83,7 @@ if(cluster_method == 'seurat'){
   seurat.obj$active_clusters = seurat.obj$seurat_clusters
 }
 
+k = as.integer(k)
 
 if(grepl(REDUCTION, pattern = 'lda', ignore.case = T)){
     

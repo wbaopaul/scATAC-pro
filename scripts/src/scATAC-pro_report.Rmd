@@ -98,7 +98,7 @@ lib_complx = paste0(100 * round(lib_complx, 3), '%')
 mapping_qc$frac = round(mapping_qc$V2/mapping_qc$V2[1], 3)
 mapping_qc$frac = paste0(100*mapping_qc$frac, '%')
 
-mapping_qc = rbind(mapping_qc, data.frame(V1 ='Library Complexity (nonredudant fraction)', V2 = '', frac = lib_complx))
+mapping_qc = rbind(mapping_qc, data.frame(V1 ='Library Complexity (#unique fragments/#fragments)', V2 = '', frac = lib_complx))
 
 kable(mapping_qc, col.names = NULL, format = 'html', caption = paste('Sample:', OUTPUT_PREFIX)) %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
@@ -187,12 +187,12 @@ if(CELL_MAP_QC){
     cell_mapping_qc$frac = round(cell_mapping_qc$V2/cell_mapping_qc$V2[1], 3)
     cell_mapping_qc$frac = paste0(100*cell_mapping_qc$frac, '%')
 
-    cell_mapping_qc = rbind(cell_mapping_qc, data.frame(V1 ='Library Complexity (nonredudant fraction)', V2 = '', frac = lib_complx))
+    cell_mapping_qc = rbind(cell_mapping_qc, data.frame(V1 ='Library Complexity (#unique fragments/#fragments)', V2 = '', frac = lib_complx))
 
     write.table(cell_mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Cell_Mapping_QC.tsv'),
 		col.names = F, quote = F, row.names = F, sep = '\t')
 
-    kable(cell_mapping_qc, row.names = T, col.names = NULL, format = 'html') %>%
+    kable(cell_mapping_qc, row.names = F, col.names = NULL, format = 'html') %>%
       kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
 
