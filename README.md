@@ -422,12 +422,12 @@ Run scATAC-pro through docker or singularity
 ----------------------------------
 In case you have problem in installing dependencies, you can run scATAC-pro without installing dependencies in **one of** the following ways:
 
-1. Run the pre-built dockerized version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro)
+1. Run the pre-built dockerized version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro) 
 
 2. Run it through singularity (which is more friendly with high performance cluster or HPC, and linux server) by running the following command:
 
 ```
-$ singularity pull -F docker://wbaopaul/scatac-pro 
+$ singularity pull -F docker://wbaopaul/scatac-pro:latest 
 ## will generate scatac-pro_latest.sif in current directory
 
 $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s XXX -i XXX -c XXX
@@ -441,11 +441,11 @@ $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro 
 #!/bin/bash
 module load singularity
 
-singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run this line once
+singularity pull -F docker://wbaopaul/scatac-pro:latest  ## you just need run this line once
 ## will generate scatac-pro_latest.sif in the current directory
 
 singularity exec --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
-scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
+scATAC-pro -s mapping -i fastq_PE1_file,fastq_PE2_file -c configure_user.txt
 
 # and then qsub mapping.sh
 ```

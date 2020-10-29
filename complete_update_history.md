@@ -1,6 +1,6 @@
 ## Complete Update History
 - Current version: 1.2.0
-    * update footprint dependent rgt-hint module to python3
+    * update footprint dependency *rgt-hint* module to python3
     * save qc statistics in html report into tables, and peak calling summary inf added in the report
     * add qc per cell to seurat obj metadata as: total.unique.frags, frac.peak, frac.mito,
       frac.tss, frac.promoter, and frac.enhancer
