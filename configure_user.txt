@@ -97,7 +97,7 @@ Top_Variable_Features = 10000 ## number/fraction of variable features used for s
 REDUCTION = pca  ## pca/lda, note that UMAP and TSNE will be automatically calculated correspondly
 nREDUCTION = 30 ## the reduced dimension
 CLUSTERING_METHOD = seurat  ## seurat/cisTopic/kmeans/LSI/SCRAT/chromVAR/scABC
-K_CLUSTERS = NULL  ## the number of clusters, will set resolution as 0.2 if it's NULL
+K_CLUSTERS = 0.2  ## the number of cluster (in integer) or the resolution parameter (in float) for louvain algorithm (implemented by seurat)
 prepCello = TRUE  ## generate object for VisCello (for visualization)
 
 

@@ -13,9 +13,11 @@ abs_out_dir=`cd ${OUTPUT_DIR}; pwd`
 abs_down_dir=${abs_out_dir}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}
 mkdir -p $abs_down_dir
 
+
+bc_stat_file=${abs_out_dir}/summary/${OUTPUT_PREFIX}.${PEAK_CALLER}.qc_per_barcode.txt
 curr_dir=`dirname $0`
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R $mtx_file $CLUSTERING_METHOD $K_CLUSTERS $abs_down_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features 
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R $mtx_file $CLUSTERING_METHOD $K_CLUSTERS $abs_down_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features $bc_stat_file 
 
 
 if [ "$prepCello" = "TRUE" ]; then

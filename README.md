@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.1.4
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.2.0
 
 <!-- -->
 
@@ -49,10 +49,13 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.1.4
+- Current version: 1.2.0
 - Recent updates
+    * updated footprinting analysis dependent module *rgt-hint* to python3
+    * saved qc statistics in html report into tables, and added peak calling summary in the report
+    * added qc per cell to metadata of the seurat object as: total.unique.frags, frac.peak, frac.mito,
+      frac.tss, frac.promoter, and frac.enhancer
     * *demplx_fastq*: the input supports PATH to the DIRECTORY of 10x fastq files
-    * *runGO*: update background genes to be all genes associated with any peak
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file
@@ -87,7 +90,7 @@ Dependencies
 -   bedtools (&gt;=2.27.1)
 -   deepTools (&gt;=3.2.1)
 -   trim\_galore (&gt;=0.6.3), Trimmomatic (&gt;=0.6.3)
--   Regulratory Genomics Toolbox (RGT, for footprinting analysis, will ask whether you want to install it since the installation is done through conda, which takes a while and you may not want to conduct footprinting analysis)
+-   Regulratory Genomics Toolbox (RGT, for footprinting analysis)
 -   g++ compiler, bzip2, ncurses-devel
 -   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, xlsx, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, VisCello.atac
 
@@ -278,7 +281,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.1.4
+    scATAC-pro 1.2.0
     ---------------
     OPTIONS
 
@@ -419,12 +422,12 @@ Run scATAC-pro through docker or singularity
 ----------------------------------
 In case you have problem in installing dependencies, you can run scATAC-pro without installing dependencies in **one of** the following ways:
 
-1. Run the pre-built dockerized version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro)
+1. Run the pre-built dockerized version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro) 
 
 2. Run it through singularity (which is more friendly with high performance cluster or HPC, and linux server) by running the following command:
 
 ```
-$ singularity pull -F docker://wbaopaul/scatac-pro 
+$ singularity pull -F docker://wbaopaul/scatac-pro:latest 
 ## will generate scatac-pro_latest.sif in current directory
 
 $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s XXX -i XXX -c XXX
@@ -438,11 +441,11 @@ $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro 
 #!/bin/bash
 module load singularity
 
-singularity pull -F docker://wbaopaul/scatac-pro  ## you just need run this line once
+singularity pull -F docker://wbaopaul/scatac-pro:latest  ## you just need run this line once
 ## will generate scatac-pro_latest.sif in the current directory
 
 singularity exec --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
-scATAC-pro -s mapping -i fastq_file1,fastq_file2 -c configure_user.txt
+scATAC-pro -s mapping -i fastq_PE1_file,fastq_PE2_file -c configure_user.txt
 
 # and then qsub mapping.sh
 ```

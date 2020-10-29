@@ -60,24 +60,24 @@ Column
 
 ```{r}
 
-read_conf <- function(){
-  
-  system(paste0('grep = ', params$configure_user, " | grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' > ", params$output_dir, "/vrs.txt"))
-  
-  system(paste0('grep = ', params$configure_user, " | grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' > ", params$output_dir, "/vls.txt"))
-  
-  vrs = readLines(paste0(params$output_dir, '/vrs.txt'))
-  vls = readLines(paste0(params$output_dir, '/vls.txt'))
+read_conf_file <- function(configure_user_file){
+
+  system(paste0('grep = ', configure_user_file, " | grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' >  /tmp/vrs.txt"))
+
+  system(paste0('grep = ', configure_user_file, " | grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' >  /tmp/vls.txt"))
+
+  vrs = readLines('/tmp/vrs.txt')
+  vls = readLines('/tmp/vls.txt')
   for(i in 1:length(vrs)){
     assign(vrs[i], vls[i], envir = .GlobalEnv)
   }
-#  system(paste0('rm', params$output_dir, '/vrs.txt'))
-#  system(paste0('rm', params$output_dir, '/vls.txt'))
 }
 
-read_conf()
-plotEPS = as.logical(plotEPS)
+dir.create(paste0(params$output_dir, '/summary/Tables'), showWarnings = F)
 
+read_conf_file(params$configure_user)
+plotEPS = as.logical(plotEPS)
+if(plotEPS) dir.create(paste0(params$output_dir, '/summary/Figures'), showWarn = F)
 mapping_qc_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.MappingStats')
 
 fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt')
@@ -98,6 +98,8 @@ mapping_qc = rbind(mapping_qc, data.frame(V1 ='Library Complexity (nonredudant f
 kable(mapping_qc, col.names = NULL, format = 'html', caption = paste('Sample:', OUTPUT_PREFIX)) %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
+write.table(mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Global_Mapping_Statistics.tsv'),
+	    col.names = F, row.names = F, sep = '\t', quote = F)
 ```
 
 
@@ -105,7 +107,7 @@ Column
 -----------------------------------------------------------------------
 
 
-### Cell barcodes Summary 
+### Cell/Peak Calling Summary 
 
 ```{r}
 cell_mapping_qc_file = paste0(params$output_dir, '/summary/cell_barcodes.MappingStats')
@@ -114,12 +116,15 @@ cell_mapping_qc = fread(cell_mapping_qc_file, header = F)
 
 
 
-bc_stat_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.qc_per_barcode.txt')
+bc_stat_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX, '.', PEAK_CALLER, '.qc_per_barcode.txt')
 selected_bcs = paste0(params$output_dir, '/filtered_matrix/', PEAK_CALLER, '/', CELL_CALLER, '/barcodes.txt')
+peak_file = paste0(params$output_dir, '/peaks/', PEAK_CALLER, '/', OUTPUT_PREFIX, '_features_BlacklistRemoved.bed')
 
 bc_stat = fread(bc_stat_file)
 
 barcodes = fread(selected_bcs, header = F)$V1
+
+peaks = fread(peak_file)
 
 qc_sele = bc_stat[bc %in% barcodes, ]
 qc_nonsele = bc_stat[!bc %in% barcodes, ]
@@ -134,13 +139,28 @@ frac.in.cell = paste0(round(cell_mapping_qc$V2[2]/as.integer(as.character(mappin
 
 med.frag.per.cell = round(median(qc_sele$total_frags))
 frac.uniq = paste0(round(nrow(frags[bc %in% barcodes])/sum(frags[bc %in% barcodes]$ndup), 3) * 100, '%')
+frac.in.peak = sum(bc_stat$total_frags * bc_stat$frac_peak)/sum(bc_stat$total_frags)
+frac.in.peak = paste0(round(frac.in.peak, 3)*100, '%')
 
-cell.table = data.frame(c(CELL_CALLER,  paste0(ncells),  paste0(med.frag.per.cell), frac.in.cell, mapq30.frac.in.cell)) 
+cell.table = data.frame(c(PEAK_CALLER, nrow(peaks),
+                          frac.in.peak, 
+                          CELL_CALLER,  paste0(ncells),
+                          paste0(med.frag.per.cell), 
+                          frac.in.cell, mapq30.frac.in.cell)) 
 
-rownames(cell.table) = c('Cell called by', 'Estimated # of cells',  'Median fragments per cell', 'Fraction of Mapped reads in cells', 'Fraction of MAPQ30 in cells')  
+rm(peaks)
+
+rownames(cell.table) = c('Peak called by', 'Number of peaks', 
+                         'Fraction of unique fragments in peaks',
+                         'Cell called by', 'Estimated # of cells',
+                         'Median No.of unique fragments per cell', 
+                         'Fraction of Mapped reads in cells', 'Fraction of MAPQ30 reads in cells')  
+
 kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
+write.table(cell.table, file = paste0(params$output_dir, '/summary/Tables/CellAndPeak_Calling_Summary.tsv'),
+	   col.names = F, quote = F, sep = '\t')
 
 ```
 
@@ -160,6 +180,10 @@ if(CELL_MAP_QC){
 
     kable(cell_mapping_qc, col.names = NULL, format = 'html') %>%
       kable_styling("striped", full_width = F, position = 'left', font_size = 15)
+
+    write.table(cell_mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Cell_Mapping_QC.tsv'),
+		col.names = F, quote = F, row.names = F, sep = '\t')
+
 }
 ```
 
@@ -190,8 +214,6 @@ g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), nsub_frags), ],
             axis.title = element_text(size = 18, family = "Helvetica")) +
   xlab('Total #Unique Fragments') + ylab('Fraction in Peak')
 
-#bb = ggplot_build(g)
-#cols = unique(bb[[1]][[1]]$colour)
 
 text1 <- grobTree(textGrob("Cell", x=0.8,  y=0.93, hjust=0,
   gp=gpar(col='#F8766D', fontsize=15, fontface = 'bold', fontfamily = "Helvetica")))
@@ -201,11 +223,7 @@ text2 <- grobTree(textGrob("Non-cell", x=0.8,  y=0.83, hjust=0,
 g <- g + annotation_custom(text1) + annotation_custom(text2)
 g
 
-if(plotEPS){
-  system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
-  pfname = paste0(params$output_dir, '/summary/Figures/fracInPeak_vs_totalFragments.eps')
-  ggsave(g, file = pfname, device = 'eps', width = 6, height = 6)
-}
+
 
 ```
 
@@ -237,8 +255,8 @@ if(plotEPS){
 
 ### TSS enrichment score profile
 ```{r}
-#tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
-tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.aggregated.mtx.gz')
+tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.MAPQ30.aggregated.mtx.gz')
+if(!file.exists(tss_escore_file)) tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
 
 set.cols = brewer.pal(n=5, name = 'Dark2')
 tss.mat = fread(tss_escore_file)
@@ -355,6 +373,8 @@ kable(fracs, row.names = T, col.names = NULL) %>%
   kable_styling(full_width = F, position = 'left', font_size = 15)
 
 
+write.table(fracs, file = paste0(params$output_dir, '/summary/Tables/Cell_FunctionRegion_Statistics.tsv'),
+		col.names = F, quote = F, sep = '\t')
 
 ```
 
@@ -395,27 +415,42 @@ if(file.exists(seurat_file)){
 
 ### GO Analysis
 ```{r, warning=F, message=F}
-go_file = paste0(down.dir, '/enrichedGO_differential_accessible_features_cluster_', group1, 
-                  '_VS_cluster_', group2, '.txt.xlsx')
+go_file = paste0(down.dir, '/enrichedGO_differential_accessible_features_', group1, 
+                  '_vs_', group2, '.xlsx')
 if(file.exists(go_file)){
-   #library(xlsx)
-    go_res1 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group1))
-    go_res2 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group2))
-    go_res = go_res1
-    group.sele = group1
-    if(nrow(go_res) == 0) {
-        go_res = go_res2
-        group.sele = group2
+    if(grepl(group1, pattern = 'one')){
+      tmp = list()
+      wb <- xlsx::loadWorkbook(go_file)
+      sheets = xlsx::getSheets(wb)
+      for(i in names(sheets)) tmp[[i]] = xlsx::read.xlsx(go_file, sheetName = i)
+      ll = sapply(tmp, nrow)
+      go_res = tmp[[which.max(ll)]]
+      group.sele = names(sheets)[which.max(ll)]
+      group.sele = gsub('cluster', '', group.sele)
+    }else{
+       go_res1 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group1))
+       go_res2 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group2))
+       go_res = go_res1
+       group.sele = group1
+       if(nrow(go_res1) < nrow(go_res2) & group2 != 'rest'){
+         go_res = go_res2
+         group.sele = group2
+       }
     }
+    
+    
     if(nrow(go_res) == 0) {
-        print('No enriched terms in any of the two groups')
+        if(grepl(group1, pattern = 'one')) {
+            print(paste0('No enriched terms in comparison of ', group1, '_vs_', group2))}else{
+            print(paste0('No enriched terms in comparison of cluster_', group1, '_vs_', group2))
+          }
     }else{
         #go_res = fread(go_file)
         go_res = data.table(go_res)
         go_res[, 'score' := -log10(p.adjust)]
         go_res = go_res[order(-score), ]
         ngo = min(20, nrow(go_res))
-        go_res = go_res[1:20, ]
+        go_res = go_res[1:ngo, ]
         go_res = go_res[order(score), ]
         
         go_res$Description = factor(go_res$Description, levels = go_res$Description)
@@ -452,7 +487,7 @@ register(SerialParam())
 
 # Do DA/DE with one cluster vs the rest clusters
 # clusters are the data frame with <barcode> <cluster>
-do_DA <- function(mtx_score, clusters, test = 'wilcox', 
+do_DA_motif <- function(mtx_score, clusters, test = 'wilcox', 
                   only.pos = T, fdr = 0.05, topn = 10){
   clusters$cluster = as.character(clusters$cluster)
   cls = unique(clusters$cluster)
@@ -497,20 +532,17 @@ if(file.exists(seurat_file)){
 
 if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   chromVar.obj = readRDS(paste0(down.dir, '/chromVar_obj.rds'))
-  #variability <- computeVariability(chromVar.obj)
-  #variability = data.table(variability, stringsAsFactors = F)
-  #variability = variability[order(-variability), ]
-  
-  ## calculate DA
-  #dev = chromVar.obj@assays$data$deviations
-  dev = deviations(chromVar.obj)
-  da.res = do_DA(dev, 
+  if(!file.exists(paste0(down.dir, '/differential_TF_motif_enriched_in_clusters.txt'))){
+         dev = deviations(chromVar.obj)
+      da.res = do_DA_motif(dev, 
                  clusters = data.table('barcode' = rownames(metaData),
                                        'cluster' = metaData$active_clusters),
                  topn = 10)
-  rm(dev)
-  write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
-  
+      rm(dev)
+      write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
+  }else{
+    da.res = fread( paste0(down.dir, '/differential_TF_motif_enriched_in_clusters.txt'))
+  }
   
   ## plot enriched TFs in heatmap
   sele.tfs = da.res$feature
@@ -520,10 +552,18 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   
   
   # change tf name to be more readable
-  rnames = rownames(sele.zscores)
-  nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
-  nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
-  rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
+  if(grepl(GENOME_NAME, pattern = 'hg', ignore.case = T)){
+    rnames = rownames(sele.zscores)
+    nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+    nnames1 = sapply(rnames, function(x) unlist(strsplit(x, '_'))[1])
+    rownames(sele.zscores) = ifelse(grepl(nnames, pattern = 'LINE'), nnames1, nnames)
+  }else{
+    rnames = rownames(sele.zscores)
+    nnames = sapply(rnames, function(x) unlist(strsplit(x, '_'))[3])
+    rownames(sele.zscores) = nnames
+    sele.zscores = sele.zscores[!grepl(nnames, pattern = '^LINE'), ]
+  }
+  
   
   metaData$active_clusters = as.character(metaData$active_clusters)
   metaData = data.table(metaData, keep.rownames = T)
@@ -568,7 +608,7 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   ggsave(ph, filename = pfname, device = 'eps', height = 12,
          width = 9)
   #dev.off()
-}
+  }
 
 }
 
@@ -579,58 +619,53 @@ Column
 ----------------------------------------------------
 
 
-### Footprinting Analysis: Comparing two clusters
+### Footprinting Analysis: differentially bound TFs
 
 ```{r, out.width='\\textwidth'}
-comp_cls = paste0('cluster_', group1_fp, '_cluster_', group2_fp)
-footprint_stats.file = paste0(down.dir, '/footprint/', comp_cls, '/differential_statistics.txt')
+
+footprint_stats.file = paste0(down.dir, '/differential_TF_footprint_', 
+                              group1_fp, '_vs_', group2_fp, '.txt')
 if(file.exists(footprint_stats.file)){
-  library(ggrepel)
-  library(gridExtra)
-#  library(grid)
-  footprint_stats = fread(footprint_stats.file)
-
-  footprint_stats[, 'motif1' := unlist(strsplit(Motif, '.', fixed = T))[3], by = Motif]
-  footprint_stats[, 'motif2' := unlist(strsplit(Motif, '.', fixed = T))[4], by = Motif]
-  footprint_stats[, 'motif2' := ifelse(is.na(motif2), "", motif2)]
-  footprint_stats[, 'motif' := paste0(motif1, motif2)]
-  footprint_stats[, c('motif1', 'motif2') := NULL]
   
-  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05, 'differentiated', 'no difference')]
-  footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity > 0, paste0('cluster', group2_fp, '_high'), isSig)]
-   footprint_stats[, 'isSig' := ifelse(P_values <= 0.05 & TF_Activity < 0, paste0('cluster', group1_fp, '_high'), isSig)]
-   
-  footprint_stats$motif_show = ""
-  footprint_stats$motif = toupper(footprint_stats$motif)
-  footprint_stats[P_values <= 0.05]$motif_show = footprint_stats[P_values <= 0.05]$motif
-  
-  
-  
- p <- ggplot(data = footprint_stats, aes(x = motif, y = TF_Activity, 
-                                         colour = factor(isSig), label = motif_show)) + geom_point() + xlab("") + 
-   ylab('TF Activity Difference') + 
-   theme(legend.text = element_text(size=18, family = "Helvetica"), 
-         axis.title = element_text(size = 18, family = "Helvetica"), 
-         axis.text.x = element_blank(), legend.title = element_blank(),
-         legend.direction = 'horizontal', 
-         plot.title = element_text(size = 15, family = "Helvetica",
-         face = 'bold'), panel.background = element_rect(fill = "white"))  + geom_text_repel(force = 10) + 
-   theme(plot.margin=unit(c(0.2, 0, 0.2, 0), "cm"), legend.position = 'bottom') +
-   scale_color_manual(values = c('#F8766D', '#619CFF', 'gray40')) 
- 
- 
-
-if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/footprint_tf_activity.eps')
-  
-  ggsave(p, filename = pfname, device = 'eps', height = 6,
-         width = 6)
-  
+  footprint_out = fread(footprint_stats.file)
+  if(length(unique(footprint_out$motif)) > 100){
+  footprint_out[, 'N' := .N, by = higher_in_cluster]
+  cls = unique(footprint_out[N > 10]$higher_in_cluster)
+  if(length(cls) >= 1){
+    res0 = NULL
+    for(cl0 in cls){
+      tmp = footprint_out[higher_in_cluster == cl0]
+      tmp = tmp[order(P_values)][1:10, ]
+      res0 = rbind(res0, tmp)
+    }
+    footprint_out = rbind(footprint_out[N < 10], res0)
+  }
 }
- 
-p
+
+  mm = reshape2::acast(motif ~ higher_in_cluster, data = footprint_out, 
+                       value.var = "P_values")
+  mm = -log10(mm)
+  mm[is.na(mm)] = 0
+  cn = colnames(mm)
+  cn.new = sapply(cn, function(x) gsub('_higher', '', x))
+  colnames(mm) = cn.new
+  mm[mm > 3] = 3
+  p1 <- pheatmap::pheatmap(mm, cluster_cols = F, fontsize = 13, fontsize_row = 9,
+                           color = viridis::viridis(100))
+  
+  pfname1 =paste0(params$output_dir, '/summary/Figures/heatmap_differential_TF_footprint_', 
+                  group1_fp, '_vs_', group2_fp, '.eps')
+  
+  if(plotEPS){
+    ggsave(p1, filename = pfname1, device = 'eps', height = 6,
+           width = 6)
+  }
+  
+  p1
 
 }
+
+
 
 ```
 

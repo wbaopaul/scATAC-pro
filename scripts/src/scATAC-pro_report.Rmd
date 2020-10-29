@@ -61,18 +61,24 @@ Column
 ```{r}
 
 read_conf_file <- function(configure_user_file){
+   temp1 <- tempfile()
+   temp2 <- tempfile()
+   pr1 = paste0(" | grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' >", temp1)
+   pr2 = paste0(" | grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' >", temp2)
+  system(paste0('grep = ', configure_user_file, pr1))
+  system(paste0('grep = ', configure_user_file, pr2))
 
-  system(paste0('grep = ', configure_user_file, " | grep -v ^# | awk -F= '{print $1}' | awk '{$1=$1;print}' >  /tmp/vrs.txt"))
 
-  system(paste0('grep = ', configure_user_file, " | grep -v ^# | awk -F= '{print $2}' | awk -F# '{print $1}' | awk '{$1=$1;print}' >  /tmp/vls.txt"))
-
-  vrs = readLines('/tmp/vrs.txt')
-  vls = readLines('/tmp/vls.txt')
+  vrs = readLines(temp1)
+  vls = readLines(temp2)
+  unlink(temp1)
+  unlink(temp2)
   for(i in 1:length(vrs)){
     assign(vrs[i], vls[i], envir = .GlobalEnv)
   }
 }
 
+dir.create(paste0(params$output_dir, '/summary/Tables'), showWarnings = F)
 
 read_conf_file(params$configure_user)
 plotEPS = as.logical(plotEPS)
@@ -97,6 +103,8 @@ mapping_qc = rbind(mapping_qc, data.frame(V1 ='Library Complexity (nonredudant f
 kable(mapping_qc, col.names = NULL, format = 'html', caption = paste('Sample:', OUTPUT_PREFIX)) %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
+write.table(mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Global_Mapping_Statistics.tsv'),
+	    col.names = F, row.names = F, sep = '\t', quote = F)
 ```
 
 
@@ -104,7 +112,7 @@ Column
 -----------------------------------------------------------------------
 
 
-### Cell barcodes Summary 
+### Cell/Peak Calling Summary 
 
 ```{r}
 cell_mapping_qc_file = paste0(params$output_dir, '/summary/cell_barcodes.MappingStats')
@@ -115,10 +123,13 @@ cell_mapping_qc = fread(cell_mapping_qc_file, header = F)
 
 bc_stat_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX, '.', PEAK_CALLER, '.qc_per_barcode.txt')
 selected_bcs = paste0(params$output_dir, '/filtered_matrix/', PEAK_CALLER, '/', CELL_CALLER, '/barcodes.txt')
+peak_file = paste0(params$output_dir, '/peaks/', PEAK_CALLER, '/', OUTPUT_PREFIX, '_features_BlacklistRemoved.bed')
 
 bc_stat = fread(bc_stat_file)
 
 barcodes = fread(selected_bcs, header = F)$V1
+
+peaks = fread(peak_file)
 
 qc_sele = bc_stat[bc %in% barcodes, ]
 qc_nonsele = bc_stat[!bc %in% barcodes, ]
@@ -133,13 +144,34 @@ frac.in.cell = paste0(round(cell_mapping_qc$V2[2]/as.integer(as.character(mappin
 
 med.frag.per.cell = round(median(qc_sele$total_frags))
 frac.uniq = paste0(round(nrow(frags[bc %in% barcodes])/sum(frags[bc %in% barcodes]$ndup), 3) * 100, '%')
+frac.in.peak = sum(bc_stat$total_frags * bc_stat$frac_peak)/sum(bc_stat$total_frags)
+frac.in.peak = paste0(round(frac.in.peak, 3)*100, '%')
 
-cell.table = data.frame(c(CELL_CALLER,  paste0(ncells),  paste0(med.frag.per.cell), frac.in.cell, mapq30.frac.in.cell)) 
+frac.in.cell = sum(qc_sele$total_frags)/sum(bc_stat$total_frags)
+frac.in.cell = paste0(round(frac.in.cell, 3)*100, '%')
 
-rownames(cell.table) = c('Cell called by', 'Estimated # of cells',  'Median fragments per cell', 'Fraction of Mapped reads in cells', 'Fraction of MAPQ30 in cells')  
+cell.table = data.frame(c(PEAK_CALLER, nrow(peaks),
+                          frac.in.peak, 
+                          CELL_CALLER,  paste0(ncells),
+                          frac.in.cell,
+                          paste0(med.frag.per.cell), 
+                          frac.in.cell, mapq30.frac.in.cell)) 
+
+rm(peaks)
+
+rownames(cell.table) = c('Peak called by', 'Number of peaks', 
+                         'Percentage of unique fragments in peaks',
+                         'Cell called by', 'Estimated # of cells',
+                         'Percentage of unique fragments in cells',
+                         'Median # of unique fragments per cell', 
+                         'Percentage of Mapped fragments in cells', 
+                         'Percentage of MAPQ30 fragments in cells')  
+
 kable(cell.table, row.names = T, col.names = NULL, format = 'html') %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
+write.table(cell.table, file = paste0(params$output_dir, '/summary/Tables/CellAndPeak_Calling_Summary.tsv'),
+	   col.names = F, quote = F, sep = '\t')
 
 ```
 
@@ -157,8 +189,13 @@ if(CELL_MAP_QC){
 
     cell_mapping_qc = rbind(cell_mapping_qc, data.frame(V1 ='Library Complexity (nonredudant fraction)', V2 = '', frac = lib_complx))
 
-    kable(cell_mapping_qc, col.names = NULL, format = 'html') %>%
+    write.table(cell_mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Cell_Mapping_QC.tsv'),
+		col.names = F, quote = F, row.names = F, sep = '\t')
+
+    kable(cell_mapping_qc, row.names = T, col.names = NULL, format = 'html') %>%
       kable_styling("striped", full_width = F, position = 'left', font_size = 15)
+
+
 }
 ```
 
@@ -180,14 +217,16 @@ bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
 library(ggplot2)
 library(grid)
 nsub_frags = min(15000, nrow(bc_stat))
+cellColors = c('cell' = '#F8766D', 'non-cell' = '#00BFC4')
 g <- ggplot(data = bc_stat[sample(1:nrow(bc_stat), nsub_frags), ], 
-            aes(x = total_frags, y = frac_peak, col = group)) + 
+            aes(x = total_frags, y = frac_peak, col = group)) +
+     scale_colour_manual(values = cellColors) +  
   geom_point(size = 0.5) + scale_x_continuous(trans='log10') + theme_bw() +
       theme(legend.position = 'none', 
             legend.title=element_blank(),
             axis.text = element_text(size = 15, family = "Helvetica"),
             axis.title = element_text(size = 18, family = "Helvetica")) +
-  xlab('Total #Unique Fragments') + ylab('Fraction in Peak')
+  xlab('Total #Unique Fragments') + ylab('Fraction in Peak') 
 
 
 text1 <- grobTree(textGrob("Cell", x=0.8,  y=0.93, hjust=0,
@@ -348,6 +387,8 @@ kable(fracs, row.names = T, col.names = NULL) %>%
   kable_styling(full_width = F, position = 'left', font_size = 15)
 
 
+write.table(fracs, file = paste0(params$output_dir, '/summary/Tables/Cell_FunctionRegion_Statistics.tsv'),
+		col.names = F, quote = F, sep = '\t')
 
 ```
 
