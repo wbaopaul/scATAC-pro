@@ -113,6 +113,7 @@ smat = sparseMatrix(i = mtx$rowID, j = mtx$colID, x = mtx$count,
                     dimnames = list(features, bcs))
 
 writeMM(smat, file = paste0(out_dir, '/matrix.mtx'))
+saveRDS(smat, file = paste0(out_dir, '/matrix.rds'))
 
 
 write.table(rownames(smat), file = paste0(out_dir, '/features.txt'),

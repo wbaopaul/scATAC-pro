@@ -1,4 +1,6 @@
 ## Complete Update History
+- updates in dev branch:
+    * save .rds file for matrix 
 - Current version: 1.2.0
     * update footprint dependency *rgt-hint* module to python3
     * save qc statistics in html report into tables, and peak calling summary inf added in the report
