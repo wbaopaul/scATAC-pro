@@ -74,7 +74,12 @@ mtx = mtx[, colnames(mtx) %in% qc_sele$bc]
 
 mtx.dir = dirname(mtx_file)
 system(paste('mkdir -p', output_dir))
+ff = fread(paste0(mtx.dir, '/features.txt'), header = F)$V1
+rownames(mtx) <- ff
+
 writeMM(mtx, file = paste0(output_dir, '/matrix.mtx'))
+saveRDS(mtx, file = paste0(output_dir, '/matrix.rds'))
+
 write.table(colnames(mtx), file = paste0(output_dir, '/barcodes.txt'), 
             sep = '\t', row.names = F, quote = F, col.names = F)
 system(paste0('cp ', dirname(mtx_file), '/features.txt ', output_dir, '/features.txt'))

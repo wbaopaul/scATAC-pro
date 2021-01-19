@@ -344,6 +344,16 @@ visualize: config_check
 	@echo 
 
 #######################################
+## addCB2bam
+#######################################
+addCB2bam: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "add CB tag to bam file ..." 
+	@$(SCRIPTS)/addCB2bam.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## all
 #######################################
 all: config_check
