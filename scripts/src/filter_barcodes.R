@@ -70,7 +70,7 @@ qc_sele = qc_bc_stat[total_frags >= cut.min.frag & total_frags <= cut.max.frag &
 mtx = readMM(mtx_file)
 input_mtx_dir = dirname(mtx_file)
 colnames(mtx) = fread(paste0(input_mtx_dir, '/barcodes.txt'), header = F)$V1
-mtx = mtx[, colnames(mtx) %in% qc_sele$bc]
+mtx = mtx[, colnames(mtx) %in% qc_sele$bc, drop = F]
 
 mtx.dir = dirname(mtx_file)
 system(paste('mkdir -p', output_dir))

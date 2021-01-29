@@ -1,6 +1,9 @@
 ## Complete Update History
 - updates in dev branch:
+<<<<<<< HEAD
     * new module *addCB2bam*: add cell barcode (CB) tag to a give bam file, new bam file will be saved in the same folder as the input bam (with name *_withCBtag.bam)
+=======
+>>>>>>> c80f64f98249dbcd32bda5d3a7f6e2ac631345b2
     * save .rds file for matrix 
 - Current version: 1.2.0
     * update footprint dependency *rgt-hint* module to python3
