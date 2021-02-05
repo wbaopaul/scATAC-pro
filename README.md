@@ -51,10 +51,10 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.2.1
 - Recent updates
-    * .rds file generated for matrices and added  *addCB2bam* module to write cell barcode into 
+    * .rds file generated for matrices and can be the input of *clustering*, *motif_analysis* and *downstream* module
+    * Added  *addCB2bam* module to write cell barcode into 
       an additional column of the bam file & correct a bug for calculating insert size
     * updated footprinting analysis dependent module *rgt-hint* to python3
-    * saved qc statistics in html report into tables, and added peak calling summary in the report
     * added qc per cell to metadata of the seurat object as: total.unique.frags, frac.peak, frac.mito,
       frac.tss, frac.promoter, and frac.enhancer
     * *demplx_fastq*: the input supports PATH to the DIRECTORY of 10x fastq files
@@ -111,7 +111,7 @@ Quick start guide
                  -c configure_user.txt 
 
     $ scATAC-pro -s downstream 
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx (or matrix.rds) 
                  -c configure_user.txt
     ## PEAK_CALLER and CELL_CALLER is specified in your configure_user.txt file
 ```
@@ -199,11 +199,11 @@ Step by step guide to running scATAC-pro
     ## to generate first page of the summary report
 
     $ scATAC-pro -s clustering
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx (or matrix.rds ) 
                  -c configure_user.txt
 
     $ scATAC-pro -s motif_analysis
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx (or matrix.rds) 
                  -c configure_user.txt
                  
     $ scATAC-pro -s split_bam
@@ -428,7 +428,7 @@ Run scATAC-pro through docker or singularity
 ----------------------------------
 In case you have problem in installing dependencies, you can run scATAC-pro without installing dependencies in **one of** the following ways:
 
-1. Run the pre-built dockerized version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro) (not recommended because some module like *mapping* will be killed due to lack of memory for the docker container) 
+1. Run the pre-built docker version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro) (not recommended because some module like *mapping* need a large memory which the docker container does not have) 
 
 2. Run it through singularity (which is more friendly with high performance cluster or HPC, and linux server) by running the following command:
 
@@ -456,11 +456,11 @@ scATAC-pro -s mapping -i fastq_PE1_file,fastq_PE2_file -c configure_user.txt
 # and then qsub mapping.sh
 ```
 
-- **NOTE**: YOUR_WORK_PATH is your working directory, where the outputs will be saved and all data under YOUR_BIND_PATH will be accessible to scATAC-pro image
+- **NOTE**: YOUR_WORK_PATH is your working directory, where the outputs will be saved 
 
-- **NOTE**: all inputs including data paths specified in configure_user.txx should be under YOUR_BIND_PATH
+- **NOTE**: All inputs including data paths specified in configure_user.txx should be accessible under YOUR_BIND_PATH
 
-- **NOTE**: if running the *footprint* module, remember to download the reference data [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) folder and put it under YOUR_WROK_PATH
+- **NOTE**: if running the *footprint* module, remember to download the reference data [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) folder into YOUR_WROK_PATH
 
 
 

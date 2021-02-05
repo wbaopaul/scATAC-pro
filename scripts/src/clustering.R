@@ -21,7 +21,15 @@ nREDUCTION = as.integer(args[9])
 top_variable_features = as.numeric(args[10])
 qc_stat_file = args[11]
 
-mtx = read_mtx_scATACpro(mtx_file)
+if(grepl(mtx_file, pattern = '.rds', fix = T)) {
+    mtx = readRDS(mtx_file)
+    rnames = rownames(mtx)
+    new.rnames = sapply(rnames, function(x) gsub('_', '-', x))
+    names(new.rnames) = NULL
+    rownames(mtx) <- new.rnames
+}else{
+    mtx = read_mtx_scATACpro(mtx_file)
+}
 
 tss_ann <- fread(tss_path, header = F)
 #names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')

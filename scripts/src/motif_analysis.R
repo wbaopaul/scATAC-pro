@@ -16,7 +16,16 @@ genome_name = args[2]
 output_dir = args[3]
 norm_by = args[4]
 
-mtx = read_mtx_scATACpro(mtx_file)
+if(grepl(mtx_file, pattern = '.rds', fix = T)) {
+    mtx = readRDS(mtx_file)
+    rnames = rownames(mtx)
+    new.rnames = sapply(rnames, function(x) gsub('_', '-', x))
+    names(new.rnames) = NULL
+    rownames(mtx) <- new.rnames
+}else{
+    mtx = read_mtx_scATACpro(mtx_file)
+}
+
 #mtx = filterMat(mtx)
 genomeName = 'BSgenome.Hsapiens.UCSC.hg38'
 if(grepl(genome_name, pattern = '38'))genomeName = 'BSgenome.Hsapiens.UCSC.hg38'
