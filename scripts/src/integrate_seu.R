@@ -33,7 +33,11 @@ len = length(mtx_files)
 mtx_list = list()
 for(i in 1:len){
     file0 = mtx_files[i]
-    mtx = read_mtx_scATACpro(file0)
+    if(grepl(file0, pattern = '.rds', fix = T)){
+        mtx = readRDS(file0)
+    }else{
+        mtx = read_mtx_scATACpro(file0)
+    }
     mtx = assignGene2Peak(mtx, tss_ann)
     mtx_list[[i]] = mtx
 }

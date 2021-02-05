@@ -51,9 +51,9 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.2.1
 - Recent updates
-    * .rds file generated for matrices and can be the input of *clustering*, *motif_analysis* and *downstream* module
+    * .rds files generated for matrices and can be the input of *clustering*, *motif_analysis* and *downstream* module
     * Added  *addCB2bam* module to write cell barcode into 
-      an additional column of the bam file & correct a bug for calculating insert size
+      an additional column of the bam file & corrected a bug for calculating insert size
     * updated footprinting analysis dependent module *rgt-hint* to python3
     * added qc per cell to metadata of the seurat object as: total.unique.frags, frac.peak, frac.mito,
       frac.tss, frac.promoter, and frac.enhancer
