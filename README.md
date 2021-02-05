@@ -52,7 +52,7 @@ Updates
 - Current version: 1.2.1
 - Recent updates
     * .rds file generated for matrices and added  *addCB2bam* module to write cell barcode into 
-      an additional column of the bam file
+      an additional column of the bam file & correct a bug for calculating insert size
     * updated footprinting analysis dependent module *rgt-hint* to python3
     * saved qc statistics in html report into tables, and added peak calling summary in the report
     * added qc per cell to metadata of the seurat object as: total.unique.frags, frac.peak, frac.mito,
@@ -428,7 +428,7 @@ Run scATAC-pro through docker or singularity
 ----------------------------------
 In case you have problem in installing dependencies, you can run scATAC-pro without installing dependencies in **one of** the following ways:
 
-1. Run the pre-built dockerized version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro) 
+1. Run the pre-built dockerized version, pull the docker image [here](https://hub.docker.com/r/wbaopaul/scatac-pro) (not recommended because some module like *mapping* will be killed due to lack of memory for the docker container) 
 
 2. Run it through singularity (which is more friendly with high performance cluster or HPC, and linux server) by running the following command:
 
@@ -436,7 +436,7 @@ In case you have problem in installing dependencies, you can run scATAC-pro with
 $ singularity pull -F docker://wbaopaul/scatac-pro:latest 
 ## will generate scatac-pro_latest.sif in current directory
 
-$ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro -s XXX -i XXX -c XXX
+$ singularity exec --bind YOUR_BIND_PATH -H YOUR_WORK_PATH --cleanenv scatac-pro_latest.sif scATAC-pro -s XXX -i XXX -c XXX
 
 ```
 
@@ -445,22 +445,22 @@ $ singularity exec -H YOUR_WORK_DIR --cleanenv scatac-pro_latest.sif scATAC-pro 
 ```
 # write a script mapping.sh for mapping as an example:
 #!/bin/bash
-module load singularity
+module load singularity ## load singularity in your system
 
 singularity pull -F docker://wbaopaul/scatac-pro:latest  ## you just need run this line once
 ## will generate scatac-pro_latest.sif in the current directory
 
-singularity exec --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
+singularity exec --bind /mnt/isilon/ --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
 scATAC-pro -s mapping -i fastq_PE1_file,fastq_PE2_file -c configure_user.txt
 
 # and then qsub mapping.sh
 ```
 
-- **NOTE**: YOUR_WORK_DIR is your working directory, where the outputs will be saved and all data under YOUR_WORK_DIR will be available to scATAC-pro
+- **NOTE**: YOUR_WORK_PATH is your working directory, where the outputs will be saved and all data under YOUR_BIND_PATH will be accessible to scATAC-pro image
 
-- **NOTE**: all inputs including data paths specified in configure_user.txt should be available under YOUR_WORK_DIR
+- **NOTE**: all inputs including data paths specified in configure_user.txx should be under YOUR_BIND_PATH
 
-- **NOTE**: if running the *footprint* module, remember to download the reference data [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) folder and put it under YOUR_WROK_DIR
+- **NOTE**: if running the *footprint* module, remember to download the reference data [rgtdata](https://chopri.box.com/s/dlqybg6agug46obiu3mhevofnq4vit4t) folder and put it under YOUR_WROK_PATH
 
 
 

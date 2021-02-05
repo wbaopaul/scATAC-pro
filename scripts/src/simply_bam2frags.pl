@@ -10,6 +10,7 @@ use Getopt::Long;
 my $samtools_path; 
 my $read_file;
 my $output_file;
+my $output_len_file;
 
 GetOptions( 'read_file=s' => \$read_file  
           , 'output_file=s' => \$output_file 
@@ -32,6 +33,10 @@ if($read_file_suffix ne ".bam")
 open(READ, "$samtools_path/samtools view $read_file |" ) or die("Cannot read $read_file \n");
 open(OUT, ">$output_file" ) or die("Cannot write $output_file \n");
 
+# save the fragment length into a file for calculating insert size
+$output_len_file = $output_file.".len";
+
+open(OUT_Len, ">$output_len_file" ) or die("Cannot write $output_len_file \n");
 
 print("Now I am starting to process read file: $read_file .\n");
 print "...\n";
@@ -62,6 +67,8 @@ while(<READ>)
      if($len <= 0){
       next;  
      }
+     print OUT_Len $len."\n" ; ## save all fragment length
+     
      $chrom = $array[2];
      ## add 4 and 5bps to the left and right to adjust the TN5 occupancy
      $start = $array[3] - 4;

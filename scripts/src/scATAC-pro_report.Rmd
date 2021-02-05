@@ -86,6 +86,7 @@ if(plotEPS) dir.create(paste0(params$output_dir, '/summary/Figures'), showWarn =
 mapping_qc_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.MappingStats')
 
 fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt')
+fragments_len_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt.len')
 frags = fread(fragments_file)
 names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
 
@@ -243,14 +244,18 @@ g
 
 
 
-### Distribution of Insert Size 
+### Distribution of Insert Size (All Barcodes) 
 
 ```{r}
-frags[, 'isize' := end - start]
-frags = frags[sample(1:nrow(frags), 1000000), ]
+rm(frags)
 
-p1 <- ggplot(data = frags[isize < 800], aes(x = isize)) +
-  geom_density(fill = 'lightblue') + xlab('Insert Size') + ylab('Density') + theme_bw() +  theme(legend.title=element_blank(), 
+frag_lens = fread(fragments_len_file)
+names(frag_lens) = 'isize'
+frag_lens = frag_lens[sample(1:nrow(frag_lens), 1000000), ]
+
+p1 <- ggplot(data = frag_lens[isize < 800], aes(x = isize)) +
+      geom_density(fill = 'lightblue') + xlab('Insert Size') + ylab('Density') + theme_bw() + 
+      theme(legend.title=element_blank(), 
                     legend.background = NULL, 
                     axis.text = element_text(size = 15, family = "Helvetica"), 
                     axis.title = element_text(size = 18, family = "Helvetica")) 
@@ -266,44 +271,6 @@ if(plotEPS){
 
 ```
 
-
-### TSS enrichment score profile
-```{r}
-tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.MAPQ30.aggregated.mtx.gz')
-if(!file.exists(tss_escore_file)) tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
-
-set.cols = brewer.pal(n=5, name = 'Dark2')
-tss.mat = fread(tss_escore_file)
-tss.mat = tss.mat[, -c(1:6)]
-tss.mat[is.na(tss.mat)] = 0
-tss.escore = colSums(tss.mat)
-ma <- function(x, n = 10){stats::filter(x, rep(1 / n, n), sides = 2)}
-tss.escore = ma(tss.escore)
-tss.escore = tss.escore[14:213]
-df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
-
-p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1])  + theme_bw() +
-  xlab('Distance to TSS (bp)') + ylab('TSS enrichment score') + theme(legend.title=element_blank(),
-      axis.text = element_text(size = 15, family = "Helvetica"), 
-      axis.title = element_text(size = 18, family = "Helvetica")) 
-
-p0
-
-
-if(plotEPS){
-
-  pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
-  ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
-}
-
-
-```
-
-
-
-
-Row 
--------------------------------------------------------------------
 
 ### Density plot of total number of unique fragments
 
@@ -342,7 +309,45 @@ if(plotEPS){
 
 
 
-### Overlapping with sequence annotated regions
+
+Row 
+-------------------------------------------------------------------
+
+### TSS enrichment score profile (Cell Barcodes)
+```{r}
+tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.MAPQ30.aggregated.mtx.gz')
+if(!file.exists(tss_escore_file)) tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
+
+set.cols = brewer.pal(n=5, name = 'Dark2')
+tss.mat = fread(tss_escore_file)
+tss.mat = tss.mat[, -c(1:6)]
+tss.mat[is.na(tss.mat)] = 0
+tss.escore = colSums(tss.mat)
+ma <- function(x, n = 10){stats::filter(x, rep(1 / n, n), sides = 2)}
+tss.escore = ma(tss.escore)
+tss.escore = tss.escore[14:213]
+df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
+
+p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1])  + theme_bw() +
+  xlab('Distance to TSS (bp)') + ylab('TSS enrichment score') + theme(legend.title=element_blank(),
+      axis.text = element_text(size = 15, family = "Helvetica"), 
+      axis.title = element_text(size = 18, family = "Helvetica")) 
+
+p0
+
+
+if(plotEPS){
+
+  pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
+  ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
+}
+
+
+```
+
+
+
+### Overlapping with sequence annotated regions (Cell Barcodes)
 ```{r}
 
 qc_sele_df = data.table(frac = c(qc_sele$frac_peak, qc_sele$frac_tss, qc_sele$frac_promoter, qc_sele$frac_enh, qc_sele$frac_mito), 'type' = rep(c('Peaks', 'Tss', 'Promoter', 'Enhancer', 'Mito'), each = nrow(qc_sele)))
@@ -365,7 +370,7 @@ if(plotEPS){
 
 ```
 
-### Overall statistics
+### Overall statistics (Cell Barcodes)
 
 ```{r}
 
@@ -403,7 +408,6 @@ Column
 
 ### Clustering 
 ```{r}
-rm(frags)
 library(Seurat)
 
 down.dir = paste0(params$output_dir, '/downstream_analysis/', PEAK_CALLER, '/', CELL_CALLER)
