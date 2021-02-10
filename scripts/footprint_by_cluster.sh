@@ -46,7 +46,7 @@ fi
 prefix1=${prefix1/cluster_/}   ## absolute cluster name
 prefix2=${prefix2/cluster_/}
 
-input_peak=${down_dir}/differential_accessible_features_${prefix1}_vs_${prefix2}.txt
+input_peak=${down_dir}/differential_accessible_features_${prefix1}_vs_${prefix2}.tsv
 
 if [ ! -e "$input_peak" ]; then
     echo "do DA..."

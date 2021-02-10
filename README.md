@@ -346,7 +346,7 @@ Detailed Usage
           clustering: cell clustering
                                input: filtered peak-by-cell matrix file, outputted from the call_cell module
                                output: seurat objects with clustering label in the metadata (.rds file) and 
-                                       barcodes with cluster labels (cell_cluster_table.txt file), and umap plot colorred
+                                       barcodes with cluster labels (cell_cluster_table.tsv file), and umap plot colorred
                                        clustering label, saved in output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
           motif_analysis: perform TF motif analysis
                                input: filtered peak-by-cell matrix file, outputted from the call_cell module
@@ -356,17 +356,17 @@ Detailed Usage
           runDA: preform differential accessibility analysis
                            input: either two groups named as '0:1,2' in which group1 consists of cluster 0 and 1,
                                   and group2 consists of cluster2 or specified as '0,rest', or 'one,rest'
-                           output: differential accessibility peaks in txt format saved in the same in 
+                           output: differential accessibility peaks in a tsv file saved in the same in 
                                    output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
           runGO: preform GO term enrichment analysis
-                           input: differential accessible features file, outputted from runDA module (.txt file)
+                           input: differential accessible features file, outputted from runDA module (.tsv file)
                            output: enriched GO terms in .xlsx format saved in the same directory as the input file
           runCicero: run cicero for calculating gene activity score and predicting cis chromatin interactions
                            input: seurat_obj.rds file outputted from the clustering module
                            output: cicero gene activity in .rds format and predicted interactions in .txt format, saved
                                    in output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
           split_bam: split bam file into different clusters
-                               input: barcodes with cluster label (cell_cluster_table.txt file, outputted from 
+                               input: barcodes with cluster label (cell_cluster_table.tsv file, outputted from 
                                       clustering module
                                output: .bam file (saved in output/downstream/PEAK_CALLER/CELL_CALLER/data_by_cluster), 
                                        .bw, .bedgraph (saved in output/signal/) file for each cluster

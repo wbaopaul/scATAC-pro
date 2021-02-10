@@ -127,6 +127,6 @@ ggsave(p1, filename = pfname1, device = 'eps', height = 10,
 
 write.table(footprint_out, 
             file = paste0(output_dir, '/differential_TF_footprint_', 
-                          group1_fp, '_vs_', group2_fp, '.txt'),
+                          group1_fp, '_vs_', group2_fp, '.tsv'),
             quote = F, row.names = F, col.names = T, sep = '\t')
   

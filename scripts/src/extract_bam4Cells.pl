@@ -109,3 +109,7 @@ my $output_bam1=$output_dir."/non_cell_barcodes.bam";
 #system("wait");
 #system("rm $output_sam");
 #system("rm $output_sam1");
+close BAM;
+close BARCODE;
+close OUT;
+close OUT1;

@@ -52,7 +52,7 @@ for(cl0 in cls){
 goByCl = list()
 interm_goByCl = list()
 go_out_file = paste0(output_dir, '/enrichedGO_', de_basename, '.xlsx')
-go_out_file = gsub('.txt', '', go_out_file, fixed = T)
+go_out_file = gsub('.tsv', '', go_out_file, fixed = T)
 organism = ifelse(grepl(GENOME_NAME, pattern = 'mm'), 'mmu', 'hsa')
 for(cl0 in cls){
     #bg_genes = unique(do.call('c', genesInDA))

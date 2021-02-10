@@ -29,7 +29,7 @@ fi
 SPLIT_BAM2CLUSTER=$(echo $SPLIT_BAM2CLUSTER | tr a-z A-Z)
 ## split bam to cluster
 if [ "$SPLIT_BAM2CLUSTER" = "TRUE" ]; then
-    input_cluster_table=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/cell_cluster_table.txt 
+    input_cluster_table=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/cell_cluster_table.tsv 
     ${curr_dir}/split_bam2clusters.sh $input_cluster_table $2 $3 &
 fi
 
@@ -37,7 +37,7 @@ wait
 
 ## go analysis
 if [ "$RUN_GO" = "TRUE" ]; then
-    ${curr_dir}/runGO.sh ${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_${group1}_vs_${group2}.txt $2 $3 & 
+    ${curr_dir}/runGO.sh ${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/differential_accessible_features_${group1}_vs_${group2}.tsv $2 $3 & 
 fi
 
 if [ "$RUN_Cicero" = "TRUE" ]; then

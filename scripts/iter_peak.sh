@@ -29,11 +29,11 @@ ${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R ${mtx_bin_dir}/matrix.m
 
 
 ## remove cluster with less than 100 cells
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/rm_minor_cluster.R ${output_dir}/cell_cluster_table.txt 100
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/rm_minor_cluster.R ${output_dir}/cell_cluster_table.tsv 100
 
 ## 3.call peaks per cluster by macs2
 ## split bam into cluster, get sam file
-${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters0.pl --cluster_file ${output_dir}/filtered_cell_cluster_table.txt --bam_file $input_bam \
+${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters0.pl --cluster_file ${output_dir}/filtered_cell_cluster_table.tsv --bam_file $input_bam \
     --output_dir $output_dir --samtools_path $SAMTOOLS_PATH
 
 

@@ -446,6 +446,8 @@ if(file.exists(go_file)){
       group.sele = names(sheets)[which.max(ll)]
       group.sele = gsub('cluster', '', group.sele)
     }else{
+       group1 = gsub(':', '_', group1)
+       group2 = gsub(':', '_', group2)
        go_res1 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group1))
        go_res2 = xlsx::read.xlsx(go_file, sheetName = paste0('cluster', group2))
        go_res = go_res1
@@ -470,7 +472,8 @@ if(file.exists(go_file)){
         ngo = min(20, nrow(go_res))
         go_res = go_res[1:ngo, ]
         go_res = go_res[order(score), ]
-        
+        go_res$Description = as.character(go_res$Description)
+        go_res$Description = sapply(go_res$Description, function(x) substr(x, 1, min(50, nchar(x)))) 
         go_res$Description = factor(go_res$Description, levels = go_res$Description)
         
         p_go <- ggplot(go_res, aes(y = score, x = Description, fill = Count)) +
@@ -550,16 +553,17 @@ if(file.exists(seurat_file)){
 
 if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   chromVar.obj = readRDS(paste0(down.dir, '/chromVar_obj.rds'))
-  if(!file.exists(paste0(down.dir, '/differential_TF_motif_enriched_in_clusters.txt'))){
+  if(!file.exists(paste0(down.dir, '/differential_TF_motif_enriched_in_clusters.tsv'))){
          dev = deviations(chromVar.obj)
       da.res = do_DA_motif(dev, 
                  clusters = data.table('barcode' = rownames(metaData),
                                        'cluster' = metaData$active_clusters),
                  topn = 10)
       rm(dev)
-      write.csv(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.txt'), quote = F, row.names = F )
+      write.table(da.res, file = paste0(down.dir, '/differential_TF_cluster_enrich.tsv'), 
+                  sep = '\t', quote = F, row.names = F )
   }else{
-    da.res = fread( paste0(down.dir, '/differential_TF_motif_enriched_in_clusters.txt'))
+    da.res = fread( paste0(down.dir, '/differential_TF_motif_enriched_in_clusters.tsv'))
   }
   
   ## plot enriched TFs in heatmap
@@ -642,7 +646,7 @@ Column
 ```{r, out.width='\\textwidth'}
 
 footprint_stats.file = paste0(down.dir, '/differential_TF_footprint_', 
-                              group1_fp, '_vs_', group2_fp, '.txt')
+                              group1_fp, '_vs_', group2_fp, '.tsv')
 if(file.exists(footprint_stats.file)){
   
   footprint_out = fread(footprint_stats.file)

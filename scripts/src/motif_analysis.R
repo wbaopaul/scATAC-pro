@@ -119,8 +119,8 @@ if(file.exists(seurat_file)){
                                          'cluster' = metaData$active_clusters),
                    topn = 10)
     rm(dev)
-    write.csv(da.res, file = paste0(output_dir, '/differential_TF_motif_enriched_in_clusters.txt'), 
-              quote = F, row.names = F )
+    write.table(da.res, file = paste0(output_dir, '/differential_TF_motif_enriched_in_clusters.tsv'), 
+              quote = F, sep = '\t', row.names = F )
     
     
     ## plot enriched TFs in heatmap

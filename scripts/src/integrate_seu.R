@@ -55,7 +55,7 @@ saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_', integrate_by, '.rd
 bc_cls = data.table('Barcode' = rownames(seurat.obj@meta.data), 'Cluster' = seurat.obj@meta.data$active_clusters)
 setkey(bc_cls, Cluster)
 
-write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table_', integrate_by, '.txt'), sep = '\t',
+write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table_', integrate_by, '.tsv'), sep = '\t',
             quote = F, row.names = F)
 
 cg <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', label = T) + 

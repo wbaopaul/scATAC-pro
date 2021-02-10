@@ -11,7 +11,7 @@ read_conf "$2"
 read_conf "$3"
 
 down_dir=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}
-input_cluster_table=${down_dir}/cell_cluster_table.txt
+input_cluster_table=${down_dir}/cell_cluster_table.tsv
 
 bam_file=${OUTPUT_DIR}/mapping_result/cell_barcodes.MAPQ${MAPQ}.bam
 

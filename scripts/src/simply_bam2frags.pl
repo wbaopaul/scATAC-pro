@@ -102,7 +102,8 @@ while(<READ>)
   
 }#while(<READ>)
 
-
+close OUT_Len;
+close READ;
 print("I have read $read_file_counter reads from input read file: $read_file .\n");
 
 
@@ -115,7 +116,7 @@ foreach my $frag_id (sort keys %frags)
 
    print OUT $frag_id."\t".$frags{$frag_id}."\n" ;
 }
-
+close OUT;
 my $etime = time;
 my $elapsed = $etime - $btime;
 
