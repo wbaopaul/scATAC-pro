@@ -81,6 +81,7 @@ Dependencies
 
 -   R (&gt;=3.6.1)
 -   Python (&gt;=3.6.0)
+-   Perl
 
 ### Software packages required
 

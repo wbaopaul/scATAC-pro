@@ -33,17 +33,17 @@ do
     ${SAMTOOLS_PATH}/samtools index -@ $ncore $file0
     ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max --normalizeUsing BPM \
          --bam $file0 --binSize 100 --skipNonCoveredRegions \
-         --outFileName $fname_bw  &
+         --outFileName $fname_bw  
     fname_bedgraph=${file0/.bam/.bedgraph}
-    ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max --normalizeUsing BPM \
-         --outFileFormat bedgraph --bam $file0 --binSize 100 --skipNonCoveredRegions \
-         --outFileName $fname_bedgraph &
-    wait
+    #${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max --normalizeUsing BPM \
+    #     --outFileFormat bedgraph --bam $file0 --binSize 100 --skipNonCoveredRegions \
+    #     --outFileName $fname_bedgraph 
+    #wait
 done
 
 ## move signal to output/signal
 mv ${output_dir}/*bw ${OUTPUT_DIR}/signal/
-mv ${output_dir}/*bedgraph ${OUTPUT_DIR}/signal/
+#mv ${output_dir}/*bedgraph ${OUTPUT_DIR}/signal/
 
 echo "The bam file was split into different clusters!"
 
