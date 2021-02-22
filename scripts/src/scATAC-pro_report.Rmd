@@ -118,7 +118,7 @@ Column
 ```{r}
 cell_mapping_qc_file = paste0(params$output_dir, '/summary/cell_barcodes.MappingStats')
 
-cell_mapping_qc = fread(cell_mapping_qc_file, header = F)
+if(file.exists(cell_mapping_qc_file)) cell_mapping_qc = fread(cell_mapping_qc_file, header = F)
 
 
 
@@ -141,7 +141,7 @@ qc_nonsele = bc_stat[!bc %in% barcodes, ]
 ncells = length(barcodes)
 mapq30.frac.in.cell = paste0(round(sum(frags[bc %in% barcodes]$ndup)/sum(frags$ndup), 3) * 100, '%')
 
-frac.in.cell = paste0(round(cell_mapping_qc$V2[2]/as.integer(as.character(mapping_qc$V2[2])), 3) * 100, '%')
+#frac.in.cell = paste0(round(cell_mapping_qc$V2[2]/as.integer(as.character(mapping_qc$V2[2])), 3) * 100, '%')
 
 med.frag.per.cell = round(median(qc_sele$total_frags))
 frac.uniq = paste0(round(nrow(frags[bc %in% barcodes])/sum(frags[bc %in% barcodes]$ndup), 3) * 100, '%')
@@ -247,10 +247,14 @@ g
 ### Distribution of Insert Size (All Barcodes) 
 
 ```{r}
+if(file.exists(fragments_len_file)) {
+    frag_lens = fread(fragments_len_file)
+    names(frag_lens) = 'isize'
+}else{
+    lens = frags$end - frags$start
+    frag_lens = data.table('isize' = rep(lens, frags$ndup))
+}
 rm(frags)
-
-frag_lens = fread(fragments_len_file)
-names(frag_lens) = 'isize'
 frag_lens = frag_lens[sample(1:nrow(frag_lens), 1000000), ]
 
 p1 <- ggplot(data = frag_lens[isize < 800], aes(x = isize)) +
@@ -318,30 +322,31 @@ Row
 tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.MAPQ30.aggregated.mtx.gz')
 if(!file.exists(tss_escore_file)) tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
 
-set.cols = brewer.pal(n=5, name = 'Dark2')
-tss.mat = fread(tss_escore_file)
-tss.mat = tss.mat[, -c(1:6)]
-tss.mat[is.na(tss.mat)] = 0
-tss.escore = colSums(tss.mat)
-ma <- function(x, n = 10){stats::filter(x, rep(1 / n, n), sides = 2)}
-tss.escore = ma(tss.escore)
-tss.escore = tss.escore[14:213]
-df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
+if(file.exists(tss_escore_file)){
+    set.cols = brewer.pal(n=5, name = 'Dark2')
+    tss.mat = fread(tss_escore_file)
+    tss.mat = tss.mat[, -c(1:6)]
+    tss.mat[is.na(tss.mat)] = 0
+    tss.escore = colSums(tss.mat)
+    ma <- function(x, n = 10){stats::filter(x, rep(1 / n, n), sides = 2)}
+    tss.escore = ma(tss.escore)
+    tss.escore = tss.escore[14:213]
+    df = data.table(index = 10*(-100:99), escore = tss.escore/tss.escore[1])
 
-p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1])  + theme_bw() +
-  xlab('Distance to TSS (bp)') + ylab('TSS enrichment score') + theme(legend.title=element_blank(),
-      axis.text = element_text(size = 15, family = "Helvetica"), 
-      axis.title = element_text(size = 18, family = "Helvetica")) 
+    p0 <- ggplot(data = df, aes(x = index, y = escore)) + geom_line(size = 1, col = set.cols[1])  + theme_bw() +
+      xlab('Distance to TSS (bp)') + ylab('TSS enrichment score') + theme(legend.title=element_blank(),
+          axis.text = element_text(size = 15, family = "Helvetica"), 
+          axis.title = element_text(size = 18, family = "Helvetica")) 
 
-p0
+    p0
 
 
-if(plotEPS){
+    if(plotEPS){
 
-  pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
-  ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
+      pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
+      ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
+    }
 }
-
 
 ```
 

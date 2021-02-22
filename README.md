@@ -81,7 +81,7 @@ Dependencies
 
 -   R (&gt;=3.6.1)
 -   Python (&gt;=3.6.0)
--   Perl
+-   Perl (pre-installed in most unix systems)
 
 ### Software packages required
 
