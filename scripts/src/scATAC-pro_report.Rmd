@@ -338,7 +338,7 @@ if(file.exists(tss_escore_file)){
           axis.text = element_text(size = 15, family = "Helvetica"), 
           axis.title = element_text(size = 18, family = "Helvetica")) 
 
-    p0
+    print(p0)
 
 
     if(plotEPS){
