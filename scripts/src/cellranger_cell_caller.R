@@ -14,11 +14,14 @@ qc_per_bc_file = args[4]
 
 ## read matrix data
 input_mtx_dir = dirname(input_mtx_file)
-mat = readMM(input_mtx_file)
-
 barcodes = fread(paste0(input_mtx_dir, '/barcodes.txt'), header = F)
+if(grepl(input_mtx_file, pattern = '.rds', fixed = T)){
+    mat = readRDS(input_mtx_file)
+}else{
+    mat = readMM(input_mtx_file)
+    colnames(mat) = barcodes$V1
+}
 
-colnames(mat) = barcodes$V1
 
 
 ## filter barcodes by frac_in_peak

@@ -17,7 +17,7 @@ ncore=`nproc --all`
 ncore=$(($ncore - 1))
 
 if [[ ! -f ${input_bam}.bai ]];then
-    ${SAMTOOLS_PATH}/samtools index -@ $ncore ${input_bam}.bam
+    ${SAMTOOLS_PATH}/samtools index -@ $ncore ${input_bam}
 fi
 
 echo "generate bw file..."

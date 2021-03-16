@@ -10,12 +10,15 @@ output_dir = args[2]
 fdr = as.numeric(args[3])
 
 input_mtx_dir = dirname(input_mtx_file)
-
-mat = readMM(input_mtx_file)
 features = fread(paste0(input_mtx_dir, '/features.txt'), header = F)
 barcodes = fread(paste0(input_mtx_dir, '/barcodes.txt'), header = F)
-rownames(mat) = features$V1
-colnames(mat) = barcodes$V1
+if(grepl(input_mtx_file, pattern = '.rds', fixed = T)) {
+    mat = readRDS(input_mtx_file)
+}else{
+    mat = readMM(input_mtx_file)
+    rownames(mat) = features$V1
+    colnames(mat) = barcodes$V1
+}
 
 set.seed(2019)
 cell.out <- emptyDrops(mat)
