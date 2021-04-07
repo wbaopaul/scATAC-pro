@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.2.2
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.3.0
 
 <!-- -->
 
@@ -49,7 +49,7 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.2.2
+- Current version: 1.3.0
 - Recent updates
     * .rds files generated for matrices and can be the input of *clustering*, *motif_analysis* and *downstream* module
     * Added  *addCB2bam* module to write cell barcode into 
@@ -284,7 +284,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.2.2
+    scATAC-pro 1.3.0
     ---------------
     OPTIONS
 
@@ -355,10 +355,13 @@ Detailed Usage
                                        TF enrichment for each cell cluster, saved in output/downstream_analysiss/
                                         PEAK_CALLER/CELL_CALLER/
           runDA: preform differential accessibility analysis
-                           input: either two groups named as '0:1,2' in which group1 consists of cluster 0 and 1,
-                                  and group2 consists of cluster2 or specified as '0,rest', or 'one,rest'
+                           input: path_to_seurat_object with two groups of clusters to compare, could be like:
+                                  seurat_obj.rds,0:1,2 (will compare cells in cluster 0 or cluster 1 with cells in cluster2 
+                                  for the given seurat object) or
+                                  seurat_obj.rds,0,rest (will compare cells in cluster 0 with the rest of cells) or
+                                  seurat_obj.rds,one,rest (will compare cells in any one of the clusters with the rest of the cells)
                            output: differential accessibility peaks in a tsv file saved in the same in 
-                                   output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
+                                   the same folder of the input seurat object
           runGO: preform GO term enrichment analysis
                            input: differential accessible features file, outputted from runDA module (.tsv file)
                            output: enriched GO terms in .xlsx format saved in the same directory as the input file
@@ -389,7 +392,7 @@ Detailed Usage
                          output: position sorted bam file in scATAC-pro format saved in output/mapping_result,
                                  mapping qc stat and fragment.txt files saved in output/summary/
           mergePeaks: merge peaks (called from different data sets) if the distance is
-                            less than a given #basepairs (200 if not specified) 
+                            less than a given size in basepairs (200 if not specified) 
                          input: peak files and a distance parameter separated by comma: 
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed
@@ -401,7 +404,7 @@ Detailed Usage
                                  if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
                                  under the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
-                           input: peak/feature files, separated by comma: peak_file1,peak_file2
+                           input: peak/feature files and a optional distance parameter separated by comma: peak_file1,peak_file2,200
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
                                    output/integrated/
           integrate_seu: perform integration of two ore more data sets given the reconstructed peak-by-cell matrix

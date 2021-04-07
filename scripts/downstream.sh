@@ -22,7 +22,7 @@ ${curr_dir}/motif_analysis.sh $input_mtx $2 $3
 seurat_obj=${OUTPUT_DIR}/downstream_analysis/${PEAK_CALLER}/${CELL_CALLER}/seurat_obj.rds
 ## do DA
 if [ "$RUN_DA" = "TRUE" ]; then
-    ${curr_dir}/runDA.sh ${group1},${group2} $2 $3 &
+    ${curr_dir}/runDA.sh ${seurat_obj},${group1},${group2} $2 $3 &
 fi
 
 #SPLIT_BAM2CLUSTER=${SPLIT_BAM2CLUSTER^^}

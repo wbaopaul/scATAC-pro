@@ -19,14 +19,15 @@ norm_by = args[4]
 if(grepl(mtx_file, pattern = '.rds', fix = T)) {
     input.obj = readRDS(mtx_file)
     itype = class(input.obj)
-    if(any(itype) == 'Seurat'){
+    if(any(itype == 'Seurat')){
         mtx = input.obj@assays$ATAC@counts
     }else{
         mtx = input.obj
         rm(input.obj)
     }
     rnames = rownames(mtx)
-    new.rnames = sapply(rnames, function(x) gsub('_', '-', x))
+    new.rnames = sapply(rnames, function(x) unlist(strsplit(x, ','))[1])
+    new.rnames = sapply(new.rnames, function(x) gsub('_', '-', x))
     names(new.rnames) = NULL
     rownames(mtx) <- new.rnames
 }else{
