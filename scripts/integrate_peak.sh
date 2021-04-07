@@ -13,12 +13,6 @@ read_conf "$3"
 
 peaks=(${input_peaks//,/ })
 peakLength=${#peaks[@]}
-peak0=${peaks[0]}
-for (( i=1; i<${peakLength}; i++ ));
-do
-    peak0=${peak0},${peaks[$i]}
-done
-
 
 ## put output into integrated_dir
 integrated_dir=${OUTPUT_DIR}/integrated
@@ -29,7 +23,7 @@ mkdir -p $peak_dir
 
 echo "merge peaks ..."
 feature_file=${peak_dir}/merged_peaks.bed
-${R_PATH}/R --vanilla --args ${peak0},200 $feature_file < ${curr_dir}/src/mergePeaks.R
+${R_PATH}/R --vanilla --args $input_peaks $feature_file < ${curr_dir}/src/mergePeaks.R
 
 echo "ReConstructing peak-by-cell matrix for each sample ..."
 echo "Using the previously called cells and merged peaks ..."
@@ -43,6 +37,9 @@ ABS_PATH=`cd "$OUTPUT_DIR"; pwd`
 mtx_files='TMP' 
 for pk0 in "${peaks[@]}"
 do 
+    if [ "$pk0" -eq "$pk0"  ] 2>/dev/null;then
+        continue  ## the gap parameter
+    fi
     sample0=$(basename $pk0)
     sample0=`echo $sample0 | awk -F. '{print $1}'`
     sample0=${sample0/_features_BlacklistRemoved/}

@@ -7,15 +7,15 @@
 ## using the 'which' command
 #######################################################################
 INSTALL_PREFIX = /mnt/isilon/tan_lab/yuw1/local_tools/bin
-PYTHON_PATH =  /cm/shared/easybuild/software/Python/3.7.4-GCCcore-8.3.0/bin
-R_PATH =  /usr/bin
+PYTHON_PATH =  /cm/shared/apps_chop/python/3.6.3/bin
+R_PATH =  /cm/shared/apps_chop/R/3.6.2/lib64/R/bin
 SAMTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/samtools-1.9
-DEEPTOOLS_PATH = /home/yuw1/.local/bin
+DEEPTOOLS_PATH = /cm/shared/apps_chop/python/3.6.3/bin
 BEDTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bedtools2/bin
 BWA_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bwa-0.7.17
 BOWTIE2_PATH = /home/yuw1/.local/bin/bowtie2.2.9
 BOWTIE_PATH = /home/yuw1/.local/bin/bowtie-1.2.2
-MACS2_PATH = /home/yuw1/.local/bin
+MACS2_PATH = /cm/shared/apps_chop/python/3.6.3/bin
 PERL_PATH = /usr/bin
 CUTADAPT_PATH = /home/yuw1/.local/bin
 TRIM_GALORE_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/TrimGalore-0.6.3

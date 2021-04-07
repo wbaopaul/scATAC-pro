@@ -65,6 +65,9 @@ if(length(unique(seurat.obj$active_clusters)) < 10) cg = cg + scale_color_brewer
 cg1 <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'sample') + 
   theme(legend.text = element_text(size = 17)) + scale_color_brewer(palette = "Set1")
 
+pcomb = gridExtra::grid.arrange(cg1, cg, nrow = 1)
 pfname = paste0(output_dir, '/umap_clusters_', integrate_by, '.eps')
-   ggsave(CombinePlots(plots = list(cg1, cg)), file = pfname, device = 'eps', width = 14, height = 6)
+
+#ggsave(CombinePlots(plots = list(cg1, cg)), file = pfname, device = 'eps', width = 14, height = 6)
+ggsave(pcomb, file = pfname, device = 'eps', width = 14, height = 6)
 
