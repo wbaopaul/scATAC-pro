@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### will search fragments.txt under output_dir/summary
+### will search fragments.tsv.gz under output_dir/summary
 set -e
 inputs=$1
 inputs=(${inputs//,/ })

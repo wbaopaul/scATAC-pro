@@ -362,6 +362,7 @@ else
     if [ $? = "0" ]; then
         echo -e "$BLUE""tabix appears to be installed successfully""$NORMAL"
         echo -e export PATH=$PREFIX_BIN/tabix:"\$"PATH >> ~/.bashrc
+        TABIX_PATH=$PREFIX_BIN/tabix
     else
         echo -e "$RED""tabix NOT installed successfully""$NORMAL"; exit 1;
     fi
@@ -623,6 +624,14 @@ else
     echo "BEDTOOLS_PATH not found." 
 fi
 
+which tabix > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "TABIX_PATH = "`dirname $(which tabix)` >> configure_system.txt
+elif [[ -d $TABIX_PATH ]]; then
+    echo -e "TABIX_PATH = " $TABIX_PATH >> configure_system.txt
+else
+    echo "TABIX_PATH not found." 
+fi
 
 which bwa > /dev/null 2>&1
 if [ $? = "0" ]; then

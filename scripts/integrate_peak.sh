@@ -46,7 +46,7 @@ do
     pk0_dir=$(dirname $pk0)
     frag0_dir=`cd "$pk0_dir"; cd "../../summary"; pwd`       
     mat0_dir=`cd "$pk0_dir"; cd "../../filtered_matrix"; pwd`       
-    frag0_file=$(find $frag0_dir -name "*fragments.txt")
+    frag0_file=$(find $frag0_dir -name "*fragments.tsv.gz")
     mat0_dir=${mat0_dir}/${PEAK_CALLER}/${CELL_CALLER}
     #bc0_file=$(find ${mat0_dir} -name "*barcodes.txt")
     bc0_file=${mat0_dir}/barcodes.txt

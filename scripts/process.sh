@@ -62,7 +62,7 @@ wait
 
 ## 6.generate matrix
 echo "generating raw matrix and qc per barcode..."
-frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt
+frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.tsv.gz
 feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}_features_BlacklistRemoved.bed
 ${curr_dir}/get_mtx.sh ${frag_file},${feature_file} $2 $3 &
 

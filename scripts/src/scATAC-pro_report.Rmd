@@ -85,8 +85,8 @@ plotEPS = as.logical(plotEPS)
 if(plotEPS) dir.create(paste0(params$output_dir, '/summary/Figures'), showWarn = F)
 mapping_qc_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.MappingStats')
 
-fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt')
-fragments_len_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt.len')
+fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.tsv.gz')
+fragments_len_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.len.tsv.gz')
 frags = fread(fragments_file)
 names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
 
