@@ -24,10 +24,10 @@ sourceCpp(code='
       NumericVector midP1(n1), len1(n1), len2(n2), midP2(n2);
       IntegerVector over1(n1);
           
-      len1 = (end1 - start1)/2;
+      len1 = (end1 - start1 + 1)/2;
       midP1 = (end1 + start1)/2;
           
-      len2 = (end2 - start2)/2;
+      len2 = (end2 - start2 + 1)/2;
       midP2 = (end2 + start2)/2;
       int k = 0;
       for(int i=0; i<n1; i++){
@@ -82,13 +82,26 @@ setkey(enhs, chr, start)
 
 chrs = unique(frags$chr)
 
+tss4escore = copy(tss)
+tss4escore.left = copy(tss)
+tss4escore.right =  copy(tss)
+tss4escore.left[, 'start' := start - 1000]
+tss4escore.left[, 'end' := start + 1]
+tss4escore.right[, 'start' := start + 1000]
+tss4escore.right[, 'end' := start + 1]
+
 tss[, 'start' := start - 1000]
 tss[, 'end' := end + 1000]
 fragsInRegion = NULL
 for(chr0 in chrs){
   peaks0 = peaks[chr == chr0]
   promoters0 = promoters[chr == chr0]
+
   tss0 = tss[chr == chr0]
+  tss4escore0 = tss4escore[chr == chr0]
+  tss4escore0.left = tss4escore.left[chr == chr0]
+  tss4escore0.right = tss4escore.right[chr == chr0]
+
   enhs0 = enhs[chr == chr0]
   frags0 = frags[chr == chr0]
   frags = frags[chr != chr0]
@@ -115,6 +128,17 @@ for(chr0 in chrs){
   }else{
     frags0[, 'enhs' := getOverlaps_read2AnyRegion(frags0, enhs0)]
   }
+ 
+  ## calculate tss enrichment score per cell
+  if(nrow(tss4escore0) == 0){
+    frags0[, 'tss_center' := 0]
+    frags0[, 'tss_left' := 0]
+    frags0[, 'tss_right' := 0]
+  }else{
+    frags0[, 'tss_center' := getOverlaps_read2AnyRegion(frags0, tss4escore0)]
+    frags0[, 'tss_left' := getOverlaps_read2AnyRegion(frags0, tss4escore0.left)]
+    frags0[, 'tss_right' := getOverlaps_read2AnyRegion(frags0, tss4escore0.right)]
+  }
   
   fragsInRegion = rbind(fragsInRegion, frags0)
   message(paste(chr0, 'Done!'))
@@ -122,7 +146,7 @@ for(chr0 in chrs){
 rm(frags)
 
 # get barcode region count matrix
-fragsInRegion[, 'isMito' := ifelse(chr == 'chrM', 1, 0)]
+fragsInRegion[, 'isMito' := ifelse(chr %in% c('chrM'), 1, 0)]
 fragsInRegion[, c('chr', 'start', 'end') := NULL]
 fragsInRegion[, 'frac_mito' := sum(isMito)/total_frags, by = bc]
 fragsInRegion[, 'isMito' := NULL]
@@ -134,6 +158,8 @@ fragsInRegion[, 'frac_tss' := sum(tss)/total_frags, by = bc]
 fragsInRegion[, 'tss' := NULL]
 fragsInRegion[, 'frac_enhancer' := sum(enhs)/total_frags, by = bc]
 fragsInRegion[, 'enhs' := NULL]
+fragsInRegion[, 'tss_enrich_score' := sum(tss_center + 1)/sum(tss_left + tss_right+1) * 2, by = bc]
+fragsInRegion[, c('tss_center', 'tss_left', 'tss_right') := NULL]
 fragsInRegion = fragsInRegion[!duplicated(fragsInRegion), ]
 
 write.table(fragsInRegion, file = out.frag.overlap.file, sep = '\t',
