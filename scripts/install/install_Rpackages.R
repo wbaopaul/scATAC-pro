@@ -1,10 +1,10 @@
 ## install R packages for scATAC-pro
 
 if(!require(BiocManager)){
-    install.packages('BiocManager')
+    install.packages('BiocManager', dependencies = TRUE, repos = "http://cran.us.r-project.org")
 }
 if(packageVersion("BiocManager")<"1.30.10"){
-    install.packages('BiocManager')
+    install.packages('BiocManager', dependencies = TRUE, repos = "http://cran.us.r-project.org")
 }
 
 pks = c('devtools', 'flexdashboard', 'png', 'data.table', 'Matirx', 'Rcpp', 'ggplot2', 'flexmix',

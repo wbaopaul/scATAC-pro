@@ -56,6 +56,6 @@ qc_dir=${OUTPUT_DIR}/summary
 mkdir -p $qc_dir
 bash ${curr_dir}/mapping_qc.sh ${mapRes_dir}  $2 $3
 
-echo "Simple mapping stats summary Done!"
+echo "Summarize global mapping stats done!"
 
 

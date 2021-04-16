@@ -51,13 +51,16 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.3.0
 - Recent updates
-    * .rds files generated for matrices and can be the input of *clustering*, *motif_analysis* and *downstream* module
-    * Added  *addCB2bam* module to write cell barcode into 
-      an additional column of the bam file & corrected a bug for calculating insert size
+    * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
+    * fragments file indexed by tabix (named fragments.tsv.gz)
+    * *motif_analysis* and *runDA*: enable seurat object in .rds format as input
+    * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks
+    * .rds files generated for raw and filtered matrices and can be the input of *clustering*,       *motif_analysis* and *downstream* module
+    * Added *addCB2bam* module to write cell barcode into 
+      an additional column of the bam file 
     * updated footprinting analysis dependent module *rgt-hint* to python3
-    * added qc per cell to metadata of the seurat object as: total.unique.frags, frac.peak, frac.mito,
-      frac.tss, frac.promoter, and frac.enhancer
-    * *demplx_fastq*: the input supports PATH to the DIRECTORY of 10x fastq files
+    * added qc per cell to metadata of the seurat object 
+      frac.tss, frac.promoter, and frac.enhancer, tss_enrich_score
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file

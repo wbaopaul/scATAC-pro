@@ -1,13 +1,21 @@
 ## Complete Update History
-- updates in dev branch:
+- Version 1.3.0 released
+    * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
+    * fragments file indexed by tabix (named fragments.tsv.gz)
+    * *motif_analysis* and *runDA*: accept seurat object in .rds format as input
+    * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks
+    * *report*: rearranged some plots and enabled output cicero interaction plot for a specific gene (specify it through **Cicero_Plot_Region* parameter in the configure_user.txt file)
+
+- Version 1.2.1 released
     * new module *addCB2bam*: add cell barcode (CB) tag to a give bam file, new bam file will be saved in the same folder as the input bam (with name *_withCBtag.bam)
     * save .rds file for matrix and correct bug of calculating insert size 
-- Current version: 1.2.0
+
+- Version: 1.2.0 released:
     * update footprint dependency *rgt-hint* module to python3
     * save qc statistics in html report into tables, and peak calling summary inf added in the report
     * add qc per cell to seurat obj metadata as: total.unique.frags, frac.peak, frac.mito,
       frac.tss, frac.promoter, and frac.enhancer
-- VERSION **1.1.4** released
+- VERSION 1.1.4 released
     * *demplx_fastq*: the input supports directory path of 10x fastq files
 - VERSION: 1.1.3 released
     * *runGO*: update background genes to be all genes associated with any peak

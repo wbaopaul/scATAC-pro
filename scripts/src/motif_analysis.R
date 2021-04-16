@@ -47,7 +47,7 @@ if(all(itype != 'Seurat')) {
     seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = 'ATAC',
                           names.delim = '-')
     if(norm_by == 'log') seurat.obj@assays$ATAC@data = log1p(seurat.obj@assays$ATAC@counts)
-    if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data = TF.IDF(seurat.obj@assays$ATAC@counts)
+    if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data = TF_IDF(seurat.obj@assays$ATAC@counts)
     seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                  selection.method = 'vst',
                                  nfeatures = floor(nrow(mtx) * 0.4))

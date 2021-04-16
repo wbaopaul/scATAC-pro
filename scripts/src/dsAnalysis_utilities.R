@@ -14,6 +14,27 @@ library(mclust)
 library(RColorBrewer)
 library(viridis)
 library(ggplot2)
+library(Matrix)
+
+TF_IDF <- function (data, verbose = T) 
+{
+    if (class(x = data) == "data.frame") {
+        data <- as.matrix(x = data)
+    }
+    if (class(x = data) != "dgCMatrix") {
+        data <- as(object = data, Class = "dgCMatrix")
+    }
+    if (verbose) {
+        message("Performing TF_IDF normalization")
+    }
+    npeaks <- colSums(x = data)
+    tf <- t(x = t(x = data)/npeaks)
+    idf <- ncol(x = data)/rowSums(x = data)
+    norm.data <- Diagonal(n = length(x = idf), x = idf) %*% tf
+    norm.data[which(x = is.na(x = norm.data))] <- 0
+    return(norm.data)
+}
+
 
 read_mtx_scATACpro <- function(mtx_path){
   #mtx_path <- paste0(dirt, "matrix.mtx")
@@ -60,6 +81,8 @@ filterMat <- function(atac.mtx, minFrac_in_cell = 0.01, min_depth = 200,
   atac.mtx = atac.mtx[, depth.cell > min_depth & depth.cell < max_depth]
   frac.in.cell = Matrix::rowMeans(atac.mtx > 0)
   atac.mtx = atac.mtx[frac.in.cell > minFrac_in_cell, ]
+  depth.cell = Matrix::colSums(atac.mtx)
+  atac.mtx = atac.mtx[, depth.cell > 0] ## remove cells without any read overlap filtered peaks
   return(atac.mtx)
 }
 
@@ -70,7 +93,7 @@ atac_tfidf = function(atac_matrix, site_frequency_threshold=0.03) {
   
   ncounts = atac_matrix[num_cells_ncounted >= threshold,]
   
-  ## Normalize the data with TF-IDF
+  ## Normalize the data with TF_IDF
   nfreqs = t(t(ncounts) / Matrix::colSums(ncounts))
   tf_idf_counts = nfreqs * log(1 + ncol(ncounts) / Matrix::rowSums(ncounts))
   
@@ -105,7 +128,7 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
                                   names.delim = '-', min.cells = 1,
                                   min.features = 1)
   if(norm_by == 'log') seurat.obj[[assay]]@data <- log1p(seurat.obj[[assay]]@counts)/log(2)
-  if(norm_by == 'tf-idf') seurat.obj[[assay]]@data <- TF.IDF(seurat.obj[[assay]]@counts)
+  if(norm_by == 'tf-idf') seurat.obj[[assay]]@data <- TF_IDF(seurat.obj[[assay]]@counts)
   nvap = ifelse(top_variable_features > 1, top_variable_features, 
                 floor(nrow(mtx) * top_variable_features))
 
@@ -136,7 +159,7 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
   
   ## redo normalization using vap if norm by tf-idf
   if(norm_by == 'tf-idf'){
-    mtx.norm = TF.IDF(mtx[vaps, ])
+    mtx.norm = TF_IDF(mtx[vaps, ])
     tmp <- mtx[setdiff(rownames(mtx), vaps), ]
     data0 <- rbind(mtx.norm, tmp)
     seurat.obj[[assay]]@data = data0[rownames(mtx), ]
@@ -443,7 +466,7 @@ run_LSI <- function(mtx, ncell.peak = 150,  max_pc = 10, k = 5){
   num_cells.peak = Matrix::rowSums(mtx)
   ncounts = mtx[num_cells.peak >= ncell.peak,]
   
-  ## Normalize the data with TF-IDF
+  ## Normalize the data with TF_IDF
   nfreqs = t(t(ncounts) / Matrix::colSums(ncounts))
   tf_idf_counts = nfreqs * log(1 + ncol(ncounts) / Matrix::rowSums(ncounts))
   
@@ -1152,7 +1175,7 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
     names(sds) = rownames(mtx_by_cls.norm)
     sele.features = names(which(sds >= sort(sds, decreasing = T)[top_variable_features]))
     mtx0 = mtx[sele.features, ]
-    mtx0.norm = Seurat::TF.IDF(mtx0)
+    mtx0.norm = TF_IDF(mtx0)
     seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
     VariableFeatures(seurat.obj) <- sele.features
     seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = verbose)
