@@ -4,6 +4,7 @@
     * fragments file indexed by tabix (named fragments.tsv.gz)
     * *motif_analysis* and *runDA*: accept seurat object in .rds format as input
     * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks
+    * *integrate_mtx*: added, as an alias of previous *integrate_seu* module
     * *report*: rearranged some plots and enabled output cicero interaction plot for a specific gene (specify it through **Cicero_Plot_Region* parameter in the configure_user.txt file)
 
 - Version 1.2.1 released

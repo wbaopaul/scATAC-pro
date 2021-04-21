@@ -55,6 +55,7 @@ Updates
     * fragments file indexed by tabix (named fragments.tsv.gz)
     * *motif_analysis* and *runDA*: enable seurat object in .rds format as input
     * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks
+    * *integrate_mtx*: new module added, as an alias of previous *integrate_seu* module
     * .rds files generated for raw and filtered matrices and can be the input of *clustering*,       *motif_analysis* and *downstream* module
     * Added *addCB2bam* module to write cell barcode into 
       an additional column of the bam file 
@@ -254,9 +255,9 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt
     
     ## if you have the reconstructed matrix for data set (meaning using the merged peaks)
-    ## you can run the *integrate_seu* whtich is second part of the module *integrate*            
+    ## you can run the *integrate_mtx* whtich is second part of the module *integrate*            
 
-    $ scATAC-pro -s integrate_seu
+    $ scATAC-pro -s integrate_mtx
                  -i mtx_file1,mtx_file2,(mtx_file3...)   
                  -c configure_user.txt
 ```
@@ -410,8 +411,8 @@ Detailed Usage
                            input: peak/feature files and a optional distance parameter separated by comma: peak_file1,peak_file2,200
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
                                    output/integrated/
-          integrate_seu: perform integration of two ore more data sets given the reconstructed peak-by-cell matrix
-                           input: mtx1,mtx2, separated by comma like, mtx_file1,mtx_file2
+          integrate_mtx: perform integration of two ore more data matrices given the reconstructed peak-by-cell matrix
+                           input: mtx1,mtx2, separated by comma like, mtx1_filepath,mtx2_filepath
                            output: integrated seurat obj and umap plot, saved in output/integrated/
           visualize: interactively visualize the data through VisCello
                          input: VisCello_obj directory, outputted from the clustering module

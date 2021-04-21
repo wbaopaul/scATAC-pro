@@ -279,8 +279,18 @@ integrate: config_check
 integrate_seu: config_check
 	@echo "--------------------------------------------" 
 	@date 
-	@echo "Doing integrating mtx by seurat ..." 
+	@echo "Integrating matrices ..." 
 	@$(SCRIPTS)/integrate_seu.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
+## integrate_mtx
+#######################################
+integrate_mtx: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Integrating matrices ..." 
+	@$(SCRIPTS)/integrate_mtx.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################

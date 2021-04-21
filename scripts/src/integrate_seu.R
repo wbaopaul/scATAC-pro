@@ -66,16 +66,16 @@ write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table_', integrate_
 getPalette1 = colorRampPalette(brewer.pal(9, "Paired"))
 myColors1 = getPalette1(len)
 getPalette2 = colorRampPalette(brewer.pal(9, "Set1"))
-myColors2 = getPalette2(length(unique(seurat.obj$seurat_cluster)))
-
-cg <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', label = T) + 
-  theme(legend.text = element_text(size = 17)) 
-if(length(unique(seurat.obj$active_clusters)) < 10) cg = cg + scale_color_brewer(values = myColor1)
+seurat.obj$active_clusters = as.character(seurat.obj$active_clusters)
+myColors2 = getPalette2(length(unique(seurat.obj$active_clusters)))
 
 cg1 <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'sample') + 
-  theme(legend.text = element_text(size = 17)) + scale_color_brewer(values = myColor2)
+  theme(legend.text = element_text(size = 17)) + scale_color_manual(values = myColors1)
+cg2 <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', label = T) + 
+  theme(legend.text = element_text(size = 17)) + scale_color_manual(values = myColors2) 
 
-pcomb = gridExtra::grid.arrange(cg1, cg, nrow = 1)
+
+pcomb = gridExtra::grid.arrange(cg1, cg2, nrow = 1)
 pfname = paste0(output_dir, '/umap_clusters_', integrate_by, '.eps')
 
 #ggsave(CombinePlots(plots = list(cg1, cg)), file = pfname, device = 'eps', width = 14, height = 6)
