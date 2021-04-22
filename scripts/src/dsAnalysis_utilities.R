@@ -151,9 +151,7 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
                                        nfeatures = min(nvap, nrow(seurat.obj)))
     vaps = VariableFeatures(seurat.obj)
     vaps = setdiff(vaps, rare.features)
-    if(niter > 5) stop('Too many variable features were filtered, 
-                       please specify a large Top_Variable_Features
-                       in the configure file!')
+    if(niter >= 5) break 
   }
   VariableFeatures(seurat.obj) <- vaps
   
