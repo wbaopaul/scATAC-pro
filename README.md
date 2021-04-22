@@ -94,7 +94,7 @@ Dependencies
 -   BWA (&gt;=0.7.17), bowtie, bowtie2
 -   MACS2 (&gt;=2.2.5)
 -   samtools (&gt;=1.9)
--   bedtools (&gt;=2.27.1)
+-   bedtools (&gt;=2.27.1), bedops, tabix
 -   deepTools (&gt;=3.2.1)
 -   trim\_galore (&gt;=0.6.3), Trimmomatic (&gt;=0.6.3)
 -   Regulratory Genomics Toolbox (RGT, for footprinting analysis)
