@@ -11,15 +11,23 @@ library(parallel)
 
 
 args = commandArgs(T)
-mtx_file = args[1]
+mtx_file = args[1] ## could be the path of matrix.mtx or rds file for matrix or seurat obj
 genome_name = args[2]
 output_dir = args[3]
 norm_by = args[4]
 
 if(grepl(mtx_file, pattern = '.rds', fix = T)) {
-    mtx = readRDS(mtx_file)
+    input.obj = readRDS(mtx_file)
+    itype = class(input.obj)
+    if(any(itype == 'Seurat')){
+        mtx = input.obj@assays$ATAC@counts
+    }else{
+        mtx = input.obj
+        rm(input.obj)
+    }
     rnames = rownames(mtx)
-    new.rnames = sapply(rnames, function(x) gsub('_', '-', x))
+    new.rnames = sapply(rnames, function(x) unlist(strsplit(x, ','))[1])
+    new.rnames = sapply(new.rnames, function(x) gsub('_', '-', x))
     names(new.rnames) = NULL
     rownames(mtx) <- new.rnames
 }else{
@@ -35,34 +43,38 @@ if(grepl(genome_name, pattern = 'mm10'))genomeName = 'BSgenome.Mmusculus.UCSC.mm
 
 ncore = detectCores()
 
-if(T){
-## select variable features first
-      seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = 'ATAC',
-                                  names.delim = '-')
+if(all(itype != 'Seurat')) {
+    seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = 'ATAC',
+                          names.delim = '-')
+    if(norm_by == 'log') seurat.obj@assays$ATAC@data = log1p(seurat.obj@assays$ATAC@counts)
+    if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data = TF_IDF(seurat.obj@assays$ATAC@counts)
+    seurat.obj <- FindVariableFeatures(object = seurat.obj,
+                                 selection.method = 'vst',
+                                 nfeatures = floor(nrow(mtx) * 0.4))
+    vFeatures = VariableFeatures(seurat.obj)
+    ## further filter peaks
+    rs = Matrix::rowSums(mtx > 0)
+    filter.pks = names(which(rs > (0.005 * ncol(seurat.obj))))
+    vFeatures = intersect(vFeatures, filter.pks)
 
-      if(norm_by == 'log') seurat.obj@assays$ATAC@data = log1p(seurat.obj@assays$ATAC@counts)
-      if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data = TF.IDF(seurat.obj@assays$ATAC@counts)
-      
-      seurat.obj <- FindVariableFeatures(object = seurat.obj,
-                                         selection.method = 'vst',
-                                         nfeatures = floor(nrow(mtx) * 0.4))
-      vFeatures = VariableFeatures(seurat.obj)
-      ## further filter peaks
-      rs = Matrix::rowSums(mtx > 0)
-      filter.pks = names(which(rs > (0.005 * ncol(seurat.obj))))
-      vFeatures = intersect(vFeatures, filter.pks)
-
-      rm(seurat.obj)
-      rnames = rownames(mtx)
-      mtx = mtx[rnames %in% vFeatures, ]
+    rm(seurat.obj)
+    rnames = rownames(mtx)
+    mtx = mtx[rnames %in% vFeatures, ]
+}else{
+    seurat.obj = input.obj
+    rm(input.obj)
 }
 
 
+
 chromVar.obj = run_chromVAR(mtx, genomeName, max(1, ncore - 1))
+seurat_file <- paste0(output_dir, '/seurat_obj.rds') ## default seurat obj for the project, not used if the input is an seurat obj
+if(any(itype == 'Seurat')) {
+    output_dir = dirname(mtx_file)
+}
 saveRDS(chromVar.obj, file = paste0(output_dir, '/chromVar_obj.rds'))
 
-
-## plot heatmap ####
+## plot enrichment heatmap ####
 library(BiocParallel)
 register(SerialParam())
 
@@ -105,14 +117,14 @@ do_DA_motif <- function(mtx_score, clusters, test = 'wilcox',
   return(res)
 }
 
-seurat_file <- paste0(output_dir, '/seurat_obj.rds')
-if(file.exists(seurat_file)){
-  ss = readRDS(seurat_file)
-  metaData = ss@meta.data
-  rm(ss)
-  if(file.exists(paste0(output_dir, '/chromVar_obj.rds'))){
-    #chromVar.obj = readRDS(paste0(output_dir, '/chromVar_obj.rds'))
-    
+if(file.exists(seurat_file) | any(itype == 'Seurat')){
+    if(all(itype != 'Seurat')){
+        seurat.obj = readRDS(seurat_file)
+    }
+
+    metaData = seurat.obj@meta.data
+    rm(seurat.obj)
+
     dev = deviations(chromVar.obj)
     da.res = do_DA_motif(dev, 
                    clusters = data.table('barcode' = rownames(metaData),
@@ -121,29 +133,28 @@ if(file.exists(seurat_file)){
     rm(dev)
     write.table(da.res, file = paste0(output_dir, '/differential_TF_motif_enriched_in_clusters.tsv'), 
               quote = F, sep = '\t', row.names = F )
-    
-    
+
+
     ## plot enriched TFs in heatmap
     sele.tfs = da.res$feature
     #zscores = chromVar.obj@assays$data$z
     zscores = deviationScores(chromVar.obj)
     sele.zscores = zscores[sele.tfs, ]
-    
+
     # change tf name to be more readable
     sele.zscores = readable_tf(sele.zscores, genome_name)    
-    
+
     metaData$active_clusters = as.character(metaData$active_clusters)
 
     bc_clusters = data.table('barcode' = rownames(metaData),
                              'cluster' = metaData$active_clusters)  
- 
+
     ph <- plot_enrich_tf(sele.zscores, bc_clusters) 
     pfname = paste0(output_dir, '/heatmap_motif_enrich.eps')
-    
+
     ggsave(ph, filename = pfname, device = 'eps', height = 12,
            width = 9)
-  }
-  
+
 }
 
 

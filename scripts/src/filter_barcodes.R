@@ -72,13 +72,14 @@ if(grepl(mtx_file, pattern = '.rds', fixed = T)){
     mtx = readMM(mtx_file)
     input_mtx_dir = dirname(mtx_file)
     colnames(mtx) = fread(paste0(input_mtx_dir, '/barcodes.txt'), header = F)$V1
-
     mtx.dir = dirname(mtx_file)
     ff = fread(paste0(mtx.dir, '/features.txt'), header = F)$V1
     rownames(mtx) <- ff
 }
 mtx = mtx[, colnames(mtx) %in% qc_sele$bc, drop = F]
 system(paste('mkdir -p', output_dir))
+
+
 writeMM(mtx, file = paste0(output_dir, '/matrix.mtx'))
 saveRDS(mtx, file = paste0(output_dir, '/matrix.rds'))
 

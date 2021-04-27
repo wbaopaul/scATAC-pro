@@ -68,7 +68,7 @@ if(groups1[1] == 'one') {
                               ident.1 = groups1, ident.2 = id2, test.use = test_use, 
                               logfc.threshold = 0.0, max.cells.per.ident = 500,
                               only.pos = F, latent.vars = confVar)
-        markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
+        markers$cluster = ifelse(markers$avg_log2FC > 0, group1, group2)
         markers$fdr = p.adjust(markers$p_val, method = 'fdr')
     }else{
         cells2 = cn[which(seurat.obj$active_clusters %in% groups2)]
@@ -77,7 +77,7 @@ if(groups1[1] == 'one') {
                               ident.1 = groups1, ident.2 = groups2, test.use = test_use,
                               max.cells.per.ident = 500, logfc.threshold = 0.0, 
                               only.pos = F, latent.vars = confVar)
-        markers$cluster = ifelse(markers$avg_logFC > 0, group1, group2)
+        markers$cluster = ifelse(markers$avg_log2FC > 0, group1, group2)
         markers$fdr = p.adjust(markers$p_val, method = 'fdr')
     }
   
@@ -91,7 +91,7 @@ markers[, 'chr' := unlist(strsplit(peak0, '-'))[1], by = peak0]
 markers[, 'start' := unlist(strsplit(peak0, '-'))[2], by = peak0]
 markers[, 'end' := unlist(strsplit(peak0, '-'))[3], by = peak0]
 
-setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_logFC','pct.1','pct.2', 
+setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_log2FC','pct.1','pct.2', 
                        'p_val_adj', 'fdr', 'cluster', 'peak', 'peak0'))
 
 markers = markers[fdr <= 0.05, ]

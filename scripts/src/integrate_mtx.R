@@ -39,8 +39,13 @@ for(i in 1:len){
         mtx = read_mtx_scATACpro(file0)
     }
     mtx = assignGene2Peak(mtx, tss_ann)
+
+    ## rename cell names in case of shared barcodes among samples
+    colnames(mtx) = paste0('sample', i, '_', colnames(mtx))    
+
     mtx_list[[i]] = mtx
 }
+names(mtx_list) = paste0('sample', 1:len)
 seurat.obj <- run_integration(mtx_list, integrate_by = integrate_by,
                             top_variable_features = top_variable_features, 
                             norm_by = norm_by, nREDUCTION = nREDUCTION,
@@ -58,13 +63,21 @@ setkey(bc_cls, Cluster)
 write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table_', integrate_by, '.tsv'), sep = '\t',
             quote = F, row.names = F)
 
-cg <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', label = T) + 
-  theme(legend.text = element_text(size = 17)) 
-if(length(unique(seurat.obj$active_clusters)) < 10) cg = cg + scale_color_brewer(palette = "Paired")
+getPalette1 = colorRampPalette(brewer.pal(9, "Paired"))
+myColors1 = getPalette1(len)
+getPalette2 = colorRampPalette(brewer.pal(9, "Set1"))
+seurat.obj$active_clusters = as.character(seurat.obj$active_clusters)
+myColors2 = getPalette2(length(unique(seurat.obj$active_clusters)))
 
 cg1 <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'sample') + 
-  theme(legend.text = element_text(size = 17)) + scale_color_brewer(palette = "Set1")
+  theme(legend.text = element_text(size = 17)) + scale_color_manual(values = myColors1)
+cg2 <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', label = T) + 
+  theme(legend.text = element_text(size = 17)) + scale_color_manual(values = myColors2) 
 
+
+pcomb = gridExtra::grid.arrange(cg1, cg2, nrow = 1)
 pfname = paste0(output_dir, '/umap_clusters_', integrate_by, '.eps')
-   ggsave(CombinePlots(plots = list(cg1, cg)), file = pfname, device = 'eps', width = 14, height = 6)
+
+#ggsave(CombinePlots(plots = list(cg1, cg)), file = pfname, device = 'eps', width = 14, height = 6)
+ggsave(pcomb, file = pfname, device = 'eps', width = 14, height = 6)
 

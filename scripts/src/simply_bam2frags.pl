@@ -111,7 +111,8 @@ print("Now I am writing the output to $output_file .\n");
 
 
 
-foreach my $frag_id (sort keys %frags)
+#foreach my $frag_id (sort keys %frags)
+foreach my $frag_id (keys %frags)
 {
 
    print OUT $frag_id."\t".$frags{$frag_id}."\n" ;

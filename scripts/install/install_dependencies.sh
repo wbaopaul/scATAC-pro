@@ -309,8 +309,8 @@ if [ $wasInstalled == 0 ]; then
     cd bedtools2
     make
     cd ..
-    cp -r bedtools2 $PREFIX_BIN/
-    export PATH=$PREFIX_BIN/bedtools2/bin:$PATH
+    cp -r bedtools2 ${PREFIX_BIN}/
+    export PATH=${PREFIX_BIN}/bedtools2/bin:$PATH
 
     check=`bedtools | grep -i options`;
     if [ $? = "0" ]; then
@@ -321,6 +321,56 @@ if [ $wasInstalled == 0 ]; then
         echo -e "$RED""bedtools NOT installed successfully""$NORMAL"; exit 1;
     fi
 fi
+
+##install bedops for bedr
+wasInstalled=0;
+which bedops > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo -e "$BLUE""bedops appears to be already installed. ""$NORMAL"
+    wasInstalled=1;
+else
+    echo "Installing bedops ..."
+    $get bedops_linux_x86_64-v2.4.39.tar.bz2 https://github.com/bedops/bedops/releases/download/v2.4.39/bedops_linux_x86_64-v2.4.39.tar.bz2
+    mkdir -p ${PREFIX_BIN}/bedops
+    tar jxvf bedops_linux_x86_64-v2.4.39.tar.bz2 -C ${PREFIX_BIN}/bedops 
+    export PATH=${PREFIX_BIN}/bedops/bin:$PATH
+    check=`which bedops`;
+    if [ $? = "0" ]; then
+        echo -e "$BLUE""bedops appears to be installed successfully""$NORMAL"
+        echo -e export PATH=$PREFIX_BIN/bedops/bin:"\$"PATH >> ~/.bashrc
+    else
+        echo -e "$RED""bedops NOT installed successfully""$NORMAL"; exit 1;
+    fi
+    wasInstalled=1 
+fi
+
+##install tabix
+wasInstalled=0;
+which tabix > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo -e "$BLUE""tabix appears to be already installed. ""$NORMAL"
+    wasInstalled=1;
+else
+    echo "Installing tabix ..."
+    git clone https://github.com/samtools/tabix
+    cd tabix
+    make
+    export PATH=tabix:$PATH
+    cd ..     
+    cp -r tabix ${PREFIX_BIN}/
+    check=`which tabix`
+    if [ $? = "0" ]; then
+        echo -e "$BLUE""tabix appears to be installed successfully""$NORMAL"
+        echo -e export PATH=$PREFIX_BIN/tabix:"\$"PATH >> ~/.bashrc
+        TABIX_PATH=$PREFIX_BIN/tabix
+    else
+        echo -e "$RED""tabix NOT installed successfully""$NORMAL"; exit 1;
+    fi
+    wasInstalled=1 
+fi
+
+##install tabix
+
 
 
 #########################################################################################
@@ -574,6 +624,14 @@ else
     echo "BEDTOOLS_PATH not found." 
 fi
 
+which tabix > /dev/null 2>&1
+if [ $? = "0" ]; then
+    echo "TABIX_PATH = "`dirname $(which tabix)` >> configure_system.txt
+elif [[ -d $TABIX_PATH ]]; then
+    echo -e "TABIX_PATH = " $TABIX_PATH >> configure_system.txt
+else
+    echo "TABIX_PATH not found." 
+fi
 
 which bwa > /dev/null 2>&1
 if [ $? = "0" ]; then

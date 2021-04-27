@@ -63,7 +63,7 @@ do
     frag0_dir=`cd "$bam0_dir"; cd "../summary"; pwd`       
     qc_dir=${ABS_PATH}/summary 
     mkdir -p $qc_dir
-    frag0_file=$(find $frag0_dir -name "*fragments.txt")
+    frag0_file=$(find $frag0_dir -name "*fragments.tsv.gz")
     ${R_PATH}/R --vanilla --args $frag0_file $feature_file ${raw_mtx_dir} 5 5 < ${curr_dir}/src/get_mtx.R &
 
     echo "QC per barcode for each sample ..."

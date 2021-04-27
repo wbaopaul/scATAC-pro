@@ -70,8 +70,18 @@ echo "Simple mapping stats summary Done!"
 
 echo "Getting txt file for read pair (fragment) information"
 ${PERL_PATH}/perl ${curr_dir}/src/simply_bam2frags.pl --read_file ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam \
-        --output_file ${qc_dir}/${OUTPUT_PREFIX}.fragments.txt --samtools_path $SAMTOOLS_PATH
+        --output_file ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv --samtools_path $SAMTOOLS_PATH
 
-#echo "Remove duplicates"
-#${SAMTOOLS_PATH}/samtools markdup -@ $ncore -r ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ30.bam ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ30.noDuplicates.bam 
-#rm ${mapRes_dir}/${OUTPUT_PREFIX}.bam*
+${TABIX_PATH}/bgzip -f ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv.len 
+
+## sort and index fragment file
+# faster sort by R data.table
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/sort_frags.R ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv
+
+## index fragment file
+#sort -k1,1 -k2,2n -T ${mapRes_dir}/tmp/  ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv > ${qc_dir}/${OUTPUT_PREFIX}.fragments.sorted.tsv
+#mv ${qc_dir}/${OUTPUT_PREFIX}.fragments.sorted.tsv ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv
+${TABIX_PATH}/bgzip  ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv 
+${TABIX_PATH}/tabix -p bed ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv.gz
+
+

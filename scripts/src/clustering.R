@@ -54,7 +54,7 @@ qc_singlecell = data.frame(qc_singlecell)
 rownames(qc_singlecell) = qc_singlecell$bc
 qc_singlecell$bc = NULL
 names(qc_singlecell) =  c("total.unique.frags", "frac.mito",  "frac.peak",
-                         "frac.promoter", "frac.tss", "frac.enhancer")
+                         "frac.promoter", "frac.tss", "frac.enhancer", "tss_enrich_score")
 seurat.obj <- AddMetaData(seurat.obj, metadata = qc_singlecell)
 
 

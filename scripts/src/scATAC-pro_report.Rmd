@@ -85,8 +85,8 @@ plotEPS = as.logical(plotEPS)
 if(plotEPS) dir.create(paste0(params$output_dir, '/summary/Figures'), showWarn = F)
 mapping_qc_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.MappingStats')
 
-fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt')
-fragments_len_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.txt.len')
+fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.tsv.gz')
+fragments_len_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.len.tsv.gz')
 frags = fread(fragments_file)
 names(frags) = c('chr', 'start', 'end', 'bc', 'ndup')
 
@@ -289,9 +289,6 @@ p <- ggplot(data = bc_stat, aes(x = total_frags, fill = group)) +
         axis.text = element_text(size = 15, family = "Helvetica")) + 
   xlab('Total #Unique Fragments') + ylab('Density') 
 
-#bb = ggplot_build(p)
-#cols = unique(bb$data[[1]][['fill']])
-
 text1 <- grobTree(textGrob("Cell", x=0.8,  y=0.93, hjust=0,
   gp=gpar(col='#F8766D', fontsize=15, fontface = 'bold', fontfamily = "Helvetica")))
 text2 <- grobTree(textGrob("Non-cell", x=0.8,  y=0.83, hjust=0,
@@ -300,7 +297,6 @@ text2 <- grobTree(textGrob("Non-cell", x=0.8,  y=0.83, hjust=0,
 p <- p + annotation_custom(text1) + annotation_custom(text2)
 
 p
-#ggplotly(p)
 
 if(plotEPS){
   system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
@@ -318,7 +314,9 @@ Row
 -------------------------------------------------------------------
 
 ### TSS enrichment score profile (Cell Barcodes)
+
 ```{r}
+
 tss_escore_file = paste0(params$output_dir, '/signal/cell_barcodes.MAPQ30.aggregated.mtx.gz')
 if(!file.exists(tss_escore_file)) tss_escore_file = paste0(params$output_dir, '/signal/', OUTPUT_PREFIX, '.aggregated.mtx.gz')
 
@@ -385,10 +383,17 @@ frac_promoter = sum(qc_sele$total_frags * qc_sele$frac_promoter)/sum(qc_sele$tot
 frac_enh = sum(qc_sele$total_frags * qc_sele$frac_enhancer)/sum(qc_sele$total_frags)
 frac_tss = sum(qc_sele$total_frags * qc_sele$frac_tss)/sum(qc_sele$total_frags)
 
-fracs = data.frame(c(frac_peak,  frac_promoter, frac_enh, frac_tss))
-row.names(fracs) = c('Fraction in peaks', 
-                    'Fraction in promoters', 'Fraction in Enhancers(ENCODE)', 
-                    'Fraction in TSS')
+frac_peak = median(qc_sele$frac_peak)
+frac_mito = median(qc_sele$frac_mito)
+frac_promoter = median(qc_sele$frac_promoter)
+frac_enh = median(qc_sele$frac_enhancer)
+frac_tss = median(qc_sele$frac_tss)
+fracs = data.frame(c(frac_peak,  frac_promoter, frac_enh, frac_tss, frac_mito))
+rownames(fracs) = c('Median % fragments overlapping peaks', 
+                    'Median % fragments overlapping promoters', 
+                    'Median % fragments overlapping Enhancers(ENCODE)', 
+                    'Median % fragments overlapping TSS (+/-1Kb)', 
+                    'Median % fragments in mitochondrial genome')
 colnames(fracs) = 'pr'
 fracs$pr = round(fracs$pr, 3)
 fracs$pr = paste0(100*fracs$pr, '%')
@@ -458,17 +463,18 @@ if(file.exists(go_file)){
        go_res = go_res1
        group.sele = group1
        if(nrow(go_res1) < nrow(go_res2) & group2 != 'rest'){
-         go_res = go_res2
-         group.sele = group2
+          go_res = go_res2
+          group.sele = group2
        }
     }
     
     
     if(nrow(go_res) == 0) {
         if(grepl(group1, pattern = 'one')) {
-            print(paste0('No enriched terms in comparison of ', group1, '_vs_', group2))}else{
-            print(paste0('No enriched terms in comparison of cluster_', group1, '_vs_', group2))
-          }
+            cat(paste0('No enriched terms in comparison of ', group1, '_vs_', group2))
+        }else{
+            cat(paste0('No enriched terms in comparison of cluster_', group1, '_vs_', group2))
+        }
     }else{
         #go_res = fread(go_file)
         go_res = data.table(go_res)
@@ -488,13 +494,15 @@ if(file.exists(go_file)){
           coord_flip()  +  scale_fill_continuous(name = "#genes", type = "viridis") +
           xlab('') + ylab('-log10(p.adjust)')
          
+        print(p_go) 
         
-      if(plotEPS){
-        pfname = paste0(params$output_dir, '/summary/Figures/enriched_GO.eps')
-        ggsave(p_go, file = pfname, device = 'eps', width = 10, height = 6)
-      }
-    p_go 
-   }
+        if(plotEPS){
+            pfname = paste0(params$output_dir, '/summary/Figures/enriched_GO.eps')
+            ggsave(p_go, file = pfname, device = 'eps', width = 10, height = 6)
+        }
+    }
+}else{
+    cat("No Go Enrichment result for given comparison, please run the runGO module of scATAC-pro first!")
 }
 
 ```
@@ -703,7 +711,6 @@ cicero_conn.file = paste0(down.dir, '/cicero_interactions.txt')
 
 if(file.exists(cicero_conn.file)){
  conns = fread(cicero_conn.file)
- conns = data.frame(conns)
  temp <- tempfile()
 if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {
     download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/mus_musculus/Mus_musculus.GRCm38.95.gtf.gz', temp)
@@ -732,14 +739,34 @@ gene_anno <- rtracklayer::readGFF(temp)
  gene_anno = subset(gene_anno, select = c(chromosome, start, end, strand, 
                                           transcript, gene, symbol))
  gene_anno = gene_anno[complete.cases(gene_anno), ]
+ if(Cicero_Plot_Region %in% gene_anno$symbol){
+    tmp_anno = gene_anno[gene_anno$symbol == Cicero_Plot_Region, ]
+    chr0 = tmp_anno$chr[1]
+    start0 = min(tmp_anno$start)
+    end0 = max(tmp_anno$end)
+ }else{
+    chr0 = unlist(strsplit(Cicero_Plot_Region, ':'))[1] ## chr5:140610000-140640000
+    region0 = unlist(strsplit(Cicero_Plot_Region, ':'))[2]
+    start0 = as.integer(unlist(strsplit(region0, '-'))[1])
+    end0 = as.integer(unlist(strsplit(region0, '-'))[2])
+ }
 
- chr0 = unlist(strsplit(Cicero_Plot_Region, ':'))[1] ## chr5:140610000-140640000
- region0 = unlist(strsplit(Cicero_Plot_Region, ':'))[2]
- start0 = as.integer(unlist(strsplit(region0, '-'))[1])
- end0 = as.integer(unlist(strsplit(region0, '-'))[2])
- 
- if(plotEPS){
-   pdf(paste0(params$output_dir,'/summary/Figures/interactions_example_region.pdf'), width = 8, height = 5, fonts = 'sans')
+if(end0 < start0 + 100000){
+    start0 = floor((start0+end0)/2) - 50000
+    end0 = start0 + 100000
+}
+ conns[, 'chr1' := unlist(strsplit(Peak1, '_'))[1], by = Peak1] 
+ conns[, 'start1' := as.integer(unlist(strsplit(Peak1, '_'))[2]), by = Peak1] 
+ conns[, 'end2' := as.integer(unlist(strsplit(Peak2, '_'))[3]), by = Peak2] 
+conns = conns[start1 <= end2]
+conns0 = conns[chr1==chr0 & start1 >= start0 & end2 <= end0]
+
+conns[, c('chr1', 'start1', 'end2') := NULL]
+conns = data.frame(conns)
+if(nrow(conns0)==0) cat('No interaction found in the griven region!')
+
+ if(plotEPS & nrow(conns0) >0 ){
+    pdf(paste0(params$output_dir,'/summary/Figures/interactions_example_region.pdf'), width = 8, height = 5, fonts = 'sans')
     plot_connections(conns, chr0, start0, end0,
                  gene_model = gene_anno, 
                  coaccess_cutoff = .3, 
@@ -749,7 +776,7 @@ gene_anno <- rtracklayer::readGFF(temp)
    dev.off()
   
  }
-    plot_connections(conns, chr0, start0, end0,
+  if(nrow(conns0) > 0)  plot_connections(conns, chr0, start0, end0,
                  gene_model = gene_anno, 
                  coaccess_cutoff = .3, 
                  connection_width = 1, 

@@ -16,9 +16,21 @@ qc_dir=${OUTPUT_DIR}/summary
 ## 1.generate mapping qc
 bash ${curr_dir}/bam2qc.sh $bam_file $2 $3
 
-echo "Getting txt file for read pair (fragment) information"
+echo "Getting fragments (read pairs) per barcode file..."
 ${PERL_PATH}/perl ${curr_dir}/src/simply_bam2frags.pl --read_file ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam \
-        --output_file ${qc_dir}/${OUTPUT_PREFIX}.fragments.txt --samtools_path $SAMTOOLS_PATH
+        --output_file ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv --samtools_path $SAMTOOLS_PATH
+
+${TABIX_PATH}/bgzip -f ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv.len
+
+echo "sort and index fragment file ..."
+# faster sort by R data.table
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/sort_frags.R ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv
+
+#sort -k1,1 -k2,2n -T ${mapRes_dir}/tmp/  ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv > ${qc_dir}/${OUTPUT_PREFIX}.fragments.sorted.tsv
+#mv ${qc_dir}/${OUTPUT_PREFIX}.fragments.sorted.tsv ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv
+${TABIX_PATH}/bgzip -f ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv 
+${TABIX_PATH}/tabix -p bed ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv.gz
+
 
 ## 2.call peak
 echo "Calling peaks ..."
@@ -31,7 +43,7 @@ wait
 
 ## 4.generate matrix
 echo "generating raw matrix and qc per barcode..."
-frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.txt
+frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.tsv.gz
 feature_file=${OUTPUT_DIR}/peaks/${PEAK_CALLER}/${OUTPUT_PREFIX}_features_BlacklistRemoved.bed
 ${curr_dir}/get_mtx.sh ${frag_file},${feature_file} $2 $3 &
 
