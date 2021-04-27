@@ -1,6 +1,7 @@
 ## Complete Update History
 - Version 1.3.0 released
     * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
+    * *call_cell*: enable filtering barcodes by tss enrichment score
     * fragments file indexed by tabix (named fragments.tsv.gz)
     * *footprint* module: suppoort comparison of any two sets of cell clusters)
     * *motif_analysis* and *runDA*: accept seurat object in .rds format as input

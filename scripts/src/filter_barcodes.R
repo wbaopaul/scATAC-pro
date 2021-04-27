@@ -44,6 +44,9 @@ parser <- add_option(parser, c("-p", "--min_frac_promoter"), type="double", defa
 parser <- add_option(parser, c("-m", "--max_frac_mito"), type="double", default=0.2,
                      help="maximal fraction of total pairs in Mitocondrial per barcode [default %default]",
                      metavar="number")
+parser <- add_option(parser, c("-s", "--min_tss_escore"), type="double", default=0,
+                     help="minimal tss enrich score per barcode [default %default]",
+                     metavar="number")
 
 opt = parse_args(parser)
 
@@ -59,13 +62,15 @@ cut.peak = opt$min_frac_peak
 cut.tss = opt$min_frac_tss
 cut.promoter = opt$min_frac_promoter
 cut.enh = opt$min_frac_enhancer
+cut.tss.escore = opt$min_tss_escore
 
 qc_sele = qc_bc_stat[total_frags >= cut.min.frag & total_frags <= cut.max.frag &
                        frac_mito <= cut.mito &
                        frac_peak >= cut.peak &
                        frac_tss >= cut.tss &
                        frac_promoter >= cut.promoter &
-                       frac_enhancer >= cut.enh]
+                       frac_enhancer >= cut.enh &
+                       tss_enrich_score >= cut.tss.escore]
 if(grepl(mtx_file, pattern = '.rds', fixed = T)){
     mtx = readRDS(mtx_file)
 }else{
