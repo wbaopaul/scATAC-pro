@@ -66,16 +66,19 @@ qc_sele = qc_bc_stat[total_frags >= cut.min.frag & total_frags <= cut.max.frag &
                        frac_tss >= cut.tss &
                        frac_promoter >= cut.promoter &
                        frac_enhancer >= cut.enh]
-
-mtx = readMM(mtx_file)
-input_mtx_dir = dirname(mtx_file)
-colnames(mtx) = fread(paste0(input_mtx_dir, '/barcodes.txt'), header = F)$V1
+if(grepl(mtx_file, pattern = '.rds', fixed = T)){
+    mtx = readRDS(mtx_file)
+}else{
+    mtx = readMM(mtx_file)
+    input_mtx_dir = dirname(mtx_file)
+    colnames(mtx) = fread(paste0(input_mtx_dir, '/barcodes.txt'), header = F)$V1
+    mtx.dir = dirname(mtx_file)
+    system(paste('mkdir -p', output_dir))
+    ff = fread(paste0(mtx.dir, '/features.txt'), header = F)$V1
+    rownames(mtx) <- ff
+}
 mtx = mtx[, colnames(mtx) %in% qc_sele$bc, drop = F]
 
-mtx.dir = dirname(mtx_file)
-system(paste('mkdir -p', output_dir))
-ff = fread(paste0(mtx.dir, '/features.txt'), header = F)$V1
-rownames(mtx) <- ff
 
 writeMM(mtx, file = paste0(output_dir, '/matrix.mtx'))
 saveRDS(mtx, file = paste0(output_dir, '/matrix.rds'))

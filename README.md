@@ -53,13 +53,12 @@ Updates
 - Recent updates
     * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
     * fragments file indexed by tabix (named fragments.tsv.gz)
-    * *motif_analysis* and *runDA*: enable seurat object in .rds format as input
+    * *footprint* module: suppoort comparison of any two sets of cell clusters
+    * *motif_analysis* and *runDA*: enable seurat/matrix object in .rds format as input
     * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks
     * *integrate_mtx*: new module added, as an alias of previous *integrate_seu* module
-    * .rds files generated for raw and filtered matrices and can be the input of *clustering*,       *motif_analysis* and *downstream* module
     * Added *addCB2bam* module to write cell barcode into 
       an additional column of the bam file 
-    * updated footprinting analysis dependent module *rgt-hint* to python3
     * added qc per cell to metadata of the seurat object 
       frac.tss, frac.promoter, and frac.enhancer, tss_enrich_score
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
@@ -184,15 +183,15 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt 
                  
     $ scATAC-pro -s get_mtx 
-                 -i output/summary/pbmc10k.fragments.txt,output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
+                 -i output/summary/pbmc10k.fragments.tsv.gz,output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
                  -c configure_user.txt 
 
     $ scATAC-pro -s qc_per_barcode 
-                 -i output/summary/pbmc10k.fragments.txt,output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
+                 -i output/summary/pbmc10k.fragments.tsv.gz,output/peaks/MACS2/pbmc10k_features_BlacklistRemoved.bed 
                  -c configure_user.txt
 
     $ scATAC-pro -s call_cell
-                 -i output/raw_matrix/PEAK_CALLER/matrix.mtx
+                 -i output/raw_matrix/PEAK_CALLER/matrix.mtx (or matrix.rds)
                  -c configure_user.txt
                  
     $ scATAC-pro -s get_bam4Cells
@@ -212,7 +211,7 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt
                  
     $ scATAC-pro -s split_bam
-                 -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/cell_cluster_table.txt
+                 -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/cell_cluster_table.tsv
                  -c configure_user.txt
 
     $ scATAC-pro -s footprint ## supporting comparison two clusters, and one-vs-rest
@@ -224,20 +223,20 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt
 
     $ scATAC-pro -s runDA
-                 -i 0:1:3,2  ## group1 consist of cluster 0,1,and 3; group2 cluster2 
+                 -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/seurat_obj.rds,0:1:3,2  ## group1 consist of cluster 0,1,and 3; group2 cluster2 
                  -c configure_user.txt
                  
     $ scATAC-pro -s runGO
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/differential_accessible_features_0:1:3_vs_2.txt,  
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/differential_accessible_features_0:1:3_vs_2.tsv,  
                  -c configure_user.txt
                  
     $ scATAC-pro -s report
                  -i output/summary
                  -c configure_user.txt
                  
-    ## merge peaks that are within 200bp distance of each other            
+    ## merge peaks that are within 500bp distance of each other            
     $ scATAC-pro -s mergePeaks
-                 -i peak_file1,peak_file2,(peak_file3...),200
+                 -i peak_file1,peak_file2,(peak_file3...),500
                  -c configure_user.txt
 
     ## reconstruct matrix using given new peak file
@@ -313,7 +312,7 @@ Detailed Usage
                                output: peaks in plain text format, saved as output/peaks/PEAK_CALLER/
                                        OUTPUT_PREFIX_features_Blacklist_Removed.bed
           get_mtx: build raw peak-by-cell matrix
-                             input: fragment.txt file, outputted from the mapping module, and features/peak file, 
+                             input: fragments.tsv.gz file, outputted from the mapping module, and features/peak file, 
                                     outputted from the call_peak module, separated by a comma
                              output: sparse peak-by-cell count matrix in Matrix Market format, barcodes and feature files
                                      in plain text format, saved in output/raw_matrix/PEAK_CALLER/
@@ -322,7 +321,7 @@ Detailed Usage
                                  input: BAM file, outputted from the mapping module
                                  output: Aggregated data in .bw and .bedgraph file, saved in output/signal/
           qc_per_barcode: generate quality control metrics for each barcode
-                                    input: fragment.txt file (outputted from module mapping) and peak/feature file, 
+                                    input: fragments.tsv.gz file (outputted from module mapping) and peak/feature file, 
                                            (outputted from module call_peak), separated by comma
                                      output: qc_per_barcode.txt file, saved in output/summary/
           call_cell: perform cell calling
@@ -378,9 +377,9 @@ Detailed Usage
                                       clustering module
                                output: .bam file (saved in output/downstream/PEAK_CALLER/CELL_CALLER/data_by_cluster), 
                                        .bw, .bedgraph (saved in output/signal/) file for each cluster
-          footprint: perform TF footprinting analysis, supports comparison between two clusters and one cluster vs
+          footprint: perform TF footprinting analysis, supports comparison between two sets of cell clusters and one cluster vs
                      the rest of cell clusters (one-vs-rest)
-                               input: 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
+                               input: 0:1,2  ## cluster0,1 vs cluster2 or 'one,rest' (all one-vs-rest)
                                output: footprinting summary statistics in tables and heatmap,
                                        saved in output/downstream/PEAK_CALLER/CELL_CALLER/
           downstream: perform all downstream analyses, including clustering, motif_analysis, 
@@ -400,7 +399,7 @@ Detailed Usage
                          input: peak files and a distance parameter separated by comma: 
                                 peakFile1,peakFile2,peakFile3,200
                          output: merged peaks saved in file output/peaks/merged.bed
-          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, barcodes.txt and 
+          reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.tsv.gz file, barcodes.txt and 
                       an optional path for reconstructed matrix 
                          input: different files separated by comma:
                                 peakFilePath,fragmentFilePath,barcodesPath,reconstructMatrixPath
@@ -412,7 +411,7 @@ Detailed Usage
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
                                    output/integrated/
           integrate_mtx: perform integration of two ore more data matrices given the reconstructed peak-by-cell matrix
-                           input: mtx1,mtx2, separated by comma like, mtx1_filepath,mtx2_filepath
+                           input: mtx1,mtx2, separated by comma like, mtx1_path,mtx2_path
                            output: integrated seurat obj and umap plot, saved in output/integrated/
           visualize: interactively visualize the data through VisCello
                          input: VisCello_obj directory, outputted from the clustering module
@@ -461,7 +460,8 @@ singularity pull -F docker://wbaopaul/scatac-pro:latest  ## you just need run th
 singularity exec --bind /mnt/isilon/ --cleanenv -H /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k scatac-pro_latest.sif \ 
 scATAC-pro -s mapping -i fastq_PE1_file,fastq_PE2_file -c configure_user.txt
 
-# and then qsub mapping.sh
+# and then sumbit your job on HPC (e.g. qsub or sbatch mapping.sh)
+
 ```
 
 - **NOTE**: YOUR_WORK_PATH is your working directory, where the outputs will be saved 
