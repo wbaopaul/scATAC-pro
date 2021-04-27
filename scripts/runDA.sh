@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-inputs=$1  ## seurat obj,group1,group2, like seurat_obj.rds,0;1,2 which compare cluster 0,1 with cluster2 in the seurat obj
+inputs=$1  ## seurat obj,group1,group2, like seurat_obj.rds,0:1,2 which compare cluster 0,1 with cluster2 in the seurat obj
  
 # reading configure file
 curr_dir=`dirname $0`

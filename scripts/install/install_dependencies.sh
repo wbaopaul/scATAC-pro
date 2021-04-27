@@ -547,6 +547,8 @@ wasInstalled=0
 ##########################
 ## RGT
 ##########################
+pip install --user cython numpy scipy
+pip install --user RGT
 which rgt-hint > /dev/null 2>&1
 if [ $? != "0" ]; then
     echo -e "$RED""rgt not detected, trying install it now..."
