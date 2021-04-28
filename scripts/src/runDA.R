@@ -77,6 +77,7 @@ if(groups1[1] == 'one') {
                               ident.1 = groups1, ident.2 = groups2, test.use = test_use,
                               max.cells.per.ident = 500, logfc.threshold = 0.0, 
                               only.pos = F, latent.vars = confVar)
+        names(markers)[grepl(names(markers), pattern = 'avg_log')] = 'avg_log2FC'
         markers$cluster = ifelse(markers$avg_log2FC > 0, group1, group2)
         markers$fdr = p.adjust(markers$p_val, method = 'fdr')
     }
@@ -84,6 +85,7 @@ if(groups1[1] == 'one') {
   markers$peak = rownames(markers)
 }
 
+names(markers)[grepl(names(markers), pattern = 'avg_log')] = 'avg_log2FC'
 
 markers = data.table(markers)
 markers[, 'peak0' := unlist(strsplit(peak, ','))[1], by = peak]
