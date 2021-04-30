@@ -44,3 +44,7 @@ if(!require(VisCello.atac)) {
 if(!require(countreg)) {
     install.packages("countreg", repos="http://R-Forge.R-project.org")
 }
+
+if(!require(DoubletFinder)) {
+    devtools::install_github('chris-mcginnis-ucsf/DoubletFinder', force = T, upgrade = 'never')
+}

@@ -60,7 +60,8 @@ unset PYTHONPATH
 output_dir=${output_dir}/${prefix1}_vs_${prefix2} ## make a subfolder to host the result
 mkdir -p $output_dir
 
-
+ncore=$(nproc --all)
+ncore=$(($ncore - 1))
 
 echo "predict footprint..."
 ${HINT_PATH}/rgt-hint footprinting --atac-seq --paired-end --organism=${GENOME_NAME} --output-location=$output_dir  \
@@ -75,7 +76,7 @@ echo "overlap with motif annotation ... "
 ${HINT_PATH}/rgt-motifanalysis matching --organism=${GENOME_NAME} --input-files ${output_dir}/${prefix1}.bed ${output_dir}/${prefix2}.bed --output-location $output_dir
 
 echo "Differential binding analysis ..."
-${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc 4 --mpbs-files=${output_dir}/${prefix1}_mpbs.bed,${output_dir}/${prefix2}_mpbs.bed --reads-files=$bam1,$bam2 --conditions=$prefix1,$prefix2 --output-location=${output_dir}
+${HINT_PATH}/rgt-hint differential --organism=${GENOME_NAME} --bc --nc $ncore --mpbs-files=${output_dir}/${prefix1}_mpbs.bed,${output_dir}/${prefix2}_mpbs.bed --reads-files=$bam1,$bam2 --conditions=$prefix1,$prefix2 --output-location=${output_dir}
 
 if [ -d "$TMP0" ]; then
     rm -r TMP0

@@ -1,4 +1,6 @@
 ## Complete Update History
+- Version 1.3.1 released
+    * *rmDoublets*: a new module added, to remove doublets
 - Version 1.3.0 released
     * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
     * *call_cell*: enable filtering barcodes by tss enrichment score

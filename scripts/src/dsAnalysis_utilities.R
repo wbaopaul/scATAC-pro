@@ -1209,3 +1209,53 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
   return(seurat.obj)
 }
    
+
+# Find doublets
+FindDoublets_Atac <- function(seurat.atac, PCs = 1:50, 
+                         exp_rate = 0.02, sct = FALSE){
+  # sct--do SCTransform or not
+  require('DoubletFinder') 
+  if(!sct){
+    seurat.rna = CreateSeuratObject(seurat.atac@assays$ATAC@counts)
+    seurat.rna = NormalizeData(seurat.rna)
+    seurat.rna = FindVariableFeatures(seurat.rna)
+    VariableFeatures(seurat.rna) <- VariableFeatures(seurat.atac)
+    seurat.rna = ScaleData(seurat.rna)
+    seurat.rna = RunPCA(seurat.rna, npcs = max(PCs), verbose = F)
+    seurat.rna@reductions$pca@cell.embeddings <- seurat.atac@reductions$pca@cell.embeddings
+    seurat.rna@reductions$pca@feature.loadings <- seurat.atac@reductions$pca@feature.loadings
+    seurat.rna$seurat_clusters = seurat.atac$seurat_clusters
+  }else{
+    seurat.rna = seurat.atac
+    seurat.rna@assays$RNA <- seurat.atac@assays$ATAC
+  }
+  
+  ## pK identification
+  sweep.res.list <- paramSweep_v3(seurat.rna, PCs = PCs, sct = sct)
+  sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
+  bcmvn <- find.pK(sweep.stats)
+  
+  ## Homotypic Doublet proportion Estimate
+  annotations <- seurat.rna@meta.data$seurat_clusters
+  homotypic.prop <- modelHomotypic(annotations)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
+  nExp_poi <- round(exp_rate * length(seurat.rna$seurat_clusters))  ## Assuming 7.5% doublet formation rate - tailor for your dataset
+  nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
+  
+  ## Run DoubletFinder with varying classification stringencies
+  seurat.rna <- doubletFinder_v3(seurat.rna, PCs = PCs, pN = 0.25,
+                                 pK = 0.09, nExp = nExp_poi, reuse.pANN = FALSE, 
+                                 sct = sct)
+  
+  seurat.rna <- doubletFinder_v3(seurat.rna, PCs = PCs, pN = 0.25, 
+                                 pK = 0.09, nExp = nExp_poi.adj,
+                                 reuse.pANN = paste0("pANN_0.25_0.09_", nExp_poi), 
+                                 sct = sct)
+  doublet_var = paste0('DF.classifications_0.25_0.09_', nExp_poi.adj)
+  seurat.rna[['Doublet_Singlet']] = seurat.rna[[doublet_var]]
+  
+  mnames = names(seurat.rna@meta.data)
+  seurat.rna@meta.data[, grep(mnames, pattern = '0.25_0.09')] <- NULL
+  seurat.atac$Doublet_Singlet = seurat.rna$Doublet_Singlet
+  return(seurat.atac)
+}
+

@@ -354,6 +354,16 @@ addCB2bam: config_check
 	@echo 
 
 #######################################
+## rmDoublets
+#######################################
+rmDoublets: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "finding doublets..." 
+	@$(SCRIPTS)/rmDoublets.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## all
 #######################################
 all: config_check
