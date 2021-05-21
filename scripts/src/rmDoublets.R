@@ -18,7 +18,8 @@ if(any(class(input.obj) == 'Seurat')) {
    seurat.obj = runSeurat_Atac(input.obj, npc = 30, norm_by = 'tf-idf',
                                top_variable_features = 5000, 
                                reg.var = 'nCount_ATAC') 
-    
+   seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:30, k.param = 20)    
+   seurat.obj = FindClusters(seurat.obj, resolusion = 0.6)    
 }
 
 seurat.obj = FindDoublets_Atac(seurat.obj, PCs = 1:10, exp_rate = drate,
@@ -34,7 +35,7 @@ saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_with_doublets.rds'))
 seurat.obj <- subset(seurat.obj, Doublet_Singlet == 'Singlet')
 
 output_seu_file = paste0(output_dir, '/seurat_obj_doubletsRemoved.rds') 
-output_mtx_file = paste0(output_dir, '/mtx_doubletsRemoved.rds') 
+output_mtx_file = paste0(output_dir, '/matrix_doubletsRemoved.rds') 
 output_barcode_file = paste0(output_dir, '/barcodes_doubletsRemoved.txt') 
 saveRDS(seurat.obj@assays$ATAC@counts, file = output_mtx_file)
 write.table(colnames(seurat.obj), file = output_barcode_file,
