@@ -23,6 +23,7 @@ qc_stat_file = args[11]
 
 if(grepl(mtx_file, pattern = '.rds', fix = T)) {
     mtx = readRDS(mtx_file)
+    if(any(class(mtx) == 'Seurat')) mtx = mtx@assays$ATAC@counts
     rnames = rownames(mtx)
     new.rnames = sapply(rnames, function(x) gsub('_', '-', x))
     names(new.rnames) = NULL

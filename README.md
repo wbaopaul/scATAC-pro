@@ -261,7 +261,7 @@ Step by step guide to running scATAC-pro
     ## you can run the *integrate_mtx* whtich is second part of the module *integrate*            
 
     $ scATAC-pro -s integrate_mtx
-                 -i mtx_file1,mtx_file2,(mtx_file3...)   
+                 -i reconstructed_mtx_file1,reconstructed_mtx_file2,(reconstructed_mtx_file3...)   
                  -c configure_user.txt
 ```
 
