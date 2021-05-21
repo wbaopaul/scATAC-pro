@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.3.0
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.3.1
 
 <!-- -->
 
@@ -49,12 +49,13 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.3.0
+- Current version: 1.3.1
 - Recent updates
+    * *rmDoublets*: new module added, to remove potential doublets using [DoubletFinder](https://github.com/chris-mcginnis-ucsf/DoubletFinder) algorithm.
     * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
     * *call_cell*: enable filtering barcodes with minimal tss enrichment score cutoff (parameter **min_tss_escore** in the updated [configure_user.txt](configure_user.txt) file)
     * fragments file indexed by tabix (named fragments.tsv.gz)
-    * *footprint* module: suppoort comparison of any two sets of cell clusters
+    * *footprint* module: support comparison of any two sets of cell clusters
     * *motif_analysis* and *runDA*: enable seurat/matrix object in .rds format as input
     * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks
     * *integrate_mtx*: new module added, as an alias of previous *integrate_seu* module
@@ -202,16 +203,16 @@ Step by step guide to running scATAC-pro
     
     ## after running the above module, you can run module report (list below)
     ## to generate first page of the summary report
-
-    $ scATAC-pro -s clustering
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx (or matrix.rds ) 
-                 -c configure_user.txt
     $ scATAC-pro -s rmDoublets
                  -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds,0.03 (0.03 is the expected fraction of doublets ) 
                  -c configure_user.txt
 
+    $ scATAC-pro -s clustering
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds (or a seurat.rds file ) 
+                 -c configure_user.txt
+
     $ scATAC-pro -s motif_analysis
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.mtx (or matrix.rds) 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds (or matrix.mtx) 
                  -c configure_user.txt
                  
     $ scATAC-pro -s split_bam
@@ -291,7 +292,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.3.0
+    scATAC-pro 1.3.1
     ---------------
     OPTIONS
 
@@ -352,7 +353,7 @@ Detailed Usage
                                 input: bam file for aggregated data, outputted from the mapping module 
                                 output: filtered peak-by-cell matrix and all intermediate results 
           clustering: cell clustering
-                               input: filtered peak-by-cell matrix file, outputted from the call_cell module
+                               input: filtered peak-by-cell matrix file, outputted from the call_cell module (or a seurat.rds file)
                                output: seurat objects with clustering label in the metadata (.rds file) and 
                                        barcodes with cluster labels (cell_cluster_table.tsv file), and umap plot colorred
                                        clustering label, saved in output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
