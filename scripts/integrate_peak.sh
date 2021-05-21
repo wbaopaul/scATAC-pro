@@ -50,7 +50,10 @@ do
     frag0_file=$(find $frag0_dir -name "*fragments*" | grep -v "\.len")
     mat0_dir=${mat0_dir}/${PEAK_CALLER}/${CELL_CALLER}
     #bc0_file=$(find ${mat0_dir} -name "*barcodes.txt")
-    bc0_file=${mat0_dir}/barcodes.txt
+    bc0_file=${mat0_dir}/barcodes_doubletsRemoved.txt
+    if [ ! -e "$bc0_file" ]; then
+         bc0_file=${mat0_dir}/barcodes.txt 
+    fi
     bash ${curr_dir}/reConstMtx.sh ${feature_file},${frag0_file},${bc0_file} $2 $3
     mtx_files=${mtx_files},${mat0_dir}/reConstruct_matrix/matrix.mtx
 done

@@ -13,6 +13,7 @@ read_conf $3
 
 frag_file=${OUTPUT_DIR}/summary/${OUTPUT_PREFIX}.fragments.tsv.gz
 
+
 ## clustering
 ${curr_dir}/clustering.sh $input_mtx $2 $3 
 

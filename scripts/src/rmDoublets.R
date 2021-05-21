@@ -9,7 +9,7 @@ source_local('dsAnalysis_utilities.R')
 args = commandArgs(T)
 inputObj_file = args[1] ## a mtx.rds or a seurat.rds file
 drate = as.numeric(args[2])
-if(is.null(drate)) drate = 0.4
+if(is.null(drate)) drate = 0.03
 input.obj = readRDS(inputObj_file)
 if(any(class(input.obj) == 'Seurat')) {
     seurat.obj = input.obj
