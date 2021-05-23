@@ -65,7 +65,7 @@ else
              ${output_dir}/tmp${i}_demplxed_${dex_prefix1} ${fastqs[$i]} &
             ${PYTHON_PATH}/python ${curr_dir}/src/dex_fastq_extraIndex.py ${output_dir}/demplxed_${dex_prefix2} \
              ${output_dir}/tmp${i}_demplxed_${dex_prefix2} ${fastqs[$i]} &
-            
+           wait 
             mv ${output_dir}/tmp${i}_demplxed_${dex_prefix1} ${output_dir}/demplxed_${dex_prefix1}
             mv ${output_dir}/tmp${i}_demplxed_${dex_prefix2} ${output_dir}/demplxed_${dex_prefix2}
         done
