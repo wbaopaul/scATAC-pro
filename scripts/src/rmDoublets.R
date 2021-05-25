@@ -20,6 +20,9 @@ if(any(class(input.obj) == 'Seurat')) {
                                reg.var = 'nCount_ATAC') 
    seurat.obj = FindNeighbors(seurat.obj, reduction = 'pca', dims = 1:30, k.param = 20)    
    seurat.obj = FindClusters(seurat.obj, resolusion = 0.6)    
+   seurat.obj = RunTSNE(seurat.obj, dims = 1:30, reduction = 'pca', check_duplicates = FALSE)
+   seurat.obj = RunUMAP(seurat.obj, dims = 1:30, reduction = 'pca', verbose = F)
+
 }
 
 seurat.obj = FindDoublets_Atac(seurat.obj, PCs = 1:10, exp_rate = drate,
