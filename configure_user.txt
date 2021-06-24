@@ -147,8 +147,10 @@ pvalue_fp = 0.05
 ## cicero cis-interaction ##
 ###########################################################################
 RUN_Cicero = TRUE
-## plot interactions within Cicero_Plot_Region on the summary report  
-Cicero_Plot_Region = chr5:140610000-140640000 ## you can also specify a gene name 
+
+## plot interactions within Cicero_Plot_Region on the summary report
+## you can also specify it as a genomic location, a gene name or none (skip the plot) 
+Cicero_Plot_Region = chr5:140610000-140640000 
 
 
 ############################################################################
