@@ -1,6 +1,6 @@
 ## Complete Update History
 - Version 1.4.0 
-    * new module planned: cellAnnotate from singleR or from scRNA-seq
+    * new module planned: labelTransfer from scRNA-seq
 - Version 1.3.1 released
     * *rmDoublets*: a new module added, to remove doublets
     * *clustering*: accepts seurat obj (in .rds format) as input as well

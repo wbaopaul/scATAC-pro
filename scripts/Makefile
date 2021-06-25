@@ -364,6 +364,16 @@ rmDoublets: config_check
 	@echo 
 
 #######################################
+## labelTransfer
+#######################################
+labelTransfer: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "label transfer from scRNA-seq..." 
+	@$(SCRIPTS)/labelTransfer.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## all
 #######################################
 all: config_check
