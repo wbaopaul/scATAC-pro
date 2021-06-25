@@ -83,8 +83,10 @@ seurat.atac <- AddMetaData(seurat.atac, metadata = celltype.predictions)
 rm(transfer.anchors)
 
 p1 <- DimPlot(seurat.atac, group.by = "Predicted_Cell_Type",
-              label = TRUE, repel = TRUE) + ggtitle("scATAC-seq cells") 
+              label = TRUE, repel = TRUE) + ggtitle("scATAC-seq") 
 
+p2 <- DimPlot(seurat.rna, group.by = "Cell_Type",
+              label = TRUE, repel = TRUE) + ggtitle("scRNA-seq") 
 
 seurat.atac[["ACTIVITY"]] <- NULL ## don't save activity assay
 
@@ -92,7 +94,9 @@ outputPath = dirname(inputSeurat_atac)
 outputName = basename(inputSeurat_atac)
 saveRDS(seurat.atac, file = paste0(outputPath, '/updated_', outputName))
 
-ggsave(p1, filename = paste0(outputPath, '/umap_with_predicted_cell_type.eps'),
-       device = 'eps', height = 6, width = 7)
+pcomb = gridExtra::grid.arrange(p1, p2, nrow = 1)
+
+ggsave(pcomb, filename = paste0(outputPath, '/umap_with_predicted_cell_type.eps'),
+       device = 'eps', height = 6, width = 13)
 
 

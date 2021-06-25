@@ -149,13 +149,14 @@ function help {
                          output: the bam file with column 'CB:Z:cellbarcode' added (saved in the same directory as
                                  the input bam file)"
 
-    echo "      labelTransfer: label transfer (cell annotation) from scRNA-seq data
-                         input: paths for a seurat object for scATAC-seq, a seurat object for scRNA-seq data,                                and an optional gtf file for gene annotation, separated by a comma. 
-                         output: a updated seurat object added with the Predicted_Cell_Type as a metadat,
-                                 saved in the same directory as the input atac seurat object.
-                         Note: the cell annotation should be given as a metadata of the seurat object of
-                               scRNA-seq. Both seurat objects should have pca and umap dimemsion reduction 
-                               done."
+   echo "       label transfer (cell annotation) from scRNA-seq data
+                         input: paths for a seurat object for scATAC-seq, a seurat object for scRNA-seq data in .rds format,                                   and an optional .gtf file for gene annotation, separated by a comma.
+                         output: a updated seurat object for atac with the Predicted_Cell_Type as a metadata variable and
+                                 an umap plot colored by Predicted_Cell_Type, saved in the same directory as the input atac
+                                 seurat object.
+                         *Note*: the cell annotation should be given as a metadata of the seurat object of
+                                 scRNA-seq. Both seurat objects should have pca and umap dimemsion reduction
+                                 done."
 
     echo "   -i|--input INPUT : input data, different types of input data are required for different analysis;"
     echo "   -c|--conf CONFIG : configuration file for parameters (if exist) for each analysis module"
