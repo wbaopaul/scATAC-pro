@@ -710,80 +710,88 @@ if(file.exists(footprint_stats.file)){
 ### Predicted Interactions at a locus of interest
 ```{r, out.width='\\textwidth'}
 cicero_conn.file = paste0(down.dir, '/cicero_interactions.txt')
-
-if(file.exists(cicero_conn.file)){
+if(Cicero_Plot_Region != 'none' & file.exists(cicero_conn.file)){
  conns = fread(cicero_conn.file)
  temp <- tempfile()
-if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {
-    download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/mus_musculus/Mus_musculus.GRCm38.95.gtf.gz', temp)
- }
-
-if(grepl(GENOME_NAME, pattern = 'mm9', ignore.case = T)) {
-    download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz', temp)
- }
-
-if(grepl(GENOME_NAME, pattern = 'hg38', ignore.case = T)) {
-    download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz', temp)
-}
-
-if(grepl(GENOME_NAME, pattern = 'hg19', ignore.case = T)) {
-    download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz', temp)
-}
-
-gene_anno <- rtracklayer::readGFF(temp)
- unlink(temp)
+  if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {
+    library(EnsDb.Mmusculus.v79)
+    ens.ann <- EnsDb.Mmusculus.v79
+  }
+  if(grepl(GENOME_NAME, pattern = 'mm9', ignore.case = T)) {
+    library(EnsDb.Mmusculus.v75)
+    ens.ann <- EnsDb.Mmusculus.v75
+  }
+  
+  if(grepl(GENOME_NAME, pattern = 'hg38', ignore.case = T)) {
+    library(EnsDb.Hsapiens.v86)
+    ens.ann <- EnsDb.Hsapiens.v86
+  }
+  
+  if(grepl(GENOME_NAME, pattern = 'hg19', ignore.case = T)) {
+    library(EnsDb.Hsapiens.v75)
+    ens.ann <- EnsDb.Hsapiens.v75
+  }
+  
+  gene_anno <- transcripts(ens.ann,
+                          columns = c("gene_id", "gene_name",  
+                                      "tx_biotype", "tx_id"))
  
- # rename some columns to match requirements
- gene_anno$chromosome <- paste0("chr", gene_anno$seqid)
- gene_anno$gene <- gene_anno$gene_id
- gene_anno$transcript <- gene_anno$transcript_id
- gene_anno$symbol <- gene_anno$gene_name
- gene_anno = subset(gene_anno, select = c(chromosome, start, end, strand, 
-                                          transcript, gene, symbol))
- gene_anno = gene_anno[complete.cases(gene_anno), ]
- if(Cicero_Plot_Region %in% gene_anno$symbol){
+  gene_anno = keepStandardChromosomes(gene_anno,pruning.mode = 'coarse')
+ 
+  gene_anno = data.table(data.frame(gene_anno))
+  gene_anno = subset(gene_anno, tx_biotype %in% c('protein_coding', 'miRNA', 'lincRNA'), select = c('seqnames', 'start', 'end', 'tx_id',
+                       'strand', 'gene_id', 'gene_name'))
+  #rename some columns to match requirements
+  names(gene_anno)[c(1, 4, 6:7)] = c('chromosome', 'transcript', 'gene', 'symbol')
+  gene_anno$chromosome = paste0('chr', gene_anno$chromosome)
+
+  gene_anno = subset(gene_anno, select = c(chromosome, start, end, strand, 
+                                           transcript, gene, symbol))
+  gene_anno = gene_anno[complete.cases(gene_anno), ]
+  if(Cicero_Plot_Region %in% gene_anno$symbol){
     tmp_anno = gene_anno[gene_anno$symbol == Cicero_Plot_Region, ]
     chr0 = tmp_anno$chr[1]
     start0 = min(tmp_anno$start)
     end0 = max(tmp_anno$end)
- }else{
+  }else{
     chr0 = unlist(strsplit(Cicero_Plot_Region, ':'))[1] ## chr5:140610000-140640000
     region0 = unlist(strsplit(Cicero_Plot_Region, ':'))[2]
     start0 = as.integer(unlist(strsplit(region0, '-'))[1])
     end0 = as.integer(unlist(strsplit(region0, '-'))[2])
- }
-
-if(end0 < start0 + 100000){
+  }
+  
+  if(end0 < start0 + 100000){
     start0 = floor((start0+end0)/2) - 50000
     end0 = start0 + 100000
-}
- conns[, 'chr1' := unlist(strsplit(Peak1, '_'))[1], by = Peak1] 
- conns[, 'start1' := as.integer(unlist(strsplit(Peak1, '_'))[2]), by = Peak1] 
- conns[, 'end2' := as.integer(unlist(strsplit(Peak2, '_'))[3]), by = Peak2] 
-conns = conns[start1 <= end2]
-conns0 = conns[chr1==chr0 & start1 >= start0 & end2 <= end0]
-
-conns[, c('chr1', 'start1', 'end2') := NULL]
-conns = data.frame(conns)
-if(nrow(conns0)==0) cat('No interaction found in the griven region!')
-
- if(plotEPS & nrow(conns0) >0 ){
+  }
+  conns[, 'chr1' := unlist(strsplit(Peak1, '_'))[1], by = Peak1] 
+  conns[, 'start1' := as.integer(unlist(strsplit(Peak1, '_'))[2]), by = Peak1] 
+  conns[, 'end2' := as.integer(unlist(strsplit(Peak2, '_'))[3]), by = Peak2] 
+  conns = conns[start1 <= end2]
+  conns0 = conns[chr1==chr0 & start1 >= start0 & end2 <= end0]
+  
+  conns[, c('chr1', 'start1', 'end2') := NULL]
+  conns = data.frame(conns)
+  if(nrow(conns0)==0) cat('No interaction found in the griven region!')
+  
+  if(plotEPS & nrow(conns0) >0 ){
     pdf(paste0(params$output_dir,'/summary/Figures/interactions_example_region.pdf'), width = 8, height = 5, fonts = 'sans')
     plot_connections(conns, chr0, start0, end0,
-                 gene_model = gene_anno, 
-                 coaccess_cutoff = .3, 
-                 connection_width = 1, 
-                 collapseTranscripts = "longest",
-                 viewpoint_alpha = 0)
-   dev.off()
-  
- }
+                     gene_model = gene_anno, 
+                     coaccess_cutoff = .3, 
+                     connection_width = 1, 
+                     collapseTranscripts = "longest",
+                     viewpoint_alpha = 0)
+    dev.off()
+    
+  }
   if(nrow(conns0) > 0)  plot_connections(conns, chr0, start0, end0,
-                 gene_model = gene_anno, 
-                 coaccess_cutoff = .3, 
-                 connection_width = 1, 
-                 collapseTranscripts = "longest",
-                 viewpoint_alpha = 0)
+                                         gene_model = gene_anno, 
+                                         coaccess_cutoff = .3, 
+                                         connection_width = 1, 
+                                         collapseTranscripts = "longest",
+                                         viewpoint_alpha = 0)
 }
+
 
 ```

@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.3.1
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.4.0
 
 <!-- -->
 
@@ -49,8 +49,9 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.3.1
+- Current version: 1.4.0
 - Recent updates
+    * *labelTransfer*: new module added, to do label trasfer (for cell annotation) from scRNA-seq annotation. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data.
     * *rmDoublets*: new module added, to remove potential doublets using [DoubletFinder](https://github.com/chris-mcginnis-ucsf/DoubletFinder) algorithm.
     * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
     * *call_cell*: enable filtering barcodes with minimal tss enrichment score cutoff (parameter **min_tss_escore** in the updated [configure_user.txt](configure_user.txt) file)
@@ -100,7 +101,7 @@ Dependencies
 -   trim\_galore (&gt;=0.6.3), Trimmomatic (&gt;=0.6.3)
 -   Regulratory Genomics Toolbox (RGT, for footprinting analysis)
 -   g++ compiler, bzip2, ncurses-devel
--   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, xlsx, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, VisCello.atac
+-   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, xlsx, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, EnsDb.Hsapiens.v86, EnsDb.Mmusculus.v79, VisCello.atac
 
 Quick start guide
 -----------
@@ -146,7 +147,7 @@ Step by step guide to running scATAC-pro
 
 -   **IMPORTANT**: you can run scATAC-pro sequentially. The input of a later analysis module is the output of the previous analysis modules. The following tutorial uses fastq files downloaded from [PBMC10k 10X Genomics](https://support.10xgenomics.com/single-cell-atac/datasets/1.1.0/atac_v1_pbmc_10k?) 
 
--   *Combine data from different sequencing lanes*
+-   *Combine data from different sequencing lanes* (not needed for 10x genomics data since v1.1.4)
 
     $ cat pbmc_fastqs/atac_pbmc_10k_v1_S1_L001_R1_001.fastq.gz pbmc_fastqs/atac_pbmc_10k_v1_S1_L002_R1_001.fastq.gz > pe1_fastq.gz
 
@@ -158,11 +159,11 @@ Step by step guide to running scATAC-pro
 
 ```
     $ scATAC-pro -s demplx_fastq 
-                 -i pe1_fastq.gz,pe2_fastq.gz,index_fastq.gz 
+                 -i pe1_fastq.gz,pe2_fastq.gz,index_fastq.gz(,other_index_fastq.gz, ...) 
                  -c configure_user.txt 
-    # or
+    # or for 10x data
     $ scATAC-pro -s demplx_fastq 
-                 -i pbmc_fastqs/ 
+                 -i pbmc_10x_fastqs/ 
                  -c configure_user.txt 
 
     $ scATAC-pro -s trimming 
@@ -219,8 +220,8 @@ Step by step guide to running scATAC-pro
                  -i output/downstream_analysis/PEAK_CALLER/CELL_CALLER/cell_cluster_table.tsv
                  -c configure_user.txt
 
-    $ scATAC-pro -s footprint ## supporting comparison two clusters, and one-vs-rest
-                 -i 0,1  ## or '0,rest' (means cluster1 vs rest) or 'one,rest' (all one-vs-rest)
+    $ scATAC-pro -s footprint ## supporting comparison two groups of cell clusters, and one-vs-rest
+                 -i 0,1  ## or '0:3,1:2' (group1 consist of cluster0,3, and group2 for cluster1,2)) or 'one,rest' (all one-vs-rest comparison)
                  -c configure_user.txt
                  
     $ scATAC-pro -s runCicero
@@ -264,6 +265,14 @@ Step by step guide to running scATAC-pro
     $ scATAC-pro -s integrate_mtx
                  -i reconstructed_mtx_file1,reconstructed_mtx_file2,(reconstructed_mtx_file3...)   
                  -c configure_user.txt
+
+
+    ## label transfer (cell annotation) from scRNA-seq
+    ## cell annotated with metadata 'Cell_Type' in seurat obj of scRNA-seq data
+    ## the gtf_file is optional
+    $ scATAC-pro -s labelTransfer
+                 -i seurat_obj_atac.rds,seurat_obj_rna.rds(,gtf_file)   
+                 -c configure_user.txt
 ```
 
 
@@ -292,7 +301,7 @@ Detailed Usage
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.3.1
+    scATAC-pro 1.4.0
     ---------------
     OPTIONS
 
@@ -429,7 +438,17 @@ Detailed Usage
                          input: a bam file generated by scATAC-pro
                          output: the bam file with column 'CB:Z:cellbarcode' added (saved in the same directory as
                                  the input bam file)
-
+      
+          labelTransfer: label transfer (cell annotation) from scRNA-seq data
+                         input: paths for a seurat object for scATAC-seq, a seurat object for scRNA-seq data in .rds format,
+                                and an optional .gtf file for gene annotation, separated by a comma. 
+                         output: a updated seurat object for atac with the Predicted_Cell_Type as a metadata variable and
+                                 an umap plot colored by Predicted_Cell_Type, saved in the same directory as the input atac
+                                 seurat object.
+                         *Note*: the cell annotation should be given as a metadata of the seurat object of
+                               scRNA-seq. Both seurat objects should have pca and umap dimemsion reduction 
+                               done.
+        
        -i|--input INPUT : input data, different types of input data are required for different analysis
        -c|--conf CONFIG : configuration file for parameters (if exist) for each analysis module
        [-o|--output_dir : folder to save results, default output/ under the current directory; sub-folder will be created automatically for each analysis

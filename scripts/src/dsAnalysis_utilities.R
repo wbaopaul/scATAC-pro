@@ -566,7 +566,7 @@ do_DA <- function(mtx_score, clusters, test = 'wilcox',
   }
   return(res)
 }
-
+do_DA = cmpfun(do_DA)
 
 #fg_genes: vector of forground genes
 #bg_genes: background genes
@@ -827,6 +827,7 @@ normalize_gene_activities.corrected <- function (activity_matrices, cell_num_gen
   }
   return(ret)
 }
+normalize_gene_activities.corrected = cmpfun(normalize_gene_activities.corrected)
 
 # do cicero given a Seurat object, output gene activity score
 doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
@@ -899,7 +900,7 @@ doCicero_gascore <- function(seurat.obj, reduction = 'tsne', chr_sizes,
   res = list('conns' = conns, 'ga_score' = cicero_gene_activities)
   return(res)  
 }
-
+doCicero_gascore = cmpfun(doCicero_gascore)
 
 # do cicero given a Seurat object, just return the connection 
 doCicero_conn <- function(seurat.obj, reduction = 'tsne', 
@@ -948,7 +949,7 @@ doCicero_conn <- function(seurat.obj, reduction = 'tsne',
   conns = conns[coaccess > coaccess_thr, ]
   return(conns)
 }
-
+doCicero_conn = cmpfun(doCicero_conn)
 
 ## change rowname of zscores (tf name) from chromvar to be readable
 readable_tf <- function(sele.zscores, GENOME_NAME){
@@ -1095,6 +1096,7 @@ runDiffMotifEnrich <- function(mtx_score, clusters, test = 'wilcox',
   }
   return(res)
 }
+runDiffMotifEnrich = cmpfun(runDiffMotifEnrich)
 
 ## mtx_objs: a list of matrix 
 run_integration <- function(mtx_list, integrate_by = 'VFACS',
@@ -1208,7 +1210,7 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
   
   return(seurat.obj)
 }
-   
+run_integration = cmpfun(run_integration)   
 
 # Find doublets
 FindDoublets_Atac <- function(seurat.atac, PCs = 1:50, 
@@ -1258,4 +1260,61 @@ FindDoublets_Atac <- function(seurat.atac, PCs = 1:50,
   seurat.atac$Doublet_Singlet = seurat.rna$Doublet_Singlet
   return(seurat.atac)
 }
+FindDoublets_Atac = cmpfun(FindDoublets_Atac)
 
+# generate gene activity matrix for labelTransfer
+generate_gene_cisActivity <- function(gene_ann, mtx, include_body = T,
+                                      dist_to_tss = 2000){
+  ## generating gene cis activity score
+  ## input: gene_ann (data table with chr, gene_start, gene_end, strand, gene_name), 
+  ##        and atac matrix file
+  
+  ## 1. select gene up/down-stream regions (promoter with/without gene_body) ##
+  
+  
+  if(!include_body){
+    gene_ann[, 'start' := ifelse(strand == '+', gene_start - dist_to_tss, gene_end - dist_to_tss)]
+    gene_ann[, 'end' := ifelse(strand == '+', gene_start + dist_to_tss, gene_end + dist_to_tss)]
+  }else{
+    gene_ann[, 'start' := ifelse(strand == '+', gene_start - dist_to_tss, gene_start)]
+    gene_ann[, 'end' := ifelse(strand == '+', gene_end, gene_end + dist_to_tss)]
+    
+  }
+  
+  gene_ann = subset(gene_ann, select = c(chr, start, end, gene_name))
+  
+  
+  ## 2. read mtx file ##
+  
+  rnames = rownames(mtx)
+  chrs = sapply(rnames, function(x) unlist(strsplit(x, '-'))[1])
+  starts = sapply(rnames, function(x) unlist(strsplit(x, '-'))[2])
+  ends = sapply(rnames, function(x) unlist(strsplit(x, '-'))[3])
+  
+  peaks = data.table('chr' = chrs, 'start' = as.integer(starts), 
+                     'end' = as.integer(ends))
+  setkey(peaks, chr, start, end)
+  peaks[, 'pname' := paste(chr, start, end, sep = '-')]
+  over.ids = foverlaps(gene_ann, peaks, by.x = c('chr', 'start', 'end'),
+                       by.y = c('chr', 'start', 'end'), which = T)
+  over.ids[, 'gene_name' := gene_ann[xid, gene_name]]
+  over.ids[, 'pname' := peaks[yid, pname]]
+  over.ids = over.ids[complete.cases(over.ids)]
+  
+  
+  smtx = sparseMatrix(i = over.ids$xid, j = over.ids$yid,
+                      dimnames = list(gene_ann$gene_name[1:max(over.ids$xid)],
+                                      peaks$pname[1:max(over.ids$yid)]))
+  
+  mtx = mtx[rownames(mtx) %in% colnames(smtx), ]
+  smtx = smtx[, rownames(mtx)]
+  
+  activity.matrix = smtx %*% mtx
+  rs = Matrix::rowSums(activity.matrix)
+  activity.matrix = activity.matrix[rs > 10, ]
+  
+  return(activity.matrix)
+  
+}
+
+generate_gene_cisActivity = cmpfun(generate_gene_cisActivity)
