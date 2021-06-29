@@ -440,7 +440,8 @@ Detailed Usage
                                  the input bam file)
       
           labelTransfer: label transfer (cell annotation) from scRNA-seq data
-                         input: paths for a seurat object for scATAC-seq, a seurat object for scRNA-seq data in .rds format,                                   and an optional .gtf file for gene annotation, separated by a comma. 
+                         input: paths for a seurat object for scATAC-seq, a seurat object for scRNA-seq data in .rds format,
+                                and an optional .gtf file for gene annotation, separated by a comma. 
                          output: a updated seurat object for atac with the Predicted_Cell_Type as a metadata variable and
                                  an umap plot colored by Predicted_Cell_Type, saved in the same directory as the input atac
                                  seurat object.

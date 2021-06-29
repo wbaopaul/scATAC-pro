@@ -12,31 +12,113 @@ inputSeurat_rna = args[2] ## a seurat.rds file, with pca conducted
 GENOME_NAME = args[3]
 gene_gtf_file = args[4]
 
-## download gtf file if not provided
+## if gtf file not provided, using R bioconductor packages for gene annotation
 if(!file.exists(gene_gtf_file)){
-  print('gene annotation gtf file not provided, I will try to download one:')
-  err = 0
+  if(!grepl(GENOME_NAME, pattern = 'hg19|hg38|mm10|mm9', ignore.case = T)){
+    stop('Genome is not belong to hg19,hg38,mm9 and mm10, 
+         please provide .gtf file for gene annotation!')
+  }
+  if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {
+    library(EnsDb.Mmusculus.v79)
+    ens.ann <- EnsDb.Mmusculus.v79
+  }
   if(grepl(GENOME_NAME, pattern = 'mm9', ignore.case = T)) {
-    err <- tryCatch(download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz', temp),
-                    error = function(e) {
-                      print("Cannot download ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz!")
-                      return(1)})
+    library(EnsDb.Mmusculus.v75)
+    ens.ann <- EnsDb.Mmusculus.v75
   }
   
   if(grepl(GENOME_NAME, pattern = 'hg38', ignore.case = T)) {
-    err <- tryCatch(download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz', temp),
-                    error = function(e) {
-                      print("Cannot download ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz!")
-                      return(1)})
+    library(EnsDb.Hsapiens.v86)
+    ens.ann <- EnsDb.Hsapiens.v86
   }
   
   if(grepl(GENOME_NAME, pattern = 'hg19', ignore.case = T)) {
-    err <- tryCatch(download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz', temp),
-                    error = function(e) {
-                      print("Cannot download ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz!")
-                      return(1)})
+    library(EnsDb.Hsapiens.v75)
+    ens.ann <- EnsDb.Hsapiens.v75
   }
-  if(err == 1) stop('Download failed! Please provide a gtf file to run this module!')
+  
+  gene_ann <- ensembldb::genes(ens.ann)
+  gene_ann <- keepStandardChromosomes(gene_ann, pruning.mode = 'coarse')
+  gene_ann = data.frame(gene_ann)
+  gene_ann = subset(gene_ann, gene_biotype %in% c('protein_coding', 'miRNA', 'lincRNA'),
+                    select = c('seqnames', 'start', 'end',
+                               'strand', 'gene_biotype', 'gene_name'))
+  
+  names(gene_ann)[1:3] = c('chr', 'gene_start', 'gene_end')
+  gene_ann = data.table(gene_ann)
+  gene_ann = gene_ann[!duplicated(gene_name)]
+  gene_ann$chr = paste0('chr', gene_ann$chr)
+  gene_ann = subset(gene_ann, select = c('chr', 'gene_start', 'gene_end',
+                                         'strand', 'gene_name'))
+  
+  gene_ann[chr == 'chrMT']$chr = 'chrM'
+  
+}else{
+  gene_ann = fread(gene_gtf_file, sep = '\t')
+  gene_ann = gene_ann[V3 == 'gene']
+  gene_ann[, 'gene_name' := unlist(strsplit(V9, ';'))[3], by = V9]
+  gene_ann[, 'gene_name' := gsub("\"", "", gene_name), by = gene_name]
+  gene_ann[, 'gene_name' := unlist(strsplit(gene_name, ' '))[3], by = gene_name]
+  names(gene_ann)[1] = 'chr'
+  gene_ann = subset(gene_ann, select = c(chr, V4, V5, V7, gene_name))
+  chrs = 1:22
+  chrs = c(chrs, 'X', 'Y', 'M')
+  gene_ann = gene_ann[chr %in% chrs]
+  gene_ann = gene_ann[!duplicated(gene_name)]
+  names(gene_ann)[2:4] = c('gene_start', 'gene_end', 'strand')
+  gene_ann[, 'chr' := paste0('chr', chr)]
+  
+}
+
+
+if(F){
+  ## download gtf file if not provided
+  if(!file.exists(gene_gtf_file)){
+    print('gene annotation gtf file not provided, I will try to download one:')
+    err = 0
+    if(grepl(GENOME_NAME, pattern = 'mm9', ignore.case = T)) {
+      err <- tryCatch(download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz', temp),
+                      error = function(e) {
+                        print("Cannot download ftp://ftp.ensembl.org/pub/release-67/gtf/mus_musculus/Mus_musculus.NCBIM37.67.gtf.gz!")
+                        return(1)})
+    }
+    if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {
+      err <- tryCatch(download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/mus_musculus/Mus_musculus.GRCm38.95.gtf.gz', temp),
+                             error = function(e) {
+                               print("Cannot download ftp://ftp.ensembl.org/pub/release-95/gtf/mus_musculus/Mus_musculus.GRCm38.95.gtf.gz!")
+                               return(1)})
+    }
+    if(grepl(GENOME_NAME, pattern = 'hg38', ignore.case = T)) {
+      err <- tryCatch(download.file('ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz', temp),
+                      error = function(e) {
+                        print("Cannot download ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz!")
+                        return(1)})
+    }
+    
+    if(grepl(GENOME_NAME, pattern = 'hg19', ignore.case = T)) {
+      err <- tryCatch(download.file('ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz', temp),
+                      error = function(e) {
+                        print("Cannot download ftp://ftp.ensembl.org/pub/release-67/gtf/homo_sapiens/Homo_sapiens.GRCh37.67.gtf.gz!")
+                        return(1)})
+    }
+    
+    if(err == 1) stop('Download failed! Please provide a gtf file to run this module!')
+  }
+  
+  gene_ann = fread(gene_gtf_file, sep = '\t')
+  gene_ann = gene_ann[V3 == 'gene']
+  gene_ann[, 'gene_name' := unlist(strsplit(V9, ';'))[3], by = V9]
+  gene_ann[, 'gene_name' := gsub("\"", "", gene_name), by = gene_name]
+  gene_ann[, 'gene_name' := unlist(strsplit(gene_name, ' '))[3], by = gene_name]
+  names(gene_ann)[1] = 'chr'
+  gene_ann = subset(gene_ann, select = c(chr, V4, V5, V7, gene_name))
+  chrs = 1:22
+  chrs = c(chrs, 'X', 'Y')
+  gene_ann = gene_ann[chr %in% chrs]
+  gene_ann = gene_ann[!duplicated(gene_name)]
+  names(gene_ann)[2:4] = c('gene_start', 'gene_end', 'strand')
+  gene_ann[, 'chr' := paste0('chr', chr)]
+  
 }
 
 seurat.rna = readRDS(inputSeurat_rna)
@@ -45,7 +127,7 @@ seurat.atac = readRDS(inputSeurat_atac)
 atac.mtx = seurat.atac@assays$ATAC@counts
 rn = rownames(atac.mtx)
 rownames(atac.mtx) <- sapply(rn, function(x) unlist(strsplit(x, ','))[1])
-activity.matrix = generate_gene_cisActivity(gene_gtf = gene_gtf_file,
+activity.matrix = generate_gene_cisActivity(gene_ann = gene_ann,
                                             atac.mtx, 
                                             include_body = T)
 

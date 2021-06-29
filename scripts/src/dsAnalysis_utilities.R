@@ -1263,37 +1263,23 @@ FindDoublets_Atac <- function(seurat.atac, PCs = 1:50,
 FindDoublets_Atac = cmpfun(FindDoublets_Atac)
 
 # generate gene activity matrix for labelTransfer
-generate_gene_cisActivity <- function(gene_gtf, mtx, include_body = T,
+generate_gene_cisActivity <- function(gene_ann, mtx, include_body = T,
                                       dist_to_tss = 2000){
   ## generating gene cis activity score
-  ## input: gene gtf file, and atac matrix file
+  ## input: gene_ann (data table with chr, gene_start, gene_end, strand, gene_name), 
+  ##        and atac matrix file
   
   ## 1. select gene up/down-stream regions (promoter with/without gene_body) ##
   
-  gene_ann = fread(gene_gtf, sep = '\t')
-  gene_ann = gene_ann[V3 == 'gene']
-  gene_ann[, 'gene_name' := unlist(strsplit(V9, ';'))[3], by = V9]
-  gene_ann[, 'gene_name' := gsub("\"", "", gene_name), by = gene_name]
-  gene_ann[, 'gene_name' := unlist(strsplit(gene_name, ' '))[3], by = gene_name]
-  names(gene_ann)[1] = 'chr'
-  gene_ann = subset(gene_ann, select = c(chr, V4, V5, V7, gene_name))
-  chrs = 1:22
-  chrs = c(chrs, 'X', 'Y')
-  gene_ann = gene_ann[chr %in% chrs]
-  gene_ann = gene_ann[!duplicated(gene_name)]
   
-  
-  names(gene_ann)[2:4] = c('ss', 'ee', 'strand')
   if(!include_body){
-    gene_ann[, 'start' := ifelse(strand == '+', ss - dist_to_tss, ee - dist_to_tss)]
-    gene_ann[, 'end' := ifelse(strand == '+', ss + dist_to_tss, ee + dist_to_tss)]
+    gene_ann[, 'start' := ifelse(strand == '+', gene_start - dist_to_tss, gene_end - dist_to_tss)]
+    gene_ann[, 'end' := ifelse(strand == '+', gene_start + dist_to_tss, gene_end + dist_to_tss)]
   }else{
-    gene_ann[, 'start' := ifelse(strand == '+', ss - dist_to_tss, ss)]
-    gene_ann[, 'end' := ifelse(strand == '+', ee, ee + dist_to_tss)]
+    gene_ann[, 'start' := ifelse(strand == '+', gene_start - dist_to_tss, gene_start)]
+    gene_ann[, 'end' := ifelse(strand == '+', gene_end, gene_end + dist_to_tss)]
     
   }
-  
-  gene_ann[, 'chr' := paste0('chr', chr)]
   
   gene_ann = subset(gene_ann, select = c(chr, start, end, gene_name))
   
