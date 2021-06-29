@@ -15,7 +15,7 @@ gene_gtf_file = args[4]
 ## if gtf file not provided, using R bioconductor packages for gene annotation
 if(!file.exists(gene_gtf_file)){
   if(!grepl(GENOME_NAME, pattern = 'hg19|hg38|mm10|mm9', ignore.case = T)){
-    stop('Genome is not belong to hg19,hg38,mm9 and mm10, 
+    stop('Genome is not belong to any of hg19,hg38,mm9 or mm10, 
          please provide .gtf file for gene annotation!')
   }
   if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {

@@ -101,7 +101,7 @@ Dependencies
 -   trim\_galore (&gt;=0.6.3), Trimmomatic (&gt;=0.6.3)
 -   Regulratory Genomics Toolbox (RGT, for footprinting analysis)
 -   g++ compiler, bzip2, ncurses-devel
--   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, xlsx, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, VisCello.atac
+-   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, xlsx, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, EnsDb.Hsapiens.v86, EnsDb.Mmusculus.v79, VisCello.atac
 
 Quick start guide
 -----------
