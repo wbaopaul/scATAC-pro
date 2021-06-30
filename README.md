@@ -51,7 +51,7 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.4.0
 - Recent updates
-    * *labelTransfer*: new module added, to do label trasfer (for cell annotation) from scRNA-seq annotation. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data.
+    * *labelTransfer*: new module added, to do label trasfer (for cell annotation) from cell annotation of scRNA-seq data. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data.
     * *rmDoublets*: new module added, to remove potential doublets using [DoubletFinder](https://github.com/chris-mcginnis-ucsf/DoubletFinder) algorithm.
     * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
     * *call_cell*: enable filtering barcodes with minimal tss enrichment score cutoff (parameter **min_tss_escore** in the updated [configure_user.txt](configure_user.txt) file)

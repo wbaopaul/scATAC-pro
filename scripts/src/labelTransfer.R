@@ -124,53 +124,14 @@ if(F){
 seurat.rna = readRDS(inputSeurat_rna)
 seurat.atac = readRDS(inputSeurat_atac)
 
-atac.mtx = seurat.atac@assays$ATAC@counts
-rn = rownames(atac.mtx)
-rownames(atac.mtx) <- sapply(rn, function(x) unlist(strsplit(x, ','))[1])
-activity.matrix = generate_gene_cisActivity(gene_ann = gene_ann,
-                                            atac.mtx, 
-                                            include_body = T)
-
-seurat.atac[["ACTIVITY"]] <- CreateAssayObject(counts = activity.matrix)
-
-DefaultAssay(seurat.atac) <- "ACTIVITY"
-seurat.atac <- NormalizeData(seurat.atac)
-seurat.atac <- ScaleData(seurat.atac, features = rownames(seurat.atac))
-seurat.atac <- FindVariableFeatures(seurat.atac)
-
-DefaultAssay(seurat.atac) <- "ATAC"
-seurat.atac$tech = 'ATAC'
-seurat.rna$tech = 'RNA'
-
-## transfer label 
-genes4anchors = VariableFeatures(object = seurat.rna)
-#genes4anchors = NULL
-transfer.anchors <- FindTransferAnchors(reference = seurat.rna,
-                                        query = seurat.atac,
-                                        features = genes4anchors,
-                                        reference.assay = "RNA",
-                                        query.assay = "ACTIVITY",
-                                        reduction = "cca",
-                                        k.anchor = 5)
-
-
-celltype.predictions <- TransferData(anchorset = transfer.anchors,
-                                     refdata = seurat.rna$Cell_Type,
-                                     weight.reduction = seurat.atac[["pca"]],
-                                     dims = 1:ncol(seurat.atac[["pca"]]),
-                                     k.weight = 50)
-celltype.predictions = subset(celltype.predictions, select = c('predicted.id', 'prediction.score.max'))
-names(celltype.predictions)[1] = 'Predicted_Cell_Type'
-seurat.atac <- AddMetaData(seurat.atac, metadata = celltype.predictions)
-rm(transfer.anchors)
+seurat.atac = labelTransfer_R(seurat.atac, seurat.rna, gene_ann,
+                              rna_ann_var = 'Cell_Type', include_genebody = T)
 
 p1 <- DimPlot(seurat.atac, group.by = "Predicted_Cell_Type",
               label = TRUE, repel = TRUE) + ggtitle("scATAC-seq") 
 
 p2 <- DimPlot(seurat.rna, group.by = "Cell_Type",
               label = TRUE, repel = TRUE) + ggtitle("scRNA-seq") 
-
-seurat.atac[["ACTIVITY"]] <- NULL ## don't save activity assay
 
 outputPath = dirname(inputSeurat_atac)
 outputName = basename(inputSeurat_atac)
