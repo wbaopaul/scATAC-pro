@@ -175,6 +175,11 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
                        verbose = FALSE, seed.use = 10, npc = npc)
   if(length(reg.var) > 0 ) seurat.obj = regress_on_pca(seurat.obj, reg.var)
 
+  if(norm_by == 'tf-idf'){
+  ## redo normalization using all features
+     mtx.norm = TF_IDF(mtx)
+     seurat.obj[[assay]]@data = mtx.norm
+  }
 
   return(seurat.obj)
 }
