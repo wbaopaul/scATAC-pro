@@ -25,7 +25,14 @@ if [ "${PEAK_CALLER}" = 'MACS2' ];then
 	unset PYTHONPATH
 	work_dir=${peaks_dir}/MACS2
 	mkdir -p $work_dir
-	${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $work_dir -n $out_prefix -f BAM $MACS2_OPTS 
+		if [ ${isSingleEnd} = 'TRUE' ]; then
+			${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $work_dir -n $out_prefix -f BAM $MACS2_OPTS 
+		fi
+		
+		if [ ${isSingleEnd} = 'FALSE' ]; then
+			${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $work_dir -n $out_prefix -f BAMPE $MACS2_OPTS 
+		fi 
+		
 	#${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $peaks_dir -f BAM $MACS2_OPTS --nomodel --extsize 147
 
     ## remove peaks whose chromosome is not list in the chrom_size file
