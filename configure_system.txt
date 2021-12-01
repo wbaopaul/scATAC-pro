@@ -7,9 +7,9 @@
 ## using the 'which' command
 #######################################################################
 INSTALL_PREFIX = /mnt/isilon/tan_lab/yuw1/local_tools/bin
-PYTHON_PATH =  /cm/shared/easybuild/software/Python/3.8.2-GCCcore-9.3.0/bin
+PYTHON_PATH =  /cm/local/apps/python37/bin
 R_PATH =  /cm/shared/apps_chop/R/4.0.5/lib64/R/bin
-SAMTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/samtools-1.9
+SAMTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin
 DEEPTOOLS_PATH = /home/yuw1/.local/bin
 BEDTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bedtools2/bin
 TABIX_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/tabix
@@ -17,7 +17,7 @@ BWA_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bwa-0.7.17
 MACS2_PATH = /home/yuw1/.local/bin
 PERL_PATH = /usr/bin
 CUTADAPT_PATH = /home/yuw1/.local/bin
-TRIM_GALORE_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/TrimGalore-0.6.3
+TRIM_GALORE_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin
 HINT_PATH =  /home/yuw1/.local/bin
 TRIMMOMATIC_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/Trimmomatic-0.39
 GEM_PATH =  /mnt/isilon/tan_lab/yuw1/local_tools/bin/gem
