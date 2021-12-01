@@ -40,10 +40,15 @@ ${PERL_PATH}/perl ${curr_dir}/src/split_bam2clusters0.pl --cluster_file ${output
 ## call peaks per cluster
 unset PYTHONHOME
 unset PYTHONPATH
+samPE="SAM"
+if [[ "$isSingleEnd"="FALSE"  ]]; then
+    samPE="SAMPE"
+fi
+
 for input_sam0 in $(find $output_dir -name *.sam); do
     pre=$(basename $input_sam0)
     pre=${pre/.sam/}
-    ${MACS2_PATH}/macs2 callpeak -t $input_sam0 --outdir $output_dir -n $pre -f SAM $MACS2_OPTS &
+    ${MACS2_PATH}/macs2 callpeak -t $input_sam0 --outdir $output_dir -n $pre -f $samPE $MACS2_OPTS &
 done
 wait
 

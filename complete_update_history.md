@@ -1,4 +1,9 @@
 ## Complete Update History
+- Version 1.4.1 released
+    * update tutorial
+    * correct a bug relate to input filepath for report module 
+    * record input file paths for the *integration* module
+    * using BAMPE for macs2 for paired-end sequencing
 - Version 1.4.0 released 
     * new module added: labelTransfer (for cell annotation) from scRNA-seq
 - Version 1.3.1 released

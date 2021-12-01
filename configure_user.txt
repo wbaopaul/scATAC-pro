@@ -64,7 +64,7 @@ PEAK_CALLER = MACS2  ## one of MACS2, BIN, and COMBINED
 
 ## provided extra options for macs2 (NO NEED TO SPECIFY -t, -n, -f here), like
 
-#MACS2_OPTS = -q 0.05 -g hs 
+#MACS2_OPTS = -q 0.05 -g hs  
 ## (change to -g mm if you are using mouse data) 
 
 ## or something like this to ignore building shifting model 

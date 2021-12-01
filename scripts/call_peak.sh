@@ -33,8 +33,6 @@ if [ "${PEAK_CALLER}" = 'MACS2' ];then
 			${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $work_dir -n $out_prefix -f BAMPE $MACS2_OPTS 
 		fi 
 		
-	#${MACS2_PATH}/macs2 callpeak -t $input_bam --outdir $peaks_dir -f BAM $MACS2_OPTS --nomodel --extsize 147
-
     ## remove peaks whose chromosome is not list in the chrom_size file
     ${R_PATH}/Rscript --vanilla ${curr_dir}/src/rmRedundantPeaks.R ${work_dir}/${out_prefix}_peaks.narrowPeak \
          $CHROM_SIZE_FILE

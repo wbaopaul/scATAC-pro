@@ -53,6 +53,11 @@ seurat.obj <- run_integration(mtx_list, integrate_by = integrate_by,
                             max_depth = 50000, reg.var = 'nCount_ATAC',
                             resolution = 0.6)
 
+# record input sample path as metadata to the seurat object
+dpath = data.table('sample' = paste0('sample', 1:len),
+                   'sample_path' = mtx_files)
+setkey(dpath, sample)
+seurat.obj$sample_path = dpath[J(seurat.obj$sample)]$sample_path
 
 saveRDS(seurat.obj, file = paste0(output_dir, '/seurat_obj_', integrate_by, '.rds'))
 

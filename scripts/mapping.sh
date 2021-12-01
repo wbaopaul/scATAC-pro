@@ -28,7 +28,7 @@ echo "Sorting bam file"
 ncore=$(nproc --all)
 ncore=$(($ncore - 1))
 mkdir -p ${mapRes_dir}/tmp
-${SAMTOOLS_PATH}/samtools sort -T ${mapRes_dir}/tmp/ -@ $ncore -n -o ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.bam
+${SAMTOOLS_PATH}/samtools sort -m 2G -T ${mapRes_dir}/tmp/ -@ $ncore -n -o ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.bam
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.bam
 
 ## to mark duplicates
@@ -36,7 +36,7 @@ ${SAMTOOLS_PATH}/samtools fixmate -@ $ncore -m ${mapRes_dir}/${OUTPUT_PREFIX}.so
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam
 
 # Markdup needs position order
-${SAMTOOLS_PATH}/samtools sort -@ $ncore -T ${mapRes_dir}/tmp/ -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort0.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
+${SAMTOOLS_PATH}/samtools sort -m 2G -@ $ncore -T ${mapRes_dir}/tmp/ -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort0.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
 
 ## mark duplicates
