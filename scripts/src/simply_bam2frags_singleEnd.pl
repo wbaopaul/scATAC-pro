@@ -66,14 +66,14 @@ while(<READ>)
      print OUT_Len $len."\n" ; ## save all fragment length
 
      $chrom = $array[2];
-     ## add 4 and 5bps to the left and right to adjust the TN5 occupancy
-     $start = $array[3];
+     ## add 4 bps to the left to adjust the TN5 occupancy
+     $start = $array[3] - 4;
      $end = $len + $start - 1;
     
 
      my @tmp_array = split /:/, $array[0];
 	   
-	   $barcode = $tmp_array[0];
+	$barcode = $tmp_array[0];
      my $frag_id = $chrom."\t".$start."\t".$end."\t".$barcode;
 
     if(exists($frags{$frag_id})){
