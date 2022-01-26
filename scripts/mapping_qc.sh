@@ -32,9 +32,13 @@ fi
 ${SAMTOOLS_PATH}/samtools flagstat -@ $ncore ${input_pre}.positionsort.MAPQ${MAPQ}.bam > ${output_pre}.MAPQ${MAPQ}.flagstat.txt
 ${SAMTOOLS_PATH}/samtools idxstats -@ $ncore ${input_pre}.positionsort.MAPQ${MAPQ}.bam > ${output_pre}.MAPQ${MAPQ}.idxstat.txt
 
+flag0=0x2
+if [ ${isSingleEnd} = 'TRUE' ]; then
+    flag0=0x1
+fi
 
 tmp_sam_file=${output_dir}/tmp.sam
-${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f 0x2 ${input_pre}.positionsort.bam > $tmp_sam_file
+${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 ${input_pre}.positionsort.bam > $tmp_sam_file
 
 if [ $MAPPING_METHOD == 'bwa' ]; then
    total_uniq_mapped=$( wc -l ${tmp_sam_file} | cut -d ' ' -f1 )  ## number of unique mapped reads
