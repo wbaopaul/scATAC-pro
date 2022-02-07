@@ -51,23 +51,21 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.4.2
 - Recent updates
+    * more friendly to single-end sequencing data
     * *labelTransfer*: new module added, to do label trasfer (for cell annotation) from cell annotation of scRNA-seq data. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data.
     * *rmDoublets*: new module added, to remove potential doublets using [DoubletFinder](https://github.com/chris-mcginnis-ucsf/DoubletFinder) algorithm.
     * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
     * *call_cell*: enable filtering barcodes with minimal tss enrichment score cutoff (parameter **min_tss_escore** in the updated [configure_user.txt](configure_user.txt) file)
-    * fragments file indexed by tabix (named fragments.tsv.gz)
+    * fragments file indexed 
     * *footprint* module: support comparison of any two sets of cell clusters
-    * *motif_analysis* and *runDA*: enable seurat/matrix object in .rds format as input
     * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks
     * *integrate_mtx*: new module added, as an alias of previous *integrate_seu* module
     * Added *addCB2bam* module to write cell barcode into 
-      an additional column of the bam file 
-    * added qc per cell to metadata of the seurat object 
-      frac.tss, frac.promoter, and frac.enhancer, tss_enrich_score
+      an additional column in the bam file 
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
-      **which reselect variable features across cell clusters after an initial clustering, followed by 
-        another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file
-       remove rare peaks (accessible in less than 1% of cells) from the variable features list
+      **which reselect highly variable features across cell clusters after an initial clustering, followed by 
+        another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file,
+        rare peaks (accessible in less than 1% of cells) were also removed from the highly variable features list.
 - Complete update history can be viewd [here](complete_update_history.md)
 
 
@@ -205,7 +203,7 @@ Step by step guide to running scATAC-pro
     ## after running the above module, you can run module report (list below)
     ## to generate first page of the summary report
     $ scATAC-pro -s rmDoublets
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds,0.03 (0.03 is the expected fraction of doublets ) 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds,0.03 (0.03 is the default expected fraction of doublets ) 
                  -c configure_user.txt
 
     $ scATAC-pro -s clustering

@@ -1,5 +1,8 @@
 ## Complete Update History
+- Version 1.4.2 released
+    * correct bugs in processing single-end sequencing data
 - Version 1.4.1 released
+    * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
     * update tutorial
     * correct a bug relate to input filepath for report module 
     * record input file paths for the *integration* module

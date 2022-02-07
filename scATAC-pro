@@ -260,7 +260,7 @@ fi
 
 ################################ check valid STEPs #####
 ############################
-AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "mapping_qc" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "get_bam4Cells" "clustering" "motif_analysis" "call_cnv" "runDA" "runGO" "runCicero" "split_bam" "footprint" "report" "process" "process_no_dex" "process_with_bam" "integrate" "downstream" "all" "integrate_seu" "integrate_mtx" "convert10xbam" "mergePeaks" "reConstMtx" "visualize" "addCB2bam" "rmDoublets" "labelTransfer")
+AVAILABLE_STEP_ARRAY=("demplx_fastq" "trimming" "mapping" "mapping_qc" "aggr_signal" "call_peak" "recall_peak" "get_mtx" "qc_per_barcode" "call_cell" "get_bam4Cells" "clustering" "motif_analysis" "runDA" "runGO" "runCicero" "split_bam" "footprint" "report" "process" "process_no_dex" "process_with_bam" "integrate" "downstream" "all" "integrate_seu" "integrate_mtx" "convert10xbam" "mergePeaks" "reConstMtx" "visualize" "addCB2bam" "rmDoublets" "labelTransfer")
 
 
 check_s=0
