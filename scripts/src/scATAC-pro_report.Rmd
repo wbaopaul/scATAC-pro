@@ -47,6 +47,7 @@ library(RColorBrewer)
 library(ggplot2)
 library(cicero)
 library(viridis)
+library(GenomicRanges)
 
 ```
 
@@ -147,10 +148,15 @@ mapq30.frac.in.cell = paste0(round(sum(frags[bc %in% barcodes]$ndup)/sum(frags$n
 
 med.frag.per.cell = round(median(qc_sele$total_frags))
 frac.uniq = paste0(round(nrow(frags[bc %in% barcodes])/sum(frags[bc %in% barcodes]$ndup), 3) * 100, '%')
-frac.in.peak = sum(bc_stat$total_frags * bc_stat$frac_peak)/sum(bc_stat$total_frags)
+
+#frac.in.peak = sum(bc_stat$total_frags * bc_stat$frac_peak)/sum(bc_stat$total_frags)
+names(peaks)[1:3] = c('chr', 'start', 'end')
+frac.in.peak <- GenomicRanges::countOverlaps(makeGRangesFromDataFrame(frags), makeGRangesFromDataFrame(peaks))
+frac.in.peak <- mean(frac.in.peak > 0)
 frac.in.peak = paste0(round(frac.in.peak, 3)*100, '%')
 
-frac.in.cell = sum(qc_sele$total_frags)/sum(bc_stat$total_frags)
+#frac.in.cell = sum(qc_sele$total_frags)/sum(bc_stat$total_frags)
+frac.in.cell = sum(qc_sele$total_frags)/nrow(frags)
 frac.in.cell = paste0(round(frac.in.cell, 3)*100, '%')
 
 cell.table = data.frame(c(PEAK_CALLER, nrow(peaks),
