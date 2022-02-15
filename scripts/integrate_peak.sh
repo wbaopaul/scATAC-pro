@@ -47,7 +47,7 @@ do
     frag0_dir=`cd "$pk0_dir"; cd "../../summary"; pwd`       
     mat0_dir=`cd "$pk0_dir"; cd "../../filtered_matrix"; pwd`       
     #frag0_file=$(find $frag0_dir -name "*fragments.tsv.gz")
-    frag0_file=$(find $frag0_dir -name "*fragments*" | grep -v "\.len")
+    frag0_file=$(find $frag0_dir -name "*fragments*" | grep -v "\.len" | grep -v tbi)
     mat0_dir=${mat0_dir}/${PEAK_CALLER}/${CELL_CALLER}
     #bc0_file=$(find ${mat0_dir} -name "*barcodes.txt")
     bc0_file=${mat0_dir}/barcodes_doubletsRemoved.txt
