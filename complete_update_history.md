@@ -1,7 +1,8 @@
 ## Complete Update History
 - Version 1.4.2 released
     * correct bugs in processing single-end sequencing data
-    * correct minor underestimate of overall FrIP in the qc report
+    * correct minor underestimate of overall FrIP in the qc *report*
+    * correst a bug in *process_with_bam* module
 - Version 1.4.1 released
     * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
     * update tutorial
