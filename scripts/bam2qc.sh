@@ -22,11 +22,11 @@ if [[ ! -f $position_sort_bam ]]; then
 fi
 
 ## check whether the bam file is position sorted or not
-isort=`samtools view $position_sort_bam -H | grep HD | cut -f3`
+isort=`samtools view $position_sort_bam -H | grep HD `
 ncore=$(nproc --all)
 ncore=$(($ncore - 1))
  ## if the input is position sorted, suppose it's duplicates marked
-if [[ "$isort" != "SO:coordinate"  ]]; then
+if [[ $isort != *SO:coordinate*  ]]; then
     ## sort
     echo "Sorting bam file"
 
@@ -64,7 +64,6 @@ ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positio
 if [ $MAPQ -ne 30 ]; then
      ${SAMTOOLS_PATH}/samtools view -f $flag0 -b -h -q $MAPQ -@ $ncore $position_sort_bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam 
 fi
-
 
 ## mapping stats
 echo "Summarizing mapping stats ..."

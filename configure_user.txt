@@ -100,6 +100,7 @@ CLUSTERING_METHOD = seurat  ## seurat/cisTopic/kmeans/LSI/SCRAT/chromVAR/scABC
 K_CLUSTERS = 0.2  ## the number of cluster (in integer) or the resolution parameter (in float) for louvain algorithm (implemented by seurat)
 prepCello = TRUE  ## generate object for VisCello (for visualization)
 
+rmDoublets = TRUE ## remove potential doublets or not
 
 
 #######################################################################################

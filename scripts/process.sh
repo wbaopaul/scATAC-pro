@@ -17,7 +17,7 @@ ${curr_dir}/dex_fastq.sh $1 $2 $3
 fastqs=(${input_fastqs//,/ })
 #isSingleEnd=${isSingleEnd^^}
 isSingleEnd=$(echo $isSingleEnd | tr a-z A-Z)
-if [[ "$isSingleEnd"="FALSE"  ]]; then
+if [[ $isSingleEnd = FALSE ]]; then
     dfastq1=${OUTPUT_PREFIX}.demplxed.PE1.fastq.gz
     dfastq2=${OUTPUT_PREFIX}.demplxed.PE2.fastq.gz
     fq1=${OUTPUT_DIR}/demplxed_fastq/${dfastq1}
@@ -69,7 +69,6 @@ ${curr_dir}/get_mtx.sh ${frag_file},${feature_file} $2 $3 &
 echo "QC per cell ..."
 qc_inputs=${frag_file},${feature_file}
 ${curr_dir}/qc_per_barcode.sh $qc_inputs $2 $3 &
-
 wait
 
 ## 7.call cell
@@ -77,19 +76,23 @@ echo "call cell ..."
 mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
 ${curr_dir}/call_cell.sh $mat_file $2 $3 
 
-
 ## 8. remove doublets
-filtered_mtx_file=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/matrix.rds
 ${curr_dir}/rmDoublets.sh ${filtered_mtx_file},0.03 $2 $3
+input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes.txt
+mtx_file=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/matrix.rds
+if [[ $rmDoublets = TRUE  ]]; then
+    ${curr_dir}/rmDoublets.sh ${mtx_file},0.03 $2 $3 &
+    input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes_doubletsRemoved.txt
+    mtx_file=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/matrix_doubletsRemoved.rds
+fi
 
 ## 9. mapping qc for cell barcodes
 map_dir=${OUTPUT_DIR}/mapping_result
 input_bam=${map_dir}/${OUTPUT_PREFIX}.positionsort.bam
-input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes_doubletsRemoved.txt
-${curr_dir}/get_bam4Cells.sh ${input_bam},${input_bc} $2 $3
+${curr_dir}/get_bam4Cells.sh ${input_bam},${input_bc} $2 $3 &
+wait
 
 ## 10.report preprocessing QC
 echo "generating report ..."
 ${curr_dir}/report.sh ${OUTPUT_DIR}/summary $2 $3
-
 

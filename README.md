@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if you prefer (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.4.2
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.4.3
 
 <!-- -->
 
@@ -49,23 +49,24 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.4.2
+- Current version: 1.4.3
 - Recent updates
-    * more friendly to single-end sequencing data
-    * *labelTransfer*: new module added, to do label trasfer (for cell annotation) from cell annotation of scRNA-seq data. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data.
-    * *rmDoublets*: new module added, to remove potential doublets using [DoubletFinder](https://github.com/chris-mcginnis-ucsf/DoubletFinder) algorithm.
-    * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics
-    * *call_cell*: enable filtering barcodes with minimal tss enrichment score cutoff (parameter **min_tss_escore** in the updated [configure_user.txt](configure_user.txt) file)
-    * fragments file indexed 
-    * *footprint* module: support comparison of any two sets of cell clusters
-    * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks
-    * *integrate_mtx*: new module added, as an alias of previous *integrate_seu* module
+    * New module *reprocess_cellranger_output* added, to reprocess 10x scATAC-seq data (including atac in 10x multiome assay) originally processed by cellranger, taking cellranger processed .bam and .fragments.tsv.gz files as input (v1.4.3)
+    * More friendly to single-end sequencing data (v1.4.2)
+    * New module *labelTransfer* added, to do label trasfer (for cell annotation) from cell annotation of scRNA-seq data. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data (v1.4.0)
+    * New module *rmDoublets* added,to remove potential doublets using [DoubletFinder](https://github.com/chris-mcginnis-ucsf/DoubletFinder) algorithm (v1.3.1)
+    * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics (v1.3.0)
+    * *call_cell*: enable filtering barcodes with minimal tss enrichment score cutoff (parameter **min_tss_escore** in the updated [configure_user.txt](configure_user.txt) file, v1.3.0)
+    * fragments file indexed (v1.3.0) 
+    * *footprint* module: support comparison of any two sets of cell clusters (v1.3.0)
+    * *integrate*: rename cell name for each sample to avoid shared barcodes among samples; enable a distance parameter to merge peaks (v1.3.0)
+    * New module *integrate_mtx* added, as an alias of previous *integrate_seu* module (v1.3.0)
     * Added *addCB2bam* module to write cell barcode into 
-      an additional column in the bam file 
+      an additional column in the bam file (v1.2.1)
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect highly variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file,
-        rare peaks (accessible in less than 1% of cells) were also removed from the highly variable features list.
+        rare peaks (accessible in less than 1% of cells) were also removed from the highly variable features list (v1.1.2).
 - Complete update history can be viewd [here](complete_update_history.md)
 
 
@@ -135,6 +136,15 @@ Quick start guide
     $ scATAC-pro -s process_no_dex 
                  -i pe1_fastq,pe2_fastq
                  -c configure_user.txt 
+
+-   To reprocess data originally processed by cellranger:
+
+```
+    $ scATAC-pro -s reprocess_cellranger_output
+                 -i path.to.cellranger.generated.bam,path.to.cellranger.generated.fragments.tsv.gz
+                 -c configure_user.txt
+
+```
 
 -   The **output** will be saved under ./output as default
 -   --verbose (or -b) will print the running message on screen, otherwise the message will only be saved under output/logs/MODULE.txt
@@ -240,7 +250,7 @@ Step by step guide to running scATAC-pro
                  
     ## merge peaks that are within 500bp distance of each other            
     $ scATAC-pro -s mergePeaks
-                 -i peak_file1,peak_file2,(peak_file3...),500
+                 -i peak_file1,peak_file2,...,peak_fileN,500
                  -c configure_user.txt
 
     ## reconstruct matrix using given new peak file
@@ -254,7 +264,7 @@ Step by step guide to running scATAC-pro
     ## the integration methods includes 'VFACS', 'pool', 'seurat', and 'harmony', for instance, 
     ## you can specify the integration method with 'Integrate_By = VFACS' in the configure file
     $ scATAC-pro -s integrate
-                 -i peak_file1,peak_file2,(peak_file3...)   ## 
+                 -i peak_file1,peak_file2,...,peak_fileN,500 
                  -c configure_user.txt
     
     ## if you have the reconstructed matrix for data set (meaning using the merged peaks)
@@ -301,7 +311,7 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.4.2
+    scATAC-pro 1.4.3
     ---------------
     OPTIONS
 

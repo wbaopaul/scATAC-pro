@@ -38,16 +38,17 @@ if [ ${isSingleEnd} = 'TRUE' ]; then
 fi
 
 tmp_sam_file=${output_dir}/tmp.sam
-${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 ${input_pre}.positionsort.bam > $tmp_sam_file
+tmp_bam_file=${output_dir}/tmp.bam
 
 if [ $MAPPING_METHOD == 'bwa' ]; then
-   total_uniq_mapped=$( wc -l ${tmp_sam_file} | cut -d ' ' -f1 )  ## number of unique mapped reads
-elif [ $MAPPING_METHOD == 'bowtie' ]; then
+    ${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 -b ${input_pre}.positionsort.bam > $tmp_bam_file
+   total_uniq_mapped=$( ${SAMTOOLS_PATH}/samtools view -c $tmp_bam_file )  ## number of unique mapped reads
+    rm $tmp_bam_file
+else
+    ${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 ${input_pre}.positionsort.bam > $tmp_sam_file
    total_uniq_mapped=$( grep -E "@|NM:" $tmp_sam_file | grep -v "XS:" | wc -l )
-else 
-   total_uniq_mapped=$( grep -E "@|NM:" $tmp_sam_file | grep -v "XS:" | wc -l )
+    rm $tmp_sam_file
 fi
-
 
 total_uniq_mapped=$((${total_uniq_mapped}/2))
 
@@ -90,7 +91,6 @@ echo "Total_Pairs_MAPQ${MAPQ}    $total_pairs_MAPQH" >> ${output_pre}.MappingSta
 echo "Total_Mito_MAPQ${MAPQ}    $total_mito_MAPQH" >> ${output_pre}.MappingStats 
 echo "Total_Dups_MAPQ${MAPQ}    $total_dups_MAPQH" >> ${output_pre}.MappingStats 
 
-rm $tmp_sam_file
 
 
 

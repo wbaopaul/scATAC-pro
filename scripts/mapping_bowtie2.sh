@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 input_ff=$1
 fastqs=(${input_ff//,/ })
 # reading configure file

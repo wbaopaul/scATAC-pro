@@ -374,6 +374,16 @@ labelTransfer: config_check
 	@echo 
 
 #######################################
+## reprocess_cellranger_output
+#######################################
+reprocess_cellranger_output: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "reprocess data processed by cellranger-atac..." 
+	@$(SCRIPTS)/reprocess_cellranger_output.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## all
 #######################################
 all: config_check
