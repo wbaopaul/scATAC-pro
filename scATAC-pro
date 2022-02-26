@@ -158,6 +158,9 @@ function help {
                                  scRNA-seq. Both seurat objects should have pca and umap dimemsion reduction
                                  done."
 
+    echo "      reprocess_cellreanger_output: re-process cellranger results 
+                            input: cellranger_bam_file,cellranger_fragments.tsv.gz
+                            output: all outputs of the data processing "
     echo "   -i|--input INPUT : input data, different types of input data are required for different analysis;"
     echo "   -c|--conf CONFIG : configuration file for parameters (if exist) for each analysis module"
     echo "   [-o|--output_dir : folder to save results, default 'output/' under current directory. sub-folder will be created automatically for each module"

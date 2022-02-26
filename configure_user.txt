@@ -53,7 +53,7 @@ BOWTIE2_OPTS = --end-to-end -p 16
 BOWTIE2_INDEX = bowtie2.2.9/indexes/GRCh38/GRCh38
 
 MAPQ = 30  ## filter bam by MAPQ for downstream analysis 
-CELL_MAP_QC = TRUE  ## output mapping stats for cell barcodes
+CELL_MAP_QC = FALSE  ## output mapping stats for cell barcodes
 
 
 #################################################################################

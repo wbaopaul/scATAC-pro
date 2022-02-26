@@ -204,7 +204,8 @@ if(as.logical(CELL_MAP_QC) & file.exists(cell_mapping_qc_file)){
 
 
 }else{
-    cat('Alignment QC for cell barcodes was not generated!')
+    cat('Sequencing Alignment QC for reads in cell barcodes was not generated!')
+    cat('To generate it, 1) run module get_bam4Cells, 2) run module report again')
 }
 
 
