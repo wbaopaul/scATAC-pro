@@ -14,7 +14,7 @@ A comprehensive workbench for single cell ATAC-seq data processing, analysis and
       * [Dependencies](#dependencies)
          * [Programming language users should install](#programming-language-users-should-install)
          * [Software packages required](#software-pacakges-required)
-      * [One command for all](#one-command-for-all)
+      * [One command for many](#one-command-for-many)
       * [Step by step guide to running scATAC-pro](#step-by-step-guide-to-running-scATAC-pro)
       * [Detailed usage](#detailed-usage)
       * [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity)
@@ -55,11 +55,7 @@ Updates
     * More friendly to single-end sequencing data (v1.4.2)
     * New module *labelTransfer* added, to do label trasfer (for cell annotation) from cell annotation of scRNA-seq data. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data (v1.4.0)
     * New module *rmDoublets* added,to remove potential doublets using [DoubletFinder](https://github.com/chris-mcginnis-ucsf/DoubletFinder) algorithm (v1.3.1)
-    * *qc_per_barcode*: add tss enrichment score per cell into the QC metrics, and can be used to filter barcodes when run *call_cell* module (v1.3.0)
     * *footprint* module: support comparison of any two sets of cell clusters (v1.3.0)
-    * New module *integrate_mtx* added, as an alias of previous *integrate_seu* module (v1.3.0)
-    * Added *addCB2bam* module to write cell barcode into 
-      an additional column in the bam file (v1.2.1)
     * *integrate*: add VFACS (Variable Features Across ClusterS) option for the integration module,
       **which reselect highly variable features across cell clusters after an initial clustering, followed by 
         another round of dimension reduction and clustering**, specify *Integrate_By = VFACS* in configure file,
@@ -99,7 +95,7 @@ Dependencies
 -   g++ compiler, bzip2, ncurses-devel
 -   R packaages: devtools, flexdashboard, png, data.table, Matirx, Rcpp, ggplot2, flexmix, optparse, magrittr, readr, Seurat, bedr, gridExtra, ggrepel, kableExtra, viridis, xlsx, RColorBrewer,pheatmap,motifmatchr, chromVAR, chromVARmotifs, SummarizedExperiment, BiocParallel, DESeq2, clusterProfiler, BSgenome.Hsapiens.UCSC.hg38, BSgenome.Mmusculus.UCSC.mm10, EnsDb.Hsapiens.v86, EnsDb.Mmusculus.v79, VisCello.atac
 
-One command for all
+One command for many
 -----------
 
 -   **IMPORTANT**: The parameters and options should be specified in a configurartion file in plain text format. Copy and edit the configure\_user.txt file in this repository and then in your terminal run the following commands:

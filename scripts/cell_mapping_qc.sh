@@ -20,6 +20,10 @@ elif [[ $ncore -lt 1 ]]; then
     ncore=1
 fi
 
+flag0=0x2
+if [ ${isSingleEnd} = 'TRUE' ]; then
+    flag0=0x1
+fi
 input_pre=${input_dir}/cell_barcodes
 output_pre=${output_dir}/cell_barcodes
 
@@ -27,7 +31,7 @@ ${SAMTOOLS_PATH}/samtools flagstat -@ $ncore ${input_pre}.bam > ${output_pre}.fl
 ${SAMTOOLS_PATH}/samtools idxstats -@ $ncore ${input_pre}.bam > ${output_pre}.idxstat.txt
 
 if [[ ! -f ${input_pre}.MAPQ${MAPQ}.bam ]];then
-	${SAMTOOLS_PATH}/samtools view -@ $ncore -h -b -q ${MAPQ} ${input_pre}.bam > ${input_pre}.MAPQ${MAPQ}.bam
+	${SAMTOOLS_PATH}/samtools view -@ $ncore -f $flag0 -h -b -q ${MAPQ} ${input_pre}.bam > ${input_pre}.MAPQ${MAPQ}.bam
 fi
 
 if [[ ! -f ${input_pre}.MAPQ${MAPQ}.bam.bai ]];then
@@ -39,6 +43,7 @@ ${SAMTOOLS_PATH}/samtools idxstats -@ $ncore ${input_pre}.MAPQ${MAPQ}.bam > ${ou
 
 tmp_sam_file=${output_dir}/tmp.sam
 tmp_bam_file=${output_dir}/tmp.bam
+
 
 if [[ $MAPPING_METHOD == bwa ]]; then
     ${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 -b ${input_pre}.bam > $tmp_bam_file
