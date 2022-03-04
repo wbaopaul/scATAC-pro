@@ -41,9 +41,12 @@ tmp_sam_file=${output_dir}/tmp.sam
 tmp_bam_file=${output_dir}/tmp.bam
 
 if [ $MAPPING_METHOD == 'bwa' ]; then
-    ${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 -b ${input_pre}.positionsort.bam > $tmp_bam_file
-   total_uniq_mapped=$( ${SAMTOOLS_PATH}/samtools view -c $tmp_bam_file )  ## number of unique mapped reads
-    rm $tmp_bam_file
+    #${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 -b ${input_pre}.positionsort.bam > $tmp_bam_file
+    #total_uniq_mapped=$( ${SAMTOOLS_PATH}/samtools view -c $tmp_bam_file )  ## number of unique mapped reads
+    #rm $tmp_bam_file
+   
+    ## alternatively
+    total_uniq_mapped=$( ${SAMTOOLS_PATH}/samtools view -q 1 -@ $ncore -f $flag0 ${input_pre}.positionsort.bam | grep -v XA: | wc -l )
 else
     ${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 ${input_pre}.positionsort.bam > $tmp_sam_file
    total_uniq_mapped=$( grep -E "@|NM:" $tmp_sam_file | grep -v "XS:" | wc -l )

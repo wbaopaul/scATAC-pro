@@ -155,7 +155,7 @@ Step by step guide to running scATAC-pro
 
 -   **IMPORTANT**: you can run scATAC-pro sequentially. The input of a later analysis module is the output of the previous analysis modules. The following tutorial uses fastq files downloaded from [PBMC10k 10X Genomics](https://support.10xgenomics.com/single-cell-atac/datasets/1.1.0/atac_v1_pbmc_10k?) 
     
--   <u>Run scATAC-pro sequentially (specifyi PEAK_CALLER = MACS2 and CELL_CALLER = FILTER or other values in the configure_user.txt file) </u>
+-   <u>Run scATAC-pro sequentially (specify PEAK_CALLER = MACS2 and CELL_CALLER = FILTER or other values in the configure_user.txt file) </u>
 
 ```
     $ scATAC-pro -s demplx_fastq 
