@@ -1,5 +1,5 @@
 ## Complete Update History
-- Version 1.5.0 released
+- Version 1.4.3 released
     * add new module *reprocess_cellranger_output* to reprocess scATAC-seq data originally processed by cellranger 
 - Version 1.4.2 released
     * correct bugs in processing single-end sequencing data
