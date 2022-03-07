@@ -55,9 +55,9 @@ if [[ $MAPPING_METHOD == bwa ]]; then
 else
     ${SAMTOOLS_PATH}/samtools view -@ $ncore -q 5 -f $flag0 ${input_pre}.bam > $tmp_sam_file
     total_uniq_mapped=$( grep -E "@|NM:" $tmp_sam_file | grep -v "XS:" | wc -l )
-    total_uniq_mapped=$((${total_uniq_mapped}/2))
     rm $tmp_sam_file
 fi
+total_uniq_mapped=$((${total_uniq_mapped}/2))
 
 total_pairs=$(grep 'paired in' ${output_pre}.flagstat.txt | cut -d ' ' -f1) 
 total_pairs=$((${total_pairs}/2)) 
