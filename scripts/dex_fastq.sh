@@ -25,9 +25,9 @@ if [[ $kk -eq 1  ]]; then
      file1=${OUTPUT_DIR}/demplxed_fastq/pooled.R1.fastq.gz
      file2=${OUTPUT_DIR}/demplxed_fastq/pooled.R2.fastq.gz
      file3=${OUTPUT_DIR}/demplxed_fastq/pooled.R3.fastq.gz
-     find $1 -name '*R1*.fastq.gz' | sort | xargs cat > $file1
-     find $1 -name '*R2*.fastq.gz' | sort | xargs cat > $file2
-     find $1 -name '*R3*.fastq.gz' | sort | xargs cat > $file3
+     find $1 -name '*R1_001.fastq.gz' | sort | xargs cat > $file1
+     find $1 -name '*R2_001.fastq.gz' | sort | xargs cat > $file2
+     find $1 -name '*R3_001.fastq.gz' | sort | xargs cat > $file3
      
      bash ${curr_dir}/dex_fastq_single.sh ${file1},${file3},${file2} $2 $3 
      
