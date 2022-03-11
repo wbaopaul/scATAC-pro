@@ -1,14 +1,14 @@
 ---
-title: scATAC-pro Report
 output: 
   flexdashboard::flex_dashboard:
     vertical_layout: fill
     social: menu
     theme: united
 params:
+  set_title: scATAC-pro Report
   output_dir: /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/output
   configure_user: /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/configure_user.txt
-  
+title: "scATAC-pro `r params$set_title`"
 ---
 
 <style type="text/css">
