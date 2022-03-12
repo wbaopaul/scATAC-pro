@@ -173,7 +173,7 @@ if(T){
     chrs0 = unique(frags0$chr)
     tss4escore0 = tss4escore[chr %in% chrs0]
     tss4escore0.left = tss4escore.left[chr %in% chrs0]
-    chrs = unique(frags0$chr)
+    #chrs = unique(frags0$chr)
     escores_chrs = NULL
     for(chr0 in chrs0){
       if(nrow(frags0[chr==chr0]) <= 50) next
