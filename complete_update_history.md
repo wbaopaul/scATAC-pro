@@ -1,4 +1,9 @@
 ## Complete Update History
+- Version 1.4.4 released
+    * Only consider standard chromosomes in the *qc_per_barcode* module 
+    * Correct a minor bug in the *qc_per_barcode* module
+    * Add version# in the html report
+    * Clean and correct a minor bug in the *trimming* module
 - Version 1.4.3 released
     * add new module *reprocess_cellranger_output* to reprocess scATAC-seq data originally processed by cellranger 
 - Version 1.4.2 released

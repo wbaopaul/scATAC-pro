@@ -63,6 +63,7 @@ ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positio
 
 if [ $MAPQ -ne 30 ]; then
      ${SAMTOOLS_PATH}/samtools view -f $flag0 -b -h -q $MAPQ -@ $ncore $position_sort_bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam 
+     ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam 
 fi
 
 ## mapping stats
