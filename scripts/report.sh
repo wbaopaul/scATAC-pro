@@ -26,5 +26,5 @@ abs_configure_file=${abs_configure_dir}/${configure_file}
 scatacpro_version=`scATAC-pro --version | cut -d " " -f3`
 
 ${R_PATH}/Rscript --vanilla ${curr_dir}/src/render2report.R \
-    ${abs_report_dir}/scATAC-pro_report_${OUTPUT_PREFIX}.html  $abs_out_dir $abs_configure_file $scatacpro_version
+    ${abs_report_dir}/scATAC-pro_report_${OUTPUT_PREFIX}.html  $abs_out_dir $abs_configure_file $scatacpro_version $OUTPUT_PREFIX
 echo "Report generation Done!"
