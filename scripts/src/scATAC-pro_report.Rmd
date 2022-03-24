@@ -1,14 +1,15 @@
 ---
-title: scATAC-pro Report
 output: 
   flexdashboard::flex_dashboard:
     vertical_layout: fill
     social: menu
     theme: united
 params:
+  set_title: scATAC-pro Report
+  set_sample: PMBC10K
   output_dir: /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/output
   configure_user: /mnt/isilon/tan_lab/yuw1/run_scATAC-pro/PBMC10k/configure_user.txt
-  
+title: "scATAC-pro `r params$set_title`: `r params$set_sample`"
 ---
 
 <style type="text/css">
@@ -102,7 +103,7 @@ mapping_qc$frac = paste0(100*mapping_qc$frac, '%')
 
 mapping_qc = rbind(mapping_qc, data.frame(V1 ='Library Complexity (#unique fragments/#fragments)', V2 = '', frac = lib_complx))
 
-kable(mapping_qc, col.names = NULL, format = 'html', caption = paste('Sample:', OUTPUT_PREFIX)) %>%
+kable(mapping_qc, col.names = NULL, format = 'html') %>%
   kable_styling("striped", full_width = F, position = 'left', font_size = 15)
 
 write.table(mapping_qc, file = paste0(params$output_dir, '/summary/Tables/Global_Mapping_Statistics.tsv'),

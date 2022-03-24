@@ -93,7 +93,7 @@ ${R_PATH}/Rscript --vanilla ${curr_dir}/src/sort_frags.R ${qc_dir}/${OUTPUT_PREF
 ## index fragment file
 #sort -k1,1 -k2,2n -T ${mapRes_dir}/tmp/  ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv > ${qc_dir}/${OUTPUT_PREFIX}.fragments.sorted.tsv
 #mv ${qc_dir}/${OUTPUT_PREFIX}.fragments.sorted.tsv ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv
-${TABIX_PATH}/bgzip  ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv 
-${TABIX_PATH}/tabix -p bed ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv.gz
+${TABIX_PATH}/bgzip -f ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv 
+${TABIX_PATH}/tabix -f -p bed ${qc_dir}/${OUTPUT_PREFIX}.fragments.tsv.gz
 
 

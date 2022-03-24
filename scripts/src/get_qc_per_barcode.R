@@ -3,7 +3,7 @@
 library(data.table)
 library(Rcpp)
 library(Matrix)
-
+library(GenomicRanges)
 
 
 #sourceCpp(paste0('getOverlaps.cpp'))
@@ -122,11 +122,14 @@ frags = fread(frags.file, select=1:4, header = F)
 names(frags) = c('chr', 'start', 'end', 'bc')
 setkey(frags, chr, start)
 
+## only keep reads in standard chrs
+chrs = standardChromosomes(makeGRangesFromDataFrame(frags))
+frags = frags[chr %in% chrs]
 frags[, 'total_frags' := .N, by = bc]
 frags = frags[total_frags > 5]
 
-frags = frags[!grepl(chr, pattern = 'random', ignore.case = T)]
-frags = frags[!grepl(chr, pattern ='un', ignore.case = T)]
+#frags = frags[!grepl(chr, pattern = 'random', ignore.case = T)]
+#frags = frags[!grepl(chr, pattern ='un', ignore.case = T)]
 
 peaks = fread(peaks.file, select=1:3, header = F)
 tss = fread(tss.file, select=1:3, header = F)
@@ -147,7 +150,7 @@ if(file.exists(enhs.file)) {
 setkey(peaks, chr, start)
 setkey(tss, chr, start)
 
-chrs = unique(frags$chr)
+#chrs = unique(frags$chr)
 
 ## calculate tss enrichment score
 if(T){
