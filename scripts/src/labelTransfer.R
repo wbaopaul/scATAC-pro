@@ -61,10 +61,11 @@ if(!file.exists(gene_gtf_file)){
   gene_ann[, 'gene_name' := unlist(strsplit(gene_name, ' '))[3], by = gene_name]
   names(gene_ann)[1] = 'chr'
   gene_ann = subset(gene_ann, select = c(chr, V4, V5, V7, gene_name))
+  names(gene_ann)[2:4] = c('start', 'end', 'strand')
   chrs = standardChromosomes(makeGRangesFromDataFrame(gene_ann))
   gene_ann = gene_ann[chr %in% chrs]
   gene_ann = gene_ann[!duplicated(gene_name)]
-  names(gene_ann)[2:4] = c('gene_start', 'gene_end', 'strand')
+  names(gene_ann)[2:3] = c('gene_start', 'gene_end')
 }
 
 seurat.rna = readRDS(inputSeurat_rna)
