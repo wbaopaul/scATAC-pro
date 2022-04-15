@@ -77,11 +77,10 @@ mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
 ${curr_dir}/call_cell.sh $mat_file $2 $3 
 
 ## 8. remove doublets
-${curr_dir}/rmDoublets.sh ${filtered_mtx_file},0.03 $2 $3
 input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes.txt
 mtx_file=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/matrix.rds
 if [[ $rmDoublets = TRUE  ]]; then
-    ${curr_dir}/rmDoublets.sh ${mtx_file},0.03 $2 $3 &
+    ${curr_dir}/rmDoublets.sh ${mtx_file},${exptDoubletRate} $2 $3 &
     input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes_doubletsRemoved.txt
     mtx_file=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/matrix_doubletsRemoved.rds
 fi

@@ -76,14 +76,19 @@ mat_file=${OUTPUT_DIR}/raw_matrix/${PEAK_CALLER}/matrix.mtx
 ${curr_dir}/call_cell.sh $mat_file $2 $3
 
 ## 8. remove doublets
-filtered_mtx_file=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/matrix.rds
-${curr_dir}/rmDoublets.sh ${filtered_mtx_file},0.03 $2 $3
+input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes.txt
+mtx_file=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/matrix.rds
+if [[ $rmDoublets = TRUE  ]]; then
+    ${curr_dir}/rmDoublets.sh ${mtx_file},${exptDoubletRate} $2 $3 &
+    input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes_doubletsRemoved.txt
+    mtx_file=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/matrix_doubletsRemoved.rds
+fi  
 
 ## 9. mapping qc for cell barcodes
 map_dir=${OUTPUT_DIR}/mapping_result
 input_bam=${map_dir}/${OUTPUT_PREFIX}.positionsort.bam
-input_bc=${OUTPUT_DIR}/filtered_matrix/${PEAK_CALLER}/${CELL_CALLER}/barcodes_doubletsRemoved.txt
-${curr_dir}/get_bam4Cells.sh ${input_bam},${input_bc} $2 $3
+${curr_dir}/get_bam4Cells.sh ${input_bam},${input_bc} $2 $3 &
+wait
 
 ## 10.report preprocessing QC
 echo "generating report ..."

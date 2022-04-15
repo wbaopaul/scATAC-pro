@@ -14,8 +14,13 @@ inputs=(${inputs//,/ })
 seuratObj_file=${inputs[0]}
 drate=${inputs[1]}
 
+if [ -z $drate  ]; then
+    drate=$exptDoubletRate
+fi
+
 output_dir=`dirname $seuratObj_file`
 curr_dir=`dirname $0`
+
 
 ${R_PATH}/Rscript --vanilla ${curr_dir}/src/rmDoublets.R $seuratObj_file $drate
 

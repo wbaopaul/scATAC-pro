@@ -101,7 +101,7 @@ K_CLUSTERS = 0.2  ## the number of cluster (in integer) or the resolution parame
 prepCello = TRUE  ## generate object for VisCello (for visualization)
 
 rmDoublets = TRUE ## remove potential doublets or not
-
+exptDoubletRate = 0.03  ## default expected doublet rate, can be overwritten in rmDoublets module
 
 #######################################################################################
 ## differential accessible analysis
