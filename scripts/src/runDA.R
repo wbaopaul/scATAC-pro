@@ -13,6 +13,7 @@ output_dir = args[2]
 group1 = args[3]
 group2 = args[4]
 test_use = args[5]
+tss_path = args[6]
 
 seurat.obj = readRDS(seuratObj_file)
 
@@ -92,6 +93,10 @@ markers[, 'peak0' := unlist(strsplit(peak, ','))[1], by = peak]
 markers[, 'chr' := unlist(strsplit(peak0, '-'))[1], by = peak0]
 markers[, 'start' := unlist(strsplit(peak0, '-'))[2], by = peak0]
 markers[, 'end' := unlist(strsplit(peak0, '-'))[3], by = peak0]
+
+tss_ann <- fread(tss_path, header = F)
+names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
+markers$peak = assignGene2Peak_coords(markers$peak, tss_ann)
 
 setcolorder(markers, c('chr', 'start', 'end', 'p_val','avg_log2FC','pct.1','pct.2', 
                        'p_val_adj', 'fdr', 'cluster', 'peak', 'peak0'))

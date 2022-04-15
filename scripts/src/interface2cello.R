@@ -12,17 +12,27 @@ args = commandArgs(T)
 
 seuratPath = args[1]
 assay4cello = args[2]
+tss_path = args[3]  ## changed since 1.5.0
+
 output_dir = dirname(seuratPath)
 
 seurat.atac = readRDS(seuratPath)
 rr = rownames(seurat.atac)
 sele.features = VariableFeatures(seurat.atac)
-rr1 = rr[grepl(rr, pattern = 'Tss')]
-sele.features = unique(c(sele.features, rr1))
+mtx <- seurat.atac@assays$ATAC@counts[rr %in% sele.features, ]
+mtx.norm <- seurat.atac@assays$ATAC@data[rr %in% sele.features, ]
 
-inputs = prepInput4Cello(seurat.atac@assays$ATAC@counts[rr %in% sele.features, ], 
+## annote peaks with genes
+tss_ann <- fread(tss_path, header = F)
+names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
+mtx = assignGene2Peak(mtx, tss_ann)
+mtx.norm = assignGene2Peak(mtx.norm, tss_ann)
+rr = rownames(mtx)
+rr1 = rr[grepl(rr, pattern = 'Tss')]
+
+inputs = prepInput4Cello(mtx[rr %in% rr1, ],
                          seurat.obj = seurat.atac,
-                         norm_mtx = seurat.atac@assays$ATAC@data[rr %in% sele.features, ],
+                         norm_mtx = mtx.norm[rr %in% rr1, ], 
                          cello.name = 'scATAC_withGene2Peak',
                          assay = assay4cello, extraDims = c(100, 80, 50, 30, 20),
                          vars.to.regOnPca = 'nCount_ATAC',

@@ -15,6 +15,6 @@ mkdir -p $output_dir
 
 curr_dir=`dirname $0`
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/runGO.R $de_file $output_dir $GENOME_NAME $GO_TYPE
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/runGO.R $de_file $output_dir $GENOME_NAME $GO_TYPE $TSS
 
 echo "GO analysis done!"

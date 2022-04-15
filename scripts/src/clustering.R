@@ -32,12 +32,14 @@ if(grepl(mtx_file, pattern = '.rds', fix = T)) {
     mtx = read_mtx_scATACpro(mtx_file)
 }
 
-tss_ann <- fread(tss_path, header = F)
-#names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
-#tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
-names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
-mtx = assignGene2Peak(mtx, tss_ann)
-
+## skip annotate peaks in seurat obj from v1.5.0
+if(F){
+    tss_ann <- fread(tss_path, header = F)
+    #names(tss_ann)[c(1:4,7)] <- c('chr', 'start', 'end', 'gene_name', 'gene_type')
+    #tss_ann <- tss_ann[gene_type %in% c('miRNA', 'lincRNA', 'protein_coding'), ]
+    names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
+    mtx = assignGene2Peak(mtx, tss_ann)
+}
 
 ## remove peaks than are less freqent than 0.5% of cells
 rfreqs = Matrix::rowMeans(mtx > 0)

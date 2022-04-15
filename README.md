@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if your system support (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.4.4
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.5.0
 
 <!-- -->
 
@@ -49,8 +49,9 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.4.4
+- Current version: 1.5.0
 - Highlighted updates
+    * No annotation of peaks in seurat object from v1.5.0. The peaks are still annotated in modules *runDA*, *runGO* and *visualize*.
     * **New module *reprocess_cellranger_output* added, to reprocess 10x scATAC-seq data (including atac in 10x multiome assay) originally processed by cellranger, taking cellranger processed .bam and .fragments.tsv.gz files as input (v1.4.3)**
     * More friendly to single-end sequencing data (v1.4.2)
     * New module *labelTransfer* added, to do label trasfer (for cell annotation) from cell annotation of scRNA-seq data. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data (v1.4.0)
@@ -208,11 +209,11 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt
 
     $ scATAC-pro -s clustering
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds (or a seurat.rds file ) 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds (or a seurat_obj.rds file ) 
                  -c configure_user.txt
 
     $ scATAC-pro -s motif_analysis
-                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds (or matrix.mtx) 
+                 -i output/filtered_matrix/PEAK_CALLER/CELL_CALLER/matrix.rds (or matrix.mtx, or seurat_obj.rds file) 
                  -c configure_user.txt
                  
     $ scATAC-pro -s split_bam
@@ -302,7 +303,7 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.4.4
+    scATAC-pro 1.5.0
     ---------------
     OPTIONS
 
@@ -371,7 +372,8 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
                                        barcodes with cluster labels (cell_cluster_table.tsv file), and umap plot colorred
                                        clustering label, saved in output/downstream_analysiss/PEAK_CALLER/CELL_CALLER/
           motif_analysis: perform TF motif analysis
-                               input: filtered peak-by-cell matrix file, outputted from the call_cell module
+                               input: filtered peak-by-cell matrix file, outputted from the call_cell module, or the seurat_obj.rds file
+                                         outputted from clustering module
                                output: TF-by-cell enrichment matrix in chromVAR object, a table and heatmap indicating 
                                        TF enrichment for each cell cluster, saved in output/downstream_analysiss/
                                         PEAK_CALLER/CELL_CALLER/

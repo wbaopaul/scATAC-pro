@@ -9,7 +9,7 @@
 #########################                                                                   
 
 SOFT="scATAC-pro"
-VERSION="1.4.4"
+VERSION="1.5.0"
 
 function usage {
     echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-o] [-h] [-v] [-b]"
@@ -79,7 +79,8 @@ function help {
                            output: seurat objects with clustering label in the metadata (.rds file) and 
                                    file of barcodes with cluster labels (cell_cluster_table.txt file), saved in output/down                                   stream_analysis/PEAK_CALLER/CELL_CALLER/"
     echo "      motif_analysis: preform motif analysis
-                           input: filtered peak-by-cell matrix file, outputted from call_cell module
+                           input: filtered peak-by-cell matrix file, outputted from call_cell module, or the seurat_obj.rds file outputted
+                                  from clustering module
                            output: TF-by-cell enrichment chromVAR object, a table and a heatmap indicating TF enrichment 
                                    for each cell clusters"
     echo "      runDA: perform differential accessibility analysis

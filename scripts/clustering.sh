@@ -22,7 +22,7 @@ ${R_PATH}/Rscript --vanilla ${curr_dir}/src/clustering.R $mtx_file $CLUSTERING_M
 
 if [ "$prepCello" = "TRUE" ]; then
     seurat_file=${abs_down_dir}/seurat_obj.rds
-    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/interface2cello.R $seurat_file ATAC
+    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/interface2cello.R $seurat_file ATAC $TSS
     ## write config file
     organism=hsa
     if [[ $GENOME_NAME =~ "mm" ]]; then

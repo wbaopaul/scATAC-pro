@@ -12,6 +12,7 @@ de_file = args[1]
 output_dir = args[2]
 GENOME_NAME = args[3]
 GO_TYPE = args[4]
+tss_path = args[5]
 
 markers = fread(de_file)
 
@@ -23,19 +24,22 @@ if(!require('clusterProfiler')){
 }
 library(clusterProfiler)
 ## genes with tss within DA for each cluster
+tss_ann <- fread(tss_path, header = F)
+names(tss_ann)[c(1:4)] <- c('chr', 'start', 'end', 'gene_name')
+
 
 #markers = markers[grepl(peak, pattern = 'Tss')]
 markers[, 'genes' := paste(unlist(strsplit(peak, ','))[-1], collapse = ','), by = peak]
 
 ## do go cluster by cluster
 ## genes associated with all peaks are set as background
-tmp <- readRDS(paste0(output_dir, '/seurat_obj.rds'))
 ## set background genes
-bg_genes <- lapply(rownames(tmp), function(x) unlist(strsplit(x, ','))[-1])
+tmp <- readRDS(paste0(output_dir, '/seurat_obj.rds'))
+all.peaks = assignGene2Peak_coords(rownames(tmp), tss_ann)
+bg_genes <- lapply(all.peaks, function(x) unlist(strsplit(x, ','))[-1])
 rm(tmp)
 bg_genes = do.call('c', bg_genes)
 bg_genes = unique(sapply(bg_genes, function(x) gsub('-Tss', '', x)))
-
 
 genesInDA = list()
 cls = sort(unique(markers$cluster))

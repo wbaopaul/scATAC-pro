@@ -20,6 +20,6 @@ group2=${inputs[2]}
 output_dir=`dirname $seuratObj_file`
 curr_dir=`dirname $0`
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seuratObj_file $output_dir $group1 $group2 $test_use
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/runDA.R $seuratObj_file $output_dir $group1 $group2 $test_use $TSS
 
 echo "Differential analysis done!"
