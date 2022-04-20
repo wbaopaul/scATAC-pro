@@ -194,6 +194,16 @@ process_no_dex: config_check
 	@echo 
 
 #######################################
+## process without demultiplex and trimming
+#######################################
+process_from_align: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Preprocessing from alignment (without demultiplexing and trimming)..." 
+	@$(SCRIPTS)/process_from_align.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## clustering
 #######################################
 clustering: config_check

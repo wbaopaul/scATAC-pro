@@ -1,6 +1,7 @@
 ## Complete Update History
 - Version 1.5.0 released
     * Donot annotate peaks in the seurat object (peaks are still annotated for modules *runDA*, *runGO* and *visualize*)
+    * Add new module *process_from_align* to do processing from alignment step (including aligment), given trimmed and demultiplexed fastq files
 - Version 1.4.4 released
     * Only consider standard chromosomes in the *qc_per_barcode* module 
     * Correct a minor bug in the *qc_per_barcode* module
