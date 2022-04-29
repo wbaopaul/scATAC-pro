@@ -38,7 +38,7 @@ for(i in 1:len){
     }else{
         mtx = read_mtx_scATACpro(file0)
     }
-    mtx = assignGene2Peak(mtx, tss_ann)
+#   mtx = assignGene2Peak(mtx, tss_ann)
 
     ## rename cell names in case of shared barcodes among samples
     colnames(mtx) = paste0('sample', i, '_', colnames(mtx))    
@@ -49,7 +49,7 @@ names(mtx_list) = paste0('sample', 1:len)
 seurat.obj <- run_integration(mtx_list, integrate_by = integrate_by,
                             top_variable_features = top_variable_features, 
                             norm_by = norm_by, nREDUCTION = nREDUCTION,
-                            minFrac_in_cell = 0.01, min_depth = 1000,
+                            minFrac_in_cell = 0.01, min_depth = 500,
                             max_depth = 50000, reg.var = 'nCount_ATAC',
                             resolution = 0.6)
 

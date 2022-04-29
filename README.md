@@ -240,9 +240,9 @@ Step by step guide to running scATAC-pro
                  -i output/summary
                  -c configure_user.txt
                  
-    ## merge peaks that are within 500bp distance of each other            
+    ## merge peaks with qvlue < 0.01 and within 500bp distance of each other            
     $ scATAC-pro -s mergePeaks
-                 -i peak_file1,peak_file2,...,peak_fileN,500
+                 -i peak_file1,peak_file2,...,peak_fileN,500,0.01
                  -c configure_user.txt
 
     ## reconstruct matrix using given new peak file
@@ -256,7 +256,7 @@ Step by step guide to running scATAC-pro
     ## the integration methods includes 'VFACS', 'pool', 'seurat', and 'harmony', for instance, 
     ## you can specify the integration method with 'Integrate_By = VFACS' in the configure file
     $ scATAC-pro -s integrate
-                 -i peak_file1,peak_file2,...,peak_fileN,500 
+                 -i peak_file1,peak_file2,...,peak_fileN,500,0.01 
                  -c configure_user.txt
     
     ## if you have the reconstructed matrix for data set (meaning using the merged peaks)
@@ -418,10 +418,10 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
                          input: bam file (position sorted) in 10x format
                          output: position sorted bam file in scATAC-pro format saved in output/mapping_result,
                                  mapping qc stat and fragment.txt files saved in output/summary/
-          mergePeaks: merge peaks (called from different data sets) if the distance is
-                            less than a given size in basepairs (200 if not specified) 
+          mergePeaks: merge peaks (called from different data sets) within a given distance (say 200bp), 
+                      filtering each peak by qvalue, 0.01 for instance 
                          input: peak files and a distance parameter separated by comma: 
-                                peakFile1,peakFile2,peakFile3,200
+                                peakFile1,peakFile2,...,peakFileN,200,0.01
                          output: merged peaks saved in file output/peaks/merged.bed
           reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.tsv.gz file, barcodes.txt and 
                       an optional path for reconstructed matrix 
@@ -431,7 +431,7 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
                                  if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
                                  under the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
-                           input: peak/feature files and a optional distance parameter separated by comma: peak_file1,peak_file2,200
+                           input: peak/feature files, a distance parameter and a qvalue cutoff separated by comma: peak_file1,peak_file2,200,0.01
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
                                    output/integrated/
           integrate_mtx: perform integration of two ore more data matrices given the reconstructed peak-by-cell matrix

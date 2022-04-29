@@ -1,6 +1,6 @@
 library(bedr)
 library(data.table)
-
+library(GenomicRanges)
 args = commandArgs(T)
 
 peak_cluster_dir = args[1]
@@ -16,11 +16,15 @@ for(file0 in files){
     peaks = rbind(peaks, fread(paste0(peak_cluster_dir, '/', file0)))
 }
 peaks = peaks[V1 %in% chrs]
-peaks = peaks[!grepl(V1, pattern = 'random', ignore.case = T)]
-peaks = peaks[!grepl(V1, pattern = 'Un', ignore.case = T)]
-peaks = peaks[!grepl(V1, pattern = 'EBV', ignore.case = T)]
+#peaks = peaks[!grepl(V1, pattern = 'random', ignore.case = T)]
+#peaks = peaks[!grepl(V1, pattern = 'Un', ignore.case = T)]
+#peaks = peaks[!grepl(V1, pattern = 'EBV', ignore.case = T)]
 
-regions = paste0(peaks$V1, ':', peaks$V2, '-', peaks$V3)
+names(peaks)[1:3] = c('chr', 'start', 'end')
+schrs = standardChromosomes(makeGRangesFromDataFrame(peaks))
+peaks = peaks[chr %in% schrs]
+
+regions = paste0(peaks$chr, ':', peaks$start, '-', peaks$end)
 a.sort   <- bedr.sort.region(regions)
 a.merged <- bedr.merge.region(a.sort, distance = 200)
 

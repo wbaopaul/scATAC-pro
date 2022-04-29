@@ -4,11 +4,9 @@ set -e
 
 ## merge multiple peaks
 ##  
-## given all peak files
-## and a distance parameter like 200, separated by comma
+## given all peak files, a distance parameter like 200 and a qscore cutoff like 0.01, separated by comma
 ## the merged peaks will be saved in output/peaks/merged_peaks.bed
-## example inputs: peak_File1,peak_File2,peak_File3,200
-## output file: output/peaks/merged_peaks.bed
+## example inputs: peak_File1,peak_File2,peak_File3,200,0.01
 
 inputs=$1  
 
