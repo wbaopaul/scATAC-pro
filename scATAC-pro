@@ -68,7 +68,11 @@ function help {
                                    folder4_10x_fastq
                             output: peak-by-cell matrix and all intermediate results "
     echo "      process_no_dex: processing data without demultiplexing
-                            input: demultiplexed fastq files for both reads and index, separated by comma like:
+                            input: demultiplexed fastq files for both reads, separated by a comma like:
+                                   fastq1,fastq2; 
+                            output: peak-by-cell and all intermediate results "
+    echo "      process_from_align: processing data from the alignment step (including alignment)
+                            input: demultiplexed and trimmed fastq files for both reads, separated by a comma like:
                                    fastq1,fastq2; 
                             output: peak-by-cell and all intermediate results "
     echo "      process_with_bam: processing from bam file

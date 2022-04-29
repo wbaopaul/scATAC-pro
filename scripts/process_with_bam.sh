@@ -70,7 +70,10 @@ fi
 ## 7. mapping qc for cell barcodes
 map_dir=${OUTPUT_DIR}/mapping_result
 input_bam=${map_dir}/${OUTPUT_PREFIX}.positionsort.bam
-${curr_dir}/get_bam4Cells.sh ${input_bam},${input_bc} $2 $3 &
+if [[ $CELL_MAP_QC = TRUE ]]; then
+    ${curr_dir}/get_bam4Cells.sh ${input_bam},${input_bc} $2 $3 &
+fi
+
 wait
 
 ## 8.report preprocessing QC

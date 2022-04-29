@@ -357,7 +357,11 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
                                        PATH_TO_10xfastqs_folder
                                 output: peak-by-cell matrix and all intermediate results 
           process_no_dex: processing data without demultiplexing
-                                input: demultiplexed fastq files for both reads and index, separated by comma like:
+                                input: demultiplexed fastq files for both reads, separated by a comma like:
+                                       fastq1,fastq2; 
+                                output: peak-by-cell matrix and all intermediate results 
+          process_from_align: processing data from the alignment step (including alignment step)
+                                input: demultiplexed and adapter trimmed fastq files for both reads, separated by a comma like:
                                        fastq1,fastq2; 
                                 output: peak-by-cell matrix and all intermediate results 
           process_with_bam: processing from bam file
