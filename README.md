@@ -240,7 +240,7 @@ Step by step guide to running scATAC-pro
                  -i output/summary
                  -c configure_user.txt
                  
-    ## merge peaks with qvlue < 0.01 and within 500bp distance of each other            
+    ## merge peaks with qvlue < 0.01 (be able to filtering by qvalue since v1.5.0) and within 500bp distance of each other            
     $ scATAC-pro -s mergePeaks
                  -i peak_file1,peak_file2,...,peak_fileN,500,0.01
                  -c configure_user.txt
@@ -431,7 +431,7 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
                                  if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
                                  under the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
-                           input: peak/feature files, a distance parameter and a qvalue cutoff separated by comma: peak_file1,peak_file2,200,0.01
+                           input: peak/feature files, a distance parameter and a qvalue cutoff separated by comma: peak_file1,peak_file2,...,peak_fileN,200,0.01
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
                                    output/integrated/
           integrate_mtx: perform integration of two ore more data matrices given the reconstructed peak-by-cell matrix
