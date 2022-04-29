@@ -24,7 +24,7 @@ if [ "$prepCello4Integration" = "TRUE" ]; then
     if [[ $Integrate_By == "seurat"  ]]; then
         assay4cello=integrated
     fi
-    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/interface2cello.R $seurat_file $assay4cello
+    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/interface2cello.R $seurat_file $assay4cello $TSS
     ## write config file
     organism=hsa
     if [[ $GENOME_NAME =~ "mm" ]]; then

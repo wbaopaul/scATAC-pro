@@ -64,3 +64,26 @@ mtx_files=${mtx_files/TMP,/}
 
 ${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_mtx.R $mtx_files $K_CLUSTERS $integrated_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features $Integrate_By
 
+abs_out_dir=`cd ${integrated_dir}; pwd`
+
+if [ "$prepCello4Integration" = "TRUE" ]; then
+    seurat_file=${abs_out_dir}/seurat_obj_${Integrate_By}.rds
+    assay4cello=ATAC
+    if [[ $Integrate_By == "seurat"  ]]; then
+        assay4cello=integrated
+    fi
+    ${R_PATH}/Rscript --vanilla ${curr_dir}/src/interface2cello.R $seurat_file $assay4cello $TSS
+    ## write config file
+    organism=hsa
+    if [[ $GENOME_NAME =~ "mm" ]]; then
+        organism=mmu
+    fi
+
+    echo "default:" > ${abs_out_dir}/VisCello_obj/config.yml
+    echo "  study_name: $OUTPUT_PREFIX_integrated " >> ${abs_out_dir}/VisCello_obj/config.yml
+    echo "  study_description: NNN " >> ${abs_out_dir}/VisCello_obj/config.yml
+    echo "  organism: $organism " >> ${abs_out_dir}/VisCello_obj/config.yml
+    echo "  feature_name_column: 'symbol' " >> ${abs_out_dir}/VisCello_obj/config.yml
+    echo "  feature_id_column: 'symbol' " >> ${abs_out_dir}/VisCello_obj/config.yml
+fi
+
