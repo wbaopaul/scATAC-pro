@@ -35,11 +35,13 @@ ABS_PATH=`cd "$OUTPUT_DIR"; pwd`
 ## reconstruct the peak-cell matrix
 ## not re-call cells
 mtx_files='TMP' 
+re='^[0-9]+([.][0-9]+)?$'
 for pk0 in "${peaks[@]}"
 do 
-    if [ "$pk0" -eq "$pk0"  ] 2>/dev/null;then
-        continue  ## the gap parameter
+    if [[ $pk0 =~ $re  ]] 2>/dev/null;then
+        continue  ## the gap and qvalue parameter
     fi
+    echo "Reconstruct matrix for sample related to $pk0: "
     sample0=$(basename $pk0)
     sample0=`echo $sample0 | awk -F. '{print $1}'`
     sample0=${sample0/_features_BlacklistRemoved/}
