@@ -88,7 +88,7 @@ mapping_qc: config_check
 convert10xbam: config_check
 	@echo "--------------------------------------------" 
 	@date 
-	@echo "Aligning ..." 
+	@echo "Converting bam file to scATAC-pro style ..." 
 	@$(SCRIPTS)/convert10xbam.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 
 ######################################

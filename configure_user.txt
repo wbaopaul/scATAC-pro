@@ -54,6 +54,7 @@ BOWTIE2_INDEX = bowtie2.2.9/indexes/GRCh38/GRCh38
 
 MAPQ = 30  ## filter bam by MAPQ for downstream analysis 
 CELL_MAP_QC = FALSE  ## output mapping stats for cell barcodes
+SHIFT_READS_IN_BAM = FALSE ## if TRUE, shift reads in + strand +4bp, in - strand -5bp 
 
 
 #################################################################################
