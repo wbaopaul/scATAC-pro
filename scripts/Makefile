@@ -280,7 +280,7 @@ integrate: config_check
 	@echo "--------------------------------------------" 
 	@date 
 	@echo "Doing integrating analysis ..." 
-	@$(SCRIPTS)/integrate_peak.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@$(SCRIPTS)/integrate.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
 	@echo 
 
 #######################################
