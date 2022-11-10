@@ -37,7 +37,7 @@ Installation
 ------------
 
 -   Note: It is not necessary to install scATAC-pro from scratch. You can use the docker or singularity version if your system support (see [Run scATAC-pro through docker or singularity](#run-scATAC-pro-through-docker-or-singularity) )
--   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.5.0
+-   Run the following command in your terminal, scATAC-pro will be installed in YOUR\_INSTALL\_PATH/scATAC-pro\_1.5.1
 
 <!-- -->
 
@@ -49,9 +49,9 @@ Installation
 Updates
 ------------
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
-- Current version: 1.5.0
+- Current version: 1.5.1
 - Highlighted updates
-    * No annotation of peaks in seurat object from v1.5.0. The peaks are still annotated in modules *runDA*, *runGO* and *visualize*.
+    * *integrate* module accepts input as a SampleSheet.csv file (since v1.5.1), in which peak, fragment and barcodes for each sample are specified. Other parameters for integration can be specified in the configure_user.txt file
     * **New module *reprocess_cellranger_output* added, to reprocess 10x scATAC-seq data (including atac in 10x multiome assay) originally processed by cellranger, taking cellranger processed .bam and .fragments.tsv.gz files as input (v1.4.3)**
     * More friendly to single-end sequencing data (v1.4.2)
     * New module *labelTransfer* added, to do label trasfer (for cell annotation) from cell annotation of scRNA-seq data. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data (v1.4.0)
@@ -253,11 +253,17 @@ Step by step guide to running scATAC-pro
 
     ## perform integrated analysis, assuming all data sets are processed by scATAC-pro
     ## which means each fragments.txt and barcodes.txt files can be found correspondingly            
-    ## the integration methods includes 'VFACS', 'pool', 'seurat', and 'harmony', for instance, 
+    ## the integration methods includes 'VFACS', 'pool', 'seurat', 'cca', 'rpca', 'rlsi' and 'harmony', for instance, 
     ## you can specify the integration method with 'Integrate_By = VFACS' in the configure file
     $ scATAC-pro -s integrate
                  -i peak_file1,peak_file2,...,peak_fileN,500,0.01 
                  -c configure_user.txt
+    
+    or (since v1.5.1)
+    $ scATAC-pro -s integrate
+                 -i SampleSheet.cvs 
+                 -c configure_user.txt
+    
     
     ## if you have the reconstructed matrix for data set (meaning using the merged peaks)
     ## you can run the *integrate_mtx* whtich is second part of the module *integrate*            
@@ -303,7 +309,7 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
     usage : scATAC-pro -s STEP -i INPUT -c CONFIG [-o] [-h] [-v]
     Use option -h|--help for more information
 
-    scATAC-pro 1.5.0
+    scATAC-pro 1.5.1
     ---------------
     OPTIONS
 
@@ -432,6 +438,7 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
                                  under the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
                            input: peak/feature files, a distance parameter and a qvalue cutoff separated by comma: peak_file1,peak_file2,...,peak_fileN,200,0.01
+                           Note: input can be just a SampleSheet.csv file since v1.5.1
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
                                    output/integrated/
           integrate_mtx: perform integration of two ore more data matrices given the reconstructed peak-by-cell matrix

@@ -1109,7 +1109,6 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
                             top_variable_features = 5000, 
                             norm_by = 'tf-idf', nREDUCTION = 30,
                             reg.var = 'nFeature_ATAC',
-                            anchor.features = 2000,
                             resolution = 0.6, verbose = F){
   
   ## pool/integrate data into a seurat object
@@ -1127,14 +1126,14 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
                                       anchor.features = features,
                                       reduction = ifelse(integrate_by == 'rpca', 'rpca', 'cca'))
     rm(seurat_list)
-    seurat.merged <- IntegrateData(anchorset = seurat.merged, dims = 1:nREDUCTION)
+    seurat.merged <- IntegrateData(anchorset = anchors, dims = 1:nREDUCTION)
     DefaultAssay(seurat.merged) <- "integrated"
     seurat.merged <- ScaleData(seurat.merged, verbose = FALSE,
                             features = VariableFeatures(seurat.merged))
     seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
   }else{
-    seurat.merged = merge(seurat_list)
-    rm(seurat_list)
+    message('Merge seurat objects...')
+    seurat.merged = merge(seurat_list[[1]], seurat_list[-1])
   }
   
   if(integrate_by == 'pool') seurat.merged <- regress_on_pca(seurat.merged, 'sampleName')
@@ -1142,6 +1141,11 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
   if(integrate_by == 'VFACS'){
     ## cluster and then reselect features
     ## variable features across clusters
+    message('Workin on merged object ...')
+    seurat.merged[['ATAC']]@data = TF_IDF(seurat.merged[['ATAC']]@counts)
+    seurat.merged <- FindVariableFeatures(seurat.merged, nfeatures = top_variable_features)
+    seurat.merged <- ScaleData(seurat.merged)
+    seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
     seurat.merged <- FindNeighbors(seurat.merged, dims = 1:nREDUCTION, reduction = 'pca', 
                                 verbose = verbose)
     seurat.merged <- FindClusters(seurat.merged, resl = resolution, verbose = verbose)
@@ -1160,23 +1164,29 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     sele.features = names(which(sds >= sort(sds, decreasing = T)[top_variable_features]))
     mtx0 = mtx[sele.features, ]
     mtx0.norm = TF_IDF(mtx0)
-    seurat.merged@assays$ATAC@data[sele.features, ] <- mtx0.norm
+    
+    tmp <- mtx0[setdiff(rownames(mtx0), sele.features), ]
+    data0 <- rbind(mtx0.norm, tmp)
+    seurat.merged[['ATAC']]@data = data0[rownames(mtx0), ]
+    
     VariableFeatures(seurat.merged) <- sele.features
-    seurat.merged <- RunPCA(seurat.merged, dims = 1:nReduction, verbose = verbose)
+    seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
     seurat.merged <- regress_on_pca(seurat.merged, reg.var = reg.var)
+    seurat.merged[['ATAC']]@data <- TF_IDF(mtx)
   }
   
   if(integrate_by %in% c('rlsi', 'signac')){
-    
+    library(Signac)
     ## process each sample
-    for(sample0 in names(seurat.list)){
-      seurat.list[[sample0]] = FindTopFeatures(seurat.list[[sample0]],
-                                               min.cutoff = as.integer(0.01 * ncol(seurat.list[[sample0]])))
-      seurat.list[[sample0]] = RunTFIDF(seurat.list[[sample0]])
-      seurat.list[[sample0]] = RunSVD(seurat.list[[sample0]])
+    for(sample0 in names(seurat_list)){
+      seurat_list[[sample0]] = FindTopFeatures(seurat_list[[sample0]],
+                                               min.cutoff = as.integer(0.01 * ncol(seurat_list[[sample0]])))
+      seurat_list[[sample0]] = RunTFIDF(seurat_list[[sample0]])
+      seurat_list[[sample0]] = RunSVD(seurat_list[[sample0]])
       
     }
     ## merge 
+    seurat.merged = merge(seurat_list[[1]], seurat_list[-1])
     seurat.merged = FindTopFeatures(seurat.merged, min.cutoff = 100)
     
     ## select anchor features
@@ -1187,18 +1197,18 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
       rowMeans(mtx[, sIDs == x] >0)
     })
     rmaxs = apply(mtx_pbulk, 1, max)
-    filtered_peaks1 <- names(which(rmaxs < 0.02)) # filter viarble features
+    filtered_peaks1 <- names(which(rmaxs < 0.02)) # filter variable features
     sele_features = setdiff(sele_features, filtered_peaks1)
     sele_features = intersect(sele_features, VariableFeatures(seurat.merged))
     
     VariableFeatures(seurat.merged) <- sele_features
     seurat.merged = RunTFIDF(seurat.merged)
     seurat.merged = RunSVD(seurat.merged)
-    seurat.merged = RunUMAP(seurat.merged, reduction = 'lsi', dims = 2:30)
+    seurat.merged = RunUMAP(seurat.merged, reduction = 'lsi', dims = 2:nREDUCTION)
     
     ## integration 
     integration.anchors <- FindIntegrationAnchors(
-      object.list = seurat.list,
+      object.list = seurat_list,
       anchor.features = sele_features,
       reduction = "rlsi",
       dims = 2:nREDUCTION
@@ -1330,7 +1340,7 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
     mtx0.norm = TF_IDF(mtx0)
     seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
     VariableFeatures(seurat.obj) <- sele.features
-    seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = verbose)
+    seurat.obj <- RunPCA(seurat.obj, dims = 1:nREDUCTION, verbose = verbose)
     seurat.obj <- regress_on_pca(seurat.obj, reg.var = reg.var)
     seurat.obj <- FindNeighbors(seurat.obj, verbose = verbose, 
                                 dims = 1:nREDUCTION, reduction = 'pca')

@@ -1166,11 +1166,11 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     mtx0.norm = TF_IDF(mtx0)
     
     tmp <- mtx0[setdiff(rownames(mtx0), sele.features), ]
-    data0 <- rbind(mtx.norm0, tmp)
+    data0 <- rbind(mtx0.norm, tmp)
     seurat.merged[['ATAC']]@data = data0[rownames(mtx0), ]
     
     VariableFeatures(seurat.merged) <- sele.features
-    seurat.merged <- RunPCA(seurat.merged, npcs = nReduction, verbose = verbose)
+    seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
     seurat.merged <- regress_on_pca(seurat.merged, reg.var = reg.var)
     seurat.merged[['ATAC']]@data <- TF_IDF(mtx)
   }
@@ -1340,7 +1340,7 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
     mtx0.norm = TF_IDF(mtx0)
     seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
     VariableFeatures(seurat.obj) <- sele.features
-    seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = verbose)
+    seurat.obj <- RunPCA(seurat.obj, dims = 1:nREDUCTION, verbose = verbose)
     seurat.obj <- regress_on_pca(seurat.obj, reg.var = reg.var)
     seurat.obj <- FindNeighbors(seurat.obj, verbose = verbose, 
                                 dims = 1:nREDUCTION, reduction = 'pca')
