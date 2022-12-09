@@ -48,7 +48,11 @@ rm ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort0.bam
 
 ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam 
 
-if [ $SHIFT_READS_IN_BAM = 'TRUE' ]; then
+if [ -z "$SHIFT_READS_IN_BAM" ]; then
+    SHIFT_READS_IN_BAM=FALSE
+fi
+
+if [ ${SHIFT_READS_IN_BAM} = 'TRUE' ]; then
     ${DEEPTOOLS_PATH}/alignmentSieve --numberOfProcessors $ncore --ATACshift --bam ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.shifted.bam
     rm ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam
     ${SAMTOOLS_PATH}/samtools sort -m 2G -@ $ncore -T ${mapRes_dir}/tmp/ -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam ${mapRes_dir}/${OUTPUT_PREFIX}.shifted.bam

@@ -63,7 +63,14 @@ while(<READ>)
 	 my @array = split /\t/;
     
 
-     $len = $array[8];
+     ## no need to shift ATAC reads since it's done in bam file
+     $chrom = $array[2];
+     $start = $array[3];
+     $mate = $array[7];
+     $len = $array[8]; 
+     $end = $start + $len;
+     $isSameChr = $array[6];
+
      ## only keep one read per pair
      if($len <= 0){
       next;  
@@ -77,12 +84,6 @@ while(<READ>)
         next;  
      }
 
-     ## no need to shift ATAC reads since it's done in bam file
-     $chrom = $array[2];
-     $start = $array[3];
-     $len = $array[8]; 
-     $end = $start + $len;
-     $isSameChr = $array[6];
 
      my @tmp_array = split /:/, $array[0];
 	   
@@ -96,9 +97,6 @@ while(<READ>)
     }else{
       $frags{$frag_id} = 1;
     }
-   
-	   
- 
   
 }#while(<READ>)
 
