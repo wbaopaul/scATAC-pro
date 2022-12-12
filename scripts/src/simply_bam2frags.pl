@@ -47,18 +47,19 @@ my $btime = time;
 my %frags = ();
 
 
+my $chrom = "XXXXXX";
+my $start = "XXXXXX";
+my $end = "XXXXXX";
+my $len = "XXXXXX";
+my $barcode = "XXXXXX";
+my $isSameChr = "XXXXXX";
+my $mate = "XXXXXX";
 
 while(<READ>)
 {
      $read_file_counter++;
 
 	 chomp;
-	 my $chrom = "XXXXXX";
-     my $start = "XXXXXX";
-     my $end = "XXXXXX";
-     my $len = "XXXXXX";
-     my $barcode = "XXXXXX";
-     my $isSameChr = "XXXXXX";
 
 	 my @array = split /\t/;
     
