@@ -32,7 +32,7 @@ TF_IDF <- function (data, verbose = T)
     idf <- ncol(x = data)/rowSums(x = data)
     idf <- log(1 + idf)
     norm.data <- Diagonal(n = length(x = idf), x = idf) %*% tf
-    norm.data[which(x = is.na(x = norm.data))] <- 0
+    #norm.data[which(x = is.na(x = norm.data))] <- 0
     return(norm.data)
 }
 
