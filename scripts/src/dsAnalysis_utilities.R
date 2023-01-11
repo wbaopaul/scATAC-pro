@@ -27,15 +27,14 @@ TF_IDF <- function (data, verbose = T)
     if (verbose) {
         message("Performing TF_IDF normalization")
     }
-    npeaks <- colSums(x = data)
+    npeaks <- colSums(x = data) + 1
     tf <- t(x = t(x = data)/npeaks)
-    idf <- ncol(x = data)/rowSums(x = data)
+    idf <- ncol(x = data)/(rowSums(x = data) + 1)
     idf <- log(1 + idf)
     norm.data <- Diagonal(n = length(x = idf), x = idf) %*% tf
     #norm.data[which(x = is.na(x = norm.data))] <- 0
     return(norm.data)
 }
-
 
 read_mtx_scATACpro <- function(mtx_path){
   #mtx_path <- paste0(dirt, "matrix.mtx")
