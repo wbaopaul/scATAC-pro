@@ -33,6 +33,7 @@ TF_IDF <- function (data, verbose = T)
     idf <- log(1 + idf)
     norm.data <- Diagonal(n = length(x = idf), x = idf) %*% tf
     #norm.data[which(x = is.na(x = norm.data))] <- 0
+    rownames(norm.data) <- rownames(data)
     return(norm.data)
 }
 
