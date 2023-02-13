@@ -52,8 +52,6 @@ if [ -z "$SHIFT_READS_IN_BAM" ]; then
     SHIFT_READS_IN_BAM=FALSE
 fi
 
-<<<<<<< HEAD
-=======
 if [ ${SHIFT_READS_IN_BAM} = 'TRUE' ]; then
     ${DEEPTOOLS_PATH}/alignmentSieve --numberOfProcessors $ncore --ATACshift --bam ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.shifted.bam
     rm ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam
@@ -62,8 +60,7 @@ if [ ${SHIFT_READS_IN_BAM} = 'TRUE' ]; then
     ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam 
 fi
 
->>>>>>> dev1.5.1
-## filtering low quality and/or deplicates for downstreame analysis
+## filtering low quality for downstreame analysis
 if [ ${isSingleEnd} = 'TRUE' ]; then
     ${SAMTOOLS_PATH}/samtools view -b -h -q $MAPQ -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam 
 else
@@ -71,7 +68,6 @@ else
 fi
 
 ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam 
-
 
 
 ## mapping stats
