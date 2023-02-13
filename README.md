@@ -51,7 +51,7 @@ Updates
 - Now provide [scATAC-pro tutorial in R](https://scatacpro-in-r.netlify.app/index.html) for access QC metrics and perform downstream analysis
 - Current version: 1.5.1
 - Highlighted updates
-    * **integrate** module takes input as a [SampleSheet](SampleSheet.csv file), in which sample names, paths of peaks, fragments and cell barcodes files for each sample can be specified. Other parameters for integration are specified in the [configure_user](configure_user.txt) file (v1.5.1)
+    * **integrate** module takes input as a [SampleSheet](SampleSheet.csv) file, in which sample names, paths of peaks, fragments and cell barcodes files for each sample can be specified. Other parameters for integration are specified in the [configure_user](configure_user.txt) file (v1.5.1)
     * New module **reprocess_cellranger_output** added, to reprocess 10x scATAC-seq data (including atac in 10x multiome assay) originally processed by cellranger, taking cellranger processed .bam and .fragments.tsv.gz files as input (v1.4.3)
     * More friendly to single-end sequencing data (v1.4.2)
     * New module *labelTransfer* added, to do label trasfer (for cell annotation) from cell annotation of scRNA-seq data. First construct a gene by cell activity matrix, then use *FindTransferAnchors* and *TransferData* function from Seurat R package to predicted cell type annotation from the cell annotaiton in scRNA-seq data (v1.4.0)
