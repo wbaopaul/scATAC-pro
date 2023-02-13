@@ -1,4 +1,7 @@
 ## Complete Update History
+- Version 1.5.1 
+    * *Integrate* module takes SampleSheet.csv file as input, where sample names, paths for peaks, fragments, and cell barcodes can be specified
+    * Enable 4/5 bp shift for each read by setting SHIFT_READS_IN_BAM as TRUE in configure_user.txt file
 - Version 1.5.0 released
     * Donot annotate peaks in the seurat object (peaks are still annotated for modules *runDA*, *runGO* and *visualize*)
     * Add new module *process_from_align* to do processing from alignment step (including aligment), given trimmed demultiplexed fastq files

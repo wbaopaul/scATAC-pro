@@ -9,7 +9,7 @@
 #########################                                                                   
 
 SOFT="scATAC-pro"
-VERSION="1.5.0"
+VERSION="1.5.1"
 
 function usage {
     echo -e "usage : $SOFT -s STEP -i INPUT -c CONFIG [-o] [-h] [-v] [-b]"
@@ -137,6 +137,7 @@ function help {
                                  under the same path as the input barcodes.txt file" 
     echo "      integrate: perform integration of two ore more data sets
                            input: peak/feature files and a optional distance parameter, separated by comma: peak_file1,peak_file2,...,peak_fileN,200,0.01
+                           Note: input can be just a SampleSheet.csv file since v1.5.1
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in 
                                    output/integrated/"
     echo "      integrate_mtx: perform integration of two ore more matrices given the reconstructed peak-by-cell matrix

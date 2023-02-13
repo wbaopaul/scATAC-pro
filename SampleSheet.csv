@@ -1,0 +1,4 @@
+﻿sample_name,peak_file,fragment_file(Optional:scATAC-pro will search in the default path if not specified),barcode_file(Optional:scATAC-pro will search in the default path if not specified)
+sample_a,output/sample_a/MACS2/sample_a_features_BlacklistRemoved.bed,output/sample_a/summary/sample_a.fragments.tsv.gz,output/sample_a/filtered_matrix/MACS2/FILTER/barcodes_doubletRemoved.txt
+sample_b,output/sample_b/MACS2/sample_b_features_BlacklistRemoved.bed,output/sample_b/summary/sample_b.fragments.tsv.gz,output/sample_b/filtered_matrix/MACS2/FILTER/barcodes_doubletRemoved.txt
+sample_c,output/sample_c/MACS2/sample_c_features_BlacklistRemoved.bed,output/sample_c/summary/sample_c.fragments.tsv.gz,output/sample_c/filtered_matrix/MACS2/FILTER/barcodes_doubletRemoved.txt

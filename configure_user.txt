@@ -54,6 +54,7 @@ BOWTIE2_INDEX = bowtie2.2.9/indexes/GRCh38/GRCh38
 
 MAPQ = 30  ## filter bam by MAPQ for downstream analysis 
 CELL_MAP_QC = FALSE  ## output mapping stats for cell barcodes
+SHIFT_READS_IN_BAM = FALSE ## if TRUE, shift reads in + strand +4bp, in - strand -5bp 
 
 
 #################################################################################
@@ -157,11 +158,12 @@ Cicero_Plot_Region = chr5:140610000-140640000
 ############################################################################
 ## about integrate module ##
 ## integrate two or more samples
-## by VFACS, seurat cca, harmony, or pool 
+## by VFACS, cca (or seurat), rpca, rlsi(or signac), harmony, or pool 
 ############################################################################
-Integrate_By = VFACS  ## one of VFACS, seurat, pool or harmony 
+Integrate_By = VFACS  ## one of VFACS, cca, rpca, rlsi, pool or harmony 
+mergePeaksWithin = 500 ## merge peaks within 500bp
+filterPeaksQvalue = 0.05 ## further filter peaks by qvalue before merging them
+nDim4Integration = 30 ## reduced dimemsions for integrated data
+nFeature4Integration = 5000 ## top variable features selected for integration, not used for rlsi
 prepCello4Integration = FALSE ## prepare cello for integrated object
-
-
-
 

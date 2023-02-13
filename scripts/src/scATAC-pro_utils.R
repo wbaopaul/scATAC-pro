@@ -27,12 +27,12 @@ TF_IDF <- function (data, verbose = T)
     if (verbose) {
         message("Performing TF_IDF normalization")
     }
-    npeaks <- colSums(x = data)
+    npeaks <- colSums(x = data) + 1
     tf <- t(x = t(x = data)/npeaks)
-    idf <- ncol(x = data)/rowSums(x = data)
+    idf <- ncol(x = data)/(rowSums(x = data) + 1)
     idf <- log(1 + idf)
     norm.data <- Diagonal(n = length(x = idf), x = idf) %*% tf
-    norm.data[which(x = is.na(x = norm.data))] <- 0
+    #norm.data[which(x = is.na(x = norm.data))] <- 0
     return(norm.data)
 }
 
@@ -1104,7 +1104,163 @@ runDiffMotifEnrich <- function(mtx_score, clusters, test = 'wilcox',
 }
 runDiffMotifEnrich = cmpfun(runDiffMotifEnrich)
 
-## mtx_objs: a list of matrix 
+## seurat_list: a list of seurat obj -- used since v1.5.1
+run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
+                            top_variable_features = 5000, 
+                            norm_by = 'tf-idf', nREDUCTION = 30,
+                            reg.var = 'nFeature_ATAC',
+                            resolution = 0.6, verbose = F){
+  
+  ## pool/integrate data into a seurat object
+  if(integrate_by %in% c('seurat', 'cca', 'rpca')){
+   
+    # select features that are repeatedly variable across datasets for integration run PCA on each
+    # dataset using these features
+    features <- SelectIntegrationFeatures(object.list = seurat_list, 
+                                          nfeatures = top_variable_features)
+    seurat_list <- lapply(X = seurat_list, FUN = function(x) {
+      x <- ScaleData(x, features = features, verbose = FALSE)
+      x <- RunPCA(x, features = features, verbose = FALSE)
+    })
+    anchors <- FindIntegrationAnchors(object.list = seurat_list,
+                                      anchor.features = features,
+                                      reduction = ifelse(integrate_by == 'rpca', 'rpca', 'cca'))
+    rm(seurat_list)
+    seurat.merged <- IntegrateData(anchorset = anchors, dims = 1:nREDUCTION)
+    DefaultAssay(seurat.merged) <- "integrated"
+    seurat.merged <- ScaleData(seurat.merged, verbose = FALSE,
+                            features = VariableFeatures(seurat.merged))
+    seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
+  }else{
+    message('Merge seurat objects...')
+    seurat.merged = merge(seurat_list[[1]], seurat_list[-1])
+  }
+  
+  if(integrate_by == 'pool') seurat.merged <- regress_on_pca(seurat.merged, 'sampleName')
+  
+  if(integrate_by == 'VFACS'){
+    ## cluster and then reselect features
+    ## variable features across clusters
+    message('Workin on merged object ...')
+    seurat.merged[['ATAC']]@data = TF_IDF(seurat.merged[['ATAC']]@counts)
+    seurat.merged <- FindVariableFeatures(seurat.merged, nfeatures = top_variable_features)
+    seurat.merged <- ScaleData(seurat.merged)
+    seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
+    seurat.merged <- FindNeighbors(seurat.merged, dims = 1:nREDUCTION, reduction = 'pca', 
+                                verbose = verbose)
+    seurat.merged <- FindClusters(seurat.merged, resl = resolution, verbose = verbose)
+    clusters = as.character(seurat.merged$seurat_clusters)
+    mtx = seurat.merged@assays$ATAC@counts
+    mtx_by_cls <- sapply(unique(clusters), function(x) {
+      
+      cl_data <- mtx[, clusters == x]
+      
+      Matrix::rowMeans(cl_data > 0)
+      
+    })
+    mtx_by_cls.norm <- edgeR::cpm(mtx_by_cls, log = T, prior.count = 1)
+    sds = sapply(1:nrow(mtx_by_cls.norm), function(x) sd(mtx_by_cls.norm[x, ]))
+    names(sds) = rownames(mtx_by_cls.norm)
+    sele.features = names(which(sds >= sort(sds, decreasing = T)[top_variable_features]))
+    mtx0 = mtx[sele.features, ]
+    mtx0.norm = TF_IDF(mtx0)
+    
+    tmp <- mtx0[setdiff(rownames(mtx0), sele.features), ]
+    data0 <- rbind(mtx0.norm, tmp)
+    seurat.merged[['ATAC']]@data = data0[rownames(mtx0), ]
+    
+    VariableFeatures(seurat.merged) <- sele.features
+    seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
+    seurat.merged <- regress_on_pca(seurat.merged, reg.var = reg.var)
+    seurat.merged[['ATAC']]@data <- TF_IDF(mtx)
+  }
+  
+  if(integrate_by %in% c('rlsi', 'signac')){
+    library(Signac)
+    ## process each sample
+    for(sample0 in names(seurat_list)){
+      seurat_list[[sample0]] = FindTopFeatures(seurat_list[[sample0]],
+                                               min.cutoff = as.integer(0.01 * ncol(seurat_list[[sample0]])))
+      seurat_list[[sample0]] = RunTFIDF(seurat_list[[sample0]])
+      seurat_list[[sample0]] = RunSVD(seurat_list[[sample0]])
+      
+    }
+    ## merge 
+    seurat.merged = merge(seurat_list[[1]], seurat_list[-1])
+    seurat.merged = FindTopFeatures(seurat.merged, min.cutoff = 100)
+    
+    ## select anchor features
+    mtx = seurat.merged@assays$ATAC@counts
+    sele_features = rownames(mtx)
+    sIDs = seurat.merged$sampleName
+    mtx_pbulk <- sapply(unique(sIDs), function(x){
+      rowMeans(mtx[, sIDs == x] >0)
+    })
+    rmaxs = apply(mtx_pbulk, 1, max)
+    filtered_peaks1 <- names(which(rmaxs < 0.02)) # filter variable features
+    sele_features = setdiff(sele_features, filtered_peaks1)
+    sele_features = intersect(sele_features, VariableFeatures(seurat.merged))
+    
+    VariableFeatures(seurat.merged) <- sele_features
+    seurat.merged = RunTFIDF(seurat.merged)
+    seurat.merged = RunSVD(seurat.merged)
+    seurat.merged = RunUMAP(seurat.merged, reduction = 'lsi', dims = 2:nREDUCTION)
+    
+    ## integration 
+    integration.anchors <- FindIntegrationAnchors(
+      object.list = seurat_list,
+      anchor.features = sele_features,
+      reduction = "rlsi",
+      dims = 2:nREDUCTION
+    )
+    
+    # integrate LSI embeddings
+    seurat.merged <- IntegrateEmbeddings(
+      anchorset = integration.anchors,
+      reductions = seurat.merged[["lsi"]],
+      new.reduction.name = "integrated_lsi",
+      dims.to.integrate = 2:nREDUCTION,
+      k.weight = 30
+    )
+    
+    seurat.merged <- RunUMAP(seurat.merged, reduction = "integrated_lsi", dims = 2:nREDUCTION)
+    seurat.merged = FindNeighbors(seurat.merged, reduction = 'integrated_lsi', 
+                                  dims = 2:nREDUCTION, verbose = verbose)
+    
+  }
+  
+  if(integrate_by %in% c('seurat', 'cca', 'rpca',
+                         'pool', 'VFACS')) {
+    seurat.merged <- RunUMAP(seurat.merged, reduction = "pca", 
+                        verbose = verbose, dims = 1:nREDUCTION)
+    seurat.merged = FindNeighbors(seurat.merged, reduction = 'pca', 
+                                  dims = 1:nREDUCTION, verbose = verbose)
+    
+  }
+  
+  if(integrate_by == 'harmony'){
+    
+    seurat.merged <- harmony::RunHarmony(seurat.merged, c("sampleName"), 
+                                         assay.use = 'ATAC')
+    
+    seurat.merged <- seurat.merged %>% 
+      RunUMAP(reduction = "harmony", dims = 1:nREDUCTION, verbose = verbose)
+    
+    seurat.merged = FindNeighbors(seurat.merged, reduction = 'harmony', 
+                                  dims = 1:nREDUCTION, verbose = verbose)
+    
+  }
+  
+  ## clustering on the integrated data
+  seurat.merged = FindClusters(seurat.merged, resolution = resolution, verbose = verbose)
+  seurat.merged$active_clusters = seurat.merged$seurat_clusters
+  
+  return(seurat.merged)
+}
+run_integrateSeuObj = cmpfun(run_integrateSeuObj)   
+
+
+## mtx_list: a list of matrix  -- older version
 run_integration <- function(mtx_list, integrate_by = 'VFACS',
                             top_variable_features = 5000, 
                             norm_by = 'tf-idf', nREDUCTION = 30,
@@ -1120,7 +1276,7 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
   for(sample0 in sampleNames){
     # filter each mtx
     mtx_list[[sample0]] <- filterMat(mtx_list[[sample0]], minFrac_in_cell = minFrac_in_cell,
-                               min_depth = min_depth, max_depth = max_depth)
+                                     min_depth = min_depth, max_depth = max_depth)
     if(integrate_by %in% c('seurat')){
       # create a seurat obj for each sample
       seurat.obj = runSeurat_Atac(mtx_list[[sample0]], npc = nREDUCTION, norm_by = norm_by, 
@@ -1132,10 +1288,10 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
       seu.all[[sample0]] = seurat.obj
     }
   }
- 
+  
   ## pool/integrate data into a seurat object
   if(integrate_by == 'seurat'){
-   
+    
     seurat.obj <- FindIntegrationAnchors(object.list = seu.all, 
                                          anchor.features = anchor.features)
     rm(seu.all)
@@ -1184,7 +1340,7 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
     mtx0.norm = TF_IDF(mtx0)
     seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
     VariableFeatures(seurat.obj) <- sele.features
-    seurat.obj <- RunPCA(seurat.obj, dims = 1:nReduction, verbose = verbose)
+    seurat.obj <- RunPCA(seurat.obj, dims = 1:nREDUCTION, verbose = verbose)
     seurat.obj <- regress_on_pca(seurat.obj, reg.var = reg.var)
     seurat.obj <- FindNeighbors(seurat.obj, verbose = verbose, 
                                 dims = 1:nREDUCTION, reduction = 'pca')
@@ -1217,6 +1373,8 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
   return(seurat.obj)
 }
 run_integration = cmpfun(run_integration)   
+
+
 
 # Find doublets
 FindDoublets_Atac <- function(seurat.atac, PCs = 1:50, 

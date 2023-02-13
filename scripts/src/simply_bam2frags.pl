@@ -47,35 +47,37 @@ my $btime = time;
 my %frags = ();
 
 
+my $chrom = "XXXXXX";
+my $start = "XXXXXX";
+my $end = "XXXXXX";
+my $len = "XXXXXX";
+my $barcode = "XXXXXX";
+my $isSameChr = "XXXXXX";
+my $mate = "XXXXXX";
 
 while(<READ>)
 {
-   $read_file_counter++;
+     $read_file_counter++;
 
 	 chomp;
-	 my $chrom = "XXXXXX";
-     my $start = "XXXXXX";
-     my $end = "XXXXXX";
-     my $len = "XXXXXX";
-     my $mate = "XXXXXX";
-     my $barcode = "XXXXXX";
-     my $isSameChr = "XXXXXX";
 
 	 my @array = split /\t/;
-     $len = $array[8];
+    
+
+     ## no need to shift ATAC reads since it's done in bam file
+     $chrom = $array[2];
+     $start = $array[3];
+     $mate = $array[7];
+     $len = $array[8]; 
+     $end = $start + $len;
+     $isSameChr = $array[6];
+
      ## only keep one read per pair
      if($len <= 0){
       next;  
      }
      print OUT_Len $len."\n" ; ## save all fragment length
      
-     $chrom = $array[2];
-     ## add 4 and 5bps to the left and right to adjust the TN5 occupancy
-     $start = $array[3] - 4;
-     $mate = $array[7] - 4; ## what is position of the mate read
-     $end = $len + $start + 5 + 4;
-     $isSameChr = $array[6];
-    
      if($isSameChr !~ "="){
         next;  
      }
@@ -86,7 +88,7 @@ while(<READ>)
 
      my @tmp_array = split /:/, $array[0];
 	   
-	   $barcode = $tmp_array[0];
+	 $barcode = $tmp_array[0];
      my $frag_id = $chrom."\t".$start."\t".$end."\t".$barcode;
 
     if(exists($frags{$frag_id})){
@@ -96,9 +98,6 @@ while(<READ>)
     }else{
       $frags{$frag_id} = 1;
     }
-   
-	   
- 
   
 }#while(<READ>)
 

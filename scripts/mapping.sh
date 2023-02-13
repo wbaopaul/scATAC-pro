@@ -22,18 +22,21 @@ else
      ${curr_dir}/mapping_bowtie2.sh $fastqs $2 $3
 fi
 
-## sort
-echo "Sorting bam file"
 
 ncore=$(nproc --all)
 ncore=$(($ncore - 1))
 mkdir -p ${mapRes_dir}/tmp
+
+## sort
+echo "Sorting bam file"
+## sort by read name
 ${SAMTOOLS_PATH}/samtools sort -m 2G -T ${mapRes_dir}/tmp/ -@ $ncore -n -o ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.bam
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.bam
 
 ## to mark duplicates
 ${SAMTOOLS_PATH}/samtools fixmate -@ $ncore -m ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.sorted.bam
+
 
 # Markdup needs position order
 ${SAMTOOLS_PATH}/samtools sort -m 2G -@ $ncore -T ${mapRes_dir}/tmp/ -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort0.bam ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
@@ -43,10 +46,23 @@ rm ${mapRes_dir}/${OUTPUT_PREFIX}.fixmate.bam
 ${SAMTOOLS_PATH}/samtools markdup -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort0.bam ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam
 rm ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort0.bam
 
-
 ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam 
 
+if [ -z "$SHIFT_READS_IN_BAM" ]; then
+    SHIFT_READS_IN_BAM=FALSE
+fi
 
+<<<<<<< HEAD
+=======
+if [ ${SHIFT_READS_IN_BAM} = 'TRUE' ]; then
+    ${DEEPTOOLS_PATH}/alignmentSieve --numberOfProcessors $ncore --ATACshift --bam ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.shifted.bam
+    rm ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam
+    ${SAMTOOLS_PATH}/samtools sort -m 2G -@ $ncore -T ${mapRes_dir}/tmp/ -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam ${mapRes_dir}/${OUTPUT_PREFIX}.shifted.bam
+    rm ${mapRes_dir}/${OUTPUT_PREFIX}.shifted.bam
+    ${SAMTOOLS_PATH}/samtools index -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam 
+fi
+
+>>>>>>> dev1.5.1
 ## filtering low quality and/or deplicates for downstreame analysis
 if [ ${isSingleEnd} = 'TRUE' ]; then
     ${SAMTOOLS_PATH}/samtools view -b -h -q $MAPQ -@ $ncore ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.bam -o ${mapRes_dir}/${OUTPUT_PREFIX}.positionsort.MAPQ${MAPQ}.bam 

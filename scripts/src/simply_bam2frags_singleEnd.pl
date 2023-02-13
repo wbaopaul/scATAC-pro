@@ -66,10 +66,8 @@ while(<READ>)
      print OUT_Len $len."\n" ; ## save all fragment length
 
      $chrom = $array[2];
-     ## add 4 bps to the left to adjust the TN5 occupancy
-     $start = $array[3] - 4;
-     $end = $len + $start - 1;
-    
+     $start = $array[3];
+     $end = $len + $start;
 
      my @tmp_array = split /:/, $array[0];
 	   
