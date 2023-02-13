@@ -48,7 +48,7 @@ do
     pk0_file=${peak_files[$i]}
     frag0_file=${frag_files[$i]}
     bc0_file=${barcodes_files[$i]}
-    echo "Reconstruct matrix for sample related to $pk0: "
+    echo "Reconstruct matrix for sample related to ${pk0_file}: "
     mtx0_dir=${reConst_mtx_dir}/${sample0}
     mkdir -p $mtx0_dir
 
