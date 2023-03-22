@@ -28,7 +28,7 @@ ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
 
 #echo "generate bedgraph..."
 ${DEEPTOOLS_PATH}/bamCoverage --numberOfProcessors max \
-  --bam $input_bam --binSize 20 --skipNonCoveredRegions -- --normalizeUsing BPM \
+  --bam $input_bam --binSize 20 --skipNonCoveredRegions --normalizeUsing BPM \
   --outFileFormat bedgraph --outFileName ${signal_dir}/${OUTPUT_PREFIX}.aggregated.bedgraph &
 wait
 
