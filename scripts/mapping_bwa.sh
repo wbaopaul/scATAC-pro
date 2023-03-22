@@ -39,9 +39,9 @@ fi
 
 
 if [[ "$isSingleEnd" = "TRUE" ]]; then
-    ${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
+    ${BWA_PATH}/bwa mem $BWA_OPTS $BWA_INDEX ${fastqs[0]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
 else
-    ${BWA_PATH}/bwa mem $BWA_INDEX $BWA_OPTS ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
+    ${BWA_PATH}/bwa mem $BWA_OPTS $BWA_INDEX ${fastqs[0]} ${fastqs[1]}  > ${mapRes_dir}/${OUTPUT_PREFIX}.sam
 fi
 
 echo "BWA Mapping Done!"
