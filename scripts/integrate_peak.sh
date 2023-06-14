@@ -21,6 +21,9 @@ mkdir -p ${integrated_dir}
 peak_dir=${integrated_dir}/peaks
 mkdir -p $peak_dir
 
+reConst_mtx_dir=${integrated_dir}/reConstructed_matrix
+mkdir -p $reConst_mtx_dir
+
 echo "merge peaks ..."
 feature_file=${peak_dir}/merged_peaks.bed
 ${R_PATH}/R --vanilla --args $input_peaks $feature_file < ${curr_dir}/src/mergePeaks.R
@@ -56,15 +59,18 @@ do
     if [ ! -e "$bc0_file" ]; then
          bc0_file=${mat0_dir}/barcodes.txt 
     fi
-    bash ${curr_dir}/reConstMtx.sh ${feature_file},${frag0_file},${bc0_file} $2 $3
-    mtx_files=${mtx_files},${mat0_dir}/reConstruct_matrix/matrix.mtx
+    
+    new_mtx0_dir=${reConst_mtx_dir}/${sample0}
+    mkdir -p $new_mtx0_dir
+    bash ${curr_dir}/reConstMtx.sh ${feature_file},${frag0_file},${bc0_file},${new_mtx0_dir} $2 $3
+    mtx_files=${mtx_files},${new_mtx0_dir}/matrix.rds
 done
 
 echo "Integrate by Seurat v3 ..."
 echo -e "These are new mtx files: $mtx_files"
 mtx_files=${mtx_files/TMP,/}
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_mtx.R $mtx_files $K_CLUSTERS $integrated_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features $Integrate_By
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_mtx.R $mtx_files $K_CLUSTERS $integrated_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $nFeature4Integration $Integrate_By
 
 abs_out_dir=`cd ${integrated_dir}; pwd`
 

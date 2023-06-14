@@ -154,6 +154,13 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
     vaps = setdiff(vaps, rare.features)
     if(niter >= 5) break 
   }
+
+  if(length(vaps) < 1000) {
+    message('Most variable features were too rare and were filtered, \n
+            I am gonna select from them top 1000 less rare!')
+    vaps = VariableFeatures(seurat.obj)
+    vaps = names(sort(rs[vaps], decreasing = T))[1:1000]
+  }
   VariableFeatures(seurat.obj) <- vaps
   
   ## redo normalization using vap if norm by tf-idf
@@ -1148,7 +1155,7 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
     seurat.merged <- FindNeighbors(seurat.merged, dims = 1:nREDUCTION, reduction = 'pca', 
                                 verbose = verbose)
-    seurat.merged <- FindClusters(seurat.merged, resl = resolution, verbose = verbose)
+    seurat.merged <- FindClusters(seurat.merged, resolution = resolution, verbose = verbose)
     clusters = as.character(seurat.merged$seurat_clusters)
     mtx = seurat.merged@assays$ATAC@counts
     mtx_by_cls <- sapply(unique(clusters), function(x) {
@@ -1322,7 +1329,7 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
     ## variable features across clusters
     seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', 
                                 verbose = verbose)
-    seurat.obj <- FindClusters(seurat.obj, resl = resolution, verbose = verbose)
+    seurat.obj <- FindClusters(seurat.obj, resolution = resolution, verbose = verbose)
     clusters = as.character(seurat.obj$seurat_clusters)
     mtx = seurat.obj@assays$ATAC@counts
     mtx_by_cls <- sapply(unique(clusters), function(x) {
@@ -1344,7 +1351,7 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
     seurat.obj <- regress_on_pca(seurat.obj, reg.var = reg.var)
     seurat.obj <- FindNeighbors(seurat.obj, verbose = verbose, 
                                 dims = 1:nREDUCTION, reduction = 'pca')
-    seurat.obj <- FindClusters(seurat.obj, verbose = verbose, resl = resolution)
+    seurat.obj <- FindClusters(seurat.obj, verbose = verbose, resolution = resolution)
     
   }
   

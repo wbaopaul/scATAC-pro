@@ -14,7 +14,7 @@ mkdir -p $output_dir
 
 curr_dir=`dirname $0`
 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_mtx.R $mtx_files $K_CLUSTERS $output_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $Top_Variable_Features $Integrate_By 
+${R_PATH}/Rscript --vanilla ${curr_dir}/src/integrate_mtx.R $mtx_files $K_CLUSTERS $output_dir $GENOME_NAME $TSS $norm_by $REDUCTION $nREDUCTION $nFeature4Integration $Integrate_By 
 
 abs_out_dir=`cd ${output_dir}; pwd`
 
