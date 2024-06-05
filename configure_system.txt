@@ -7,11 +7,11 @@
 ## using the 'which' command
 #######################################################################
 INSTALL_PREFIX = /mnt/isilon/tan_lab/yuw1/local_tools/bin
-PYTHON_PATH =  /cm/local/apps/python37/bin
-R_PATH =  /cm/shared/apps_chop/R/4.0.5/lib64/R/bin
-SAMTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin
+PYTHON_PATH =  /cm/shared/easybuild/software/Python/3.10.4-GCCcore-11.3.0/bin
+R_PATH =  /cm/shared/apps_chop/R/4.4.0/lib64/R/bin
+SAMTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/samtools-1.9
 DEEPTOOLS_PATH = /home/yuw1/.local/bin
-BEDTOOLS_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bedtools2/bin
+BEDTOOLS_PATH = /home/yuw1/squire_build/bedtools-2.25.0/bedtools2/bin
 TABIX_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/tabix
 BWA_PATH = /mnt/isilon/tan_lab/yuw1/local_tools/bin/bwa-0.7.17
 MACS2_PATH = /home/yuw1/.local/bin

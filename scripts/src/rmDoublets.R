@@ -40,7 +40,13 @@ seurat.obj <- subset(seurat.obj, Doublet_Singlet == 'Singlet')
 output_seu_file = paste0(output_dir, '/seurat_obj_doubletsRemoved.rds') 
 output_mtx_file = paste0(output_dir, '/matrix_doubletsRemoved.rds') 
 output_barcode_file = paste0(output_dir, '/barcodes_doubletsRemoved.txt') 
-saveRDS(seurat.obj@assays$ATAC@counts, file = output_mtx_file)
+
+if(class(seurat.obj[['ATAC']]) == 'Assay5') {
+  mtx = seurat.obj[['ATAC']]$counts
+}else{
+  mtx = seurat.obj[['ATAC']]@counts
+}
+saveRDS(mtx, file = output_mtx_file)
 write.table(colnames(seurat.obj), file = output_barcode_file,
             quote = F, row.names = F, col.names = F, sep = '\t')
 saveRDS(seurat.obj, file = output_seu_file)

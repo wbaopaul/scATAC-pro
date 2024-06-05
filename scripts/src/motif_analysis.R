@@ -20,7 +20,11 @@ if(grepl(mtx_file, pattern = '.rds', fix = T)) {
     input.obj = readRDS(mtx_file)
     itype = class(input.obj)
     if(any(itype == 'Seurat')){
-        mtx = input.obj@assays$ATAC@counts
+      if(class(input.obj[['ATAC']]) == 'Assay5'){
+        mtx = input.obj[['ATAC']]$counts
+      }else{
+        mtx = input.obj[['ATAC']]@counts
+      }
     }else{
         mtx = input.obj
         rm(input.obj)
@@ -46,8 +50,14 @@ ncore = detectCores()
 if(all(itype != 'Seurat')) {
     seurat.obj = CreateSeuratObject(mtx, project = 'scATAC', assay = 'ATAC',
                           names.delim = '-')
-    if(norm_by == 'log') seurat.obj@assays$ATAC@data = log1p(seurat.obj@assays$ATAC@counts)
-    if(norm_by == 'tf-idf') seurat.obj@assays$ATAC@data = TF_IDF(seurat.obj@assays$ATAC@counts)
+    if(class(seurat.obj[['ATAC']]) == 'Assay5'){
+      if(norm_by == 'log') seurat.obj[['ATAC']]$data = log1p(seurat.obj[['ATAC']]$counts)
+      if(norm_by == 'tf-idf') seurat.obj[['ATAC']]$data = TF_IDF(seurat.obj[['ATAC']]$counts)
+    }else{
+      if(norm_by == 'log') seurat.obj[['ATAC']]@data = log1p(seurat.obj[['ATAC']]@counts)
+      if(norm_by == 'tf-idf') seurat.obj[['ATAC']]@data = TF_IDF(seurat.obj[['ATAC']]@counts)
+    }
+    
     seurat.obj <- FindVariableFeatures(object = seurat.obj,
                                  selection.method = 'vst',
                                  nfeatures = floor(nrow(mtx) * 0.4))

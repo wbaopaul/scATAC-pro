@@ -33,9 +33,9 @@ TF_IDF <- function (data, verbose = T)
     idf <- log(1 + idf)
     norm.data <- Diagonal(n = length(x = idf), x = idf) %*% tf
     #norm.data[which(x = is.na(x = norm.data))] <- 0
+    rownames(norm.data) <- rownames(data)
     return(norm.data)
 }
-
 
 read_mtx_scATACpro <- function(mtx_path){
   #mtx_path <- paste0(dirt, "matrix.mtx")
@@ -128,8 +128,15 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
   seurat.obj = CreateSeuratObject(mtx, project = project, assay = assay,
                                   names.delim = '-', min.cells = 1,
                                   min.features = 1)
-  if(norm_by == 'log') seurat.obj[[assay]]@data <- log1p(seurat.obj[[assay]]@counts)/log(2)
-  if(norm_by == 'tf-idf') seurat.obj[[assay]]@data <- TF_IDF(seurat.obj[[assay]]@counts)
+  
+  if(class(seurat.obj[[assay]]) == 'Assay5'){
+    if(norm_by == 'log') seurat.obj[[assay]]$data <- log1p(seurat.obj[[assay]]$counts)/log(2)
+    if(norm_by == 'tf-idf') seurat.obj[[assay]]$data <- TF_IDF(seurat.obj[[assay]]$counts)
+  }else{
+    if(norm_by == 'log') seurat.obj[[assay]]@data <- log1p(seurat.obj[[assay]]@counts)/log(2)
+    if(norm_by == 'tf-idf') seurat.obj[[assay]]@data <- TF_IDF(seurat.obj[[assay]]@counts)
+  }
+  
   nvap = ifelse(top_variable_features > 1, top_variable_features, 
                 floor(nrow(mtx) * top_variable_features))
 
@@ -138,7 +145,12 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
                                      nfeatures = nvap)
   
   ## remove variable features only accessible in less than 1% of cells
-  mtx = seurat.obj[[assay]]@counts
+ 
+  if(class(seurat.obj[[assay]]) == 'Assay5'){
+    mtx = seurat.obj[[assay]]$counts
+  }else{
+    mtx = seurat.obj[[assay]]@counts
+  }
   rs = Matrix::rowMeans(mtx > 0)
   rare.features = names(which(rs < 0.01))
   vaps = VariableFeatures(seurat.obj)
@@ -154,6 +166,13 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
     vaps = setdiff(vaps, rare.features)
     if(niter >= 5) break 
   }
+
+  if(length(vaps) < 1000) {
+    message('Most variable features were too rare and were filtered, \n
+            I am gonna select from them top 1000 less rare!')
+    vaps = VariableFeatures(seurat.obj)
+    vaps = names(sort(rs[vaps], decreasing = T))[1:1000]
+  }
   VariableFeatures(seurat.obj) <- vaps
   
   ## redo normalization using vap if norm by tf-idf
@@ -161,7 +180,13 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
     mtx.norm = TF_IDF(mtx[vaps, ])
     tmp <- mtx[setdiff(rownames(mtx), vaps), ]
     data0 <- rbind(mtx.norm, tmp)
-    seurat.obj[[assay]]@data = data0[rownames(mtx), ]
+    if(class(seurat.obj[[assay]]) == 'Assay5'){
+      seurat.obj[[assay]]$data = data0[rownames(mtx), ]
+    }else{
+      seurat.obj[[assay]]@data = data0[rownames(mtx), ]
+    }
+    
+    
     rm(data0, tmp, mtx.norm)
   }
 
@@ -179,7 +204,12 @@ runSeurat_Atac <- function(mtx, npc = 50, top_variable_features = 0.2,
   if(norm_by == 'tf-idf'){
   ## redo normalization using all features
      mtx.norm = TF_IDF(mtx)
-     seurat.obj[[assay]]@data = mtx.norm
+     if(class(seurat.obj[[assay]]) == 'Assay5'){
+       seurat.obj[[assay]]$data = mtx.norm
+     }else{
+       seurat.obj[[assay]]@data = mtx.norm
+     }
+     
   }
 
   return(seurat.obj)
@@ -1142,15 +1172,26 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     ## cluster and then reselect features
     ## variable features across clusters
     message('Workin on merged object ...')
-    seurat.merged[['ATAC']]@data = TF_IDF(seurat.merged[['ATAC']]@counts)
+    
+    if(class(seurat.merged[['ATAC']]) == 'Assay5'){
+      seurat.merged[['ATAC']]$data = TF_IDF(seurat.merged[['ATAC']]$counts)
+    }else{
+      seurat.merged[['ATAC']]@data = TF_IDF(seurat.merged[['ATAC']]@counts)
+    }
+    
     seurat.merged <- FindVariableFeatures(seurat.merged, nfeatures = top_variable_features)
     seurat.merged <- ScaleData(seurat.merged)
     seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
     seurat.merged <- FindNeighbors(seurat.merged, dims = 1:nREDUCTION, reduction = 'pca', 
                                 verbose = verbose)
-    seurat.merged <- FindClusters(seurat.merged, resl = resolution, verbose = verbose)
+    seurat.merged <- FindClusters(seurat.merged, resolution = resolution, verbose = verbose)
     clusters = as.character(seurat.merged$seurat_clusters)
-    mtx = seurat.merged@assays$ATAC@counts
+    
+    if(class(seurat.merged[['ATAC']]) == 'Assay5') {
+      mtx = seurat.merged[['ATAC']]$counts
+    }else{
+      mtx = seurat.merged[['ATAC']]@counts
+    }
     mtx_by_cls <- sapply(unique(clusters), function(x) {
       
       cl_data <- mtx[, clusters == x]
@@ -1172,7 +1213,12 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     VariableFeatures(seurat.merged) <- sele.features
     seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
     seurat.merged <- regress_on_pca(seurat.merged, reg.var = reg.var)
-    seurat.merged[['ATAC']]@data <- TF_IDF(mtx)
+    if(class(seurat.merged[['ATAC']]) == 'Assay5') {
+      seurat.merged[['ATAC']]$data = TF_IDF(mtx)
+    }else{
+      seurat.merged[['ATAC']]@data <- TF_IDF(mtx)
+    }
+    
   }
   
   if(integrate_by %in% c('rlsi', 'signac')){
@@ -1190,7 +1236,12 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     seurat.merged = FindTopFeatures(seurat.merged, min.cutoff = 100)
     
     ## select anchor features
-    mtx = seurat.merged@assays$ATAC@counts
+    if(class(seurat.merged[['ATAC']]) == 'Assay5'){
+      mtx = seurat.merged[['ATAC']]$counts
+    }else{
+      mtx = seurat.merged[['ATAC']]@counts
+    }
+  
     sele_features = rownames(mtx)
     sIDs = seurat.merged$sampleName
     mtx_pbulk <- sapply(unique(sIDs), function(x){
@@ -1322,9 +1373,15 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
     ## variable features across clusters
     seurat.obj <- FindNeighbors(seurat.obj, dims = 1:nREDUCTION, reduction = 'pca', 
                                 verbose = verbose)
-    seurat.obj <- FindClusters(seurat.obj, resl = resolution, verbose = verbose)
+    seurat.obj <- FindClusters(seurat.obj, resolution = resolution, verbose = verbose)
     clusters = as.character(seurat.obj$seurat_clusters)
-    mtx = seurat.obj@assays$ATAC@counts
+    
+    if(class(seurat.obj[['ATAC']]) == 'Assay5'){
+      mtx = seurat.obj[['ATAC']]$counts
+    }else{
+      mtx = seurat.obj[['ATAC']]@counts
+    }
+      
     mtx_by_cls <- sapply(unique(clusters), function(x) {
       
       cl_data <- mtx[, clusters == x]
@@ -1338,13 +1395,19 @@ run_integration <- function(mtx_list, integrate_by = 'VFACS',
     sele.features = names(which(sds >= sort(sds, decreasing = T)[top_variable_features]))
     mtx0 = mtx[sele.features, ]
     mtx0.norm = TF_IDF(mtx0)
-    seurat.obj@assays$ATAC@data[sele.features, ] <- mtx0.norm
+    
+    if(class(seurat.obj[['ATAC']]) == 'Assay5') {
+      seurat.obj[['ATAC']]$data[sele.features, ] <- mtx0.norm
+    }else{
+      seurat.obj[['ATAC']]@data[sele.features, ] <- mtx0.norm
+    }
+    
     VariableFeatures(seurat.obj) <- sele.features
     seurat.obj <- RunPCA(seurat.obj, dims = 1:nREDUCTION, verbose = verbose)
     seurat.obj <- regress_on_pca(seurat.obj, reg.var = reg.var)
     seurat.obj <- FindNeighbors(seurat.obj, verbose = verbose, 
                                 dims = 1:nREDUCTION, reduction = 'pca')
-    seurat.obj <- FindClusters(seurat.obj, verbose = verbose, resl = resolution)
+    seurat.obj <- FindClusters(seurat.obj, verbose = verbose, resolution = resolution)
     
   }
   
@@ -1382,7 +1445,11 @@ FindDoublets_Atac <- function(seurat.atac, PCs = 1:50,
   # sct--do SCTransform or not
   require('DoubletFinder') 
   if(!sct){
-    seurat.rna = CreateSeuratObject(seurat.atac@assays$ATAC@counts)
+    if(class(seurat.atac[['ATAC']]) == 'Assay5') {
+      seurat.rna = CreateSeuratObject(seurat.atac[['ATAC']]$counts)
+    }else{
+      seurat.rna = CreateSeuratObject(seurat.atac[['ATAC']]@counts)
+    }
     seurat.rna = NormalizeData(seurat.rna)
     seurat.rna = FindVariableFeatures(seurat.rna)
     VariableFeatures(seurat.rna) <- VariableFeatures(seurat.atac)
@@ -1393,7 +1460,7 @@ FindDoublets_Atac <- function(seurat.atac, PCs = 1:50,
     seurat.rna$seurat_clusters = seurat.atac$seurat_clusters
   }else{
     seurat.rna = seurat.atac
-    seurat.rna@assays$RNA <- seurat.atac@assays$ATAC
+    seurat.rna[['RNA']] <- seurat.atac[['ATAC']]
   }
   
   ## pK identification
@@ -1486,7 +1553,11 @@ generate_gene_cisActivity = cmpfun(generate_gene_cisActivity)
 
 labelTransfer_R <- function(seurat.atac, seurat.rna, gene_ann,
                             rna_ann_var = 'Cell_Type', include_genebody = T){
-  atac.mtx = seurat.atac@assays$ATAC@counts
+  if(class(seurat.atac[['ATAC']]) == 'Assay5'){
+    atac.mtx = seurat.atac[['ATAC']]$counts
+  }else{
+    atac.mtx = seurat.atac[['ATAC']]@counts
+  }
   rn = rownames(atac.mtx)
   rownames(atac.mtx) <- sapply(rn, function(x) unlist(strsplit(x, ','))[1])
   activity.matrix = generate_gene_cisActivity(gene_ann = gene_ann,

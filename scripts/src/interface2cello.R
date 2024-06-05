@@ -19,8 +19,13 @@ output_dir = dirname(seuratPath)
 seurat.atac = readRDS(seuratPath)
 rr = rownames(seurat.atac)
 sele.features = VariableFeatures(seurat.atac)
-mtx <- seurat.atac@assays$ATAC@counts[rr %in% sele.features, ]
-mtx.norm <- seurat.atac@assays$ATAC@data[rr %in% sele.features, ]
+if(class(seurat.atac[['ATAC']]) == 'Assay5'){
+  mtx <- seurat.atac[['ATAC']]$counts[rr %in% sele.features, ]
+  mtx.norm <- seurat.atac[['ATAC']]$data[rr %in% sele.features, ]
+}else{
+  mtx <- seurat.atac[['ATAC']]@counts[rr %in% sele.features, ]
+  mtx.norm <- seurat.atac[['ATAC']]@data[rr %in% sele.features, ]
+}
 
 ## annote peaks with genes
 tss_ann <- fread(tss_path, header = F)
