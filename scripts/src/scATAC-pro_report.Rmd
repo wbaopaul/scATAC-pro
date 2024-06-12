@@ -166,7 +166,7 @@ cell.table = data.frame(c(PEAK_CALLER, nrow(peaks),
                           frac.in.cell, mapq30.frac.in.cell)) 
 
 rm(peaks)
-
+gc()
 rownames(cell.table) = c('Peak called by', 'Number of peaks', 
                          'Percentage of unique fragments in peaks',
                          'Cell called by', 'Estimated # of cells',
@@ -267,6 +267,7 @@ if(file.exists(fragments_len_file)) {
     frag_lens = data.table('isize' = rep(lens, frags$ndup))
 }
 rm(frags)
+gc()
 frag_lens = frag_lens[sample(1:nrow(frag_lens), 1000000), ]
 
 p1 <- ggplot(data = frag_lens[isize < 800], aes(x = isize)) +
@@ -282,7 +283,8 @@ if(plotEPS){
   pfname = paste0(params$output_dir, '/summary/Figures/dist_insert_size.eps')
   ggsave(p1, file = pfname, device = 'eps', width = 6, height = 6)
 }
-
+rm(frag_lens)
+gc()
 
 
 ```
@@ -315,7 +317,8 @@ if(plotEPS){
   pfname = paste0(params$output_dir, '/summary/Figures/dist_frags.eps')
   ggsave(p, file = pfname, device = 'eps', width = 6, height = 6)
 }
-
+rm(bc_stat)
+gc()
 
 ```
 
@@ -574,6 +577,7 @@ do_DA_motif <- function(mtx_score, clusters, test = 'wilcox',
 if(file.exists(seurat_file)){
     metaData = ss@meta.data
     rm(ss)
+    gc()
 }
 
 if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
@@ -656,7 +660,8 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
          width = 9)
   #dev.off()
   }
-
+  rm(sele.zscores, zscores, mtx0)
+  gc()
 }
 
 
@@ -745,7 +750,9 @@ if(Cicero_Plot_Region != 'none' & file.exists(cicero_conn.file)){
   gene_anno <- transcripts(ens.ann,
                           columns = c("gene_id", "gene_name",  
                                       "tx_biotype", "tx_id"))
- 
+  rm(ens.ann)
+  gc()
+  
   gene_anno = keepStandardChromosomes(gene_anno,pruning.mode = 'coarse')
  
   gene_anno = data.table(data.frame(gene_anno))

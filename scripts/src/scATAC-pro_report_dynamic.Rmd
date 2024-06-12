@@ -13,32 +13,6 @@ params:
 title: "scATAC-pro `r params$set_title`: `r params$set_sample`"
 ---
 
-<style type="text/css">
-
-.title { /* Header 1 */
-  font-size: 28px;
-}
-
-.chart-title {  /* chart_title  */
-   font-family: "Raleway", Helvetica, Arial, sans-serif;
-   font-size: 18px;
-   font-weight: 800;
-}  
-.navbar-brand {
-   font-size: 22px;
-   font-weight: 900;
-}
-
-</style>
-
-
-<style type="image-container">
-  width: 100%;
-  margin-left: 0;
-  margin-right: 0;
-</style>
-
-
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
@@ -169,6 +143,7 @@ cell.table = data.frame(c(PEAK_CALLER, nrow(peaks),
                           frac.in.cell, mapq30.frac.in.cell)) 
 
 rm(peaks)
+gc()
 
 rownames(cell.table) = c('Peak called by', 'Number of peaks', 
                          'Percentage of unique fragments in peaks',
@@ -216,13 +191,11 @@ if(as.logical(CELL_MAP_QC) & file.exists(cell_mapping_qc_file)){
 ```
 
 
-
 <span style="font-size:20px;"> Cell Barcode QC  </span> {data-orientation=rows}
 ==========================================
 
 Row 
 --------------------------------------------------------------------
-
 
 ### Total fragments VS fraction in peaks
 
@@ -270,6 +243,7 @@ if(file.exists(fragments_len_file)) {
     frag_lens = data.table('isize' = rep(lens, frags$ndup))
 }
 rm(frags)
+gc()
 frag_lens = frag_lens[sample(1:nrow(frag_lens), 1000000), ]
 
 p1 <- ggplot(data = frag_lens[isize < 800], aes(x = isize)) +
@@ -286,7 +260,8 @@ if(plotEPS){
   ggsave(p1, file = pfname, device = 'eps', width = 6, height = 6)
 }
 
-
+rm(frag_lens)
+gc()
 
 ```
 
@@ -294,9 +269,6 @@ if(plotEPS){
 ### Density plot of total number of unique fragments
 
 ```{r}
-
-bc_stat[, 'group' := ifelse(bc %in% barcodes, 'cell', 'non-cell')]
-
 p <- ggplot(data = bc_stat, aes(x = total_frags, fill = group)) + 
   geom_density() + scale_x_continuous(trans = 'log10') + theme_bw() +
   theme(legend.position='none', legend.title=element_blank(),
@@ -319,6 +291,8 @@ if(plotEPS){
   ggsave(p, file = pfname, device = 'eps', width = 6, height = 6)
 }
 
+rm(bc_stat)
+gc()
 
 ```
 
@@ -426,7 +400,6 @@ Column
 
 ### Clustering 
 ```{r}
-library(Seurat)
 
 down.dir = paste0(params$output_dir, '/downstream_analysis/', PEAK_CALLER, '/', CELL_CALLER)
 seurat_file = paste0(down.dir, '/seurat_obj.rds')
@@ -569,7 +542,6 @@ do_DA_motif <- function(mtx_score, clusters, test = 'wilcox',
 
 if(file.exists(seurat_file)){
     metaData = ss@meta.data
-    rm(ss)
 }
 
 if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
@@ -653,6 +625,8 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   #dev.off()
   }
 
+  rm(sele.zscores, zscores, mtx0)
+  gc()
 }
 
 
@@ -714,7 +688,7 @@ if(file.exists(footprint_stats.file)){
 =====================================================
 
 
-### Predicted Interactions at a locus of interest {.sidebar}
+### Predicted Interactions at a locus of interest 
 
 ```{r}
 
@@ -722,11 +696,8 @@ down.dir = paste0(params$output_dir, '/downstream_analysis/', PEAK_CALLER, '/', 
 
 cicero_conn.file = paste0(down.dir, '/cicero_interactions.txt')
 
-seurat_file = paste0(down.dir, '/seurat_obj.rds')
-
 if (file.exists(seurat_file)) {
-  ss = readRDS(seurat_file)
-  
+ 
   if (grepl(GENOME_NAME, pattern = 'mm10', ignore.case = TRUE)) {
     library(EnsDb.Mmusculus.v79)
     ens.ann <- EnsDb.Mmusculus.v79
@@ -751,6 +722,9 @@ if (file.exists(seurat_file)) {
   seqlevels(annotations) <- paste0('chr', seqlevels(annotations))
   genome(annotations) <- GENOME_NAME
   
+  rm(ens.ann)
+  gc()
+  
   if (class(ss[['ATAC']]) == 'Assay5') {
     atac_counts = ss[['ATAC']]$counts
   } else {
@@ -763,9 +737,12 @@ if (file.exists(seurat_file)) {
     min.cells = 10,
     annotation = annotations
   )
+  rm(atac_counts)
+  gc()
+  
   ss[['peaks']] <- chrom_assay
   DefaultAssay(ss) <- 'peaks'
-  
+  ss[['ATAC']] <- NULL # save space
   if (file.exists(cicero_conn.file)) {
     conns = fread(cicero_conn.file)
     ccans <- generate_ccans(conns)
