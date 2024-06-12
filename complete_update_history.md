@@ -1,4 +1,8 @@
 ## Complete Update History
+-Version 1.5.2
+    * Be compatible with Seurat v5
+    * Interactive report with shiny features
+    * *call_peak*: change to skip peak extension;
 - Version 1.5.1 
     * *Integrate* module takes SampleSheet.csv file as input, where sample names, paths of peaks, fragments, and cell barcodes can be specified
     * Enable 4/5 bp shift for each read by setting SHIFT_READS_IN_BAM as TRUE in configure_user.txt file

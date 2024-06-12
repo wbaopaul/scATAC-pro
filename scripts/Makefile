@@ -324,6 +324,16 @@ report: config_check
 	@echo 
 
 #######################################
+## report_dynamic
+#######################################
+report_dynamic: config_check
+	@echo "--------------------------------------------" 
+	@date 
+	@echo "Generating dynamic reports ..." 
+	@$(SCRIPTS)/report_dynamic.sh $(INPUT_FILE) $(CONFIG_FILE) $(CONFIG_SYS)
+	@echo 
+
+#######################################
 ## mergePeaks
 #######################################
 mergePeaks: config_check

@@ -77,6 +77,6 @@ if [ "${PEAK_CALLER}" = 'BIN' ];then
 fi
   
 
-## extend peaks which is shorter than 500bp 
-${R_PATH}/Rscript --vanilla ${curr_dir}/src/extendPeaks.R ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed
+## extend peaks which is shorter than 500bp  --skip
+#${R_PATH}/Rscript --vanilla ${curr_dir}/src/extendPeaks.R ${work_dir}/${out_prefix}_features_BlacklistRemoved.bed
 echo "Call peaks done !"

@@ -4,6 +4,7 @@ output:
     vertical_layout: fill
     social: menu
     theme: united
+runtime: shiny
 params:
   set_title: scATAC-pro Report
   set_sample: PMBC10K
@@ -49,7 +50,9 @@ library(ggplot2)
 library(cicero)
 library(viridis)
 library(GenomicRanges)
-
+library(Seurat)
+library(Signac)
+library(shiny)
 ```
 
 <span style="font-size:20px;"> Global QC </span>
@@ -388,13 +391,6 @@ if(plotEPS){
 ### Overall statistics (Cell Barcodes)
 
 ```{r}
-
-frac_peak = sum(qc_sele$total_frags * qc_sele$frac_peak)/sum(qc_sele$total_frags)
-frac_mito = sum(qc_sele$total_frags * qc_sele$frac_mito)/sum(qc_sele$total_frags)
-frac_promoter = sum(qc_sele$total_frags * qc_sele$frac_promoter)/sum(qc_sele$total_frags)
-frac_enh = sum(qc_sele$total_frags * qc_sele$frac_enhancer)/sum(qc_sele$total_frags)
-frac_tss = sum(qc_sele$total_frags * qc_sele$frac_tss)/sum(qc_sele$total_frags)
-
 frac_peak = median(qc_sele$frac_peak)
 frac_mito = median(qc_sele$frac_mito)
 frac_promoter = median(qc_sele$frac_promoter)
@@ -662,10 +658,6 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
 
 ```
 
-Column 
-----------------------------------------------------
-
-
 ### Footprinting Analysis: differentially bound TFs
 
 ```{r, out.width='\\textwidth'}
@@ -717,91 +709,108 @@ if(file.exists(footprint_stats.file)){
 ```
 
 
-### Predicted Interactions at a locus of interest
-```{r, out.width='\\textwidth'}
+
+<span style="font-size:20px;"> Explore </span>
+=====================================================
+
+
+### Predicted Interactions at a locus of interest {.sidebar}
+
+```{r}
+
+down.dir = paste0(params$output_dir, '/downstream_analysis/', PEAK_CALLER, '/', CELL_CALLER)
+
 cicero_conn.file = paste0(down.dir, '/cicero_interactions.txt')
-if(Cicero_Plot_Region != 'none' & file.exists(cicero_conn.file)){
- conns = fread(cicero_conn.file)
- temp <- tempfile()
-  if(grepl(GENOME_NAME, pattern = 'mm10', ignore.case = T)) {
+
+seurat_file = paste0(down.dir, '/seurat_obj.rds')
+
+if (file.exists(seurat_file)) {
+  ss = readRDS(seurat_file)
+  
+  if (grepl(GENOME_NAME, pattern = 'mm10', ignore.case = TRUE)) {
     library(EnsDb.Mmusculus.v79)
     ens.ann <- EnsDb.Mmusculus.v79
   }
-  if(grepl(GENOME_NAME, pattern = 'mm9', ignore.case = T)) {
+  
+  if (grepl(GENOME_NAME, pattern = 'mm9', ignore.case = TRUE)) {
     library(EnsDb.Mmusculus.v75)
     ens.ann <- EnsDb.Mmusculus.v75
   }
   
-  if(grepl(GENOME_NAME, pattern = 'hg38', ignore.case = T)) {
+  if (grepl(GENOME_NAME, pattern = 'hg38', ignore.case = TRUE)) {
     library(EnsDb.Hsapiens.v86)
     ens.ann <- EnsDb.Hsapiens.v86
   }
   
-  if(grepl(GENOME_NAME, pattern = 'hg19', ignore.case = T)) {
+  if (grepl(GENOME_NAME, pattern = 'hg19', ignore.case = TRUE)) {
     library(EnsDb.Hsapiens.v75)
     ens.ann <- EnsDb.Hsapiens.v75
   }
   
-  gene_anno <- transcripts(ens.ann,
-                          columns = c("gene_id", "gene_name",  
-                                      "tx_biotype", "tx_id"))
- 
-  gene_anno = keepStandardChromosomes(gene_anno,pruning.mode = 'coarse')
- 
-  gene_anno = data.table(data.frame(gene_anno))
-  gene_anno = subset(gene_anno, tx_biotype %in% c('protein_coding', 'miRNA', 'lincRNA'), select = c('seqnames', 'start', 'end', 'tx_id',
-                       'strand', 'gene_id', 'gene_name'))
-  #rename some columns to match requirements
-  names(gene_anno)[c(1, 4, 6:7)] = c('chromosome', 'transcript', 'gene', 'symbol')
-  gene_anno$chromosome = paste0('chr', gene_anno$chromosome)
-
-  gene_anno = subset(gene_anno, select = c(chromosome, start, end, strand, 
-                                           transcript, gene, symbol))
-  gene_anno = gene_anno[complete.cases(gene_anno), ]
-  if(Cicero_Plot_Region %in% gene_anno$symbol){
-    tmp_anno = gene_anno[gene_anno$symbol == Cicero_Plot_Region, ]
-    chr0 = tmp_anno$chr[1]
-    start0 = min(tmp_anno$start)
-    end0 = max(tmp_anno$end)
-  }else{
-    chr0 = unlist(strsplit(Cicero_Plot_Region, ':'))[1] ## chr5:140610000-140640000
-    region0 = unlist(strsplit(Cicero_Plot_Region, ':'))[2]
-    start0 = as.integer(unlist(strsplit(region0, '-'))[1])
-    end0 = as.integer(unlist(strsplit(region0, '-'))[2])
+  annotations <- GetGRangesFromEnsDb(ensdb = ens.ann)
+  seqlevels(annotations) <- paste0('chr', seqlevels(annotations))
+  genome(annotations) <- GENOME_NAME
+  
+  if (class(ss[['ATAC']]) == 'Assay5') {
+    atac_counts = ss[['ATAC']]$counts
+  } else {
+    atac_counts = ss[['ATAC']]@counts
   }
   
-  if(end0 < start0 + 100000){
-    start0 = floor((start0+end0)/2) - 50000
-    end0 = start0 + 100000
-  }
-  conns[, 'chr1' := unlist(strsplit(Peak1, '_'))[1], by = Peak1] 
-  conns[, 'start1' := as.integer(unlist(strsplit(Peak1, '_'))[2]), by = Peak1] 
-  conns[, 'end2' := as.integer(unlist(strsplit(Peak2, '_'))[3]), by = Peak2] 
-  conns = conns[start1 <= end2]
-  conns0 = conns[chr1==chr0 & start1 >= start0 & end2 <= end0]
+  chrom_assay <- CreateChromatinAssay(
+    counts = atac_counts,
+    fragments = fragments_file,
+    min.cells = 10,
+    annotation = annotations
+  )
+  ss[['peaks']] <- chrom_assay
+  DefaultAssay(ss) <- 'peaks'
   
-  conns[, c('chr1', 'start1', 'end2') := NULL]
-  conns = data.frame(conns)
-  if(nrow(conns0)==0) cat('No interaction found in the griven region!')
-  
-  if(plotEPS & nrow(conns0) >0 ){
-    pdf(paste0(params$output_dir,'/summary/Figures/interactions_example_region.pdf'), width = 8, height = 5, fonts = 'sans')
-    plot_connections(conns, chr0, start0, end0,
-                     gene_model = gene_anno, 
-                     coaccess_cutoff = .3, 
-                     connection_width = 1, 
-                     collapseTranscripts = "longest",
-                     viewpoint_alpha = 0)
-    dev.off()
-    
+  if (file.exists(cicero_conn.file)) {
+    conns = fread(cicero_conn.file)
+    ccans <- generate_ccans(conns)
+    links <- ConnectionsToLinks(conns = conns, ccans = ccans)
+    Links(ss) <- links
   }
-  if(nrow(conns0) > 0)  plot_connections(conns, chr0, start0, end0,
-                                         gene_model = gene_anno, 
-                                         coaccess_cutoff = .3, 
-                                         connection_width = 1, 
-                                         collapseTranscripts = "longest",
-                                         viewpoint_alpha = 0)
 }
+```
+
+```{r}
+shinyApp(
+  ui <- fillPage(fillCol(flex = c(NA, 1),
+        inputPanel(
+          textInput("region", "Region or gene Name:", "chr1-50000000-50010000"),
+          numericInput("up_dist", "Upstream of the region (kb):", 10),
+          numericInput("down_dist", "Downstream of the region (kb):", 10),
+          actionButton("update", "Update View")
+        ),
+        plotOutput("covPlot", height = "100%")
+      )
+),
+  server <- function(input, output) {
+    observeEvent(input$update, {
+      tss_ann <- Signac:::CollapseToLongestTranscript(annotations)
+      if(input$region %in% tss_ann$gene_name){
+        hl.region = tss_ann[tss_ann$gene_name == input$region, ]
+      }else{
+        hl.region = StringToGRanges(input$region)
+      }
+      output$covPlot <- renderPlot({
+       CoveragePlot(
+        object = ss,
+        assay = 'peaks',
+        region = input$region,
+        region.highlight = hl.region,
+        group.by = 'active_clusters',
+        peaks = TRUE,
+        extend.upstream = input$up_dist * 1000,
+        extend.downstream = input$down_dist * 1000
+      )
+    })
+  })
+ }
+)
 
 
 ```
+
