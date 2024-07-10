@@ -143,7 +143,7 @@ cell.table = data.frame(c(PEAK_CALLER, nrow(peaks),
                           frac.in.cell, mapq30.frac.in.cell)) 
 
 rm(peaks)
-gc()
+invisible(gc())
 
 rownames(cell.table) = c('Peak called by', 'Number of peaks', 
                          'Percentage of unique fragments in peaks',
@@ -243,7 +243,7 @@ if(file.exists(fragments_len_file)) {
     frag_lens = data.table('isize' = rep(lens, frags$ndup))
 }
 rm(frags)
-gc()
+invisible(gc())
 frag_lens = frag_lens[sample(1:nrow(frag_lens), 1000000), ]
 
 p1 <- ggplot(data = frag_lens[isize < 800], aes(x = isize)) +
@@ -261,7 +261,7 @@ if(plotEPS){
 }
 
 rm(frag_lens)
-gc()
+invisible(gc())
 
 ```
 
@@ -292,7 +292,7 @@ if(plotEPS){
 }
 
 rm(bc_stat)
-gc()
+invisible(gc())
 
 ```
 
@@ -626,7 +626,7 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
   }
 
   rm(sele.zscores, zscores, mtx0)
-  gc()
+  invisible(gc())
 }
 
 
@@ -687,6 +687,34 @@ if(file.exists(footprint_stats.file)){
 <span style="font-size:20px;"> Explore </span>
 =====================================================
 
+### Clustering with different paramters
+```{r}
+if (file.exists(seurat_file)) {
+  shinyApp(
+  ui <- fillPage(fillCol(flex = c(NA, 1),
+        inputPanel(
+          textInput("dims", "dims (reduced dimensions):", '1:30'),
+          numericInput("resolution", "resolution (of clustering):", 0.2),
+          actionButton("update", "Update View")
+        ),
+        plotOutput("umapPlot", height = "100%")
+      )
+),
+  server <- function(input, output) {
+    observeEvent(input$update, {
+      range_values <- strsplit(input$dims, ":")[[1]]
+      pc_start <- as.integer(range_values[1])
+      pc_end <- as.integer(range_values[2])
+      ss = FindNeighbors(ss, dims = seq(pc_start, pc_end), verbose = F)
+      ss = FindClusters(ss, resolution = input$resolution, verbose = F)
+      output$umapPlot <- renderPlot({
+       DimPlot(ss, reduction = 'umap') + scale_color_brewer(palette = 'Paired')
+    })
+  })
+ }
+)
+}
+```
 
 ### Predicted Interactions at a locus of interest 
 
@@ -723,7 +751,7 @@ if (file.exists(seurat_file)) {
   genome(annotations) <- GENOME_NAME
   
   rm(ens.ann)
-  gc()
+  invisible(gc())
   
   if (class(ss[['ATAC']]) == 'Assay5') {
     atac_counts = ss[['ATAC']]$counts
@@ -738,7 +766,7 @@ if (file.exists(seurat_file)) {
     annotation = annotations
   )
   rm(atac_counts)
-  gc()
+  invisible(gc())
   
   ss[['peaks']] <- chrom_assay
   DefaultAssay(ss) <- 'peaks'
