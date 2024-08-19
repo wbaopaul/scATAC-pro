@@ -1464,7 +1464,7 @@ FindDoublets_Atac <- function(seurat.atac, PCs = 1:50,
   }
   
   ## pK identification
-  sweep.res.list <- paramSweep_v3(seurat.rna, PCs = PCs, sct = sct)
+  sweep.res.list <- paramSweep(seurat.rna, PCs = PCs, sct = sct)
   sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
   bcmvn <- find.pK(sweep.stats)
   
@@ -1475,11 +1475,11 @@ FindDoublets_Atac <- function(seurat.atac, PCs = 1:50,
   nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
   
   ## Run DoubletFinder with varying classification stringencies
-  seurat.rna <- doubletFinder_v3(seurat.rna, PCs = PCs, pN = 0.25,
+  seurat.rna <- doubletFinder(seurat.rna, PCs = PCs, pN = 0.25,
                                  pK = 0.09, nExp = nExp_poi, reuse.pANN = FALSE, 
                                  sct = sct)
   
-  seurat.rna <- doubletFinder_v3(seurat.rna, PCs = PCs, pN = 0.25, 
+  seurat.rna <- doubletFinder(seurat.rna, PCs = PCs, pN = 0.25, 
                                  pK = 0.09, nExp = nExp_poi.adj,
                                  reuse.pANN = paste0("pANN_0.25_0.09_", nExp_poi), 
                                  sct = sct)
