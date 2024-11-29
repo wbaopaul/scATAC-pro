@@ -161,7 +161,9 @@ Cicero_Plot_Region = chr5:140610000-140640000
 ## by VFACS, cca (or seurat), rpca, rlsi(or signac), harmony, or pool 
 ############################################################################
 Integrate_By = VFACS  ## one of VFACS, cca, rpca, rlsi, pool or harmony 
-mergePeaksWithin = 500 ## merge peaks within 500bp
+
+mergePeaksWithin = 0 ## maximum distance between peaks to be merged. defaults to 0 which means overlapping or bookended features. note that you can use negative distances to enforce a minimum overlap.
+
 filterPeaksQvalue = 0.05 ## further filter peaks by qvalue before merging them
 nDim4Integration = 30 ## reduced dimemsions for integrated data
 nFeature4Integration = 5000 ## top variable features selected for integration, not used for rlsi

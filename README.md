@@ -430,10 +430,10 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
                          input: bam file (position sorted) in 10x format
                          output: position sorted bam file in scATAC-pro format saved in output/mapping_result,
                                  mapping qc stat and fragment.txt files saved in output/summary/
-          mergePeaks: merge peaks (called from different data sets) within a given distance (say 200bp), 
+          mergePeaks: merge peaks (called from different data sets) with maximum distance (default 0), 
                       filtering each peak by qvalue, 0.01 for instance 
                          input: peak files and a distance parameter separated by comma: 
-                                peakFile1,peakFile2,...,peakFileN,200,0.01
+                                peakFile1,peakFile2,...,peakFileN,0,0.01
                          output: merged peaks saved in file output/peaks/merged.bed
           reconstMtx: reconstruct peak-by-cell matrix given peak file, fragments.tsv.gz file, barcodes.txt and 
                       an optional path for reconstructed matrix 
@@ -443,7 +443,7 @@ See [here](https://scatacpro-in-r.netlify.app/note_module) or in your terminal:
                                  if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
                                  under the same path as the input barcodes.txt file
           integrate: perform integration of two ore more data sets
-                           input: peak/feature files, a distance parameter and a qvalue cutoff separated by comma: peak_file1,peak_file2,...,peak_fileN,200,0.01
+                           input: peak/feature files, a distance parameter and a qvalue cutoff separated by comma: peak_file1,peak_file2,...,peak_fileN,0,0.01
                            Note: input can be just a SampleSheet.csv file since v1.5.2
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in
                                    output/integrated/

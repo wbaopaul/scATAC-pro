@@ -124,9 +124,9 @@ function help {
                          output: position sorted bam file in scATAC-pro format in output/mapping_result, mapping qc stat
                                  and fragment.txt file in output/summary/"
     echo "      mergePeaks: merge peaks (called from different data sets) if the distance is
-                            less than a given size in basepairs (200 for instance),filtering peaks by qvalue 
+                            less than a given size in basepairs (0 for instance),filtering peaks by qvalue 
                          input: peak files and a distance parameter separated by comma:
-                                peakFile1,peakFile2,...,peakFileN,200,0.01
+                                peakFile1,peakFile2,...,peakFileN,0,0.01
                          output: merged peaks saved in file output/peaks/merged.bed"
     echo "      reConstMtx: reconstruct peak-by-cell matrix given peak file, fragments.txt file, barcodes.txt and
                             an optional path for reconstructed matrix
@@ -136,7 +136,7 @@ function help {
                                  if reconstructMatrixPath not specified, a sub-folder reConstruct_matrix will be created
                                  under the same path as the input barcodes.txt file" 
     echo "      integrate: perform integration of two ore more data sets
-                           input: peak/feature files and a optional distance parameter, separated by comma: peak_file1,peak_file2,...,peak_fileN,200,0.01
+                           input: peak/feature files and a optional distance parameter, separated by comma: peak_file1,peak_file2,...,peak_fileN,0,0.01
                            Note: input can be just a SampleSheet.csv file since v1.5.2
                            output: merged peaks, reconstructed matrix, integrated seurat obj and umap plot, saved in 
                                    output/integrated/"
