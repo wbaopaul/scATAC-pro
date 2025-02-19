@@ -1166,6 +1166,10 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     seurat.merged = merge(seurat_list[[1]], seurat_list[-1])
   }
   
+  if(class(seurat.obj[['ATAC']]) == 'Assay5'){
+    seurat.merged = JoinLayers(seurat.merged)
+  }
+  
   if(integrate_by == 'pool') seurat.merged <- regress_on_pca(seurat.merged, 'sampleName')
   
   if(integrate_by == 'VFACS'){
