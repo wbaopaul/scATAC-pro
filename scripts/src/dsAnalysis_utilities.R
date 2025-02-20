@@ -1166,7 +1166,7 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     seurat.merged = merge(seurat_list[[1]], seurat_list[-1])
   }
   
-  if(class(seurat.obj[['ATAC']]) == 'Assay5'){
+  if(class(seurat.merged[['ATAC']]) == 'Assay5'){
     seurat.merged = JoinLayers(seurat.merged)
   }
   
