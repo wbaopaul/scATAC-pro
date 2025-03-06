@@ -1166,8 +1166,17 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     seurat.merged = merge(seurat_list[[1]], seurat_list[-1])
   }
   
-  if(integrate_by == 'pool') seurat.merged <- regress_on_pca(seurat.merged, 'sampleName')
+  if(class(seurat.merged[['ATAC']]) == 'Assay5'){
+    seurat.merged = JoinLayers(seurat.merged)
+  }
   
+  if(integrate_by == 'pool') {
+    seurat.merged <- FindVariableFeatures(seurat.merged, nfeatures = top_variable_features)
+    seurat.merged <- ScaleData(seurat.merged)
+    seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
+    seurat.merged <- regress_on_pca(seurat.merged, 'sampleName')
+  }
+
   if(integrate_by == 'VFACS'){
     ## cluster and then reselect features
     ## variable features across clusters
@@ -1208,7 +1217,11 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     
     tmp <- mtx0[setdiff(rownames(mtx0), sele.features), ]
     data0 <- rbind(mtx0.norm, tmp)
-    seurat.merged[['ATAC']]@data = data0[rownames(mtx0), ]
+    if(class(seurat.merged[['ATAC']]) == 'Assay5') {
+      seurat.merged[['ATAC']]$data = data0[rownames(mtx0), ]
+    }else{
+      seurat.merged[['ATAC']]@data = data0[rownames(mtx0), ]
+    }
     
     VariableFeatures(seurat.merged) <- sele.features
     seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
@@ -1233,6 +1246,9 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     }
     ## merge 
     seurat.merged = merge(seurat_list[[1]], seurat_list[-1])
+    if(class(seurat.merged[['ATAC']]) == 'Assay5'){
+      seurat.merged = JoinLayers(seurat.merged)
+    }
     seurat.merged = FindTopFeatures(seurat.merged, min.cutoff = 100)
     
     ## select anchor features
