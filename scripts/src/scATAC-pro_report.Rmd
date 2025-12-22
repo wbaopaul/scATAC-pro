@@ -83,8 +83,8 @@ read_conf_file <- function(configure_user_file){
 dir.create(paste0(params$output_dir, '/summary/Tables'), showWarnings = F)
 
 read_conf_file(params$configure_user)
-plotEPS = as.logical(plotEPS)
-if(plotEPS) dir.create(paste0(params$output_dir, '/summary/Figures'), showWarn = F)
+plotPDF = as.logical(plotPDF)
+if(plotPDF) dir.create(paste0(params$output_dir, '/summary/Figures'), showWarn = F)
 mapping_qc_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.MappingStats')
 
 fragments_file = paste0(params$output_dir, '/summary/', OUTPUT_PREFIX,  '.fragments.tsv.gz')
@@ -281,9 +281,9 @@ p1 <- ggplot(data = frag_lens[isize < 800], aes(x = isize)) +
 
 p1
 
-if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/dist_insert_size.eps')
-  ggsave(p1, file = pfname, device = 'eps', width = 6, height = 6)
+if(plotPDF){
+  pfname = paste0(params$output_dir, '/summary/Figures/dist_insert_size.pdf')
+  ggsave(p1, file = pfname, device = 'pdf', width = 6, height = 6)
 }
 rm(frag_lens)
 invisible(gc())
@@ -313,10 +313,10 @@ p <- p + annotation_custom(text1) + annotation_custom(text2)
 
 p
 
-if(plotEPS){
+if(plotPDF){
   system(paste0('mkdir -p ', params$output_dir, '/summary/Figures'))
-  pfname = paste0(params$output_dir, '/summary/Figures/dist_frags.eps')
-  ggsave(p, file = pfname, device = 'eps', width = 6, height = 6)
+  pfname = paste0(params$output_dir, '/summary/Figures/dist_frags.pdf')
+  ggsave(p, file = pfname, device = 'pdf', width = 6, height = 6)
 }
 rm(bc_stat)
 invisible(gc())
@@ -355,10 +355,10 @@ if(file.exists(tss_escore_file)){
     print(p0)
 
 
-    if(plotEPS){
+    if(plotPDF){
 
-      pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.eps')
-      ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
+      pfname = paste0(params$output_dir, '/summary/Figures/tss_enrich.pdf')
+      ggsave(p0, file = pfname, device = 'pdf', width = 6, height = 6)
     }
 }
 
@@ -381,9 +381,9 @@ p0 <- ggplot(data = qc_sele_df, aes(y = frac, x = type, fill = type)) + ylab('Fr
         axis.title.y = element_text(size = 18, family = "Helvetica")) + xlab('') 
 p0
 
-if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/overlap_annotation.eps')
-  ggsave(p0, file = pfname, device = 'eps', width = 6, height = 6)
+if(plotPDF){
+  pfname = paste0(params$output_dir, '/summary/Figures/overlap_annotation.pdf')
+  ggsave(p0, file = pfname, device = 'pdf', width = 6, height = 6)
 }
 
 
@@ -445,9 +445,9 @@ if(file.exists(seurat_file)){
     
     
     
-    if(plotEPS){
-      pfname = paste0(params$output_dir, '/summary/Figures/umap_clusters.eps')
-      ggsave(cg, file = pfname, device = 'eps', width = 6, height = 6)
+    if(plotPDF){
+      pfname = paste0(params$output_dir, '/summary/Figures/umap_clusters.pdf')
+      ggsave(cg, file = pfname, device = 'pdf', width = 6, height = 6)
     }
     
     cg
@@ -512,9 +512,9 @@ if(file.exists(go_file)){
          
         print(p_go) 
         
-        if(plotEPS){
-            pfname = paste0(params$output_dir, '/summary/Figures/enriched_GO.eps')
-            ggsave(p_go, file = pfname, device = 'eps', width = 10, height = 6)
+        if(plotPDF){
+            pfname = paste0(params$output_dir, '/summary/Figures/enriched_GO.pdf')
+            ggsave(p_go, file = pfname, device = 'pdf', width = 10, height = 6)
         }
     }
 }else{
@@ -652,11 +652,11 @@ if(file.exists(paste0(down.dir, '/chromVar_obj.rds'))){
                      annotation_col = ann_col0, color = viridis(100),
                      annotation_colors = ann_colors, fontsize_row = 9)
   
-  if(plotEPS){
-  pfname = paste0(params$output_dir, '/summary/Figures/heatmap_motif_enrich.eps')
+  if(plotPDF){
+  pfname = paste0(params$output_dir, '/summary/Figures/heatmap_motif_enrich.pdf')
   #postscript(file = pfname, width = 9, height = 12)
   
-  ggsave(ph, filename = pfname, device = 'eps', height = 12,
+  ggsave(ph, filename = pfname, device = 'pdf', height = 12,
          width = 9)
   #dev.off()
   }
@@ -706,10 +706,10 @@ if(file.exists(footprint_stats.file)){
                            color = viridis::viridis(100))
   
   pfname1 =paste0(params$output_dir, '/summary/Figures/heatmap_differential_TF_footprint_', 
-                  group1_fp, '_vs_', group2_fp, '.eps')
+                  group1_fp, '_vs_', group2_fp, '.pdf')
   
-  if(plotEPS){
-    ggsave(p1, filename = pfname1, device = 'eps', height = 6,
+  if(plotPDF){
+    ggsave(p1, filename = pfname1, device = 'pdf', height = 6,
            width = 6)
   }
   
@@ -791,7 +791,7 @@ if(Cicero_Plot_Region != 'none' & file.exists(cicero_conn.file)){
   conns = data.frame(conns)
   if(nrow(conns0)==0) cat('No interaction found in the griven region!')
   
-  if(plotEPS & nrow(conns0) >0 ){
+  if(plotPDF & nrow(conns0) >0 ){
     pdf(paste0(params$output_dir,'/summary/Figures/interactions_example_region.pdf'), width = 8, height = 5, fonts = 'sans')
     plot_connections(conns, chr0, start0, end0,
                      gene_model = gene_anno, 

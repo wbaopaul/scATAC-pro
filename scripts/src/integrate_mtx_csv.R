@@ -76,8 +76,8 @@ cg2 <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', lab
 
 
 pcomb = gridExtra::grid.arrange(cg1, cg2, nrow = 1)
-pfname = paste0(output_dir, '/umap_clusters_', integrate_by, '.eps')
+pfname = paste0(output_dir, '/umap_clusters_', integrate_by, '.pdf')
 
 #ggsave(CombinePlots(plots = list(cg1, cg)), file = pfname, device = 'eps', width = 14, height = 6)
-ggsave(pcomb, file = pfname, device = 'eps', width = 14, height = 6)
+ggsave(pcomb, file = pfname, device = 'pdf', width = 14, height = 6)
 

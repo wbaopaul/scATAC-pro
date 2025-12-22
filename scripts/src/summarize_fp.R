@@ -120,9 +120,9 @@ p1 <- pheatmap::pheatmap(mm, cluster_cols = F, fontsize = 13, fontsize_row = 9,
                    color = viridis::viridis(100))
 
 pfname1 =paste0(output_dir, '/heatmap_differential_TF_footprint_', 
-               group1_fp, '_vs_', group2_fp, '.eps')
+               group1_fp, '_vs_', group2_fp, '.pdf')
 
-ggsave(p1, filename = pfname1, device = 'eps', height = 10,
+ggsave(p1, filename = pfname1, device = 'pdf', height = 10,
        width = 6)
 
 write.table(footprint_out, 

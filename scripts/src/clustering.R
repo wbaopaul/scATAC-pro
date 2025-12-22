@@ -172,6 +172,6 @@ write.table(bc_cls, file = paste0(output_dir, '/cell_cluster_table.tsv'), sep = 
 
 cg <- DimPlot(seurat.obj, reduction = 'umap', group.by = 'active_clusters', label = T) + theme(legend.text = element_text(size = 17))
     
-   pfname = paste0(output_dir, '/umap_clusters.eps')
-   ggsave(cg, file = pfname, device = 'eps', width = 6, height = 6)
+   pfname = paste0(output_dir, '/umap_clusters.pdf')
+   ggsave(cg, file = pfname, device = 'pdf', width = 6, height = 6)
 

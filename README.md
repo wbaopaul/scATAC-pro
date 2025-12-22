@@ -246,9 +246,9 @@ Step by step guide to running scATAC-pro
                  -c configure_user.txt
     ##report_dynamic regnerates dynamic report which can explore chromatin interactions and coverage plots (still in testing), requiring access to a internet browser.
 
-    ## merge peaks with qvlue < 0.01 (be able to filtering by qvalue since v1.5.0) and within 500bp distance of each other            
+    ## merge peaks with qvalue < 0.01 (be able to filtering by qvalue since v1.5.0) and with 50bp overlap            
     $ scATAC-pro -s mergePeaks
-                 -i peak_file1,peak_file2,...,peak_fileN,500,0.01
+                 -i peak_file1,peak_file2,...,peak_fileN,-50,0.01
                  -c configure_user.txt
 
     ## reconstruct matrix using given new peak file

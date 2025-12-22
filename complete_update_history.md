@@ -1,8 +1,8 @@
 ## Complete Update History
 -Version 1.5.2
     * Be compatible with Seurat v5
-    * Add *report_dynamic* module: Interactive report with shiny features (still in testing)
     * *call_peak*: change to skip peak extension;
+    * plot figure in .pdf format insted of in .eps format
 - Version 1.5.1 
     * *Integrate* module takes SampleSheet.csv file as input, where sample names, paths of peaks, fragments, and cell barcodes can be specified
     * Enable 4/5 bp shift for each read by setting SHIFT_READS_IN_BAM as TRUE in configure_user.txt file
