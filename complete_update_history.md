@@ -3,6 +3,7 @@
     * Be compatible with Seurat v5
     * *call_peak*: change to skip peak extension;
     * plot figure in .pdf format insted of in .eps format
+    * set harmony as default method of *integrate* module  
 - Version 1.5.1 
     * *Integrate* module takes SampleSheet.csv file as input, where sample names, paths of peaks, fragments, and cell barcodes can be specified
     * Enable 4/5 bp shift for each read by setting SHIFT_READS_IN_BAM as TRUE in configure_user.txt file

@@ -1170,11 +1170,11 @@ run_integrateSeuObj <- function(seurat_list, integrate_by = 'VFACS',
     seurat.merged = JoinLayers(seurat.merged)
   }
   
-  if(integrate_by == 'pool') {
+  if(integrate_by %in% c('pool', 'harmony')) {
     seurat.merged <- FindVariableFeatures(seurat.merged, nfeatures = top_variable_features)
     seurat.merged <- ScaleData(seurat.merged)
     seurat.merged <- RunPCA(seurat.merged, npcs = nREDUCTION, verbose = verbose)
-    seurat.merged <- regress_on_pca(seurat.merged, 'sampleName')
+    #seurat.merged <- regress_on_pca(seurat.merged, 'sampleName')
   }
 
   if(integrate_by == 'VFACS'){
